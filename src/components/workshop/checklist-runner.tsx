@@ -66,13 +66,13 @@ export function ChecklistRunner({
             <Button size="sm" variant="outline" disabled={pending} onClick={() => start(async () => { await transitionJob(jobId, "READY"); router.refresh(); toast.success("Marked ready"); })}>Mark Ready</Button>
           )}
           {(status === "READY" || status === "IN_PROGRESS" || status === "AWAITING_APPROVAL") && (
-            <Button size="sm" disabled={pending} onClick={complete}>Complete Service</Button>
+            <Button size="sm" disabled={pending} onClick={complete} data-testid="complete-service">Complete Service</Button>
           )}
         </div>
       </div>
 
       {!hasChecklist && (
-        <Button className="w-full" onClick={() => start(async () => { await startChecklist(jobId); router.refresh(); })} disabled={pending}>
+        <Button className="w-full" data-testid="start-checklist" onClick={() => start(async () => { await startChecklist(jobId); router.refresh(); })} disabled={pending}>
           Start Inspection Checklist
         </Button>
       )}
@@ -84,7 +84,7 @@ export function ChecklistRunner({
             const approved = item.result === "PASS" || item.result === "FAIL" || item.result === "WARNING" || item.result === "NA";
             const result = item.result;
             return (
-              <div key={item.id} className={"rounded-2xl border bg-card p-4 " + (result === "WARNING" ? "border-amber-300" : result === "FAIL" ? "border-red-300" : "")}>
+              <div key={item.id} data-testid={"check-" + item.name.replace(/\s+/g, "-")} className={"rounded-2xl border bg-card p-4 " + (result === "WARNING" ? "border-amber-300" : result === "FAIL" ? "border-red-300" : "")}>
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5">
                     <span className={"h-2 w-2 rounded-full " + (result === "PASS" ? "bg-emerald-500" : result === "WARNING" ? "bg-amber-500" : result === "FAIL" ? "bg-red-500" : "bg-slate-300")} />
@@ -93,7 +93,7 @@ export function ChecklistRunner({
                   </div>
                   <div className="flex gap-1">
                     {["PASS", "WARNING", "FAIL", "NA"].map((opt) => (
-                      <button key={opt} onClick={() => setResult(item.id, opt)}
+                      <button key={opt} data-testid={"result-" + item.name.replace(/\s+/g, "-") + "-" + opt} onClick={() => setResult(item.id, opt)}
                         className={"rounded-md px-2 py-1 text-[11px] font-bold uppercase transition-colors " +
                           (result === opt ? (opt === "PASS" ? "bg-emerald-600 text-white" : opt === "WARNING" ? "bg-amber-500 text-white" : opt === "FAIL" ? "bg-red-600 text-white" : "bg-slate-400 text-white") : "bg-muted text-muted-foreground hover:bg-muted/70")}>
                         {opt}
@@ -105,7 +105,7 @@ export function ChecklistRunner({
                   <div className="mt-3 rounded-xl bg-muted/50 p-3">
                     <Input placeholder="Mechanic note (e.g. Chain is too loose)" value={note[item.id] ?? ""} onChange={(e) => setNote((n) => ({ ...n, [item.id]: e.target.value }))} className="bg-background h-8 text-sm" />
                     {!active ? (
-                      <Button size="sm" variant="outline" className="mt-2" onClick={() => setApprovalPanel(item.id)}>
+                      <Button size="sm" variant="outline" className="mt-2" data-testid={"approval-request-" + item.name.replace(/\s+/g, "-")} onClick={() => setApprovalPanel(item.id)}>
                         <MessageSquare className="h-3.5 w-3.5 mr-1.5" /> Request Customer Approval
                       </Button>
                     ) : (
@@ -121,7 +121,7 @@ export function ChecklistRunner({
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" onClick={() => submitApproval(item.id, item.name)} disabled={pending}>Send Request</Button>
+                          <Button size="sm" data-testid="approval-send" onClick={() => submitApproval(item.id, item.name)} disabled={pending}>Send Request</Button>
                           <Button size="sm" variant="ghost" onClick={() => setApprovalPanel(null)}>Cancel</Button>
                         </div>
                       </div>

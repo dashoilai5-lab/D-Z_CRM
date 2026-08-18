@@ -29,7 +29,7 @@ export function ApprovalCard({ approval }: { approval: { id: string; title: stri
     });
 
   return (
-    <div className="rounded-2xl border-2 border-amber-200 bg-card p-5">
+    <div data-testid="approval-card" className="rounded-2xl border-2 border-amber-200 bg-card p-5">
       <div className="text-[11px] font-bold uppercase tracking-wide text-amber-600">Additional Work Required</div>
       <h3 className="mt-1 text-lg font-bold uppercase">{approval.title}</h3>
       <p className="text-xs text-muted-foreground mt-1">{approval.job.motorcycle.brand} {approval.job.motorcycle.model} · {approval.job.motorcycle.plate}</p>
@@ -41,8 +41,8 @@ export function ApprovalCard({ approval }: { approval: { id: string; title: stri
       )}
       <div className="mt-4 text-2xl font-bold tabular-nums">{formatRM(approval.amountSen)}</div>
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <Button variant="outline" disabled={pending} onClick={() => respond("DECLINED")}>DECLINE</Button>
-        <Button disabled={pending} onClick={() => respond("APPROVED")}>APPROVE {formatRM(approval.amountSen)}</Button>
+        <Button variant="outline" data-testid="approval-decline" disabled={pending} onClick={() => respond("DECLINED")}>DECLINE</Button>
+        <Button data-testid="approval-approve" disabled={pending} onClick={() => respond("APPROVED")}>APPROVE {formatRM(approval.amountSen)}</Button>
       </div>
     </div>
   );

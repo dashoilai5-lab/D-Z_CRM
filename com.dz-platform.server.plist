@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.dz-platform.server</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/Jun/.dsh/runtime/node/bin/node</string>
+    <string>/Users/Jun/Documents/CRM-D&Z/node_modules/next/dist/bin/next</string>
+    <string>start</string>
+    <string>-p</string>
+    <string>3002</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>/Users/Jun/Documents/CRM-D&Z</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/tmp/dz-launchd.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/dz-launchd.err.log</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/Users/Jun/.dsh/runtime/node/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+</dict>
+</plist>

@@ -40,12 +40,12 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
             <div className="space-y-3 py-2">
               <div>
                 <Label>Current Mileage (km)</Label>
-                <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="e.g. 31800" className="mt-1.5" />
+                <Input data-testid="checkin-mileage" inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="e.g. 31800" className="mt-1.5" />
               </div>
               <div>
                 <Label>Service Package</Label>
                 <Select value={packageId} onValueChange={(v) => setPackageId(v ?? "")}>
-                  <SelectTrigger className="mt-1.5"><SelectValue placeholder="Recommended at counter" /></SelectTrigger>
+                  <SelectTrigger data-testid="checkin-package" className="mt-1.5"><SelectValue placeholder="Recommended at counter" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No package</SelectItem>
                     {packages.map((p) => (
@@ -57,7 +57,7 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-              <Button disabled={!mileage || pending} onClick={() => start(async () => {
+              <Button data-testid="checkin-submit" disabled={!mileage || pending} onClick={() => start(async () => {
                 const result = await bookingAction(bookingId, "CHECKED_IN", { mileage: Number(mileage), packageId: packageId === "none" ? undefined : packageId });
                 setOpen(false);
                 router.refresh();

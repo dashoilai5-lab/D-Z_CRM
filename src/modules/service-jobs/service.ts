@@ -2,24 +2,16 @@ import type { DbLike } from "@/modules/customers/repository";
 import type { JobStatus, Prisma, PrismaClient } from "@prisma/client";
 import type { IJobRepository } from "./repository";
 import { PrismaJobRepository } from "@/repositories/prisma/jobs.repository";
+import { canTransitionJob, type JobStatus as StatusT } from "@/lib/state-machines";
 import { db } from "@/lib/db";
 
 export type JobStatusInput = JobStatus;
-
-const STATUS_FLOW: Record<string, JobStatusInput[]> = {
-  WAITING: ["IN_PROGRESS", "CANCELLED"],
-  IN_PROGRESS: ["AWAITING_APPROVAL", "READY", "CANCELLED"],
-  AWAITING_APPROVAL: ["IN_PROGRESS", "READY", "CANCELLED"],
-  READY: ["COMPLETED", "CANCELLED"],
-  COMPLETED: [],
-  CANCELLED: [],
-};
 
 export class JobService {
   constructor(private repo: IJobRepository = new PrismaJobRepository()) {}
 
   canTransition(from: JobStatusInput, to: JobStatusInput): boolean {
-    return STATUS_FLOW[from]?.includes(to) ?? false;
+    return canTransitionJob(from as JobStatus, to as JobStatus);
   }
 
   async listBoard() {

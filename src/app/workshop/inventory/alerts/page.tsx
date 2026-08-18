@@ -18,7 +18,9 @@ export default async function StockAlertsPage() {
         {alerts.map((r) => (
           <div key={r.productId} className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
             <div className="flex-1 min-w-44">
-              <div className="font-medium text-sm">{r.name}</div>
+              <div className="flex items-center gap-2 font-medium text-sm">{r.name}
+                <span className={"rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 " + (r.level === "CRITICAL" ? "bg-red-50 text-red-700 ring-red-200" : r.level === "OUT_OF_STOCK" ? "bg-slate-100 text-slate-700 ring-slate-300" : r.level === "LOW" ? "bg-amber-50 text-amber-700 ring-amber-200" : "bg-emerald-50 text-emerald-700 ring-emerald-200")}>{r.level.replace("_", " ")}</span>
+              </div>
               <div className="text-xs text-muted-foreground">{r.sku} · {r.reason ?? r.level}</div>
             </div>
             <div className="text-right">

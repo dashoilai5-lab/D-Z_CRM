@@ -2,6 +2,7 @@ import type { DbLike } from "@/modules/customers/repository";
 import type { StockLevel, StockStatus } from "@/types";
 import type { IInventoryRepository } from "./repository";
 import { PrismaInventoryRepository } from "@/repositories/prisma/inventory.repository";
+import { stockLevel } from "@/lib/state-machines";
 import { db } from "@/lib/db";
 
 /** Deterministic stock intelligence (§34-37). */
@@ -9,10 +10,7 @@ export class InventoryService {
   constructor(private repo: IInventoryRepository = new PrismaInventoryRepository()) {}
 
   private levelOf(quantity: number, minStock: number): StockLevel {
-    if (quantity <= 0) return "OUT_OF_STOCK";
-    if (quantity <= Math.ceil(minStock * 0.5)) return "CRITICAL";
-    if (quantity <= minStock) return "LOW";
-    return "HEALTHY";
+    return stockLevel(quantity, minStock);
   }
 
   private avgDailyUsage(movements: { quantity: number; createdAt: Date }[], days = 30): number {

@@ -12,15 +12,20 @@ Phase 1 ships a manual E2E-verified prototype. The automated suite is next:
 
 ## E2E (Playwright) — mandatory first test (§74)
 
-`ahmad-complete-service-journey.spec.ts`: book → workshop receives → confirm →
-check-in → job → mechanic inspection → chain warning → approval requested →
-customer approves → complete → stock deducted → invoice RM165 → profit updated →
-history updated → reminder created → rider app updated. **If it fails: DO NOT DEPLOY.**
+`e2e/ahmad-complete-service-journey.spec.ts`: book → workshop receives → confirm →
+check-in (31,800 km) → oil filter recommended & added → mechanic inspection →
+chain WARNING → approval requested (RM20) → customer approves → complete →
+invoice RM165 · stock deducted · next service 34,800 km · rider app updated.
+**If it fails: DO NOT DEPLOY.**
 
-More tests (§75): booking cancel/reschedule, package selection, repair decline,
-low stock, dead stock, purchase order, KPI, return campaign, reminder, rider
-invoice, multi-motorcycle. Browser matrix: desktop Chromium/Firefox/WebKit +
-mobile Chromium/WebKit (heavy on mechanic & rider).
+More tests (§75): booking cancel, booking reschedule, repair decline, low stock,
+dead stock, purchase order creation. Browser matrix in `playwright.config.ts`:
+**desktop Chromium + mobile Chromium + mobile WebKit** (§73 — heavy on mechanic
+& rider). E2E uses its own SQLite database (`prisma/e2e.db`) seeded fresh in
+`e2e/global-setup.ts` (§76: never test against real data); the app server runs
+under launchd (`com.dz-platform.e2e`, port 3102) and Playwright reuses it.
+
+Current status: **72/72 passing** (24 tests × 3 projects).
 
 ## Environments (§66)
 

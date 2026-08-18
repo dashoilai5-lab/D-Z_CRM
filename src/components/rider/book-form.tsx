@@ -73,7 +73,7 @@ export function BookForm({ customerId, bikes }: { customerId: string; bikes: Bik
         <Label>Notes (optional)</Label>
         <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Anything we should know?" className="mt-1.5" rows={3} />
       </div>
-      <Button className="w-full" size="lg" disabled={pending || !motorcycleId || !date} onClick={submit}>
+      <Button className="w-full" size="lg" data-testid="book-submit" disabled={pending || !motorcycleId || !date} onClick={submit}>
         {pending ? "Sending…" : "REQUEST BOOKING"}
       </Button>
       <p className="text-center text-[11px] text-muted-foreground">The workshop receives your request instantly and confirms the slot.</p>

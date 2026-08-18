@@ -36,7 +36,7 @@ export function DemoBar({ persona, compact = false }: { persona: DemoPersona; co
         </Select>
         <div className="flex-1" />
         <AlertDialog>
-          <AlertDialogTrigger className="inline-flex h-7 items-center gap-1 rounded-md border border-input bg-white px-2.5 text-xs font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50">
+          <AlertDialogTrigger data-testid="reset-demo" className="inline-flex h-7 items-center gap-1 rounded-md border border-input bg-white px-2.5 text-xs font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50">
             <RefreshCcw className="h-3 w-3" /> RESET DEMO DATA
           </AlertDialogTrigger>
           <AlertDialogContent>

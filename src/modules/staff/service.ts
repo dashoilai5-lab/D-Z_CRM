@@ -1,6 +1,7 @@
 import type { KpiStaff } from "@/types";
 import type { IStaffRepository } from "./repository";
 import { PrismaStaffRepository } from "@/repositories/prisma/staff.repository";
+import { calculateKpiScore } from "@/lib/state-machines";
 import { db } from "@/lib/db";
 
 /**
@@ -42,11 +43,14 @@ export class StaffService {
       const packageConversion = (withPackage / jobs.length) * 100;
       const addonConversion = (jobsWithAddon.size / jobs.length) * 100;
 
-      const jobsNorm = Math.min(100, (jobs.length / 15) * 100);
-      const ticketNorm = Math.min(100, (avgTicket / 15000) * 100);
-      const score = Math.round(
-        0.3 * jobsNorm + 0.2 * ticketNorm + 0.15 * packageConversion + 0.15 * addonConversion + 0.1 * checklistCompletion + 0.1 * (rating / 5) * 100
-      );
+      const score = calculateKpiScore({
+        jobs: jobs.length,
+        avgTicketSen: Math.round(avgTicket),
+        packageConversion,
+        addonConversion,
+        checklistCompletion,
+        rating,
+      });
 
       staff.push({
         id: u.id, name: u.name, role: u.role, jobs: jobs.length, salesSen: sales, avgTicketSen: Math.round(avgTicket),

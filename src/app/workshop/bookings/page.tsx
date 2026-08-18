@@ -23,7 +23,7 @@ export default async function BookingsPage() {
 
       <div className="space-y-2">
         {sorted.map((b) => (
-          <div key={b.id} className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
+          <div key={b.id} data-testid="booking-row" className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <CalendarClock className="h-5 w-5" />
             </div>

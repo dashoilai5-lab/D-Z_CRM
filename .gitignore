@@ -43,3 +43,9 @@ next-env.d.ts
 # prisma
 prisma/dev.db
 prisma/dev.db-journal
+
+# e2e
+prisma/e2e.db
+prisma/e2e.db-journal
+playwright-report/
+test-results/
