@@ -1,0 +1,716 @@
+// D&Z Platform — core data model
+// Money is stored as integer SEN (RM1.00 = 100). Never use floats for money.
+// All business records carry organisationId (multi-tenant); most carry branchId.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Identity / Tenancy ----------
+
+enum Role {
+  SUPER_ADMIN
+  OWNER
+  MANAGER
+  COUNTER_STAFF
+  SERVICE_ADVISOR
+  MECHANIC
+  INVENTORY
+  MARKETING
+  ACCOUNTING
+}
+
+model Organisation {
+  id        String   @id @default(cuid())
+  name      String
+  currency  String   @default("MYR")
+  createdAt DateTime @default(now())
+  branches  Branch[]
+  users     User[]
+  customers Customer[]
+  products  Product[]
+  suppliers Supplier[]
+}
+
+model Branch {
+  id             String       @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  city           String
+  phone          String?
+  address        String?
+  isMain         Boolean      @default(false)
+  users          User[]
+  customers      Customer[]
+  bookings       Booking[]
+  jobs           ServiceJob[]
+  inventories    Inventory[]
+  stockMovements StockMovement[]
+  purchaseOrders PurchaseOrder[]
+  invoices       Invoice[]
+  reviews        Review[]
+  campaigns      Campaign[]
+  marketingAssets MarketingAsset[]
+  contentScripts ContentScript[]
+  messages       Message[]
+  notifications  Notification[]
+}
+
+model User {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  branchId       String?
+  branch         Branch?  @relation(fields: [branchId], references: [id])
+  name           String
+  phone          String?
+  email          String?
+  role           Role     @default(MECHANIC)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  jobs           ServiceJob[]     @relation("AssignedMechanic")
+  notifications  Notification[]
+}
+
+// ---------- Customers ----------
+
+model Customer {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  branchId       String?
+  branch         Branch?  @relation(fields: [branchId], references: [id])
+  name           String
+  phone          String?
+  email          String?
+  gender         String?
+  joinedAt       DateTime @default(now())
+  address        String?
+  source         String?
+  notes          String?
+  internalNotes  String?
+  authProfile    CustomerAuthProfile?
+  motorcycles    Motorcycle[]
+  bookings       Booking[]
+  jobs           ServiceJob[]
+  messages       Message[]
+  reviews        Review[]
+  reminders      ServiceReminder[]
+  invoices       Invoice[]
+  notifications  Notification[]
+  createdAt      DateTime @default(now())
+}
+
+model CustomerAuthProfile {
+  id             String   @id @default(cuid())
+  customerId     String   @unique
+  customer       Customer @relation(fields: [customerId], references: [id])
+  pin            String?
+  phoneVerified  Boolean  @default(false)
+  createdAt      DateTime @default(now())
+}
+
+// ---------- Motorcycles ----------
+
+model Motorcycle {
+  id                   String    @id @default(cuid())
+  customerId           String
+  customer             Customer  @relation(fields: [customerId], references: [id])
+  brand                String
+  model                String
+  year                 Int
+  plate                String    @unique
+  vin                  String?
+  color                String?
+  currentMileage       Int       @default(0)
+  // denormalised service snapshot (updated transactionally on completion)
+  lastServiceDate      DateTime?
+  lastServiceMileage   Int?
+  lastOilChangeMileage Int?
+  lastOilFilterMileage Int?
+  nextServiceMileage   Int?
+  nextServiceEstDate   DateTime?
+  createdAt            DateTime  @default(now())
+  jobs                 ServiceJob[]
+  bookings             Booking[]
+  reminders            ServiceReminder[]
+}
+
+// ---------- Bookings ----------
+
+enum BookingStatus {
+  REQUESTED
+  CONFIRMED
+  RESCHEDULED
+  CHECKED_IN
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingSource {
+  RIDER_APP
+  COUNTER
+  PHONE
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  branchId      String
+  branch        Branch        @relation(fields: [branchId], references: [id])
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  motorcycleId  String
+  motorcycle    Motorcycle    @relation(fields: [motorcycleId], references: [id])
+  serviceType   String
+  date          DateTime
+  timeSlot      String
+  notes         String?
+  status        BookingStatus @default(REQUESTED)
+  source        BookingSource @default(RIDER_APP)
+  jobId         String?       @unique
+  job           ServiceJob?   @relation(fields: [jobId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+// ---------- Service Jobs ----------
+
+enum JobStatus {
+  WAITING
+  IN_PROGRESS
+  AWAITING_APPROVAL
+  READY
+  COMPLETED
+  CANCELLED
+}
+
+enum ItemStatus {
+  INCLUDED
+  RECOMMENDED
+  ACCEPTED
+  DECLINED
+}
+
+enum ItemSource {
+  PACKAGE
+  COUNTER
+  APPROVAL
+  MANUAL
+}
+
+model ServiceJob {
+  id              String     @id @default(cuid())
+  jobNumber       String     @unique
+  branchId        String
+  branch          Branch     @relation(fields: [branchId], references: [id])
+  customerId      String
+  customer        Customer   @relation(fields: [customerId], references: [id])
+  motorcycleId    String
+  motorcycle      Motorcycle @relation(fields: [motorcycleId], references: [id])
+  booking         Booking?
+  mechanicId      String?
+  mechanic        User?      @relation("AssignedMechanic", fields: [mechanicId], references: [id])
+  servicePackageId String?
+  servicePackage  ServicePackage? @relation(fields: [servicePackageId], references: [id])
+  packageName     String?
+  mileage         Int
+  customerRequest String?
+  status          JobStatus  @default(WAITING)
+  startedAt       DateTime?
+  readyAt         DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  items           ServiceJobItem[]
+  parts           ServiceJobPart[]
+  findings        InspectionFinding[]
+  approvals       CustomerApproval[]
+  checklist       ChecklistExecution?
+  reviews         Review[]
+  invoice         Invoice?
+  reminder        ServiceReminder?
+  messages        Message[]  @relation("JobMessages")
+}
+
+model ServiceJobItem {
+  id           String     @id @default(cuid())
+  jobId        String
+  job          ServiceJob @relation(fields: [jobId], references: [id])
+  description  String
+  kind         String     @default("SERVICE") // SERVICE | FEE | ADDON
+  quantity     Int        @default(1)
+  unitPriceSen Int
+  lineTotalSen Int
+  status       ItemStatus @default(INCLUDED)
+  source       ItemSource @default(PACKAGE)
+  createdAt    DateTime   @default(now())
+}
+
+model ServiceJobPart {
+  id           String     @id @default(cuid())
+  jobId        String
+  job          ServiceJob @relation(fields: [jobId], references: [id])
+  productId    String
+  product      Product    @relation(fields: [productId], references: [id])
+  quantity     Int        @default(1)
+  unitCostSen  Int
+  unitPriceSen Int
+  lineTotalSen Int
+  status       ItemStatus @default(INCLUDED)
+  source       ItemSource @default(PACKAGE)
+  createdAt    DateTime   @default(now())
+}
+
+// ---------- Checklists / Inspections ----------
+
+enum CheckResult {
+  PASS
+  WARNING
+  FAIL
+  NA
+}
+
+model ChecklistTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  branchId  String?
+  isDefault Boolean  @default(false)
+  items     ChecklistItem[]
+}
+
+model ChecklistItem {
+  id         String            @id @default(cuid())
+  templateId String
+  template   ChecklistTemplate @relation(fields: [templateId], references: [id])
+  name       String
+  order      Int
+  category   String?
+}
+
+model ChecklistExecution {
+  id         String    @id @default(cuid())
+  jobId      String    @unique
+  job        ServiceJob @relation(fields: [jobId], references: [id])
+  templateId String?
+  startedAt  DateTime  @default(now())
+  completedAt DateTime?
+  items      ChecklistExecutionItem[]
+}
+
+model ChecklistExecutionItem {
+  id          String               @id @default(cuid())
+  executionId String
+  execution   ChecklistExecution   @relation(fields: [executionId], references: [id])
+  checklistItemId String?
+  name        String
+  result      CheckResult          @default(NA)
+  note        String?
+  photoUrl    String?
+  createdAt   DateTime             @default(now())
+}
+
+enum FindingStatus {
+  OPEN
+  RECOMMENDED
+  APPROVED
+  DECLINED
+  RESOLVED
+}
+
+model InspectionFinding {
+  id               String        @id @default(cuid())
+  jobId            String
+  job              ServiceJob    @relation(fields: [jobId], references: [id])
+  executionItemId  String?
+  title            String
+  severity         String        @default("WARNING") // WARNING | FAIL
+  note             String?
+  recommendedRepair String?
+  priceSen         Int?
+  status           FindingStatus @default(RECOMMENDED)
+  approval         CustomerApproval?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  DECLINED
+}
+
+model CustomerApproval {
+  id          String         @id @default(cuid())
+  jobId       String
+  job         ServiceJob     @relation(fields: [jobId], references: [id])
+  findingId   String         @unique
+  finding     InspectionFinding @relation(fields: [findingId], references: [id])
+  title       String
+  description String?
+  amountSen   Int
+  status      ApprovalStatus @default(PENDING)
+  requestedAt DateTime       @default(now())
+  respondedAt DateTime?
+}
+
+// ---------- Service Packages ----------
+
+enum PackageTier {
+  GOOD
+  BETTER
+  BEST
+}
+
+model ServicePackage {
+  id           String   @id @default(cuid())
+  branchId     String?
+  name         String
+  tier         PackageTier
+  priceSen     Int
+  description  String?
+  isBestValue  Boolean  @default(false)
+  active       Boolean  @default(true)
+  items        ServicePackageItem[]
+  jobs         ServiceJob[]
+}
+
+model ServicePackageItem {
+  id         String         @id @default(cuid())
+  packageId  String
+  package    ServicePackage @relation(fields: [packageId], references: [id])
+  name       String
+  kind       String         @default("SERVICE")
+  productId  String?
+  product    Product?       @relation(fields: [productId], references: [id])
+  defaultQty Int            @default(1)
+  priceSen   Int            @default(0)
+}
+
+// ---------- Inventory ----------
+
+model Product {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  sku            String   @unique
+  category       String?
+  brand          String?
+  unit           String   @default("unit")
+  sellPriceSen   Int
+  costPriceSen   Int
+  minStock       Int      @default(5)
+  safetyStock    Int      @default(2)
+  leadTimeDays   Int      @default(3)
+  supplierId     String?
+  supplier       Supplier? @relation(fields: [supplierId], references: [id])
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  inventories    Inventory[]
+  stockMovements StockMovement[]
+  jobParts       ServiceJobPart[]
+  poItems        PurchaseOrderItem[]
+  packageItems   ServicePackageItem[]
+}
+
+model Inventory {
+  id        String  @id @default(cuid())
+  branchId  String
+  branch    Branch  @relation(fields: [branchId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int     @default(0)
+  @@unique([branchId, productId])
+}
+
+model StockMovement {
+  id            String   @id @default(cuid())
+  branchId      String
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id])
+  quantity      Int // signed: negative = consumed/out
+  reason        String
+  referenceType String?
+  referenceId   String?
+  createdAt     DateTime @default(now())
+}
+
+// ---------- Suppliers / Purchasing ----------
+
+model Supplier {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  contactName    String?
+  phone          String?
+  email          String?
+  address        String?
+  leadTimeDays   Int      @default(3)
+  products       Product[]
+  purchaseOrders PurchaseOrder[]
+}
+
+enum POStatus {
+  DRAFT
+  SENT
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id         String   @id @default(cuid())
+  branchId   String
+  branch     Branch   @relation(fields: [branchId], references: [id])
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id])
+  status     POStatus @default(DRAFT)
+  expectedAt DateTime?
+  receivedAt DateTime?
+  notes      String?
+  totalSen   Int      @default(0)
+  createdAt  DateTime @default(now())
+  items      PurchaseOrderItem[]
+}
+
+model PurchaseOrderItem {
+  id              String        @id @default(cuid())
+  purchaseOrderId String
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  productId       String
+  product         Product       @relation(fields: [productId], references: [id])
+  quantity        Int
+  unitCostSen     Int
+  lineTotalSen    Int
+  receivedQty     Int           @default(0)
+}
+
+// ---------- Finance ----------
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+}
+
+enum InvoiceSource {
+  SERVICE
+  PART
+  FEE
+  APPROVAL
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  branchId      String
+  branch        Branch        @relation(fields: [branchId], references: [id])
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  jobId         String?       @unique
+  job           ServiceJob?   @relation(fields: [jobId], references: [id])
+  invoiceNumber String        @unique
+  status        InvoiceStatus @default(ISSUED)
+  issuedAt      DateTime      @default(now())
+  paidAt        DateTime?
+  subtotalSen   Int           @default(0)
+  discountSen   Int           @default(0)
+  taxSen        Int           @default(0)
+  totalSen      Int           @default(0)
+  items         InvoiceItem[]
+  payments      Payment[]
+}
+
+model InvoiceItem {
+  id           String       @id @default(cuid())
+  invoiceId    String
+  invoice      Invoice      @relation(fields: [invoiceId], references: [id])
+  description  String
+  quantity     Int          @default(1)
+  unitPriceSen Int
+  lineTotalSen Int
+  source       InvoiceSource @default(SERVICE)
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  ONLINE
+  EWALLET
+  PAY_LATER
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  invoiceId String
+  invoice   Invoice       @relation(fields: [invoiceId], references: [id])
+  amountSen Int
+  method    PaymentMethod @default(CASH)
+  status    String        @default("PAID")
+  paidAt    DateTime      @default(now())
+}
+
+// ---------- CRM ----------
+
+enum ReminderStatus {
+  UPCOMING
+  DUE_SOON
+  DUE
+  OVERDUE
+  BOOKED
+  COMPLETED
+}
+
+model ServiceReminder {
+  id                 String         @id @default(cuid())
+  customerId         String
+  customer           Customer       @relation(fields: [customerId], references: [id])
+  motorcycleId       String
+  motorcycle         Motorcycle     @relation(fields: [motorcycleId], references: [id])
+  jobId              String?        @unique
+  job                ServiceJob?    @relation(fields: [jobId], references: [id])
+  status             ReminderStatus @default(UPCOMING)
+  lastServiceMileage Int
+  intervalKm         Int            @default(3000)
+  nextServiceMileage Int
+  estimatedDate      DateTime?
+  createdAt          DateTime       @default(now())
+  closedAt           DateTime?
+}
+
+enum MessageDirection {
+  OUT
+  IN
+}
+
+enum MessageChannel {
+  WHATSAPP
+  SMS
+  EMAIL
+  APP
+  SYSTEM
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
+  REPLIED
+  FAILED
+}
+
+model Message {
+  id            String          @id @default(cuid())
+  organisationId String
+  branchId      String?
+  branch        Branch?         @relation(fields: [branchId], references: [id])
+  customerId    String
+  customer      Customer        @relation(fields: [customerId], references: [id])
+  direction     MessageDirection @default(OUT)
+  channel       MessageChannel  @default(WHATSAPP)
+  body          String
+  status        MessageStatus   @default(SENT)
+  referenceType String?
+  referenceId   String?
+  jobId         String?
+  job           ServiceJob?     @relation("JobMessages", fields: [jobId], references: [id])
+  createdAt     DateTime        @default(now())
+}
+
+model Notification {
+  id         String    @id @default(cuid())
+  userId     String?
+  user       User?     @relation(fields: [userId], references: [id])
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  branchId   String?
+  branch     Branch?   @relation(fields: [branchId], references: [id])
+  title      String
+  body       String?
+  type       String    @default("INFO")
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+}
+
+enum ReviewStatus {
+  REQUESTED
+  SUBMITTED
+  PUBLISHED
+  SKIPPED
+}
+
+model Review {
+  id         String       @id @default(cuid())
+  branchId   String
+  branch     Branch       @relation(fields: [branchId], references: [id])
+  customerId String
+  customer   Customer     @relation(fields: [customerId], references: [id])
+  jobId      String?
+  job        ServiceJob?  @relation(fields: [jobId], references: [id])
+  rating     Int?
+  comment    String?
+  source     String       @default("APP")
+  status     ReviewStatus @default(REQUESTED)
+  requestedAt DateTime?
+  createdAt  DateTime     @default(now())
+}
+
+// ---------- Marketing ----------
+
+enum CampaignType {
+  RETURN
+  REMINDER
+  PROMO
+  NEWS
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  ENDED
+}
+
+model Campaign {
+  id        String         @id @default(cuid())
+  branchId  String
+  branch    Branch         @relation(fields: [branchId], references: [id])
+  name      String
+  type      CampaignType   @default(RETURN)
+  audience  String?
+  status    CampaignStatus @default(ACTIVE)
+  startDate DateTime
+  endDate   DateTime?
+  createdAt DateTime       @default(now())
+}
+
+model MarketingAsset {
+  id          String   @id @default(cuid())
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  title       String
+  type        String   @default("POSTER")
+  month       String?
+  description String?
+  url         String?
+  createdAt   DateTime @default(now())
+}
+
+model ContentScript {
+  id         String   @id @default(cuid())
+  branchId   String
+  branch     Branch   @relation(fields: [branchId], references: [id])
+  title      String
+  platform   String   @default("TIKTOK")
+  hook       String?
+  body       String
+  tone       String?
+  createdAt  DateTime @default(now())
+}
