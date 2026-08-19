@@ -32,7 +32,7 @@ export function Sidebar({ persona, user }: { persona: DemoPersona; user?: DemoUs
         expanded ? "w-52" : "w-14"
       )}
     >
-      <Link href="/workshop/dashboard" className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-2.5 px-5 mb-3" : "gap-0 justify-center mb-2")}>
+      <Link href="/workshop/dashboard" className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-2.5 px-5 mt-3 mb-3" : "gap-0 justify-center mt-3 mb-2")}>
         <div className="h-8 w-8 shrink-0 rounded-xl bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center">
           <Bike className="h-5 w-5" />
         </div>
