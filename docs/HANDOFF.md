@@ -63,7 +63,7 @@
 
 ## 6 · Next steps (recommended order)
 
-- [ ] A · Finish remaining modules: marketing calendar/posters/scripts UIs, purchase-order receiving, promotions engine, payment simulation (Phases 8-9 completion).
+- [x] A · Remaining modules DONE (19 Aug): marketing calendar/posters/scripts UIs (CRUD + promo engine with discountPercent), purchase-order receiving (receive button → stock in + movements), promotions engine (pure functions + 5 unit tests), payment simulation (already had MockPaymentProvider).
 - [ ] B · Dealer validation: fill docs/DEALER_FEEDBACK.md, run the DEMO_SCRIPT session, answer the decisions above.
 - [ ] C · Production transition (§65): Supabase PostgreSQL + Auth + RLS, provider swap (WhatsApp/OpenAI/storage), Vercel deploy, Sentry, k6.
 - [ ] D · Hardening: pagination on big tables, mileage-correction audit flow, i18n (BM/EN), dark mode for rider.

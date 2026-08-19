@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Money } from "@/components/shared/money";
 import { inventoryService } from "@/modules/inventory/service";
 import { fmtDate } from "@/lib/format";
+import { POReceive } from "@/components/workshop/po-receive";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export default async function PurchaseOrdersPage() {
               </div>
               <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (po.status === "RECEIVED" ? "bg-emerald-100 text-emerald-700" : po.status === "DRAFT" ? "bg-slate-100 text-slate-600" : "bg-blue-100 text-blue-700")}>{po.status}</span>
               <div className="font-bold tabular-nums"><Money sen={po.totalSen} /></div>
+              <POReceive poId={po.id} status={po.status} />
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {po.items.map((i) => (

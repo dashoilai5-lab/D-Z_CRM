@@ -19,6 +19,8 @@ export interface IInventoryRepository {
   listPOs(client?: DbLike): Promise<Prisma.PurchaseOrderGetPayload<{ include: { supplier: true; items: { include: { product: true } } } }>[]>;
   createPO(data: Prisma.PurchaseOrderCreateInput, client?: DbLike): Promise<{ id: string }>;
   createPOItem(data: Prisma.PurchaseOrderItemCreateInput, client?: DbLike): Promise<unknown>;
+  markPOReceived(poId: string, receivedAt: Date, client?: DbLike): Promise<unknown>;
+  markPOItemReceived(itemId: string, receivedQty: number, client?: DbLike): Promise<unknown>;
   searchProducts(q: string, client?: DbLike): Promise<ProductWithInv[]>;
 }
 

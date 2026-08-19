@@ -147,6 +147,22 @@ export class InventoryService {
     });
   }
 
+  /** Receive a PO: mark RECEIVED, stock each line in and record movements (§34 purchase receiving). */
+  async receivePurchaseOrder(poId: string, branchId: string) {
+    return db.$transaction(async (tx: DbLike) => {
+      const po = await this.repo.listPOs(tx).then((rows) => rows.find((p) => p.id === poId));
+      if (!po) throw new Error("Purchase order not found");
+      if (po.status === "RECEIVED") throw new Error("Purchase order already received");
+      const receivedAt = new Date();
+      await this.repo.markPOReceived(poId, receivedAt, tx);
+      for (const item of po.items) {
+        await this.addStockTx(branchId, item.productId, item.quantity, "PO receive: " + po.supplier.name, poId, tx);
+        await this.repo.markPOItemReceived(item.id, item.quantity, tx);
+      }
+      return { ok: true, receivedAt };
+    });
+  }
+
   async searchProducts(q: string) {
     const rows = await this.repo.searchProducts(q);
     return rows.map((p) => ({ id: p.id, name: p.name, sku: p.sku, sellPriceSen: p.sellPriceSen, costPriceSen: p.costPriceSen, category: p.category, brand: p.brand, unit: p.unit }));

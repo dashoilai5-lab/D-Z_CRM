@@ -101,6 +101,14 @@ export async function createPurchaseOrder(input: { supplierId: string; items: { 
   return { ok: true };
 }
 
+export async function receivePurchaseOrder(poId: string) {
+  const org = await db.organisation.findFirst();
+  const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
+  const result = await inventoryService.receivePurchaseOrder(poId, branch!.id);
+  revalidatePath("/", "layout");
+  return { ok: true, receivedAt: result.receivedAt };
+}
+
 export async function addAiRecommendation(input: {
   jobId: string; kind: "item" | "part"; description: string; quantity: number; unitPriceSen: number;
   productId?: string; unitCostSen?: number;

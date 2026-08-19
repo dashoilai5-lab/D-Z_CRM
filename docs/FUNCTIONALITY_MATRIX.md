@@ -20,8 +20,8 @@
 | Mock WhatsApp messages | ✅ | — | ✅ | Pending | Verified ✅ |
 | Staff KPI (deterministic) | ✅ | — | ✅ | Pending | Verified ✅ |
 | AI Command Centre (rule-based) | ✅ | — | ✅ | Pending | Verified ✅ |
-| Marketing calendar / posters / scripts | ⏳ | — | Placeholder | Pending | — |
-| Purchase orders | ✅ | — | ✅ (draft create) | Pending | Partial |
+| Marketing calendar / posters / scripts | ✅ | — | ✅ (CRUD + promo engine) | Pending | Unit ✅ (promo) |
+| Purchase orders | ✅ | — | ✅ (draft create + receive) | Pending | Verified ✅ |
 | Reviews | ✅ | — | ✅ | Pending | Verified ✅ |
 | Global search (Ctrl+K) | ✅ | — | ✅ | Pending | Manual ✅ |
 | Persona switcher + demo reset | ✅ | ✅ | ✅ | — | Manual ✅ |

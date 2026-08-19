@@ -204,6 +204,19 @@ export async function runSeed(): Promise<Record<string, number>> {
   }
   counts.products = PRODUCTS.length;
 
+  // one DRAFT purchase order (demo: receive button on the PO page stocks these lines in)
+  {
+    const po = await prisma.purchaseOrder.create({ data: { branchId: kl.id, supplierId: supplierIds[0], status: "DRAFT", expectedAt: daysFromNow(2), totalSen: RM(180) } });
+    const poLines: [string, number, number][] = [
+      ["NGK Spark Plug (CR7HSA)", 10, 9],   // CRITICAL item
+      ["Yamaha Genuine Oil Filter", 12, 6], // fast mover
+      ["Yamalube 10W-40 1L", 6, 24],        // service oil
+    ];
+    for (const [name, qty, unitRM] of poLines) {
+      await prisma.purchaseOrderItem.create({ data: { purchaseOrderId: po.id, productId: productIds[name], quantity: qty, unitCostSen: RM(unitRM), lineTotalSen: RM(unitRM) * qty } });
+    }
+  }
+
   // service packages
   const pkgOil = productIds["Yamalube 10W-40 1L"];
   const pkgFilter = productIds["Yamaha Genuine Oil Filter"];
@@ -750,8 +763,12 @@ export async function runSeed(): Promise<Record<string, number>> {
 
   // ----- marketing -----
   const campaignNames = ["Return Campaign Aug", "Service Reminder Blast", "Hari Merdeka Promo", "Chain & Sprocket Sale", "Tyre Week", "New Rider Welcome", "Battery Check Month", "Student Discount", "Weekend Wash & Polish", "Loyalty 10th Visit"];
+  // deterministic promos: Hari Merdeka (20% off, live) + Chain & Sprocket (15%, live) — drives the promo engine demo
+  const promoDiscounts: Record<string, number> = { "Hari Merdeka Promo": 20, "Chain & Sprocket Sale": 15, "Student Discount": 10 };
   for (const [i, name] of campaignNames.entries()) {
-    await prisma.campaign.create({ data: { branchId: kl.id, name, type: pick(["RETURN", "REMINDER", "PROMO", "NEWS"]), audience: pick(["ALL", "30_DAYS", "60_DAYS", "OVERDUE", "NEW"]), status: pick(["ACTIVE", "SCHEDULED", "ENDED"]), startDate: daysAgo(int(-20, 20)), endDate: i % 2 === 0 ? daysFromNow(14) : null } });
+    const type = (promoDiscounts[name] !== undefined ? "PROMO" : pick(["RETURN", "REMINDER", "PROMO", "NEWS"])) as "RETURN" | "REMINDER" | "PROMO" | "NEWS";
+    const status = (promoDiscounts[name] !== undefined ? "ACTIVE" : pick(["ACTIVE", "SCHEDULED", "ENDED"])) as "ACTIVE" | "SCHEDULED" | "ENDED";
+    await prisma.campaign.create({ data: { branchId: kl.id, name, type, audience: pick(["ALL", "30_DAYS", "60_DAYS", "OVERDUE", "NEW"]), status, startDate: daysAgo(3), endDate: promoDiscounts[name] !== undefined ? daysFromNow(30) : i % 2 === 0 ? daysFromNow(14) : null, discountPercent: promoDiscounts[name] ?? null } });
   }
   const months = ["2026-05", "2026-06", "2026-07", "2026-08", "2026-09"];
   const posterTitles = ["Servis Musim Ini", "Check Before Raya", "Standard RM120", "Premium Best Value", "Tyre Safety Week", "Oil Change Reminder", "Chain & Sprocket", "Battery Health", "Student Promo", "Weekend Wash", "Brake Check", "Returning Rider"];

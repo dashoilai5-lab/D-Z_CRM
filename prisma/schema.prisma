@@ -679,16 +679,17 @@ enum CampaignStatus {
 }
 
 model Campaign {
-  id        String         @id @default(cuid())
-  branchId  String
-  branch    Branch         @relation(fields: [branchId], references: [id])
-  name      String
-  type      CampaignType   @default(RETURN)
-  audience  String?
-  status    CampaignStatus @default(ACTIVE)
-  startDate DateTime
-  endDate   DateTime?
-  createdAt DateTime       @default(now())
+  id             String         @id @default(cuid())
+  branchId       String
+  branch         Branch         @relation(fields: [branchId], references: [id])
+  name           String
+  type           CampaignType   @default(RETURN)
+  audience       String?
+  status         CampaignStatus @default(ACTIVE)
+  startDate      DateTime
+  endDate        DateTime?
+  discountPercent Int?                       // PROMO only: 1-100
+  createdAt      DateTime       @default(now())
 }
 
 model MarketingAsset {

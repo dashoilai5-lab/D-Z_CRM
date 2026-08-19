@@ -29,6 +29,12 @@ export class PrismaInventoryRepository implements IInventoryRepository {
   }
   createPO(data: Prisma.PurchaseOrderCreateInput, client?: DbLike) { return this.c(client).purchaseOrder.create({ data }); }
   createPOItem(data: Prisma.PurchaseOrderItemCreateInput, client?: DbLike) { return this.c(client).purchaseOrderItem.create({ data }); }
+  markPOReceived(poId: string, receivedAt: Date, client?: DbLike) {
+    return this.c(client).purchaseOrder.update({ where: { id: poId }, data: { status: "RECEIVED", receivedAt } });
+  }
+  markPOItemReceived(itemId: string, receivedQty: number, client?: DbLike) {
+    return this.c(client).purchaseOrderItem.update({ where: { id: itemId }, data: { receivedQty } });
+  }
   searchProducts(q: string, client?: DbLike) {
     const contains = q.trim().toLowerCase();
     if (!contains) return this.c(client).product.findMany({ include: productInclude, take: 15 });
