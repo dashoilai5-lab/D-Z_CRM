@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { CampaignForm } from "@/components/workshop/marketing-forms";
 import { CampaignActions } from "@/components/workshop/campaign-actions";
+import { PromoCalendarGrid, type CalendarCampaign } from "@/components/workshop/promo-calendar-grid";
 import { isPromoActive } from "@/modules/marketing/promo";
 
 export const dynamic = "force-dynamic";
@@ -28,10 +29,15 @@ export default async function MarketingCalendarPage() {
   const sorted = [...campaigns].sort((a, b) => (order[a.status as keyof typeof order] ?? 9) - (order[b.status as keyof typeof order] ?? 9) || a.startDate.getTime() - b.startDate.getTime());
   const activePromos = campaigns.filter((c) => isPromoActive(c as never));
   const convMap = new Map(bookingsByCampaign.map((b) => [b.campaignId, b._count]));
+  const calendarCampaigns: CalendarCampaign[] = campaigns.map((c) => ({
+    id: c.id, name: c.name, type: c.type, status: c.status, startDate: c.startDate, endDate: c.endDate,
+    discountPercent: c.discountPercent, conversions: convMap.get(c.id) ?? 0,
+  }));
 
   return (
     <div>
       <PageHeader title="Promotion Calendar" subtitle={campaigns.length + " campaigns · " + activePromos.length + " promo(s) live now · " + dueCustomers + " customers due"} action={<CampaignForm />} />
+      <div className="mb-5"><PromoCalendarGrid campaigns={calendarCampaigns} /></div>
       <div className="space-y-2">
         {sorted.map((c) => {
           const conversions = convMap.get(c.id) ?? 0;
