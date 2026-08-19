@@ -3,11 +3,14 @@ import { Search } from "lucide-react";
 import { customerService } from "@/modules/customers/service";
 import { Money } from "@/components/shared/money";
 import { fmtDate, fmtKM } from "@/lib/format";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
+  const lang = await getLang();
   const summaries = await customerService.listSummaries();
   const filtered = q?.trim() ? summaries.filter((c) => (c.name + " " + (c.phone ?? "") + " " + c.motorcycles.map((m) => m.plate + m.model).join(" ")).toLowerCase().includes(q.toLowerCase())) : summaries;
 
@@ -15,12 +18,12 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
     <div>
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="flex-1 min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{summaries.length} customers · Rider Passport for every bike</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("ws.customers.title", lang)}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{t("ws.customers.summary", lang).replace("{n}", String(summaries.length))}</p>
         </div>
         <form className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input name="q" defaultValue={q ?? ""} placeholder="Search name or phone…" className="h-9 w-full rounded-lg border bg-card pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
+          <input name="q" defaultValue={q ?? ""} placeholder={t("ws.customers.search-placeholder", lang)} className="h-9 w-full rounded-lg border bg-card pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
         </form>
       </div>
 
@@ -29,12 +32,12 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
-                <th className="px-4 py-3 font-medium">Customer</th>
-                <th className="px-4 py-3 font-medium">Motorcycle</th>
-                <th className="px-4 py-3 font-medium">Visits</th>
-                <th className="px-4 py-3 font-medium">Lifetime Spend</th>
-                <th className="px-4 py-3 font-medium">Last Visit</th>
-                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">{t("ws.customers.col-customer", lang)}</th>
+                <th className="px-4 py-3 font-medium">{t("ws.customers.col-motorcycle", lang)}</th>
+                <th className="px-4 py-3 font-medium">{t("ws.customers.col-visits", lang)}</th>
+                <th className="px-4 py-3 font-medium">{t("ws.customers.col-lifetime-spend", lang)}</th>
+                <th className="px-4 py-3 font-medium">{t("ws.customers.col-last-visit", lang)}</th>
+                <th className="px-4 py-3 font-medium">{t("common.status", lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -42,7 +45,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                 <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3">
                     <Link href={"/workshop/customers/" + c.id} className="font-medium hover:text-primary">{c.name}</Link>
-                    <div className="text-xs text-muted-foreground">{c.phone ?? "—"} · since {fmtDate(c.joinedAt)}</div>
+                    <div className="text-xs text-muted-foreground">{c.phone ?? "—"} · {t("ws.customers.since", lang)} {fmtDate(c.joinedAt)}</div>
                   </td>
                   <td className="px-4 py-3">
                     {c.motorcycles.map((m) => (
@@ -56,10 +59,10 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   <td className="px-4 py-3 tabular-nums font-medium"><Money sen={c.lifetimeSpendSen} /></td>
                   <td className="px-4 py-3 text-muted-foreground">{c.lastVisitAt ? fmtDate(c.lastVisitAt) : "—"}</td>
                   <td className="px-4 py-3">
-                    {c.dueStatus === "DUE" && <span className="inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 ring-1 ring-red-200">DUE</span>}
-                    {c.dueStatus === "DUE_SOON" && <span className="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-200">DUE SOON</span>}
-                    {c.dueStatus === "UPCOMING" && <span className="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">UPCOMING</span>}
-                    {c.dueStatus === "BOOKED" && <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-200">BOOKED</span>}
+                    {c.dueStatus === "DUE" && <span className="inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 ring-1 ring-red-200">{t("ws.customers.due", lang)}</span>}
+                    {c.dueStatus === "DUE_SOON" && <span className="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-200">{t("ws.customers.due-soon", lang)}</span>}
+                    {c.dueStatus === "UPCOMING" && <span className="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">{t("ws.customers.upcoming", lang)}</span>}
+                    {c.dueStatus === "BOOKED" && <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-200">{t("ws.customers.booked", lang)}</span>}
                     {c.dueStatus === "NONE" && <span className="text-xs text-muted-foreground">—</span>}
                   </td>
                 </tr>

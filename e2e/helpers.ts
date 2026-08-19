@@ -11,7 +11,11 @@ export async function settle(page: Page) {
 
 /** §13 — set the demo persona via its cookie (equivalent to the DEMO bar select). */
 export async function setPersona(context: BrowserContext, persona: DemoPersona) {
-  await context.addCookies([{ name: "dz_demo_persona", value: persona, url: BASE_URL }]);
+  // Tests assert English UI text — pin the language so i18n never breaks them.
+  await context.addCookies([
+    { name: "dz_demo_persona", value: persona, url: BASE_URL },
+    { name: "dz_lang", value: "en", url: BASE_URL },
+  ]);
 }
 
 /** Booking dates must be unique per test — pass a distinct days offset. */

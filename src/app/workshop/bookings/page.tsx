@@ -5,10 +5,13 @@ import { db } from "@/lib/db";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { BookingActions } from "@/components/workshop/booking-actions";
 import { fmtDate } from "@/lib/format";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function BookingsPage() {
+  const lang = await getLang();
   const [bookings, packages] = await Promise.all([
     bookingService.list(),
     db.servicePackage.findMany({ where: { active: true }, select: { id: true, name: true, priceSen: true, isBestValue: true }, orderBy: { priceSen: "asc" } }),
@@ -18,8 +21,8 @@ export default async function BookingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight mb-1">Bookings</h1>
-      <p className="text-sm text-muted-foreground mb-6">Rider App requests and counter bookings — one shared calendar.</p>
+      <h1 className="text-2xl font-bold tracking-tight mb-1">{t("ws.bookings.title", lang)}</h1>
+      <p className="text-sm text-muted-foreground mb-6">{t("ws.bookings.subtitle", lang)}</p>
 
       <div className="space-y-2">
         {sorted.map((b) => (
@@ -35,7 +38,7 @@ export default async function BookingsPage() {
               <div className="text-sm font-medium">{b.serviceType}</div>
               <div className="text-xs text-muted-foreground">{fmtDate(b.date)} · {b.timeSlot}</div>
             </div>
-            <div className="text-[11px] uppercase text-muted-foreground">{b.source === "RIDER_APP" ? "Rider App" : b.source}</div>
+            <div className="text-[11px] uppercase text-muted-foreground">{b.source === "RIDER_APP" ? t("ws.bookings.source-rider", lang) : b.source}</div>
             <StatusBadge kind="booking" value={b.status} />
             {b.job && <Link href={"/workshop/jobs/" + b.job.id} className="text-xs font-mono text-primary hover:underline">{b.job.jobNumber}</Link>}
             <BookingActions bookingId={b.id} status={b.status} packages={packages} />
