@@ -38,7 +38,11 @@ export default async function RiderPromotionsPage() {
           </div>
           <div className="space-y-2">
             {livePromos.map((p) => (
-              <div key={p.id} className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white p-4">
+              <Link
+                key={p.id}
+                href={"/rider/book?campaign=" + p.id + "&promo=" + encodeURIComponent(p.name)}
+                className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white p-4 hover:opacity-95 transition-opacity"
+              >
                 <div>
                   <div className="font-semibold">{p.name}</div>
                   {p.discountPercent && <div className="mt-0.5 text-xs opacity-90">Save {p.discountPercent}% on selected services</div>}
@@ -46,12 +50,14 @@ export default async function RiderPromotionsPage() {
                 {p.discountPercent && (
                   <span className="shrink-0 rounded-full bg-white/20 px-3 py-1 text-sm font-bold">−{p.discountPercent}%</span>
                 )}
-              </div>
+              </Link>
             ))}
           </div>
-          <Link href="/rider/book" className="mt-2 flex items-center justify-center gap-2 rounded-2xl border py-3 text-sm font-semibold text-primary">
-            <CalendarPlus className="h-4 w-4" /> Book with a promotion
-          </Link>
+          {livePromos[0] && (
+            <Link href={"/rider/book?campaign=" + livePromos[0].id + "&promo=" + encodeURIComponent(livePromos[0].name)} className="mt-2 flex items-center justify-center gap-2 rounded-2xl border py-3 text-sm font-semibold text-primary">
+              <CalendarPlus className="h-4 w-4" /> Book with a promotion
+            </Link>
+          )}
         </section>
       )}
 

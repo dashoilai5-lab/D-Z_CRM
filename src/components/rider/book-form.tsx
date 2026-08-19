@@ -13,7 +13,7 @@ import { motorcycleTypeInfo, MOTORCYCLE_TYPE_LABELS } from "@/lib/motorcycle-typ
 
 export interface BikeOption { id: string; brand: string; model: string; plate: string; type: string }
 
-export function BookForm({ customerId, bikes }: { customerId: string; bikes: BikeOption[] }) {
+export function BookForm({ customerId, bikes, campaignId }: { customerId: string; bikes: BikeOption[]; campaignId?: string | null }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [motorcycleId, setMotorcycleId] = useState(bikes[0]?.id ?? "");
@@ -33,7 +33,7 @@ export function BookForm({ customerId, bikes }: { customerId: string; bikes: Bik
   const submit = () =>
     start(async () => {
       if (!date) { toast.error("Pick a date"); return; }
-      await bookService({ customerId, motorcycleId, serviceType, date, timeSlot, notes: notes || undefined });
+      await bookService({ customerId, motorcycleId, serviceType, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined });
       router.push("/rider/bookings");
       toast.success("Booking requested — the workshop will confirm");
     });

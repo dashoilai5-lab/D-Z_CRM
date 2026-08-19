@@ -174,6 +174,8 @@ model Booking {
   notes         String?
   status        BookingStatus @default(REQUESTED)
   source        BookingSource @default(RIDER_APP)
+  campaignId    String?       // promo attribution: which campaign drove this booking
+  campaign      Campaign?     @relation(fields: [campaignId], references: [id])
   jobId         String?       @unique
   job           ServiceJob?   @relation(fields: [jobId], references: [id])
   createdAt     DateTime      @default(now())
@@ -659,6 +661,8 @@ model Review {
   comment    String?
   source     String       @default("APP")
   status     ReviewStatus @default(REQUESTED)
+  reply      String?
+  repliedAt  DateTime?
   requestedAt DateTime?
   createdAt  DateTime     @default(now())
 }
@@ -691,6 +695,7 @@ model Campaign {
   endDate        DateTime?
   discountPercent Int?                       // PROMO only: 1-100
   createdAt      DateTime       @default(now())
+  bookings       Booking[]
 }
 
 model MarketingAsset {

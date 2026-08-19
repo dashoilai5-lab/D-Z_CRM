@@ -123,7 +123,7 @@ export class CrmService {
       count: rows.length,
       list: rows.map((r) => ({
         id: r.id, rating: r.rating, comment: r.comment, status: r.status, source: r.source, createdAt: r.createdAt,
-        customer: r.customer.name, jobNumber: r.job?.jobNumber ?? null,
+        customer: r.customer.name, jobNumber: r.job?.jobNumber ?? null, reply: r.reply, repliedAt: r.repliedAt,
       })),
     };
   }

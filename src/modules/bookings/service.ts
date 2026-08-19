@@ -36,7 +36,7 @@ export class BookingService {
   /** Create a booking (rider app or counter). */
   async create(input: {
     branchId: string; customerId: string; motorcycleId: string;
-    serviceType: string; date: Date; timeSlot: string; notes?: string; source: BookingSource;
+    serviceType: string; date: Date; timeSlot: string; notes?: string; source: BookingSource; campaignId?: string;
   }) {
     return this.repo.create({
       branch: { connect: { id: input.branchId } },
@@ -47,6 +47,7 @@ export class BookingService {
       timeSlot: input.timeSlot,
       notes: input.notes,
       source: input.source,
+      campaign: input.campaignId ? { connect: { id: input.campaignId } } : undefined,
     });
   }
 

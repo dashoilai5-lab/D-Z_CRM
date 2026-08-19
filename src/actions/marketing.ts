@@ -34,6 +34,29 @@ export async function createCampaign(input: {
   return { ok: true };
 }
 
+export async function updateCampaign(input: {
+  id: string;
+  name?: string;
+  type?: "RETURN" | "REMINDER" | "PROMO" | "NEWS";
+  status?: "DRAFT" | "SCHEDULED" | "ACTIVE" | "ENDED";
+  startDate?: string;
+  endDate?: string | null;
+  discountPercent?: number | null;
+  audience?: string;
+}) {
+  const data: Record<string, unknown> = {};
+  if (input.name !== undefined) data.name = input.name;
+  if (input.type !== undefined) data.type = input.type;
+  if (input.status !== undefined) data.status = input.status;
+  if (input.startDate !== undefined) data.startDate = new Date(input.startDate);
+  if (input.endDate !== undefined) data.endDate = input.endDate ? new Date(input.endDate) : null;
+  if (input.discountPercent !== undefined) data.discountPercent = input.discountPercent;
+  if (input.audience !== undefined) data.audience = input.audience;
+  await db.campaign.update({ where: { id: input.id }, data });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
 export async function createPoster(input: {
   title: string;
   type?: string;
@@ -68,6 +91,18 @@ export async function createScript(input: {
     body: input.body,
     tone: input.tone ?? null,
   });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function publishReview(reviewId: string) {
+  await db.review.update({ where: { id: reviewId }, data: { status: "PUBLISHED" } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function replyToReview(reviewId: string, reply: string) {
+  await db.review.update({ where: { id: reviewId }, data: { reply, repliedAt: new Date(), status: "PUBLISHED" } });
   revalidatePath("/", "layout");
   return { ok: true };
 }
