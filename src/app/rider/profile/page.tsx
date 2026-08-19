@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, MessageCircle, CheckCheck } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { initials } from "@/lib/format";
@@ -34,6 +34,28 @@ export default async function RiderProfilePage() {
           <div className="text-xs text-muted-foreground">Reviews</div>
         </div>
       </div>
+
+      {messages[0] && (
+        <div className="rounded-2xl border bg-emerald-50/70 ring-1 ring-emerald-200 dark:bg-emerald-950/40 dark:ring-emerald-900 p-4">
+          <div className="flex items-center justify-between">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+              <MessageCircle className="h-3.5 w-3.5" /> LATEST MESSAGE
+            </span>
+            <span className="text-[10px] text-emerald-700/70 dark:text-emerald-400/70">
+              {messages[0].createdAt.toLocaleDateString("en-MY", { day: "2-digit", month: "short", year: "numeric" })}
+            </span>
+          </div>
+          <p className="mt-2 text-sm font-medium text-emerald-900 dark:text-emerald-100">{messages[0].body}</p>
+          <div className="mt-2 flex items-center justify-between">
+            <span className="text-[11px] text-emerald-700/70 dark:text-emerald-400/70">
+              From D&Z Smart Workshop · WhatsApp
+            </span>
+            <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
+              <CheckCheck className="h-3 w-3" /> {messages[0].status === "READ" ? "Read" : "Delivered"}
+            </span>
+          </div>
+        </div>
+      )}
       <div>
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-semibold">Notifications</h2>
