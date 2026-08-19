@@ -17,7 +17,8 @@ export function BottomNav({ lang = "en" }: { lang?: Lang }) {
   ];
   return (
     <nav className="sticky bottom-0 z-40 border-t bg-background/95 backdrop-blur">
-      <div className="mx-auto max-w-md flex">
+      {/* safe-area padding: leaves room for the iPhone home indicator / gesture bar */}
+      <div className="mx-auto max-w-md flex pb-[env(safe-area-inset-bottom)]">
         {items.map((it) => {
           const active = path === it.href || path.startsWith(it.href + "/");
           return (

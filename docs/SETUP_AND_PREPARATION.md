@@ -237,4 +237,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-19 | Provider 抽象（5 个接口） | 生产可替换 |
 | 2026-08-19 | 新增路由 /preview（手机预览框架） | rider 调试视图（iframe 同源 + cookie 共享） |
 | 2026-08-19 | rider layout 支持 dz_hide_demo cookie | 预览框架内隐藏琥珀 demo bar（完整页面视图） |
+| 2026-08-19 | BottomNav/MobileNav 加 safe-area padding（env(safe-area-inset-bottom)） | 适配 iPhone home indicator，底部导航不被遮挡 |
 | — | （后续改动在此追加） | — |

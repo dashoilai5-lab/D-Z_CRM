@@ -16,7 +16,8 @@ export function MobileNav() {
   ];
   return (
     <nav className="lg:hidden sticky bottom-0 z-40 border-t bg-background/95 backdrop-blur">
-      <div className="flex">
+      {/* safe-area padding for phones with a home indicator / gesture bar */}
+      <div className="flex pb-[env(safe-area-inset-bottom)]">
         {items.map((it) => {
           const active = path === it.href || path.startsWith(it.href + "/");
           return (
