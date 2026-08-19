@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Tag, CalendarPlus, Megaphone, Clapperboard, BookOpen, ChevronRight, ChevronLeft } from "lucide-react";
 import { db } from "@/lib/db";
 import { isPromoActive } from "@/modules/marketing/promo";
+import { MaterialGrid } from "@/components/rider/material-grid";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ export default async function RiderPromotionsPage() {
   ]);
   const livePromos = campaigns.filter((c) => isPromoActive(c as never));
   const groups = (["POSTER", "REEL", "STORY"] as const)
-    .map((t) => ({ type: t, meta: TYPE_META[t], items: assets.filter((a) => a.type === t) }))
+    .map((t) => ({ type: t, label: TYPE_META[t].label, grad: TYPE_META[t].grad, items: assets.filter((a) => a.type === t) }))
     .filter((g) => g.items.length > 0);
 
   return (
@@ -61,35 +62,7 @@ export default async function RiderPromotionsPage() {
         </section>
       )}
 
-      {groups.map((g) => (
-        <section key={g.type}>
-          <div className="flex items-center gap-1.5 mb-2">
-            <g.meta.icon className="h-4 w-4 text-muted-foreground" />
-            <h2 className="font-semibold">{g.meta.label}</h2>
-            <span className="text-xs text-muted-foreground">({g.items.length})</span>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {g.items.map((a) => (
-              <div key={a.id} className="overflow-hidden rounded-2xl border bg-card">
-                {a.url ? (
-                  <div className="aspect-[3/4] bg-muted overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={a.url} alt={a.title} className="h-full w-full object-cover" />
-                  </div>
-                ) : (
-                  <div className={"aspect-[3/4] bg-gradient-to-br flex items-center justify-center " + g.meta.grad}>
-                    <g.meta.icon className="h-8 w-8 text-white/80" />
-                  </div>
-                )}
-                <div className="p-3">
-                  <div className="text-sm font-semibold truncate">{a.title}</div>
-                  <div className="mt-0.5 text-[11px] text-muted-foreground">{a.month ?? ""}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      ))}
+      <MaterialGrid groups={groups} />
 
       {groups.length === 0 && livePromos.length === 0 && (
         <p className="text-sm text-muted-foreground text-center py-12">No promotions or materials yet.</p>
