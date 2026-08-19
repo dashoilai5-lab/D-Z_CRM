@@ -68,13 +68,13 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
       <DialogTrigger className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-muted">
         <Pencil className="h-3.5 w-3.5" /> Edit Details
       </DialogTrigger>
-      <DialogContent className="max-h-[85vh] overflow-y-auto">
+      <DialogContent style={{ maxWidth: "48rem" }} className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Job Details</DialogTitle>
           <DialogDescription>Update mileage, customer request, mechanic, and service lines.</DialogDescription>
         </DialogHeader>
 
-        <div className="grid sm:grid-cols-2 gap-3 py-2">
+        <div className="grid sm:grid-cols-3 gap-3 py-2">
           <div>
             <Label>Mileage (km)</Label>
             <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} className="mt-1.5" />
@@ -89,17 +89,18 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
               </SelectContent>
             </Select>
           </div>
-          <div className="sm:col-span-2">
+          <div>
             <Label>Customer Request</Label>
             <Input value={request} onChange={(e) => setRequest(e.target.value)} placeholder="—" className="mt-1.5" />
           </div>
         </div>
 
-        {/* current lines with remove */}
-        {data.items.length > 0 && (
-          <div className="mt-1">
+        <div className="grid sm:grid-cols-2 gap-4 mt-1">
+          {/* current lines with remove */}
+          <div>
             <Label>Job Lines</Label>
-            <div className="mt-1.5 space-y-1 max-h-40 overflow-y-auto">
+            <div className="mt-1.5 space-y-1 max-h-52 overflow-y-auto">
+              {data.items.length === 0 && <p className="text-xs text-muted-foreground">No lines yet.</p>}
               {data.items.map((it) => (
                 <div key={it.id} className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm">
                   <span className="flex-1 truncate">{it.description}</span>
@@ -116,38 +117,38 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
               ))}
             </div>
           </div>
-        )}
 
-        {/* add-on services */}
-        <div className="mt-1">
-          <Label>Add Additional Service</Label>
-          <div className="mt-1.5 space-y-1 max-h-44 overflow-y-auto">
-            {extras.map((s) => {
-              const active = !!extra[s.key];
-              return (
-                <div key={s.key} className={"flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm " + (active ? "border-emerald-300 bg-emerald-50/40" : "")}>
-                  <input
-                    type="checkbox"
-                    checked={active}
-                    onChange={() => setExtra((prev) => {
-                      const next = { ...prev };
-                      if (next[s.key]) delete next[s.key];
-                      else next[s.key] = { label: s.label, priceSen: s.defaultPriceSen };
-                      return next;
-                    })}
-                    className="h-4 w-4 accent-emerald-600"
-                  />
-                  <span className="flex-1 truncate">{s.label}</span>
-                  <span className="text-xs text-muted-foreground tabular-nums">{formatRM(s.defaultPriceSen)}</span>
-                </div>
-              );
-            })}
+          {/* add-on services */}
+          <div>
+            <Label>Add Additional Service</Label>
+            <div className="mt-1.5 space-y-1 max-h-52 overflow-y-auto">
+              {extras.map((s) => {
+                const active = !!extra[s.key];
+                return (
+                  <div key={s.key} className={"flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm " + (active ? "border-emerald-300 bg-emerald-50/40" : "")}>
+                    <input
+                      type="checkbox"
+                      checked={active}
+                      onChange={() => setExtra((prev) => {
+                        const next = { ...prev };
+                        if (next[s.key]) delete next[s.key];
+                        else next[s.key] = { label: s.label, priceSen: s.defaultPriceSen };
+                        return next;
+                      })}
+                      className="h-4 w-4 accent-emerald-600"
+                    />
+                    <span className="flex-1 truncate">{s.label}</span>
+                    <span className="text-xs text-muted-foreground tabular-nums">{formatRM(s.defaultPriceSen)}</span>
+                  </div>
+                );
+              })}
+            </div>
+            {Object.keys(extra).length > 0 && (
+              <p className="mt-1.5 text-[11px] text-emerald-700">
+                {Object.keys(extra).length} service(s) will be added — +{formatRM(Object.values(extra).reduce((s, x) => s + x.priceSen, 0))}
+              </p>
+            )}
           </div>
-          {Object.keys(extra).length > 0 && (
-            <p className="mt-1.5 text-[11px] text-emerald-700">
-              {Object.keys(extra).length} service(s) will be added — +{formatRM(Object.values(extra).reduce((s, x) => s + x.priceSen, 0))}
-            </p>
-          )}
         </div>
 
         <DialogFooter>
