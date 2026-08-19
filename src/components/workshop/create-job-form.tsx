@@ -53,7 +53,10 @@ export function CreateJobForm({
   const totalExtras = selectedExtras.reduce((s, x) => s + x.priceSen, 0);
 
   useEffect(() => {
-    if (!motorcycleId) { setRecs([]); return; }
+    if (!motorcycleId) {
+      const id = requestAnimationFrame(() => setRecs([]));
+      return () => cancelAnimationFrame(id);
+    }
     let cancelled = false;
     fetch("/api/recommendations?motorcycleId=" + motorcycleId + "&mileage=" + (Number(mileage) || 0))
       .then((r) => r.json())

@@ -31,9 +31,12 @@ export function CommandPalette() {
 
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
-    if (!q.trim()) { setHits([]); return; }
-    setLoading(true);
+    if (!q.trim()) {
+      const id = requestAnimationFrame(() => { setHits([]); setLoading(false); });
+      return () => cancelAnimationFrame(id);
+    }
     timer.current = setTimeout(async () => {
+      setLoading(true);
       try {
         const res = await fetch("/api/search?q=" + encodeURIComponent(q));
         const data = (await res.json()) as { hits: Hit[] };

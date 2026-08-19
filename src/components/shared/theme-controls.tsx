@@ -20,8 +20,11 @@ export function ThemeControls({ compact = false }: { compact?: boolean }) {
   const [fontSize, setFontSize] = useState<FontSize>("md");
   const [mounted, setMounted] = useState(false);
 
-  // sync from the DOM (persisted) on mount
-  useEffect(() => { setFontSize(readFontSize()); setMounted(true); }, []);
+  // sync from the DOM (persisted) on mount — defer to avoid cascading render
+  useEffect(() => {
+    const id = requestAnimationFrame(() => { setFontSize(readFontSize()); setMounted(true); });
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const apply = (next: FontSize) => {
     setFontSize(next);

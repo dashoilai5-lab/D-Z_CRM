@@ -11,6 +11,9 @@ import { bookService } from "@/actions/rider";
 import { SERVICE_CATALOG, servicesForType } from "@/lib/service-catalog";
 import { motorcycleTypeInfo, MOTORCYCLE_TYPE_LABELS } from "@/lib/motorcycle-types";
 
+/** Module-level constant — Date.now() at module load, not per render. */
+const TOMORROW = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+
 export interface BikeOption { id: string; brand: string; model: string; plate: string; type: string }
 
 export function BookForm({ customerId, bikes, campaignId }: { customerId: string; bikes: BikeOption[]; campaignId?: string | null }) {
@@ -22,7 +25,7 @@ export function BookForm({ customerId, bikes, campaignId }: { customerId: string
   const [timeSlot, setTimeSlot] = useState("10:00");
   const [notes, setNotes] = useState("");
 
-  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+  const tomorrow = TOMORROW;
 
   const selectedBike = bikes.find((b) => b.id === motorcycleId);
   const bikeType = selectedBike ? motorcycleTypeInfo(selectedBike.type) : undefined;
