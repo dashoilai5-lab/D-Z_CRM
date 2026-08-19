@@ -24,6 +24,11 @@ test.describe("sidebar hover flyout", () => {
     await aside.hover();
     await expect(flyout).toHaveCSS("opacity", "1", { timeout: 5000 });
 
+    // no visual gap: flyout's left edge hugs the rail's right edge
+    const railBox = await aside.locator(".flex.h-full.w-16").boundingBox();
+    const flyoutBox = await flyout.boundingBox();
+    expect(Math.abs(railBox!.x + railBox!.width - flyoutBox!.x)).toBeLessThan(1);
+
     // labels are visible in flyout
     await expect(flyout.getByText("Inventory", { exact: false }).first()).toBeVisible();
     await expect(flyout.getByText("Purchase Orders").first()).toBeVisible();

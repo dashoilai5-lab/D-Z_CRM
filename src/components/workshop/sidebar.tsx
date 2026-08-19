@@ -109,8 +109,11 @@ export function Sidebar() {
         <div className="border-t border-sidebar-border py-3 text-center text-[10px] text-sidebar-foreground/50">v0.1</div>
       </div>
 
-      {/* Hover flyout — full menu, appears on mouse-over, hides on leave */}
-      <div className="pointer-events-none absolute left-full top-0 h-full w-60 overflow-y-auto border-r bg-sidebar shadow-2xl opacity-0 transition-[opacity,transform] duration-150 -translate-x-1 group-hover:pointer-events-auto group-hover:translate-x-0 group-hover:opacity-100">
+      {/* Hover flyout — full menu, appears on mouse-over, hides on leave.
+          No translate on the X axis: the flyout hugs the rail edge (left-full),
+          so there is no visible gap between rail and menu. Collapse keeps a
+          short delay so the cursor crossing onto the flyout doesn't dismiss it. */}
+      <div className="pointer-events-none absolute left-full top-0 h-full w-60 overflow-y-auto border-r bg-sidebar shadow-xl opacity-0 origin-left scale-[0.98] transition-[opacity,transform] duration-200 ease-out delay-150 group-hover:pointer-events-auto group-hover:scale-100 group-hover:opacity-100 group-hover:delay-0">
         <div className="px-5 h-16 border-b border-sidebar-border flex flex-col justify-center">
           <div className="font-bold text-sm">D&Z WORKSHOP OS</div>
           <div className="text-[10px] text-sidebar-foreground/60">Smart Workshop · KL</div>
