@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -126,8 +126,15 @@
   }
   html {
     @apply font-sans;
+    font-size: var(--app-font-size, 16px); /* rem base — scales every Tailwind text-* size */
   }
 }
+
+/* Font-size stepping (A− / A+): body rem base scales, everything rem-based follows. */
+:root[data-font-size="sm"] { --app-font-size: 15px; }
+:root[data-font-size="md"] { --app-font-size: 16px; }
+:root[data-font-size="lg"] { --app-font-size: 17.5px; }
+:root[data-font-size="xl"] { --app-font-size: 19px; }
 /* D&Z tweaks */
 body { font-feature-settings: "cv11"; }
 .text-balance { text-wrap: balance; }
