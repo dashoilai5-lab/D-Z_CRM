@@ -63,3 +63,38 @@ export async function submitReview(input: { customerId: string; branchId: string
   revalidatePath("/", "layout");
   return { ok: true };
 }
+
+function makePlate(): string {
+  const pre = ["WXY", "JKL", "BQE", "WWW", "VLL", "PRH", "JMR", "JQY", "KFX", "BSS", "WUL", "VKM"];
+  const digits = String(Math.floor(1000 + Math.random() * 9000));
+  const suffix = "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random() * 24)] + "ABCDEFGHJKLMNPQRSTUVWXYZ"[Math.floor(Math.random() * 24)];
+  return pre[Math.floor(Math.random() * pre.length)] + " " + digits + " " + suffix;
+}
+
+export async function addMotorcycle(input: {
+  customerId: string;
+  brand: string;
+  model: string;
+  year: number;
+  type: string;
+  color?: string;
+  currentMileage: number;
+}) {
+  await db.motorcycle.create({
+    data: {
+      customerId: input.customerId,
+      brand: input.brand.trim(),
+      model: input.model.trim(),
+      year: input.year,
+      type: input.type,
+      color: input.color || null,
+      plate: makePlate(),
+      currentMileage: input.currentMileage,
+      // new bike: next service is 3,000 km out from today's mileage (default interval)
+      lastServiceMileage: input.currentMileage,
+      nextServiceMileage: input.currentMileage + 3000,
+    },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
