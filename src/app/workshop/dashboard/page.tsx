@@ -9,29 +9,34 @@ import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
 import { getPersona } from "@/lib/demo";
 import { getDemoUser } from "@/lib/demo-user";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const branch = await db.branch.findFirst({ where: { isMain: true } });
-  const [dash, recs, persona, user] = await Promise.all([
+  const [dash, recs, persona, user, lang] = await Promise.all([
     dashboardService.get(branch?.id),
     aiService.recommendations(branch?.id),
     getPersona(),
     getDemoUser(await getPersona()),
+    getLang(),
   ]);
 
   const statusRows = [
-    { status: "WAITING", label: "Waiting", count: dash.statuses.WAITING, cls: "bg-slate-500" },
-    { status: "IN_PROGRESS", label: "In Progress", count: dash.statuses.IN_PROGRESS, cls: "bg-blue-500" },
-    { status: "AWAITING_APPROVAL", label: "Awaiting Approval", count: dash.statuses.AWAITING_APPROVAL, cls: "bg-amber-500" },
-    { status: "READY", label: "Ready", count: dash.statuses.READY, cls: "bg-emerald-500" },
-    { status: "COMPLETED", label: "Completed", count: dash.statuses.COMPLETED, cls: "bg-emerald-700" },
+    { status: "WAITING", label: t("status.WAITING", lang), count: dash.statuses.WAITING, cls: "bg-slate-500" },
+    { status: "IN_PROGRESS", label: t("status.IN_PROGRESS", lang), count: dash.statuses.IN_PROGRESS, cls: "bg-blue-500" },
+    { status: "AWAITING_APPROVAL", label: t("status.AWAITING_APPROVAL", lang), count: dash.statuses.AWAITING_APPROVAL, cls: "bg-amber-500" },
+    { status: "READY", label: t("status.READY", lang), count: dash.statuses.READY, cls: "bg-emerald-500" },
+    { status: "COMPLETED", label: t("status.COMPLETED", lang), count: dash.statuses.COMPLETED, cls: "bg-emerald-700" },
   ] as const;
 
   const isOwner = persona === "OWNER";
   const isMechanic = persona === "MECHANIC";
   const greetingName = user?.name.split(" ")[0] ?? "Daniel";
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? t("dash.morning", lang) : hour < 18 ? t("dash.afternoon", lang) : t("dash.evening", lang);
 
   // data isolation: mechanic sees only their jobs in the snapshot
   const myJobs = isMechanic && user ? dash.board.jobs.filter((j) => j.mechanic?.id === user.id) : dash.board.jobs;
@@ -40,41 +45,41 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Good {new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening"}, {greetingName} 👋</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName} 👋</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {isMechanic ? "Here are your assigned jobs and today's tasks." : isOwner ? "Here is what is happening at D&Z Smart Workshop (Kuala Lumpur) today." : "Here is the front-desk view for today."}
+          {isMechanic ? t("dash.mechanic-sub", lang) : isOwner ? t("dash.owner-sub", lang) : t("dash.counter-sub", lang)}
         </p>
       </div>
 
       {/* today metrics — role-scoped */}
       {isMechanic ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <StatCard label="My Active Jobs" value={myJobs.filter((j) => ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "READY"].includes(j.status)).length} href="/workshop/mechanic" />
-          <StatCard label="My Jobs Today" value={todayJobs.length} href="/workshop/jobs" />
-          <StatCard label="Awaiting Approval" value={dash.statuses.AWAITING_APPROVAL} href="/workshop/jobs?status=AWAITING_APPROVAL" tone="warn" />
-          <StatCard label="Ready" value={dash.statuses.READY} href="/workshop/jobs?status=READY" tone="success" />
+          <StatCard label={t("dash.my-active-jobs", lang)} value={myJobs.filter((j) => ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "READY"].includes(j.status)).length} href="/workshop/mechanic" />
+          <StatCard label={t("dash.my-jobs-today", lang)} value={todayJobs.length} href="/workshop/jobs" />
+          <StatCard label={t("dash.awaiting-approval", lang)} value={dash.statuses.AWAITING_APPROVAL} href="/workshop/jobs?status=AWAITING_APPROVAL" tone="warn" />
+          <StatCard label={t("dash.ready", lang)} value={dash.statuses.READY} href="/workshop/jobs?status=READY" tone="success" />
         </div>
       ) : isOwner ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <StatCard label="Today's Sales" value={<Money sen={dash.todaySales} />} href="/workshop/finance/profit" />
-          <StatCard label="Gross Profit" value={<Money sen={dash.todayGrossProfit} />} href="/workshop/finance/profit" tone="success" />
-          <StatCard label="Jobs Today" value={dash.jobsToday} href="/workshop/jobs" />
-          <StatCard label="Average Ticket" value={<Money sen={dash.avgTicket} />} href="/workshop/finance/profit" />
+          <StatCard label={t("dash.today-sales", lang)} value={<Money sen={dash.todaySales} />} href="/workshop/finance/profit" />
+          <StatCard label={t("dash.gross-profit", lang)} value={<Money sen={dash.todayGrossProfit} />} href="/workshop/finance/profit" tone="success" />
+          <StatCard label={t("dash.jobs-today", lang)} value={dash.jobsToday} href="/workshop/jobs" />
+          <StatCard label={t("dash.avg-ticket", lang)} value={<Money sen={dash.avgTicket} />} href="/workshop/finance/profit" />
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <StatCard label="Jobs Today" value={dash.jobsToday} href="/workshop/jobs" />
-          <StatCard label="Customers Due" value={dash.customersDue} href="/workshop/crm/reminders" tone="danger" />
-          <StatCard label="New Bookings" value={dash.statuses.WAITING + dash.statuses.IN_PROGRESS} href="/workshop/bookings" />
-          <StatCard label="Average Rating" value={dash.avgRating + " ★"} href="/workshop/marketing/reviews" />
+          <StatCard label={t("dash.jobs-today", lang)} value={dash.jobsToday} href="/workshop/jobs" />
+          <StatCard label={t("dash.customers-due", lang)} value={dash.customersDue} href="/workshop/crm/reminders" tone="danger" />
+          <StatCard label={t("dash.new-bookings", lang)} value={dash.statuses.WAITING + dash.statuses.IN_PROGRESS} href="/workshop/bookings" />
+          <StatCard label={t("dash.avg-rating", lang)} value={dash.avgRating + " ★"} href="/workshop/marketing/reviews" />
         </div>
       )}
 
       {/* workshop status */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold">Workshop Status</h2>
-          <Link href="/workshop/jobs" className="text-xs font-medium text-primary flex items-center gap-1">View job board <ArrowRight className="h-3 w-3" /></Link>
+          <h2 className="font-semibold">{t("dash.workshop-status", lang)}</h2>
+          <Link href="/workshop/jobs" className="text-xs font-medium text-primary flex items-center gap-1">{t("dash.view-job-board", lang)} <ArrowRight className="h-3 w-3" /></Link>
         </div>
         <div className="flex flex-wrap gap-2">
           {statusRows.map((s) => (
@@ -90,12 +95,12 @@ export default async function DashboardPage() {
       {/* additional cards — owner-only financials/stock/marketing */}
       {isOwner && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-          <StatCard label="Customers Due" value={dash.customersDue} href="/workshop/crm/reminders" tone="danger" />
-          <StatCard label="Critical Stock" value={dash.criticalStock} href="/workshop/inventory/alerts" tone="danger" />
-          <StatCard label="Dead Stock Value" value={<Money sen={dash.deadStockValue} />} href="/workshop/inventory/dead-stock" tone="warn" />
-          <StatCard label="Average Rating" value={dash.avgRating + " ★"} href="/workshop/marketing/reviews" />
+          <StatCard label={t("dash.customers-due", lang)} value={dash.customersDue} href="/workshop/crm/reminders" tone="danger" />
+          <StatCard label={t("dash.critical-stock", lang)} value={dash.criticalStock} href="/workshop/inventory/alerts" tone="danger" />
+          <StatCard label={t("dash.dead-stock-value", lang)} value={<Money sen={dash.deadStockValue} />} href="/workshop/inventory/dead-stock" tone="warn" />
+          <StatCard label={t("dash.avg-rating", lang)} value={dash.avgRating + " ★"} href="/workshop/marketing/reviews" />
           {dash.topPerformer && (
-            <StatCard label="Top Performer" value={dash.topPerformer.name.split(" ")[0]} sub={"Score " + dash.topPerformer.score} href="/workshop/staff/kpi" tone="success" />
+            <StatCard label={t("dash.top-performer", lang)} value={dash.topPerformer.name.split(" ")[0]} sub={t("dash.score", lang) + " " + dash.topPerformer.score} href="/workshop/staff/kpi" tone="success" />
           )}
         </div>
       )}
@@ -105,7 +110,7 @@ export default async function DashboardPage() {
         <section>
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="h-4 w-4 text-primary" />
-            <h2 className="font-semibold">AI Command Centre</h2>
+            <h2 className="font-semibold">{t("dash.ai-centre", lang)}</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             {recs.map((r, i) => (
@@ -115,7 +120,7 @@ export default async function DashboardPage() {
                 <span className="inline-block mt-3 text-xs font-semibold text-primary group-hover:underline">{r.action} →</span>
               </Link>
             ))}
-            {recs.length === 0 && <p className="text-sm text-muted-foreground col-span-2">No recommendations right now — everything is on track.</p>}
+            {recs.length === 0 && <p className="text-sm text-muted-foreground col-span-2">{t("dash.no-recs", lang)}</p>}
           </div>
         </section>
       )}
@@ -123,8 +128,8 @@ export default async function DashboardPage() {
       {/* today's jobs snapshot — role-scoped */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold">{isMechanic ? "My Today's Jobs" : "Today's Jobs"}</h2>
-          <Link href="/workshop/jobs" className="text-xs font-medium text-primary">All jobs →</Link>
+          <h2 className="font-semibold">{isMechanic ? t("dash.my-today-jobs", lang) : t("dash.today-jobs", lang)}</h2>
+          <Link href="/workshop/jobs" className="text-xs font-medium text-primary">{t("dash.all-jobs", lang)} →</Link>
         </div>
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
           {todayJobs.map((j) => (
@@ -138,7 +143,7 @@ export default async function DashboardPage() {
               <div className="mt-2 text-sm font-semibold tabular-nums"><Money sen={j.totalSen} /></div>
             </Link>
           ))}
-          {todayJobs.length === 0 && <p className="text-sm text-muted-foreground col-span-3 text-center py-6">{isMechanic ? "No jobs assigned to you today." : "No jobs created today."}</p>}
+          {todayJobs.length === 0 && <p className="text-sm text-muted-foreground col-span-3 text-center py-6">{isMechanic ? t("dash.no-jobs-assigned", lang) : t("dash.no-jobs-created", lang)}</p>}
         </div>
       </section>
     </div>
