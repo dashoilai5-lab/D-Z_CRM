@@ -169,3 +169,28 @@ export async function addAiRecommendation(input: {
   revalidatePath("/", "layout");
   return { ok: true, id: (r as { id: string }).id };
 }
+
+export async function createStaff(input: { name: string; role: string; phone?: string; email?: string }) {
+  const org = await db.organisation.findFirst();
+  const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
+  await db.user.create({
+    data: {
+      organisationId: org!.id,
+      branchId: branch?.id,
+      name: input.name.trim(),
+      role: input.role as never,
+      phone: input.phone || null,
+      email: input.email || null,
+      active: true,
+    },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function toggleStaffActive(userId: string) {
+  const u = await db.user.findUnique({ where: { id: userId }, select: { active: true } });
+  await db.user.update({ where: { id: userId }, data: { active: !u?.active } });
+  revalidatePath("/", "layout");
+  return { ok: true, active: !u?.active };
+}

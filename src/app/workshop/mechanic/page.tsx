@@ -1,4 +1,5 @@
 import { jobService } from "@/modules/service-jobs/service";
+import { db } from "@/lib/db";
 import { getPersona } from "@/lib/demo";
 import { getDemoUser } from "@/lib/demo-user";
 import { MechanicBoard, type BoardJob, type MechanicSummary } from "@/components/workshop/mechanic-board";
@@ -24,18 +25,24 @@ export default async function MechanicPage() {
     byMechanic.set(id, arr);
   }
 
-  // mechanic names: from the jobs themselves; ensure every staff mechanic appears
-  const nameById = new Map<string, string>();
-  for (const j of active) if (j.mechanic?.id && j.mechanic.name) nameById.set(j.mechanic.id, j.mechanic.name);
-  nameById.set("unassigned", "Unassigned");
+  // all active mechanics (0-job mechanics still appear), plus unassigned bucket
+  const allMechanics = await db.user.findMany({ where: { role: "MECHANIC", active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } });
+  const byId = new Map<string, { id: string; name: string; jobs: BoardJob[] }>();
+  for (const m of allMechanics) byId.set(m.id, { id: m.id, name: m.name, jobs: [] });
+  for (const [id, jobs] of byMechanic) {
+    const cur = byId.get(id) ?? { id, name: id === "unassigned" ? "Unassigned" : id, jobs: [] };
+    cur.jobs = jobs;
+    byId.set(id, cur);
+  }
+  byId.set("unassigned", { id: "unassigned", name: "Unassigned", jobs: byMechanic.get("unassigned") ?? [] });
 
-  const mechanics: MechanicSummary[] = [...byMechanic.entries()].map(([id, jobs]) => ({
-    id,
-    name: nameById.get(id) ?? id,
-    jobs,
-    todayCount: jobs.filter((j) => j.isToday).length,
-    approvals: jobs.filter((j) => j.status === "AWAITING_APPROVAL").length,
-    ready: jobs.filter((j) => j.status === "READY").length,
+  const mechanics: MechanicSummary[] = [...byId.values()].map((m) => ({
+    id: m.id,
+    name: m.name,
+    jobs: m.jobs,
+    todayCount: m.jobs.filter((j) => j.isToday).length,
+    approvals: m.jobs.filter((j) => j.status === "AWAITING_APPROVAL").length,
+    ready: m.jobs.filter((j) => j.status === "READY").length,
   })).sort((a, b) => (a.id === "unassigned" ? 1 : 0) - (b.id === "unassigned" ? 1 : 0) || b.jobs.length - a.jobs.length);
 
   // MECHANIC persona defaults to their own card; OWNER defaults to the first (busiest)

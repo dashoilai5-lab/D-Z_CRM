@@ -71,7 +71,7 @@ export const NAV_SECTIONS: readonly NavSection[] = [
   {
     section: "STAFF",
     items: [
-      { key: "staff", label: "Staff", href: "/workshop/staff/kpi", icon: Users2, access: ["OWNER"] },
+      { key: "staff", label: "Staff", href: "/workshop/staff", icon: Users2, access: ["OWNER"] },
       { key: "kpi", label: "KPI Board", href: "/workshop/staff/kpi", icon: Gauge, access: ["OWNER", "MECHANIC"] },
     ],
   },
