@@ -9,7 +9,7 @@ export default async function WorkshopLayout({ children }: { children: React.Rea
   const persona = await getPersona();
   return (
     <div className="flex min-h-screen bg-muted/30">
-      <Sidebar current="" />
+      <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <div className="hidden lg:flex items-center gap-4 border-b bg-background px-6 h-16">
           <CommandPalette />
