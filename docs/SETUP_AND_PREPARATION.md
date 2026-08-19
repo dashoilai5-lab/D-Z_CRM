@@ -235,4 +235,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-19 | 海报素材 public/posters/（10 张） | MarketingAsset.url |
 | 2026-08-19 | 灯箱组件 shared/lightbox.tsx | 图片放大 |
 | 2026-08-19 | Provider 抽象（5 个接口） | 生产可替换 |
+| 2026-08-19 | 新增路由 /preview（手机预览框架） | rider 调试视图（iframe 同源 + cookie 共享） |
 | — | （后续改动在此追加） | — |
