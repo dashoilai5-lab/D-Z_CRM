@@ -6,13 +6,19 @@ import { Money } from "@/components/shared/money";
 import { JobActions } from "@/components/workshop/job-actions";
 import { Button } from "@/components/ui/button";
 import { fmtDate } from "@/lib/format";
+import { getPersona } from "@/lib/demo";
+import { getDemoUser } from "@/lib/demo-user";
 
 export const dynamic = "force-dynamic";
 
 export default async function JobsPage({ searchParams }: { searchParams: Promise<{ status?: string; view?: string }> }) {
   const { status, view } = await searchParams;
+  const persona = await getPersona();
+  const user = await getDemoUser(persona);
   const board = await jobService.listBoard();
-  const filtered = status ? board.jobs.filter((j) => j.status === status) : board.jobs;
+  // data isolation: MECHANIC sees only their assigned jobs
+  const scoped = persona === "MECHANIC" && user ? board.jobs.filter((j) => j.mechanic?.id === user.id) : board.jobs;
+  const filtered = status ? scoped.filter((j) => j.status === status) : scoped;
   const isKanban = view === "kanban";
 
   const columns = [
