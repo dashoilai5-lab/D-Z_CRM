@@ -127,6 +127,36 @@ export async function updateJobDetails(input: {
   return { ok: true };
 }
 
+/** Add priced service lines to a job (additional services from the market catalogue). */
+export async function addJobServiceItems(input: {
+  jobId: string;
+  items: { description: string; priceSen: number }[];
+}) {
+  if (input.items.length === 0) return { ok: true };
+  await db.serviceJobItem.createMany({
+    data: input.items.map((it) => ({
+      jobId: input.jobId,
+      description: it.description,
+      kind: "SERVICE",
+      quantity: 1,
+      unitPriceSen: it.priceSen,
+      lineTotalSen: it.priceSen,
+      status: "INCLUDED",
+      source: "COUNTER",
+    })),
+  });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+/** Remove a job line (item or part) by id. */
+export async function removeJobItem(input: { jobId: string; kind: "item" | "part"; itemId: string }) {
+  if (input.kind === "item") await db.serviceJobItem.delete({ where: { id: input.itemId } });
+  else await db.serviceJobPart.delete({ where: { id: input.itemId } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
 export async function addAiRecommendation(input: {
   jobId: string; kind: "item" | "part"; description: string; quantity: number; unitPriceSen: number;
   productId?: string; unitCostSen?: number;

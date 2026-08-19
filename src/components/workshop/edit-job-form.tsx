@@ -3,12 +3,12 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Pencil, X, Plus, Check } from "lucide-react";
+import { Pencil, X, Check, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { updateJobDetails } from "@/actions/workshop";
+import { updateJobDetails, addJobServiceItems, removeJobItem } from "@/actions/workshop";
 import { formatRM } from "@/lib/money";
 import { SERVICE_CATALOG, servicesForType } from "@/lib/service-catalog";
 
@@ -36,15 +36,30 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
 
   const save = () =>
     start(async () => {
-      await updateJobDetails({
-        jobId: data.jobId,
-        mileage: Number(mileage) || 0,
-        customerRequest: request || undefined,
-        mechanicId: mechanicId || null,
-      });
-      setOpen(false);
+      try {
+        await updateJobDetails({
+          jobId: data.jobId,
+          mileage: Number(mileage) || 0,
+          customerRequest: request || undefined,
+          mechanicId: mechanicId || null,
+        });
+        const added = Object.values(extra);
+        if (added.length > 0) {
+          await addJobServiceItems({ jobId: data.jobId, items: added.map((x) => ({ description: x.label, priceSen: x.priceSen })) });
+        }
+        setOpen(false);
+        router.refresh();
+        toast.success("Job details updated" + (added.length > 0 ? " — " + added.length + " service line(s) added" : ""));
+      } catch (e) {
+        toast.error((e as Error).message);
+      }
+    });
+
+  const removeLine = (kind: "item" | "part", itemId: string, description: string) =>
+    start(async () => {
+      await removeJobItem({ jobId: data.jobId, kind, itemId });
       router.refresh();
-      toast.success("Job details updated");
+      toast.success("Removed " + description);
     });
 
   if (!open) {
@@ -85,9 +100,33 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
         </div>
       </div>
 
+      {/* current lines with remove */}
+      {data.items.length > 0 && (
+        <div className="mt-4">
+          <Label>Job Lines</Label>
+          <div className="mt-1.5 space-y-1 max-h-44 overflow-y-auto">
+            {data.items.map((it) => (
+              <div key={it.id} className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm">
+                <span className="flex-1 truncate">{it.description}</span>
+                <span className="text-xs text-muted-foreground tabular-nums">{formatRM(it.unitPriceSen)}</span>
+                <button
+                  type="button"
+                  onClick={() => removeLine(it.kind, it.id, it.description)}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-red-50 hover:text-red-600"
+                  title="Remove line"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* add-on services */}
       <div className="mt-4">
         <Label>Add Additional Service</Label>
-        <div className="mt-1.5 space-y-1">
+        <div className="mt-1.5 space-y-1 max-h-48 overflow-y-auto">
           {extras.map((s) => {
             const active = !!extra[s.key];
             return (
@@ -110,8 +149,8 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
           })}
         </div>
         {Object.keys(extra).length > 0 && (
-          <p className="mt-1.5 text-[11px] text-muted-foreground">
-            {Object.keys(extra).length} service(s) marked — they will be added on save. (Line-based add with prices coming next.)
+          <p className="mt-1.5 text-[11px] text-emerald-700">
+            {Object.keys(extra).length} service(s) will be added — +{formatRM(Object.values(extra).reduce((s, x) => s + x.priceSen, 0))}
           </p>
         )}
       </div>
