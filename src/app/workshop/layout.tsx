@@ -4,12 +4,14 @@ import { ThemeControls } from "@/components/shared/theme-controls";
 import { Sidebar } from "@/components/workshop/sidebar";
 import { MobileNav } from "@/components/workshop/mobile-nav";
 import { getPersona } from "@/lib/demo";
+import { getDemoUser } from "@/lib/demo-user";
 
 export default async function WorkshopLayout({ children }: { children: React.ReactNode }) {
   const persona = await getPersona();
+  const user = await getDemoUser(persona);
   return (
     <div className="flex min-h-screen bg-muted/30">
-      <Sidebar />
+      <Sidebar user={user} />
       <div className="flex-1 flex flex-col min-w-0">
         <div className="hidden lg:flex items-center gap-4 border-b bg-background px-6 h-16">
           <CommandPalette />

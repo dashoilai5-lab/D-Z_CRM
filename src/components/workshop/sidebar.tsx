@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Bike, LayoutDashboard, Users, UserCheck, CalendarClock, Wrench, ClipboardList, ListChecks, Package, Store, BellRing, MessageSquare, Megaphone, Star, Users2, Gauge, Boxes, AlertTriangle, Archive, RefreshCw, Truck, ShoppingCart, Wallet, Sparkles, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { DemoUserInfo } from "@/lib/demo-user";
 
 const NAV = [
   { section: null, items: [{ href: "/workshop/dashboard", label: "Dashboard", icon: LayoutDashboard }] },
@@ -72,7 +73,7 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href + "/");
 }
 
-export function Sidebar() {
+export function Sidebar({ user }: { user?: DemoUserInfo | null }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
 
@@ -85,7 +86,7 @@ export function Sidebar() {
         expanded ? "w-52" : "w-14"
       )}
     >
-      <Link href="/workshop/dashboard" className={cn("flex items-center gap-2.5 h-16 border-b border-sidebar-border", expanded ? "px-5" : "px-3.5 justify-center")}>
+      <Link href="/workshop/dashboard" className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-2.5 px-5" : "gap-0 justify-center")}>
         <div className="h-8 w-8 shrink-0 rounded-xl bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center">
           <Bike className="h-5 w-5" />
         </div>
@@ -94,6 +95,17 @@ export function Sidebar() {
           <div className="text-[10px] text-sidebar-foreground/60">Smart Workshop · KL</div>
         </div>
       </Link>
+      {user && (
+        <div className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-3 px-5" : "gap-0 justify-center")}>
+          <div className="h-9 w-9 shrink-0 rounded-full bg-sidebar-primary/20 text-sidebar-foreground flex items-center justify-center text-xs font-semibold">
+            {user.initials}
+          </div>
+          <div className={cn("leading-tight overflow-hidden whitespace-nowrap transition-opacity duration-200 min-w-0", expanded ? "opacity-100" : "opacity-0 w-0")}>
+            <div className="font-semibold text-sm truncate">{user.name}</div>
+            <div className="text-[11px] text-sidebar-foreground/60 truncate">{user.roleLabel}</div>
+          </div>
+        </div>
+      )}
       <nav className={cn("flex-1 py-4", expanded ? "px-3 space-y-5" : "px-2 space-y-2")}>
         {NAV.map((group, gi) => (
           <div key={gi}>
@@ -108,8 +120,8 @@ export function Sidebar() {
                     aria-current={active ? "page" : undefined}
                     title={expanded ? undefined : item.label}
                     className={cn(
-                      "relative flex items-center gap-2.5 rounded-lg text-[13px] font-medium transition-colors",
-                      expanded ? "px-2.5 py-1.5" : "px-0 py-2 justify-center",
+                      "relative flex items-center rounded-lg text-[13px] font-medium transition-colors",
+                      expanded ? "gap-2.5 px-2.5 py-1.5" : "gap-0 justify-center px-0 py-2",
                       active
                         ? "bg-sidebar-primary text-sidebar-primary-foreground font-semibold shadow-sm"
                         : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
