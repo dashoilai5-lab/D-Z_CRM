@@ -32,7 +32,7 @@ export function Sidebar({ persona, user }: { persona: DemoPersona; user?: DemoUs
         expanded ? "w-52" : "w-14"
       )}
     >
-      <Link href="/workshop/dashboard" className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-2.5 px-5 mb-5" : "gap-0 justify-center mb-3")}>
+      <Link href="/workshop/dashboard" className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-2.5 px-5 mb-3" : "gap-0 justify-center mb-2")}>
         <div className="h-8 w-8 shrink-0 rounded-xl bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center">
           <Bike className="h-5 w-5" />
         </div>
@@ -42,7 +42,7 @@ export function Sidebar({ persona, user }: { persona: DemoPersona; user?: DemoUs
         </div>
       </Link>
       {user && (
-        <div className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-3 px-5 mb-5" : "gap-0 justify-center mb-3")}>
+        <div className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-3 px-5 mb-3" : "gap-0 justify-center mb-2")}>
           <div className="h-9 w-9 shrink-0 rounded-full bg-sidebar-primary/20 text-sidebar-foreground flex items-center justify-center text-xs font-semibold">
             {user.initials}
           </div>
@@ -52,7 +52,7 @@ export function Sidebar({ persona, user }: { persona: DemoPersona; user?: DemoUs
           </div>
         </div>
       )}
-      <nav className={cn("flex-1 py-4", expanded ? "px-3 space-y-5" : "px-2 space-y-2")}>
+      <nav className={cn("flex-1 pb-4", expanded ? "pt-0 px-3 space-y-5" : "pt-0 px-2 space-y-2")}>
         {sections.map((group, gi) => (
           <div key={gi}>
             {group.section && expanded && <div className="px-2 mb-1.5 text-[10px] font-semibold tracking-wider text-sidebar-foreground/40">{group.section}</div>}
