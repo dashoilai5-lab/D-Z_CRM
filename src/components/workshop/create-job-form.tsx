@@ -11,9 +11,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createJob } from "@/actions/workshop";
 import { formatRM } from "@/lib/money";
+import { SERVICE_CATALOG, servicesForType } from "@/lib/service-catalog";
 
 export interface CustomerOption { id: string; name: string; phone: string | null }
-export interface MotorcycleOption { id: string; brand: string; model: string; plate: string; year: number; currentMileage: number }
+export interface MotorcycleOption { id: string; brand: string; model: string; plate: string; year: number; type: string; currentMileage: number }
 export interface PackageOption { id: string; name: string; tier: string; priceSen: number; isBestValue?: boolean; description?: string | null }
 export interface MechanicOption { id: string; name: string }
 export interface Rec { kind: string; description: string; reason: string; script: string; priceSen: number; productId?: string; unitCostSen?: number }
@@ -40,8 +41,16 @@ export function CreateJobForm({
   const [showScript, setShowScript] = useState<string | null>(null);
   const [customerOpen, setCustomerOpen] = useState(false);
   const [q, setQ] = useState("");
+  // additional services (manual add-ons from the market service catalogue)
+  const [extraServices, setExtraServices] = useState<Record<string, { label: string; priceSen: number }>>({});
 
   const motorcycles = customerId ? (motorcyclesByCustomer[customerId] ?? []) : [];
+  const bike = motorcycles.find((m) => m.id === motorcycleId);
+  // services applicable to the selected bike type (falls back to full catalogue)
+  const availableServices = bike && servicesForType(bike.type).flatMap((g) => g.items);
+  const extras = availableServices && availableServices.length > 0 ? availableServices : [...SERVICE_CATALOG];
+  const selectedExtras = Object.values(extraServices);
+  const totalExtras = selectedExtras.reduce((s, x) => s + x.priceSen, 0);
 
   useEffect(() => {
     if (!motorcycleId) { setRecs([]); return; }
@@ -54,7 +63,7 @@ export function CreateJobForm({
 
   const filteredCustomers = customers.filter((c) => (c.name + " " + (c.phone ?? "")).toLowerCase().includes(q.toLowerCase()));
   const selectedRecs = recs.filter((r) => recState[r.description] === "added");
-  const totalAddons = selectedRecs.reduce((s, r) => s + r.priceSen, 0);
+  const totalAddons = selectedRecs.reduce((s, r) => s + r.priceSen, 0) + totalExtras;
   const pkg = packages.find((p) => p.id === packageId);
   const estimated = (pkg?.priceSen ?? 0) + totalAddons;
 
@@ -65,7 +74,10 @@ export function CreateJobForm({
         const r = await createJob({
           customerId, motorcycleId, mileage: Number(mileage), customerRequest: request || undefined,
           packageId: packageId || undefined, mechanicId: mechanicId || undefined,
-          addons: selectedRecs.map((rec) => ({ description: rec.description, kind: rec.kind, quantity: 1, unitPriceSen: rec.priceSen, productId: rec.productId, unitCostSen: rec.unitCostSen })),
+          addons: [
+            ...selectedRecs.map((rec) => ({ description: rec.description, kind: rec.kind, quantity: 1, unitPriceSen: rec.priceSen, productId: rec.productId, unitCostSen: rec.unitCostSen })),
+            ...selectedExtras.map((x) => ({ description: x.label, kind: "SERVICE", quantity: 1, unitPriceSen: x.priceSen })),
+          ],
         });
         router.push("/workshop/jobs/" + r.id);
         toast.success("Job " + r.jobNumber + " created");
@@ -145,7 +157,57 @@ export function CreateJobForm({
         </section>
 
         <section className="rounded-2xl border bg-card p-5">
-          <h3 className="font-semibold mb-3">4 · Assign Mechanic</h3>
+          <h3 className="font-semibold mb-1">Additional Services</h3>
+          <p className="text-xs text-muted-foreground mb-3">Add manual services beyond the package (prices adjustable at counter)</p>
+          {!motorcycleId ? (
+            <p className="text-sm text-muted-foreground">Select a motorcycle to see services recommended for its type.</p>
+          ) : (
+            <div className="space-y-1.5">
+              {extras.map((s) => {
+                const added = extraServices[s.key];
+                const active = !!added;
+                return (
+                  <div key={s.key} className={"flex items-center gap-3 rounded-xl border px-3 py-2.5 " + (active ? "border-emerald-300 bg-emerald-50/40" : "hover:border-primary/40")}>
+                    <input
+                      type="checkbox"
+                      checked={active}
+                      onChange={() => {
+                        setExtraServices((prev) => {
+                          const next = { ...prev };
+                          if (next[s.key]) delete next[s.key];
+                          else next[s.key] = { label: s.label, priceSen: s.defaultPriceSen };
+                          return next;
+                        });
+                      }}
+                      className="h-4 w-4 accent-emerald-600"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium truncate">{s.label}</div>
+                      <div className="text-[11px] text-muted-foreground">{s.family} · {s.typicalInterval}</div>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-muted-foreground">RM</span>
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        disabled={!active}
+                        value={active ? (added.priceSen / 100).toFixed(2) : (s.defaultPriceSen / 100).toFixed(2)}
+                        onChange={(ev) => {
+                          const v = Math.max(0, Math.round(Number(ev.target.value) * 100));
+                          setExtraServices((prev) => ({ ...prev, [s.key]: { label: s.label, priceSen: isNaN(v) ? 0 : v } }));
+                        }}
+                        className="w-16 rounded-md border bg-background px-1.5 py-1 text-right text-sm tabular-nums disabled:opacity-40"
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <section className="rounded-2xl border bg-card p-5">
+          <h3 className="font-semibold mb-3">5 · Assign Mechanic</h3>
           <Select value={mechanicId} onValueChange={(v) => setMechanicId(v ?? "")}>
             <SelectTrigger className="mt-1.5 max-w-sm"><SelectValue placeholder="Assign later" /></SelectTrigger>
             <SelectContent>

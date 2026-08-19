@@ -8,7 +8,7 @@ export default async function NewJobPage({ searchParams }: { searchParams: Promi
   const { customer } = await searchParams;
   const [customers, motorcycles, packages, mechanics] = await Promise.all([
     db.customer.findMany({ select: { id: true, name: true, phone: true }, orderBy: { name: "asc" } }),
-    db.motorcycle.findMany({ select: { id: true, customerId: true, brand: true, model: true, plate: true, year: true, currentMileage: true } }),
+    db.motorcycle.findMany({ select: { id: true, customerId: true, brand: true, model: true, plate: true, year: true, type: true, currentMileage: true } }),
     db.servicePackage.findMany({ where: { active: true }, select: { id: true, name: true, tier: true, priceSen: true, isBestValue: true, description: true }, orderBy: { priceSen: "asc" } }),
     db.user.findMany({ where: { role: { in: ["MECHANIC", "MANAGER"] }, active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } }),
   ]);
