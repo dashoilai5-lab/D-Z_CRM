@@ -33,10 +33,12 @@ export default function PreviewPage() {
 
   const src = useMemo(() => page, [page]);
 
-  // apply cookies for the iframe (same-origin) so the rider app renders the right persona + lang
+  // apply cookies for the iframe (same-origin) so the rider app renders the right persona + lang,
+  // and hide the amber demo bar inside the frame for a full-page view
   useEffect(() => {
     document.cookie = "dz_demo_persona=" + persona + "; path=/";
     document.cookie = "dz_lang=" + lang + "; path=/";
+    document.cookie = "dz_hide_demo=1; path=/";
     setFrameKey((k) => k + 1); // reload frame with new cookies
   }, [persona, lang]);
 
@@ -119,8 +121,8 @@ export default function PreviewPage() {
 
       {/* hint */}
       <p className="mt-6 text-[11px] text-white/40 max-w-md text-center">
-        The frame embeds the live rider app (same origin, cookies shared). Switch page / device / persona / language to inspect each state.
-        The amber demo bar inside the frame is part of the prototype.
+        The frame embeds the live rider app (same origin, cookies shared). The amber demo bar is hidden here for a full-page view —
+        it appears in real browsing only. Switch page / device / persona / language to inspect each state.
       </p>
     </div>
   );
