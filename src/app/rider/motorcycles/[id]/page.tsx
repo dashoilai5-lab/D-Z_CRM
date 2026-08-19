@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 import { fmtKM, fmtDate } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { motorcycleTypeInfo } from "@/lib/motorcycle-types";
+import { EditMotorcycle } from "@/components/rider/edit-motorcycle";
 
 /** Consumable wear: 0-100 progress from last replacement to the recommended interval. */
 function wearProgress(currentKm: number, lastKm: number | null, intervalKm: number): number {
@@ -69,6 +70,12 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
         <Link href="/rider/book" className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground">
           <CalendarPlus className="h-4 w-4" /> BOOK SERVICE
         </Link>
+        <div className="mt-2 flex justify-center">
+          <EditMotorcycle
+            motorcycleId={passport.id}
+            initial={{ brand: passport.brand, model: passport.model, year: passport.year, type: passport.type, color: passport.color, currentMileage: passport.currentMileage }}
+          />
+        </div>
       </div>
 
       <div className="rounded-2xl border bg-card p-4">

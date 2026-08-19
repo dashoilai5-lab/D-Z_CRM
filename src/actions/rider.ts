@@ -98,3 +98,27 @@ export async function addMotorcycle(input: {
   revalidatePath("/", "layout");
   return { ok: true };
 }
+
+export async function updateMotorcycle(input: {
+  motorcycleId: string;
+  brand: string;
+  model: string;
+  year: number;
+  type: string;
+  color?: string;
+  currentMileage: number;
+}) {
+  await db.motorcycle.update({
+    where: { id: input.motorcycleId },
+    data: {
+      brand: input.brand.trim(),
+      model: input.model.trim(),
+      year: input.year,
+      type: input.type,
+      color: input.color || null,
+      currentMileage: input.currentMileage,
+    },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
