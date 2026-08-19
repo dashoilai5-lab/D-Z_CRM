@@ -23,8 +23,8 @@ test.describe("sidebar top spacing", () => {
       const nav = document.querySelector("aside nav")!.getBoundingClientRect();
       return { logoToUser: Math.round(user.top - link.bottom), userToNav: Math.round(nav.top - user.bottom) };
     });
-    expect(gap.logoToUser).toBeGreaterThanOrEqual(8);
-    expect(gap.userToNav).toBeGreaterThanOrEqual(8);
+    expect(gap.logoToUser).toBeGreaterThanOrEqual(16);
+    expect(gap.userToNav).toBeGreaterThanOrEqual(16);
     await ctx.close();
   });
 });
