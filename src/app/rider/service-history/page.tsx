@@ -3,18 +3,24 @@ import { getDemoCustomer } from "@/lib/demo-customer";
 import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
 import { fmtKM } from "@/lib/format";
+import { ReviewCard } from "@/components/rider/review-card";
 
 export const dynamic = "force-dynamic";
 
 export default async function RiderHistoryPage() {
   const customer = await getDemoCustomer();
   if (!customer) return null;
-  const jobs = await db.serviceJob.findMany({
-    where: { customerId: customer.id, status: "COMPLETED" },
-    include: { invoice: true, items: true, parts: { include: { product: true } }, mechanic: true, motorcycle: true },
-    orderBy: { completedAt: "desc" },
-  });
+  const [jobs, branch] = await Promise.all([
+    db.serviceJob.findMany({
+      where: { customerId: customer.id, status: "COMPLETED" },
+      include: { invoice: true, items: true, parts: { include: { product: true } }, mechanic: true, motorcycle: true },
+      orderBy: { completedAt: "desc" },
+    }),
+    db.branch.findFirst({ where: { isMain: true } }),
+  ]);
   const lifetime = jobs.reduce((s, j) => s + (j.invoice?.totalSen ?? 0), 0);
+  const reviews = await db.review.findMany({ where: { customerId: customer.id, jobId: { not: null } }, select: { jobId: true, rating: true } });
+  const ratingByJob = new Map(reviews.filter((r) => r.jobId).map((r) => [r.jobId!, r.rating]));
 
   return (
     <div className="space-y-4">
@@ -42,6 +48,9 @@ export default async function RiderHistoryPage() {
               <span>D&Z Smart Workshop · {j.mechanic?.name ?? ""}</span>
               <Link href={j.invoice ? "/rider/invoices" : "#"} className="font-bold text-foreground tabular-nums hover:text-primary">{formatRM(j.invoice?.totalSen ?? 0)}</Link>
             </div>
+            {branch && (
+              <ReviewCard customerId={customer.id} branchId={branch.id} jobId={j.id} existingRating={ratingByJob.get(j.id) ?? null} />
+            )}
           </div>
         ))}
         {jobs.length === 0 && <p className="text-sm text-muted-foreground text-center py-10">No service history yet.</p>}

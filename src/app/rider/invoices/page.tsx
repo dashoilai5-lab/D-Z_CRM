@@ -9,7 +9,7 @@ export default async function RiderInvoicesPage() {
   if (!customer) return null;
   const invoices = await db.invoice.findMany({
     where: { customerId: customer.id },
-    include: { items: true, job: { include: { motorcycle: true } } },
+    include: { items: true, payments: true, job: { include: { motorcycle: true } } },
     orderBy: { issuedAt: "desc" },
   });
 
@@ -35,6 +35,12 @@ export default async function RiderInvoicesPage() {
               <div className="flex justify-between border-t pt-1.5 mt-1.5 font-bold">
                 <span>TOTAL</span><span className="tabular-nums">{formatRM(inv.totalSen)}</span>
               </div>
+              {inv.payments.length > 0 && (
+                <div className="mt-2.5 flex items-center justify-between rounded-lg bg-emerald-50 px-2.5 py-1.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-100">
+                  <span>Paid · {inv.payments[0].method}</span>
+                  <span>{inv.payments[0].paidAt ? inv.payments[0].paidAt.toLocaleDateString("en-MY", { day: "2-digit", month: "short", year: "numeric" }) : "—"}</span>
+                </div>
+              )}
             </div>
           </div>
         ))}

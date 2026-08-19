@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { initials } from "@/lib/format";
@@ -8,10 +10,11 @@ export const dynamic = "force-dynamic";
 export default async function RiderProfilePage() {
   const customer = await getDemoCustomer();
   if (!customer) return null;
-  const [visits, reviews, notifications] = await Promise.all([
+  const [visits, reviews, notifications, messages] = await Promise.all([
     db.serviceJob.count({ where: { customerId: customer.id, status: "COMPLETED" } }),
     db.review.count({ where: { customerId: customer.id } }),
     db.notification.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" }, take: 5 }),
+    db.message.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" }, take: 8 }),
   ]);
   return (
     <div className="space-y-5">
@@ -32,7 +35,12 @@ export default async function RiderProfilePage() {
         </div>
       </div>
       <div>
-        <h2 className="font-semibold mb-2">Notifications</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-semibold">Notifications</h2>
+          <Link href="/rider/notifications" className="inline-flex items-center gap-0.5 text-xs font-medium text-primary">
+            View all <ChevronRight className="h-3.5 w-3.5" />
+          </Link>
+        </div>
         <div className="space-y-2">
           {notifications.map((n) => (
             <div key={n.id} className="rounded-xl border bg-card p-3 text-sm">
@@ -43,6 +51,30 @@ export default async function RiderProfilePage() {
           {notifications.length === 0 && <p className="text-sm text-muted-foreground">No notifications.</p>}
         </div>
       </div>
+      {messages.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="font-semibold">Messages</h2>
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" /> WhatsApp
+            </span>
+          </div>
+          <div className="space-y-2">
+            {messages.map((m) => (
+              <div key={m.id} className="rounded-xl border bg-card p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-semibold text-muted-foreground">
+                    {m.direction === "IN" ? "You" : "D&Z Smart Workshop"} · {m.channel}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground/70">{m.createdAt.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}</span>
+                </div>
+                <p className="mt-1 text-sm">{m.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <p className="text-center text-[11px] text-muted-foreground pt-2">D&Z Rider · demo persona: Customer (Ahmad Danial)</p>
     </div>
   );
