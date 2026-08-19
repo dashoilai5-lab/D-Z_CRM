@@ -1,6 +1,8 @@
 // D&Z demo seed — deterministic, anchored to today (18 Aug 2026).
 // Usage: pnpm db:seed  |  UI "RESET DEMO DATA" |  pnpm db:reset
 import { PrismaClient } from "@prisma/client";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 const prisma = new PrismaClient();
 
@@ -774,8 +776,11 @@ export async function runSeed(): Promise<Record<string, number>> {
   }
   const months = ["2026-05", "2026-06", "2026-07", "2026-08", "2026-09"];
   const posterTitles = ["Servis Musim Ini", "Check Before Raya", "Standard RM120", "Premium Best Value", "Tyre Safety Week", "Oil Change Reminder", "Chain & Sprocket", "Battery Health", "Student Promo", "Weekend Wash", "Brake Check", "Returning Rider"];
+  // demo poster images (public/posters/*.png) mapped to the first 10 titles
+  const posterFiles = fs.readdirSync(path.join(__dirname, "../../public/posters")).filter((f: string) => f.endsWith(".png")).sort();
   for (const [i, t] of posterTitles.entries()) {
-    await prisma.marketingAsset.create({ data: { branchId: kl.id, title: t, type: pick(["POSTER", "POSTER", "REEL", "STORY"]), month: months[i % months.length], description: "AI-generated poster pack — " + t + "." } });
+    const url = posterFiles[i % posterFiles.length] ? "/posters/" + posterFiles[i % posterFiles.length] : null;
+    await prisma.marketingAsset.create({ data: { branchId: kl.id, title: t, type: "POSTER", month: months[i % months.length], description: "AI-generated poster pack — " + t + ".", url } });
   }
   const scriptHooks = [
     ["5 Tanda Moto Perlu Servis", "TIKTOK"], ["Servis RM120 je?", "REELS"], ["Cara Check Rantai Sendiri", "TIKTOK"],
