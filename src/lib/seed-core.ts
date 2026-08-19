@@ -27,16 +27,18 @@ const FIRST = ["Ahmad", "Muhammad", "Nurul", "Aisyah", "Hafiz", "Farah", "Syafiq
 const LAST = ["bin Abdullah", "bin Ismail", "bin Hassan", "bin Osman", "binti Ahmad", "bin Rahman", "bin Yusof", "binti Salleh", "a/l Raju", "a/l Kumar", "a/p Lee", "a/l Tan", "bin Ramli", "bin Bakar", "a/p Wong", "bin Hamid", "binti Zain", "bin Karim", "a/p Devi", "bin Omar", "bin Saad", "binti Hashim", "bin Aziz", "bin Khalid", "a/p Chong"];
 const PHONE_PRE = ["012", "013", "014", "016", "017", "018", "019", "011"];
 const PLATE_PRE = ["WXY", "JKL", "BQE", "WWW", "VLL", "PRH", "JMR", "JQY", "KFX", "BSS", "WUL", "VKM"];
-const BIKE_MODELS: [string, string, number][] = [
-  ["Yamaha", "Y15ZR", 2019], ["Yamaha", "Y16ZR", 2021], ["Yamaha", "LC135", 2018], ["Yamaha", "EX5", 2015],
-  ["Yamaha", "NMAX155", 2022], ["Yamaha", "XMAX250", 2023], ["Honda", "RS150R", 2020], ["Honda", "EX5 Dream", 2017],
-  ["Honda", "PCX160", 2022], ["Honda", "C70", 2014], ["Honda", "WAVE125", 2019], ["Modenas", "KRV150", 2023],
-  ["Modenas", "Elegan 150", 2016], ["Modenas", "Pulsar NS200", 2021], ["Kawasaki", "Ninja 250", 2019],
-  ["Kawasaki", "Z900RS", 2023], ["Suzuki", "GSX-R150", 2021], ["Suzuki", "AVG125", 2020], ["KTM", "Duke 200", 2022],
-  ["Benelli", "TNT15", 2018], ["Vespa", "Primavera 150", 2022], ["Yamaha", "FZ150i", 2019], ["Honda", "Scoopy", 2021],
-  ["SYM", "VTS200", 2017],
+// [brand, model, year, motorcycleTypeKey] — type aligned to lib/motorcycle-types (market taxonomy 2026)
+const BIKE_MODELS: [string, string, number, string][] = [
+  ["Yamaha", "Y15ZR", 2019, "UNDERBONE"], ["Yamaha", "Y16ZR", 2021, "UNDERBONE"], ["Yamaha", "LC135", 2018, "UNDERBONE"], ["Yamaha", "EX5", 2015, "UNDERBONE"],
+  ["Yamaha", "NMAX155", 2022, "SCOOTER"], ["Yamaha", "XMAX250", 2023, "PREMIUM_SCOOTER"], ["Honda", "RS150R", 2020, "UNDERBONE"], ["Honda", "EX5 Dream", 2017, "UNDERBONE"],
+  ["Honda", "PCX160", 2022, "SCOOTER"], ["Honda", "C70", 2014, "MODERN_CLASSIC"], ["Honda", "WAVE125", 2019, "UNDERBONE"], ["Modenas", "KRV150", 2023, "SCOOTER"],
+  ["Modenas", "Elegan 150", 2016, "PREMIUM_SCOOTER"], ["Modenas", "Pulsar NS200", 2021, "NAKED"], ["Kawasaki", "Ninja 250", 2019, "SPORT"],
+  ["Kawasaki", "Z900RS", 2023, "NAKED"], ["Suzuki", "GSX-R150", 2021, "SPORT"], ["Suzuki", "AVG125", 2020, "SCOOTER"], ["KTM", "Duke 200", 2022, "NAKED"],
+  ["Benelli", "TNT15", 2018, "NAKED"], ["Vespa", "Primavera 150", 2022, "SCOOTER"], ["Yamaha", "FZ150i", 2019, "NAKED"], ["Honda", "Scoopy", 2021, "LIFESTYLE_CUB"],
+  ["SYM", "VTS200", 2017, "SCOOTER"],
 ];
-const SERVICE_TYPES = ["Standard Service", "Premium Service", "Tyre Change", "Brake Service", "Engine Overhaul", "Battery Replacement", "Chain & Sprocket", "General Checkup"];
+// Service labels aligned to lib/service-catalog (market taxonomy 2026) — booking serviceType strings
+const SERVICE_TYPES = ["Engine Oil Change", "Oil Filter Replacement", "CVT Service (Belt & Rollers)", "Chain & Sprocket Service", "Tyre Replacement", "Brake Pad Replacement", "Brake Fluid Flush", "Battery Test / Replacement", "Air Filter Service", "Spark Plug Replacement", "Coolant Replacement", "General Checkup"];
 
 // product table: [name, sku, category, brand, sellRM, costRM, minStock, leadDays, supplierIdx]
 const PRODUCTS: [string, string, string, string, number, number, number, number, number][] = [
@@ -260,7 +262,7 @@ export async function runSeed(): Promise<Record<string, number>> {
   const customers: { id: string; name: string; phone: string; joined: Date }[] = [];
   const usedPhones = new Set<string>();
   const usedPlates = new Set<string>();
-  const bikeIds: { id: string; customerId: string; brand: string; model: string; plate: string; year: number; mileage: number }[] = [];
+  const bikeIds: { id: string; customerId: string; brand: string; model: string; plate: string; year: number; type: string; mileage: number }[] = [];
   const makePhone = () => {
     let p = pick(PHONE_PRE) + "-" + int(100, 999) + " " + int(1000, 9999);
     while (usedPhones.has(p)) p = pick(PHONE_PRE) + "-" + int(100, 999) + " " + int(1000, 9999);
@@ -300,7 +302,7 @@ export async function runSeed(): Promise<Record<string, number>> {
   });
   const ahmadBike = await prisma.motorcycle.create({
     data: {
-      customerId: ahmad.id, brand: "Yamaha", model: "Y15ZR", year: 2019, plate: "WXY 8812",
+      customerId: ahmad.id, brand: "Yamaha", model: "Y15ZR", year: 2019, type: "UNDERBONE", plate: "WXY 8812",
       color: "Black", vin: "MH3RG15V0KJ0" + int(10000, 99999),
       currentMileage: 31800,
       lastServiceDate: daysAgo(92), lastServiceMileage: 28500,
@@ -308,7 +310,7 @@ export async function runSeed(): Promise<Record<string, number>> {
       nextServiceMileage: 31500, nextServiceEstDate: daysAgo(0),
     },
   });
-  bikeIds.push({ id: ahmadBike.id, customerId: ahmad.id, brand: "Yamaha", model: "Y15ZR", plate: "WXY 8812", year: 2019, mileage: 31800 });
+  bikeIds.push({ id: ahmadBike.id, customerId: ahmad.id, brand: "Yamaha", model: "Y15ZR", plate: "WXY 8812", year: 2019, type: "UNDERBONE", mileage: 31800 });
   customers.push({ id: ahmad.id, name: "Ahmad Danial", phone: "012-345 6789", joined: new Date(2019, 2, 14) });
   await prisma.customerAuthProfile.create({ data: { customerId: ahmad.id, pin: "1234", phoneVerified: true } });
 
@@ -317,18 +319,18 @@ export async function runSeed(): Promise<Record<string, number>> {
     let cand = customers[int(0, customers.length - 1)];
     while (cand.id === ahmad.id) cand = customers[int(0, customers.length - 1)];
     const cust = cand;
-    const [brand, model, year] = pick(BIKE_MODELS);
+    const [brand, model, year, typeKey] = pick(BIKE_MODELS);
     const mileage = int(500, 52000);
     const m = await prisma.motorcycle.create({
       data: {
-        customerId: cust.id, brand, model, year, plate: makePlate(),
+        customerId: cust.id, brand, model, year, type: typeKey, plate: makePlate(),
         color: pick(["Black", "Red", "Blue", "White", "Grey", "Silver"]),
         currentMileage: mileage,
         lastServiceMileage: Math.max(0, mileage - int(0, 5000)),
         nextServiceMileage: mileage + 3000,
       },
     });
-    bikeIds.push({ id: m.id, customerId: cust.id, brand, model, plate: m.plate, year, mileage });
+    bikeIds.push({ id: m.id, customerId: cust.id, brand, model, plate: m.plate, year, type: typeKey, mileage });
   }
   // a few customers with 2-3 bikes (never Ahmad — demo customer keeps exactly 1)
   for (let i = 0; i < 5; i++) {
@@ -336,11 +338,11 @@ export async function runSeed(): Promise<Record<string, number>> {
     while (cand.id === ahmad.id) cand = customers[int(0, customers.length - 1)];
     const cust = cand;
     for (let k = 0; k < int(1, 2); k++) {
-      const [brand, model, year] = pick(BIKE_MODELS);
+      const [brand, model, year, typeKey] = pick(BIKE_MODELS);
       const m = await prisma.motorcycle.create({
-        data: { customerId: cust.id, brand, model, year, plate: makePlate(), color: pick(["Black", "Red", "Blue"]), currentMileage: int(500, 20000) },
+        data: { customerId: cust.id, brand, model, year, type: typeKey, plate: makePlate(), color: pick(["Black", "Red", "Blue"]), currentMileage: int(500, 20000) },
       });
-      bikeIds.push({ id: m.id, customerId: cust.id, brand, model, plate: m.plate, year, mileage: m.currentMileage });
+      bikeIds.push({ id: m.id, customerId: cust.id, brand, model, plate: m.plate, year, type: typeKey, mileage: m.currentMileage });
     }
   }
 

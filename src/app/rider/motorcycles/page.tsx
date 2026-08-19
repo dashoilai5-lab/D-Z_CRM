@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Bike, ChevronRight, Plus } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
 import { fmtKM } from "@/lib/format";
+import { motorcycleTypeInfo } from "@/lib/motorcycle-types";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,9 @@ export default async function MyMotorcyclesPage() {
             <div className="flex-1">
               <div className="font-semibold">{m.brand} {m.model}</div>
               <div className="text-xs text-muted-foreground">{m.plate} · {m.year} · {fmtKM(m.currentMileage)}</div>
+              {(() => { const ti = motorcycleTypeInfo(m.type); return ti ? (
+                <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">{ti.label}</span>
+              ) : null; })()}
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           </Link>

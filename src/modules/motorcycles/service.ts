@@ -17,7 +17,7 @@ export class MotorcycleService {
     const m = await this.repo.getById(motorcycleId);
     if (!m) return null;
     return {
-      id: m.id, brand: m.brand, model: m.model, year: m.year, plate: m.plate, color: m.color, vin: m.vin,
+      id: m.id, brand: m.brand, model: m.model, year: m.year, plate: m.plate, color: m.color, vin: m.vin, type: m.type,
       currentMileage: m.currentMileage,
       lastServiceDate: m.lastServiceDate, lastServiceMileage: m.lastServiceMileage,
       lastOilChangeMileage: m.lastOilChangeMileage, lastOilFilterMileage: m.lastOilFilterMileage,

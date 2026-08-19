@@ -5,6 +5,7 @@ import { motorcycleService } from "@/modules/motorcycles/service";
 import { db } from "@/lib/db";
 import { fmtKM, fmtDate } from "@/lib/format";
 import { formatRM } from "@/lib/money";
+import { motorcycleTypeInfo } from "@/lib/motorcycle-types";
 
 /** Consumable wear: 0-100 progress from last replacement to the recommended interval. */
 function wearProgress(currentKm: number, lastKm: number | null, intervalKm: number): number {
@@ -46,6 +47,9 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
         <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><ShieldCheck className="h-7 w-7" /></div>
         <h1 className="mt-3 text-xl font-bold uppercase">D&Z Rider Passport</h1>
         <p className="mt-1 font-semibold">{passport.brand} {passport.model}</p>
+        {(() => { const ti = motorcycleTypeInfo(passport.type); return ti ? (
+          <p className="mt-1 text-[11px] font-medium text-primary">{ti.label} · {ti.labelBM}</p>
+        ) : null; })()}
         <p className="text-sm text-muted-foreground">{passport.plate} · {passport.year}{passport.color ? " · " + passport.color : ""}</p>
         <p className="mt-2 text-lg font-bold tabular-nums">{fmtKM(passport.currentMileage)}</p>
         <div className="mt-5 grid grid-cols-3 gap-2">
