@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { marketingService } from "@/modules/marketing/service";
+import { messagingProvider } from "@/providers";
 import { db } from "@/lib/db";
 
 async function mainBranchId() {
@@ -62,6 +63,7 @@ export async function createPoster(input: {
   type?: string;
   month?: string;
   description?: string;
+  url?: string;
 }) {
   const branchId = await mainBranchId();
   await marketingService.createAsset({
@@ -70,6 +72,7 @@ export async function createPoster(input: {
     type: input.type ?? "POSTER",
     month: input.month ?? null,
     description: input.description ?? null,
+    url: input.url ?? null,
   });
   revalidatePath("/", "layout");
   return { ok: true };
@@ -105,4 +108,49 @@ export async function replyToReview(reviewId: string, reply: string) {
   await db.review.update({ where: { id: reviewId }, data: { reply, repliedAt: new Date(), status: "PUBLISHED" } });
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+/** Resolve the customers a campaign audience maps to. */
+async function audienceCustomers(audience: string | null): Promise<{ id: string; name: string; phone: string | null }[]> {
+  const all = await db.customer.findMany({ where: { phone: { not: null } }, select: { id: true, name: true, phone: true, joinedAt: true } });
+  if (!audience || audience === "ALL") return all;
+  if (audience === "NEW") {
+    return all.filter((c) => new Date(c.joinedAt) > new Date(Date.now() - 30 * 86400000));
+  }
+  // reminder-based audiences: OVERDUE / 30_DAYS / 60_DAYS
+  const statuses = audience === "OVERDUE" ? ["DUE", "OVERDUE"] : ["UPCOMING", "DUE_SOON", "DUE", "OVERDUE"];
+  const reminded = await db.serviceReminder.findMany({ where: { status: { in: statuses as never } }, select: { customerId: true } });
+  const ids = new Set(reminded.map((r) => r.customerId));
+  return all.filter((c) => ids.has(c.id));
+}
+
+/** One-click WhatsApp broadcast to a campaign's audience. Persists messages linked to the campaign. */
+export async function broadcastCampaign(input: { campaignId: string; message?: string }) {
+  const campaign = await db.campaign.findUnique({ where: { id: input.campaignId } });
+  if (!campaign) throw new Error("Campaign not found");
+  const org = await db.organisation.findFirst();
+  const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
+
+  const customers = await audienceCustomers(campaign.audience);
+  const body = input.message?.trim() || "Hi, " + campaign.name + " is on now at D&Z Smart Workshop" + (campaign.discountPercent ? " — save " + campaign.discountPercent + "%!" : " — book your service today!");
+  let sent = 0;
+  for (const c of customers) {
+    const result = await messagingProvider.send(c.phone ?? c.name, body);
+    await db.message.create({
+      data: {
+        organisationId: org!.id,
+        branchId: branch?.id,
+        customerId: c.id,
+        direction: "OUT",
+        channel: "WHATSAPP",
+        body,
+        status: result.status,
+        referenceType: "CAMPAIGN",
+        referenceId: campaign.id,
+      },
+    });
+    sent++;
+  }
+  revalidatePath("/", "layout");
+  return { ok: true, sent, audience: customers.length };
 }

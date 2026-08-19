@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { CampaignForm } from "@/components/workshop/marketing-forms";
 import { CampaignActions } from "@/components/workshop/campaign-actions";
+import { BroadcastButton } from "@/components/workshop/broadcast-button";
 import { PromoCalendarGrid, type CalendarCampaign } from "@/components/workshop/promo-calendar-grid";
 import { isPromoActive } from "@/modules/marketing/promo";
 
@@ -24,11 +25,14 @@ export default async function MarketingCalendarPage() {
   const dueCustomers = await db.serviceReminder.count({ where: { status: { in: ["UPCOMING", "DUE_SOON", "DUE", "OVERDUE"] } } });
   // conversions: bookings attributed to each campaign
   const bookingsByCampaign = await db.booking.groupBy({ by: ["campaignId"], where: { campaignId: { not: null } }, _count: true });
+  // broadcast count per campaign
+  const msgsByCampaign = await db.message.groupBy({ by: ["referenceId"], where: { referenceType: "CAMPAIGN", referenceId: { not: null } }, _count: true });
 
   const order = { ACTIVE: 0, SCHEDULED: 1, DRAFT: 2, ENDED: 3 } as const;
   const sorted = [...campaigns].sort((a, b) => (order[a.status as keyof typeof order] ?? 9) - (order[b.status as keyof typeof order] ?? 9) || a.startDate.getTime() - b.startDate.getTime());
   const activePromos = campaigns.filter((c) => isPromoActive(c as never));
   const convMap = new Map(bookingsByCampaign.map((b) => [b.campaignId, b._count]));
+  const msgMap = new Map(msgsByCampaign.map((m) => [m.referenceId, m._count]));
   const calendarCampaigns: CalendarCampaign[] = campaigns.map((c) => ({
     id: c.id, name: c.name, type: c.type, status: c.status, startDate: c.startDate, endDate: c.endDate,
     discountPercent: c.discountPercent, conversions: convMap.get(c.id) ?? 0,
@@ -55,6 +59,7 @@ export default async function MarketingCalendarPage() {
                 <CampaignForm
                   initial={{ id: c.id, name: c.name, type: c.type, status: c.status, audience: c.audience ?? null, startDate: c.startDate, endDate: c.endDate, discountPercent: c.discountPercent }}
                 />
+                <BroadcastButton campaignId={c.id} sentCount={msgMap.get(c.id) ?? 0} />
                 <CampaignActions id={c.id} status={c.status} />
               </div>
               {/* reach + conversion */}

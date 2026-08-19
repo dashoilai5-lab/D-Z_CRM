@@ -71,9 +71,16 @@ export default async function RiderPromotionsPage() {
           <div className="grid grid-cols-2 gap-3">
             {g.items.map((a) => (
               <div key={a.id} className="overflow-hidden rounded-2xl border bg-card">
-                <div className={"aspect-[3/4] bg-gradient-to-br flex items-center justify-center " + g.meta.grad}>
-                  <g.meta.icon className="h-8 w-8 text-white/80" />
-                </div>
+                {a.url ? (
+                  <div className="aspect-[3/4] bg-muted overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={a.url} alt={a.title} className="h-full w-full object-cover" />
+                  </div>
+                ) : (
+                  <div className={"aspect-[3/4] bg-gradient-to-br flex items-center justify-center " + g.meta.grad}>
+                    <g.meta.icon className="h-8 w-8 text-white/80" />
+                  </div>
+                )}
                 <div className="p-3">
                   <div className="text-sm font-semibold truncate">{a.title}</div>
                   <div className="mt-0.5 text-[11px] text-muted-foreground">{a.month ?? ""}</div>

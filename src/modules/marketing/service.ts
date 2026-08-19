@@ -18,6 +18,7 @@ export interface CreateAssetInput {
   type?: string;
   month?: string | null;
   description?: string | null;
+  url?: string | null;
 }
 
 export interface CreateScriptInput {
@@ -40,7 +41,7 @@ export class MarketingService {
     ]);
     return {
       campaigns: campaigns.map((c) => ({ id: c.id, name: c.name, type: c.type, status: c.status, audience: c.audience, discountPercent: c.discountPercent, startDate: c.startDate, endDate: c.endDate, branch: c.branch.city })),
-      assets: assets.map((a) => ({ id: a.id, title: a.title, type: a.type, month: a.month, description: a.description })),
+      assets: assets.map((a) => ({ id: a.id, title: a.title, type: a.type, month: a.month, description: a.description, url: a.url })),
       scripts: scripts.map((s) => ({ id: s.id, title: s.title, platform: s.platform, hook: s.hook, body: s.body, tone: s.tone })),
     };
   }
@@ -65,6 +66,7 @@ export class MarketingService {
       type: input.type ?? "POSTER",
       month: input.month ?? null,
       description: input.description ?? null,
+      url: input.url ?? null,
     });
   }
 

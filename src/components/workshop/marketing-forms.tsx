@@ -99,7 +99,7 @@ export function CampaignForm({ initial, onDone }: { initial?: CampaignDraft; onD
 
 export function PosterForm() {
   const { pending, open, setOpen, run } = useForm();
-  const [title, setTitle] = useState(""); const [month, setMonth] = useState(""); const [description, setDescription] = useState("");
+  const [title, setTitle] = useState(""); const [month, setMonth] = useState(""); const [description, setDescription] = useState(""); const [url, setUrl] = useState("");
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
@@ -113,12 +113,13 @@ export function PosterForm() {
         <div className="space-y-3 py-2">
           <div><Label>Title</Label><Input data-testid="poster-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Servis Musim Ini" className="mt-1.5" /></div>
           <div><Label>Month</Label><Input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="mt-1.5" /></div>
+          <div><Label>Image URL (optional)</Label><Input data-testid="poster-url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…/poster.png — real image replaces the placeholder" className="mt-1.5" /></div>
           <div><Label>Description</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short tagline for the poster" className="mt-1.5" rows={3} /></div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
           <Button data-testid="poster-submit" disabled={!title || pending} onClick={() => run(
-            () => createPoster({ title, month: month || undefined, description: description || undefined }),
+            () => createPoster({ title, month: month || undefined, description: description || undefined, url: url || undefined }),
             "Poster added"
           )}>Add Poster</Button>
         </DialogFooter>
