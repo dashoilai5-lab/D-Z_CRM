@@ -6,8 +6,15 @@ import { useState } from "react";
 import { Bike } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navForPersona } from "@/lib/nav-registry";
+import { t, type Lang } from "@/lib/i18n";
 import type { DemoUserInfo } from "@/lib/demo-user";
 import type { DemoPersona } from "@/lib/persona";
+
+/** Map a section label (e.g. "AI CENTRE") to its i18n key. */
+function sectionKey(section: string): string {
+  const map: Record<string, string> = { "AI CENTRE": "sec.ai", "CUSTOMERS": "sec.customers", "WORKSHOP": "sec.workshop", "MARKETING": "sec.marketing", "STAFF": "sec.staff", "INVENTORY": "sec.inventory", "FINANCE": "sec.finance" };
+  return map[section] ?? "sec." + section.toLowerCase();
+}
 
 /** Active if the pathname equals the nav href or lives under it (detail pages highlight their section). */
 function isActive(pathname: string, href: string): boolean {
@@ -16,7 +23,7 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href + "/");
 }
 
-export function Sidebar({ persona, user }: { persona: DemoPersona; user?: DemoUserInfo | null }) {
+export function Sidebar({ persona, user, lang = "en" }: { persona: DemoPersona; user?: DemoUserInfo | null; lang?: Lang }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
   const sections = navForPersona(persona);
@@ -55,10 +62,11 @@ export function Sidebar({ persona, user }: { persona: DemoPersona; user?: DemoUs
       <nav className={cn("flex-1 pb-4", expanded ? "pt-0 px-3 space-y-5" : "pt-0 px-2 space-y-2")}>
         {sections.map((group, gi) => (
           <div key={gi}>
-            {group.section && expanded && <div className="px-2 mb-1.5 text-[10px] font-semibold tracking-wider text-sidebar-foreground/40">{group.section}</div>}
+            {group.section && expanded && <div className="px-2 mb-1.5 text-[10px] font-semibold tracking-wider text-sidebar-foreground/40">{t(sectionKey(group.section), lang)}</div>}
             <div className="space-y-0.5">
               {group.items.map((item) => {
                 const active = isActive(pathname, item.href);
+                const label = item.labelKey ? t(item.labelKey, lang) : item.label;
                 return (
                   <Link
                     key={item.key}
@@ -75,7 +83,7 @@ export function Sidebar({ persona, user }: { persona: DemoPersona; user?: DemoUs
                   >
                     {active && <span className={cn("absolute top-1/2 -translate-y-1/2 h-3.5 w-1 rounded-full bg-sidebar-primary-foreground/80", expanded ? "left-1" : "left-0.5")} aria-hidden />}
                     <item.icon className="h-5 w-5 shrink-0" />
-                    <span className={cn("truncate transition-opacity duration-200", expanded ? "opacity-100" : "opacity-0 w-0")}>{item.label}</span>
+                    <span className={cn("truncate transition-opacity duration-200", expanded ? "opacity-100" : "opacity-0 w-0")}>{label}</span>
                   </Link>
                 );
               })}

@@ -9,9 +9,11 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { setPersona, resetDemo } from "@/actions/demo";
 import { ThemeControls } from "@/components/shared/theme-controls";
+import { LanguageToggle } from "@/components/shared/language-toggle";
 import { DEMO_PERSONAS, PERSONA_LABEL, type DemoPersona } from "@/lib/persona";
+import { t, type Lang } from "@/lib/i18n";
 
-export function DemoBar({ persona, compact = false }: { persona: DemoPersona; compact?: boolean }) {
+export function DemoBar({ persona, compact = false, lang = "en" }: { persona: DemoPersona; compact?: boolean; lang?: Lang }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
@@ -19,9 +21,9 @@ export function DemoBar({ persona, compact = false }: { persona: DemoPersona; co
     <div className="sticky top-0 z-40 border-b bg-amber-50/90 backdrop-blur print:hidden dark:bg-amber-950/70 dark:border-amber-900/40">
       <div className={`mx-auto flex items-center gap-2 px-3 md:px-6 ${compact ? "h-10" : "h-11"}`}>
         <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-500/30 dark:bg-amber-400/15 dark:text-amber-300 dark:ring-amber-400/30">
-          <FlaskConical className="h-3 w-3" /> DEMO MODE
+          <FlaskConical className="h-3 w-3" /> {t("demo.mode", lang)}
         </span>
-        <span className="text-xs text-muted-foreground hidden sm:inline">DEMO AS</span>
+        <span className="text-xs text-muted-foreground hidden sm:inline">{t("demo.as", lang)}</span>
         <Select
           value={persona}
           onValueChange={(v) => startTransition(async () => { await setPersona(v as DemoPersona); router.refresh(); toast.success("Switched to " + PERSONA_LABEL[v as DemoPersona]); })}
@@ -31,15 +33,16 @@ export function DemoBar({ persona, compact = false }: { persona: DemoPersona; co
           </SelectTrigger>
           <SelectContent>
             {DEMO_PERSONAS.map((p) => (
-              <SelectItem key={p} value={p}>{PERSONA_LABEL[p]}</SelectItem>
+              <SelectItem key={p} value={p}>{t("persona." + p, lang)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
         <div className="flex-1" />
+        <div className="hidden sm:block"><LanguageToggle lang={lang} compact /></div>
         <ThemeControls compact />
         <AlertDialog>
           <AlertDialogTrigger data-testid="reset-demo" className="inline-flex h-7 items-center gap-1 rounded-md border border-input bg-white px-2.5 text-xs font-medium transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-50 dark:bg-background">
-            <RefreshCcw className="h-3 w-3" /> RESET DEMO DATA
+            <RefreshCcw className="h-3 w-3" /> {t("demo.reset", lang)}
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
