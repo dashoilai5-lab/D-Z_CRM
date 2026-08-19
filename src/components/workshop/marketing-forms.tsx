@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { createCampaign, createPoster, createScript } from "@/actions/marketing";
+import { createCampaign, createPoster, createScript, updateCampaign } from "@/actions/marketing";
 
 function useForm() {
   const router = useRouter();
@@ -24,19 +24,43 @@ const typeOptions = [["RETURN", "Return"], ["REMINDER", "Reminder"], ["PROMO", "
 const statusOptions = [["DRAFT", "Draft"], ["SCHEDULED", "Scheduled"], ["ACTIVE", "Active"], ["ENDED", "Ended"]] as const;
 const audienceOptions = [["ALL", "All customers"], ["30_DAYS", "Active last 30 days"], ["60_DAYS", "Active last 60 days"], ["OVERDUE", "Overdue service"], ["NEW", "New customers"]] as const;
 
-export function CampaignForm() {
+export interface CampaignDraft {
+  id: string; name: string; type: string; status: string; audience: string | null;
+  startDate: Date; endDate: Date | null; discountPercent: number | null;
+}
+
+function iso(d: Date): string { return d.toISOString().slice(0, 10); }
+
+export function CampaignForm({ initial, onDone }: { initial?: CampaignDraft; onDone?: () => void }) {
   const { pending, open, setOpen, run } = useForm();
-  const [name, setName] = useState(""); const [type, setType] = useState("PROMO"); const [status, setStatus] = useState("DRAFT");
-  const [audience, setAudience] = useState("ALL"); const [startDate, setStartDate] = useState(""); const [endDate, setEndDate] = useState(""); const [discount, setDiscount] = useState("");
+  const [name, setName] = useState(initial?.name ?? "");
+  const [type, setType] = useState(initial?.type ?? "PROMO");
+  const [status, setStatus] = useState(initial?.status ?? "DRAFT");
+  const [audience, setAudience] = useState(initial?.audience ?? "ALL");
+  const [startDate, setStartDate] = useState(initial ? iso(initial.startDate) : "");
+  const [endDate, setEndDate] = useState(initial?.endDate ? iso(initial.endDate) : "");
+  const [discount, setDiscount] = useState(initial?.discountPercent != null ? String(initial.discountPercent) : "");
+  const isEdit = !!initial;
+
+  const submit = () => {
+    const payload = { name, type: type as never, status: status as never, audience, startDate, endDate: endDate || undefined, discountPercent: discount ? Number(discount) : undefined };
+    if (isEdit) {
+      run(() => updateCampaign({ id: initial.id, ...payload }), "Campaign updated");
+    } else {
+      run(() => createCampaign(payload), "Campaign created");
+    }
+    onDone?.();
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-        New Campaign
+        {isEdit ? "Edit" : "New Campaign"}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New campaign</DialogTitle>
-          <DialogDescription>Plan a promotion, reminder or return campaign.</DialogDescription>
+          <DialogTitle>{isEdit ? "Edit campaign" : "New campaign"}</DialogTitle>
+          <DialogDescription>{isEdit ? "Update the campaign details." : "Plan a promotion, reminder or return campaign."}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
           <div><Label>Name</Label><Input data-testid="campaign-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Hari Merdeka Promo" className="mt-1.5" /></div>
@@ -64,10 +88,9 @@ export function CampaignForm() {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button data-testid="campaign-submit" disabled={!name || !startDate || pending} onClick={() => run(
-            () => createCampaign({ name, type: type as never, status: status as never, audience, startDate, endDate: endDate || undefined, discountPercent: discount ? Number(discount) : undefined }),
-            "Campaign created"
-          )}>Create Campaign</Button>
+          <Button data-testid="campaign-submit" disabled={!name || !startDate || pending} onClick={submit}>
+            {isEdit ? "Save Changes" : "Create Campaign"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

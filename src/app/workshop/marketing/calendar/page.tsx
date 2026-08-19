@@ -52,6 +52,9 @@ export default async function MarketingCalendarPage() {
                   <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-700">−{c.discountPercent}%</span>
                 )}
                 <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (statusTone[c.status] ?? "bg-slate-100 text-slate-600")}>{c.status}</span>
+                <CampaignForm
+                  initial={{ id: c.id, name: c.name, type: c.type, status: c.status, audience: c.audience ?? null, startDate: c.startDate, endDate: c.endDate, discountPercent: c.discountPercent }}
+                />
                 <CampaignActions id={c.id} status={c.status} />
               </div>
               {/* reach + conversion */}
