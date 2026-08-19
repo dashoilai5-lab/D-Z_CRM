@@ -3,15 +3,18 @@ import { Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { aiService } from "@/modules/ai/service";
 import { db } from "@/lib/db";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AiCentrePage() {
+  const lang = await getLang();
   const branch = await db.branch.findFirst({ where: { isMain: true } });
   const recs = await aiService.recommendations(branch?.id);
   return (
     <div>
-      <PageHeader title="AI Command Centre" subtitle="Rule-based in the prototype — OpenAI replaces content/summary generation later (§39)" />
+      <PageHeader title={t("dash.ai-centre", lang)} subtitle={t("ws.ai.subtitle", lang)} />
       <div className="space-y-3">
         {recs.map((r, i) => (
           <Link key={i} href={r.href} className="group flex items-start gap-4 rounded-2xl border bg-card p-5 hover:border-primary/40 transition-colors">
@@ -26,7 +29,7 @@ export default async function AiCentrePage() {
           </Link>
         ))}
         {recs.length === 0 && (
-          <div className="rounded-2xl border bg-card p-10 text-center text-sm text-muted-foreground">No recommendations — everything is on track. ✅</div>
+          <div className="rounded-2xl border bg-card p-10 text-center text-sm text-muted-foreground">{t("ws.ai.no-recs", lang)}</div>
         )}
       </div>
     </div>

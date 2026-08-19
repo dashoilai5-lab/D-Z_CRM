@@ -7,10 +7,23 @@ import { CampaignActions } from "@/components/workshop/campaign-actions";
 import { BroadcastButton } from "@/components/workshop/broadcast-button";
 import { PromoCalendarGrid, type CalendarCampaign } from "@/components/workshop/promo-calendar-grid";
 import { isPromoActive } from "@/modules/marketing/promo";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-const typeLabel: Record<string, string> = { RETURN: "Return", REMINDER: "Reminder", PROMO: "Promo", NEWS: "News" };
+const typeKey: Record<string, string> = {
+  RETURN: "ws.mkt.calendar.type.RETURN",
+  REMINDER: "ws.mkt.calendar.type.REMINDER",
+  PROMO: "ws.mkt.calendar.type.PROMO",
+  NEWS: "ws.mkt.calendar.type.NEWS",
+};
+const statusKey: Record<string, string> = {
+  ACTIVE: "ws.mkt.status.ACTIVE",
+  SCHEDULED: "ws.mkt.status.SCHEDULED",
+  DRAFT: "ws.mkt.status.DRAFT",
+  ENDED: "ws.mkt.status.ENDED",
+};
 const statusTone: Record<string, string> = {
   ACTIVE: "bg-emerald-100 text-emerald-700",
   SCHEDULED: "bg-blue-100 text-blue-700",
@@ -19,6 +32,7 @@ const statusTone: Record<string, string> = {
 };
 
 export default async function MarketingCalendarPage() {
+  const lang = await getLang();
   const { campaigns } = await marketingService.overview();
 
   // audience size: customers due for service (deterministic demo proxy for reach)
@@ -40,7 +54,15 @@ export default async function MarketingCalendarPage() {
 
   return (
     <div>
-      <PageHeader title="Promotion Calendar" subtitle={campaigns.length + " campaigns · " + activePromos.length + " promo(s) live now · " + dueCustomers + " customers due"} action={<CampaignForm />} />
+      <PageHeader
+        title={t("ws.mkt.calendar.title", lang)}
+        subtitle={[
+          t("ws.mkt.calendar.campaigns", lang).replace("{n}", String(campaigns.length)),
+          t("ws.mkt.calendar.promo-live", lang).replace("{n}", String(activePromos.length)),
+          t("ws.mkt.calendar.customers-due", lang).replace("{n}", String(dueCustomers)),
+        ].join(" · ")}
+        action={<CampaignForm />}
+      />
       <div className="mb-5"><PromoCalendarGrid campaigns={calendarCampaigns} /></div>
       <div className="space-y-2">
         {sorted.map((c) => {
@@ -50,12 +72,12 @@ export default async function MarketingCalendarPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="min-w-52 flex-1">
                   <div className="font-medium text-sm">{c.name}</div>
-                  <div className="text-xs text-muted-foreground">{typeLabel[c.type] ?? c.type} · {c.audience ?? "All"} · {fmtDate(c.startDate)}{c.endDate ? " → " + fmtDate(c.endDate) : ""}</div>
+                  <div className="text-xs text-muted-foreground">{(typeKey[c.type] ? t(typeKey[c.type], lang) : c.type)} · {c.audience ?? t("ws.mkt.calendar.all", lang)} · {fmtDate(c.startDate)}{c.endDate ? " → " + fmtDate(c.endDate) : ""}</div>
                 </div>
                 {c.type === "PROMO" && c.discountPercent && (
                   <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-700">−{c.discountPercent}%</span>
                 )}
-                <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (statusTone[c.status] ?? "bg-slate-100 text-slate-600")}>{c.status}</span>
+                <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (statusTone[c.status] ?? "bg-slate-100 text-slate-600")}>{statusKey[c.status] ? t(statusKey[c.status], lang) : c.status}</span>
                 <CampaignForm
                   initial={{ id: c.id, name: c.name, type: c.type, status: c.status, audience: c.audience ?? null, startDate: c.startDate, endDate: c.endDate, discountPercent: c.discountPercent }}
                 />
@@ -65,16 +87,16 @@ export default async function MarketingCalendarPage() {
               {/* reach + conversion */}
               <div className="mt-2.5 flex flex-wrap gap-2 text-[11px] text-muted-foreground">
                 <span className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2.5 py-1">
-                  <span className="font-semibold text-foreground">{dueCustomers}</span> customers due
+                  <span className="font-semibold text-foreground">{dueCustomers}</span> {t("ws.mkt.calendar.customers-due-label", lang)}
                 </span>
                 <span className={"inline-flex items-center gap-1 rounded-full px-2.5 py-1 " + (conversions > 0 ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "bg-muted/50")}>
-                  <span className={"font-semibold " + (conversions > 0 ? "text-emerald-700" : "text-foreground")}>{conversions}</span> bookings driven
+                  <span className={"font-semibold " + (conversions > 0 ? "text-emerald-700" : "text-foreground")}>{conversions}</span> {t("ws.mkt.calendar.bookings-driven", lang)}
                 </span>
               </div>
             </div>
           );
         })}
-        {sorted.length === 0 && <p className="text-sm text-muted-foreground text-center py-10">No campaigns yet — create the first one.</p>}
+        {sorted.length === 0 && <p className="text-sm text-muted-foreground text-center py-10">{t("ws.mkt.calendar.empty", lang)}</p>}
       </div>
     </div>
   );

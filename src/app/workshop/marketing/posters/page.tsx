@@ -2,14 +2,24 @@ import { PageHeader } from "@/components/shared/page-header";
 import { marketingService } from "@/modules/marketing/service";
 import { PosterForm } from "@/components/workshop/marketing-forms";
 import { Image } from "lucide-react";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function PostersPage() {
+  const lang = await getLang();
   const { assets } = await marketingService.overview();
   return (
     <div>
-      <PageHeader title="Poster Library" subtitle={assets.length + " poster packs · generated with mocked AI content"} action={<PosterForm />} />
+      <PageHeader
+        title={t("ws.mkt.posters.title", lang)}
+        subtitle={[
+          t("ws.mkt.posters.packs", lang).replace("{n}", String(assets.length)),
+          t("ws.mkt.posters.generated", lang),
+        ].join(" · ")}
+        action={<PosterForm />}
+      />
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {assets.map((a) => (
           <div key={a.id} className="rounded-2xl border bg-card overflow-hidden">
@@ -30,7 +40,7 @@ export default async function PostersPage() {
             </div>
           </div>
         ))}
-        {assets.length === 0 && <p className="text-sm text-muted-foreground text-center py-10 col-span-full">No posters yet — add the first one.</p>}
+        {assets.length === 0 && <p className="text-sm text-muted-foreground text-center py-10 col-span-full">{t("ws.mkt.posters.empty", lang)}</p>}
       </div>
     </div>
   );

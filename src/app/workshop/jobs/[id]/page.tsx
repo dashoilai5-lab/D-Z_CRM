@@ -13,11 +13,14 @@ import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-fo
 import { fmtDate, fmtDateTime, fmtKM } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { db } from "@/lib/db";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const lang = await getLang();
   const detail = await jobService.getDetail(id);
   if (!detail) notFound();
   const recs = await aiService.salesRecommendations(id);
@@ -40,14 +43,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
     <div>
       <PageHeader
         title={<span className="font-mono">{detail.jobNumber}</span>}
-        subtitle={"Created " + fmtDateTime(detail.createdAt)}
+        subtitle={t("ws.job.created", lang) + " " + fmtDateTime(detail.createdAt)}
         backHref="/workshop/jobs"
       />
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <StatusBadge kind="job" value={detail.status} />
         {pendingApprovals.length > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
-            <AlertTriangle className="h-3.5 w-3.5" /> {pendingApprovals.length} pending customer approval{pendingApprovals.length > 1 ? "s" : ""}
+            <AlertTriangle className="h-3.5 w-3.5" /> {pendingApprovals.length} {t(pendingApprovals.length > 1 ? "ws.job.pending-approvals" : "ws.job.pending-approval", lang)}
           </span>
         )}
         <div className="flex-1" />
@@ -71,16 +74,16 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             </div>
             <div className="mt-4 grid sm:grid-cols-2 gap-3 text-sm">
               <div className="rounded-xl bg-muted/40 p-3">
-                <div className="text-xs text-muted-foreground">Service</div>
+                <div className="text-xs text-muted-foreground">{t("ws.jobs.col-service", lang)}</div>
                 <div className="font-medium mt-0.5">{detail.packageName ?? "—"}</div>
               </div>
               <div className="rounded-xl bg-muted/40 p-3">
-                <div className="text-xs text-muted-foreground">Mechanic</div>
-                <div className="font-medium mt-0.5">{detail.mechanic?.name ?? "Unassigned"}</div>
+                <div className="text-xs text-muted-foreground">{t("ws.jobs.col-mechanic", lang)}</div>
+                <div className="font-medium mt-0.5">{detail.mechanic?.name ?? t("ws.job.unassigned", lang)}</div>
               </div>
               {detail.customerRequest && (
                 <div className="rounded-xl bg-muted/40 p-3 sm:col-span-2">
-                  <div className="text-xs text-muted-foreground">Customer Request</div>
+                  <div className="text-xs text-muted-foreground">{t("ws.job.customer-request", lang)}</div>
                   <div className="font-medium mt-0.5">“{detail.customerRequest}”</div>
                 </div>
               )}
@@ -89,12 +92,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
           {/* items & parts */}
           <section className="rounded-2xl border bg-card">
-            <div className="px-5 pt-4 pb-2 font-semibold">Job Lines</div>
+            <div className="px-5 pt-4 pb-2 font-semibold">{t("ws.job.lines-title", lang)}</div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead><tr className="border-y bg-muted/40 text-left text-xs text-muted-foreground">
-                  <th className="px-5 py-2 font-medium">Description</th><th className="px-3 py-2 font-medium">Qty</th>
-                  <th className="px-3 py-2 font-medium">Price</th><th className="px-3 py-2 font-medium">Status</th><th className="px-3 py-2" />
+                  <th className="px-5 py-2 font-medium">{t("ws.job.col-description", lang)}</th><th className="px-3 py-2 font-medium">{t("common.qty", lang)}</th>
+                  <th className="px-3 py-2 font-medium">{t("common.price", lang)}</th><th className="px-3 py-2 font-medium">{t("common.status", lang)}</th><th className="px-3 py-2" />
                 </tr></thead>
                 <tbody>
                   {detail.items.map((i) => (
@@ -108,7 +111,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                   ))}
                   {detail.parts.map((p) => (
                     <tr key={p.id} className="border-b last:border-0">
-                      <td className="px-5 py-2.5">{p.product.name}<div className="text-xs text-muted-foreground">Part · SKU {p.product.sku}</div></td>
+                      <td className="px-5 py-2.5">{p.product.name}<div className="text-xs text-muted-foreground">{t("ws.job.part", lang)} · SKU {p.product.sku}</div></td>
                       <td className="px-3 py-2.5 tabular-nums">{p.quantity}</td>
                       <td className="px-3 py-2.5 tabular-nums">{formatRM(p.unitPriceSen)}</td>
                       <td className="px-3 py-2.5"><span className={"text-[11px] font-semibold uppercase " + (p.status === "INCLUDED" ? "text-slate-500" : p.status === "ACCEPTED" ? "text-emerald-600" : p.status === "DECLINED" ? "text-red-500 line-through" : "text-amber-600")}>{p.status}</span></td>
@@ -116,13 +119,13 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     </tr>
                   ))}
                   {detail.items.length === 0 && detail.parts.length === 0 && (
-                    <tr><td className="px-5 py-4 text-sm text-muted-foreground">No lines yet — add a package or accept recommendations.</td></tr>
+                    <tr><td className="px-5 py-4 text-sm text-muted-foreground">{t("ws.job.no-lines", lang)}</td></tr>
                   )}
                 </tbody>
               </table>
             </div>
             <div className="flex justify-between border-t px-5 py-3 text-sm">
-              <span className="text-muted-foreground">Estimated Total</span>
+              <span className="text-muted-foreground">{t("ws.job.estimated-total", lang)}</span>
               <span className="font-bold tabular-nums">{formatRM(detail.summary.totalSen)}</span>
             </div>
           </section>
@@ -130,7 +133,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           {/* AI recommendations */}
           {recs.length > 0 && (
             <section className="rounded-2xl border bg-card p-5">
-              <h3 className="font-semibold mb-3">AI Sales Recommendations</h3>
+              <h3 className="font-semibold mb-3">{t("ws.job.ai-recs", lang)}</h3>
               <div className="space-y-3">
                 {recs.map((r) => (
                   <div key={r.description} className="rounded-xl border p-3.5">
@@ -153,8 +156,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           {checklist && (
             <section className="rounded-2xl border bg-card">
               <div className="px-5 pt-4 pb-2 font-semibold flex items-center justify-between">
-                <span>Inspection Checklist</span>
-                {checklist.completedAt ? <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><BadgeCheck className="h-3.5 w-3.5" /> Completed {fmtDate(checklist.completedAt)}</span> : <span className="text-xs text-muted-foreground">In progress</span>}
+                <span>{t("ws.checklist.title", lang)}</span>
+                {checklist.completedAt ? <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><BadgeCheck className="h-3.5 w-3.5" /> {t("common.completed", lang)} {fmtDate(checklist.completedAt)}</span> : <span className="text-xs text-muted-foreground">{t("ws.checklist.in-progress", lang)}</span>}
               </div>
               <div className="px-5 pb-4 grid sm:grid-cols-2 gap-2">
                 {checklist.items.map((i) => (
@@ -171,9 +174,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         <div className="space-y-5">
           {/* approvals */}
           <section className="rounded-2xl border bg-card p-5">
-            <h3 className="font-semibold mb-3">Customer Approvals</h3>
+            <h3 className="font-semibold mb-3">{t("ws.job.customer-approvals", lang)}</h3>
             {detail.findings.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No inspection findings yet.</p>
+              <p className="text-sm text-muted-foreground">{t("ws.job.no-findings", lang)}</p>
             ) : (
               <div className="space-y-3">
                 {detail.findings.map((f) => (
@@ -182,7 +185,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                       <span className={"text-[11px] font-bold uppercase " + (f.severity === "WARNING" ? "text-amber-600" : "text-red-600")}>{f.severity}</span>
                       {f.approval && (
                         <span className={"inline-flex items-center gap-1 text-[11px] font-semibold " + (f.approval.status === "PENDING" ? "text-amber-600" : f.approval.status === "APPROVED" ? "text-emerald-600" : "text-red-500")}>
-                          {f.approval.status === "PENDING" ? "WAITING CUSTOMER" : f.approval.status === "APPROVED" ? <><CheckCircle2 className="h-3.5 w-3.5" /> CUSTOMER APPROVED</> : <><XCircle className="h-3.5 w-3.5" /> CUSTOMER DECLINED</>}
+                          {f.approval.status === "PENDING" ? t("ws.job.waiting-customer", lang) : f.approval.status === "APPROVED" ? <><CheckCircle2 className="h-3.5 w-3.5" /> {t("ws.job.customer-approved", lang)}</> : <><XCircle className="h-3.5 w-3.5" /> {t("ws.job.customer-declined", lang)}</>}
                         </span>
                       )}
                     </div>
@@ -203,7 +206,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           {detail.invoice && (
             <section className="rounded-2xl border bg-card p-5">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="font-semibold">Invoice</h3>
+                <h3 className="font-semibold">{t("ws.job.invoice", lang)}</h3>
                 <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (detail.invoice.status === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}>{detail.invoice.status}</span>
               </div>
               <div className="font-mono text-sm">{detail.invoice.invoiceNumber}</div>
@@ -211,8 +214,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 {detail.invoice.items.map((it) => (
                   <div key={it.id} className="flex justify-between text-xs"><span>{it.description} ×{it.quantity}</span><span className="tabular-nums">{formatRM(it.lineTotalSen)}</span></div>
                 ))}
-                <div className="border-t pt-2 mt-2 flex justify-between font-bold"><span>Total</span><span className="tabular-nums">{formatRM(detail.invoice.totalSen)}</span></div>
-                {detail.invoice.paidAt && <div className="text-xs text-muted-foreground pt-1">Paid {fmtDate(detail.invoice.paidAt)}</div>}
+                <div className="border-t pt-2 mt-2 flex justify-between font-bold"><span>{t("common.total", lang)}</span><span className="tabular-nums">{formatRM(detail.invoice.totalSen)}</span></div>
+                {detail.invoice.paidAt && <div className="text-xs text-muted-foreground pt-1">{t("ws.job.paid", lang)} {fmtDate(detail.invoice.paidAt)}</div>}
               </div>
             </section>
           )}

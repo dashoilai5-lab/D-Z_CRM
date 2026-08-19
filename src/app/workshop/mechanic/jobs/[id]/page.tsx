@@ -7,11 +7,14 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-form";
 import { db } from "@/lib/db";
 import { fmtKM } from "@/lib/format";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function MechanicJobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const lang = await getLang();
   const detail = await jobService.getDetail(id);
   if (!detail) notFound();
 
@@ -37,7 +40,7 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-2xl mx-auto">
       <Link href="/workshop/mechanic" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-3">
-        <ChevronLeft className="h-4 w-4" /> Mechanic Board
+        <ChevronLeft className="h-4 w-4" /> {t("nav.mechanic", lang)}
       </Link>
       <div className="flex items-center gap-3 mb-5">
         <h1 className="text-2xl font-bold font-mono tracking-tight">#{detail.jobNumber}</h1>
@@ -51,7 +54,7 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
           <div className="text-xs text-muted-foreground">{detail.motorcycle.plate} · {detail.customer.name}</div>
         </div>
         <div className="text-right text-sm">
-          <div className="text-xs text-muted-foreground">Mileage</div>
+          <div className="text-xs text-muted-foreground">{t("ws.jobs.col-mileage", lang)}</div>
           <div className="font-bold">{fmtKM(detail.mileage)}</div>
         </div>
       </div>

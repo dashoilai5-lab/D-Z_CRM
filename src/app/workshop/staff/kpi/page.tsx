@@ -5,10 +5,13 @@ import { staffService } from "@/modules/staff/service";
 import { formatRM } from "@/lib/money";
 import { getPersona } from "@/lib/demo";
 import { getDemoUser } from "@/lib/demo-user";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function KpiPage() {
+  const lang = await getLang();
   const persona = await getPersona();
   const user = await getDemoUser(persona);
   const { staff, top } = await staffService.kpiBoard(30);
@@ -17,13 +20,13 @@ export default async function KpiPage() {
   const myTop = persona === "MECHANIC" && user ? rows[0] ?? null : top;
   return (
     <div>
-      <PageHeader title={persona === "MECHANIC" ? "My KPI" : "Staff KPI Board"} subtitle={persona === "MECHANIC" ? "Your performance — deterministic formulas (last 30 days)" : "Deterministic formulas — jobs, ticket, package & add-on conversion, checklist, rating (last 30 days)"} />
+      <PageHeader title={persona === "MECHANIC" ? t("ws.kpi.my", lang) : t("ws.kpi.board", lang)} subtitle={persona === "MECHANIC" ? t("ws.kpi.my-sub", lang) : t("ws.kpi.sub", lang)} />
       {myTop && (
         <div className="mb-5 rounded-2xl bg-primary text-primary-foreground p-5 flex items-center gap-4">
           <div className="text-4xl font-bold tabular-nums">{myTop.score}</div>
           <div>
-            <div className="font-semibold">{persona === "MECHANIC" ? myTop.name + " — your score" : myTop.name + " — top performer"}</div>
-            <div className="text-xs opacity-90">{myTop.jobs} jobs · avg ticket {formatRM(myTop.avgTicketSen)} · {myTop.rating}★</div>
+            <div className="font-semibold">{persona === "MECHANIC" ? t("ws.kpi.your-score", lang).replace("{name}", myTop.name) : t("ws.kpi.top-performer", lang).replace("{name}", myTop.name)}</div>
+            <div className="text-xs opacity-90">{t("ws.kpi.top-line", lang).replace("{jobs}", String(myTop.jobs)).replace("{ticket}", formatRM(myTop.avgTicketSen)).replace("{rating}", String(myTop.rating))}</div>
           </div>
         </div>
       )}
@@ -31,11 +34,11 @@ export default async function KpiPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
-              <th className="px-4 py-3 font-medium">Staff</th><th className="px-4 py-3 font-medium">Jobs</th>
-              <th className="px-4 py-3 font-medium">Sales</th><th className="px-4 py-3 font-medium">Avg Ticket</th>
-              <th className="px-4 py-3 font-medium">Package Conv</th><th className="px-4 py-3 font-medium">Add-on Conv</th>
-              <th className="px-4 py-3 font-medium">Checklist</th><th className="px-4 py-3 font-medium">Rating</th>
-              <th className="px-4 py-3 font-medium">Score</th>
+              <th className="px-4 py-3 font-medium">{t("ws.kpi.col-staff", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.kpi.col-jobs", lang)}</th>
+              <th className="px-4 py-3 font-medium">{t("ws.kpi.col-sales", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.kpi.col-avg-ticket", lang)}</th>
+              <th className="px-4 py-3 font-medium">{t("ws.kpi.col-package", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.kpi.col-addon", lang)}</th>
+              <th className="px-4 py-3 font-medium">{t("ws.kpi.col-checklist", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.kpi.col-rating", lang)}</th>
+              <th className="px-4 py-3 font-medium">{t("dash.score", lang)}</th>
             </tr></thead>
             <tbody>
               {rows.map((s) => (
@@ -60,7 +63,7 @@ export default async function KpiPage() {
           </table>
         </div>
       </div>
-      <p className="mt-3 text-xs text-muted-foreground">KPI formulas are deterministic and explainable (§33) — never AI-invented. Score = 30% jobs + 20% ticket + 15% package + 15% add-on + 10% checklist + 10% rating.</p>
+      <p className="mt-3 text-xs text-muted-foreground">{t("ws.kpi.formula-note", lang)}</p>
     </div>
   );
 }

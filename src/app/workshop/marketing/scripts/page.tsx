@@ -3,14 +3,24 @@ import { marketingService } from "@/modules/marketing/service";
 import { ScriptForm } from "@/components/workshop/marketing-forms";
 import { ScriptCopy } from "@/components/workshop/script-copy";
 import { Clapperboard } from "lucide-react";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function ScriptsPage() {
+  const lang = await getLang();
   const { scripts } = await marketingService.overview();
   return (
     <div>
-      <PageHeader title="Reels Script Bank" subtitle={scripts.length + " scripts · TikTok / Reels templates for the workshop"} action={<ScriptForm />} />
+      <PageHeader
+        title={t("ws.mkt.scripts.title", lang)}
+        subtitle={[
+          t("ws.mkt.scripts.count", lang).replace("{n}", String(scripts.length)),
+          t("ws.mkt.scripts.templates", lang),
+        ].join(" · ")}
+        action={<ScriptForm />}
+      />
       <div className="grid sm:grid-cols-2 gap-3">
         {scripts.map((s) => (
           <div key={s.id} className="rounded-2xl border bg-card p-4 flex flex-col">
@@ -28,7 +38,7 @@ export default async function ScriptsPage() {
             <p className="mt-1.5 text-xs text-muted-foreground whitespace-pre-wrap flex-1">{s.body}</p>
           </div>
         ))}
-        {scripts.length === 0 && <p className="text-sm text-muted-foreground text-center py-10 col-span-full">No scripts yet — add the first one.</p>}
+        {scripts.length === 0 && <p className="text-sm text-muted-foreground text-center py-10 col-span-full">{t("ws.mkt.scripts.empty", lang)}</p>}
       </div>
     </div>
   );

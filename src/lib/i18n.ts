@@ -313,6 +313,180 @@ export const DICT: Dict = {
   "rider.verified-history": { en: "Verified Service History", zh: "已验证服务历史", ms: "Sejarah Servis Disahkan" },
   "rider.no-verified": { en: "No verified services yet.", zh: "还没有已验证的服务。", ms: "Belum ada servis disahkan." },
 
+  // --- workshop marketing: campaign calendar ---
+  "ws.mkt.calendar.title": { en: "Promotion Calendar", zh: "促销日历", ms: "Kalendar Promosi" },
+  "ws.mkt.calendar.campaigns": { en: "{n} campaigns", zh: "{n} 场活动", ms: "{n} kempen" },
+  "ws.mkt.calendar.promo-live": { en: "{n} promo(s) live now", zh: "{n} 个促销进行中", ms: "{n} promosi aktif" },
+  "ws.mkt.calendar.customers-due": { en: "{n} customers due", zh: "{n} 位客户到期", ms: "{n} pelanggan tamat" },
+  "ws.mkt.calendar.customers-due-label": { en: "customers due", zh: "位客户到期", ms: "pelanggan tamat" },
+  "ws.mkt.calendar.bookings-driven": { en: "bookings driven", zh: "笔预约转化", ms: "tempahan dijana" },
+  "ws.mkt.calendar.all": { en: "All", zh: "全部", ms: "Semua" },
+  "ws.mkt.calendar.type.RETURN": { en: "Return", zh: "回流", ms: "Pulangan" },
+  "ws.mkt.calendar.type.REMINDER": { en: "Reminder", zh: "提醒", ms: "Peringatan" },
+  "ws.mkt.calendar.type.PROMO": { en: "Promo", zh: "促销", ms: "Promosi" },
+  "ws.mkt.calendar.type.NEWS": { en: "News", zh: "资讯", ms: "Berita" },
+  "ws.mkt.calendar.empty": { en: "No campaigns yet — create the first one.", zh: "还没有活动——创建第一个吧。", ms: "Belum ada kempen — cipta yang pertama." },
+  "ws.mkt.status.ACTIVE": { en: "ACTIVE", zh: "进行中", ms: "AKTIF" },
+  "ws.mkt.status.SCHEDULED": { en: "SCHEDULED", zh: "已排期", ms: "DIJADUALKAN" },
+  "ws.mkt.status.DRAFT": { en: "DRAFT", zh: "草稿", ms: "DRAF" },
+  "ws.mkt.status.ENDED": { en: "ENDED", zh: "已结束", ms: "TAMAT" },
+
+  // --- workshop marketing: poster library ---
+  "ws.mkt.posters.title": { en: "Poster Library", zh: "海报库", ms: "Perpustakaan Poster" },
+  "ws.mkt.posters.packs": { en: "{n} poster packs", zh: "{n} 套海报", ms: "{n} pakej poster" },
+  "ws.mkt.posters.generated": { en: "generated with mocked AI content", zh: "由模拟 AI 内容生成", ms: "dijana dengan kandungan AI tiruan" },
+  "ws.mkt.posters.empty": { en: "No posters yet — add the first one.", zh: "还没有海报——添加第一张吧。", ms: "Belum ada poster — tambah yang pertama." },
+
+  // --- workshop marketing: reels script bank ---
+  "ws.mkt.scripts.title": { en: "Reels Script Bank", zh: "脚本库", ms: "Bank Skrip" },
+  "ws.mkt.scripts.count": { en: "{n} scripts", zh: "{n} 个脚本", ms: "{n} skrip" },
+  "ws.mkt.scripts.templates": { en: "TikTok / Reels templates for the workshop", zh: "适用于车间的 TikTok / Reels 模板", ms: "Templat TikTok / Reels untuk bengkel" },
+  "ws.mkt.scripts.empty": { en: "No scripts yet — add the first one.", zh: "还没有脚本——添加第一个吧。", ms: "Belum ada skrip — tambah yang pertama." },
+
+  // --- workshop marketing: reviews ---
+  "ws.mkt.reviews.title": { en: "Reviews", zh: "评价", ms: "Ulasan" },
+  "ws.mkt.reviews.avg": { en: "Average rating {r} ★ across {n} reviews", zh: "平均评分 {r} ★ 共 {n} 条评价", ms: "Purata penilaian {r} ★ merentas {n} ulasan" },
+  "ws.mkt.reviews.sub": { en: "publish & reply to manage reputation", zh: "发布与回复以管理口碑", ms: "terbit & balas untuk mengurus reputasi" },
+
+  // --- workshop crm: service reminders ---
+  "ws.crm.reminders.title": { en: "Service Reminders", zh: "保养提醒", ms: "Peringatan Servis" },
+  "ws.crm.reminders.subtitle": { en: "Deterministic: next = last service + 3,000 km interval", zh: "确定性规则：下次保养 = 上次保养 + 3,000 公里间隔", ms: "Deterministik: seterusnya = servis terakhir + selang 3,000 km" },
+  "ws.crm.reminders.col.customer": { en: "Customer", zh: "客户", ms: "Pelanggan" },
+  "ws.crm.reminders.col.motorcycle": { en: "Motorcycle", zh: "摩托车", ms: "Motosikal" },
+  "ws.crm.reminders.col.last-service": { en: "Last Service", zh: "上次保养", ms: "Servis Terakhir" },
+  "ws.crm.reminders.col.next-service": { en: "Next Service", zh: "下次保养", ms: "Servis Seterusnya" },
+  "ws.crm.reminders.col.gap": { en: "Gap", zh: "差距", ms: "Jarak" },
+  "ws.crm.reminders.est": { en: "est", zh: "预计", ms: "anggaran" },
+
+  // --- workshop crm: customer return list ---
+  "ws.crm.return.title": { en: "Customer Return List", zh: "客户回流名单", ms: "Senarai Pulangan Pelanggan" },
+  "ws.crm.return.subtitle": { en: "Customers who haven't visited — segmented by days since last service", zh: "久未到访的客户——按距上次保养的天数分群", ms: "Pelanggan yang belum berkunjung — dibahagikan mengikut hari sejak servis terakhir" },
+  "ws.crm.return.seg.30_PLUS": { en: "30+ Days", zh: "30+ 天", ms: "30+ Hari" },
+  "ws.crm.return.seg.60_PLUS": { en: "60+ Days", zh: "60+ 天", ms: "60+ Hari" },
+  "ws.crm.return.seg.90_PLUS": { en: "90+ Days", zh: "90+ 天", ms: "90+ Hari" },
+  "ws.crm.return.seg.LOST_CUSTOMER": { en: "Lost Customer", zh: "流失客户", ms: "Pelanggan Hilang" },
+  "ws.crm.return.col.customer": { en: "Customer", zh: "客户", ms: "Pelanggan" },
+  "ws.crm.return.col.motorcycle": { en: "Motorcycle", zh: "摩托车", ms: "Motosikal" },
+  "ws.crm.return.col.last-service": { en: "Last Service", zh: "上次保养", ms: "Servis Terakhir" },
+  "ws.crm.return.col.days": { en: "Days", zh: "天数", ms: "Hari" },
+  "ws.crm.return.col.lifetime-value": { en: "Lifetime Value", zh: "终身价值", ms: "Nilai Sepanjang Hayat" },
+  "ws.crm.return.col.segment": { en: "Segment", zh: "分组", ms: "Segmen" },
+  "ws.crm.return.col.recommended-action": { en: "Recommended Action", zh: "建议行动", ms: "Tindakan Disyorkan" },
+  "ws.crm.return.view-passport": { en: "View Passport", zh: "查看护照", ms: "Lihat Pasport" },
+  "ws.crm.return.create-booking": { en: "Create Booking", zh: "创建预约", ms: "Cipta Tempahan" },
+
+  // --- workshop inventory: dead stock ---
+  "ws.dead.title": { en: "Dead Stock", zh: "滞销库存", ms: "Stok Mati" },
+  "ws.dead.subtitle": { en: "60 days slow · 90 days warning · 180 days critical — total value {n}", zh: "60 天慢销 · 90 天预警 · 180 天严重 —— 总价值 {n}", ms: "60 hari lambat · 90 hari amaran · 180 hari kritikal — jumlah nilai {n}" },
+  "ws.dead.col.product": { en: "Product", zh: "产品", ms: "Produk" },
+  "ws.dead.col.stock-value": { en: "Stock Value", zh: "库存价值", ms: "Nilai Stok" },
+  "ws.dead.col.last-sale": { en: "Last Sale", zh: "最近售出", ms: "Jualan Terakhir" },
+  "ws.dead.col.days": { en: "Days", zh: "天数", ms: "Hari" },
+  "ws.dead.col.stage": { en: "Stage", zh: "阶段", ms: "Peringkat" },
+  "ws.dead.col.recommendation": { en: "Recommendation", zh: "建议", ms: "Cadangan" },
+  "ws.dead.days-ago": { en: "days ago", zh: "天前", ms: "hari lalu" },
+  "ws.dead.stage.CRITICAL_DEAD_STOCK": { en: "CRITICAL DEAD STOCK", zh: "严重滞销", ms: "STOK MATI KRITIKAL" },
+  "ws.dead.stage.DEAD_STOCK_WARNING": { en: "DEAD STOCK WARNING", zh: "滞销预警", ms: "AMARAN STOK MATI" },
+  "ws.dead.stage.SLOW_MOVING": { en: "SLOW MOVING", zh: "慢销", ms: "GERAKAN PERLAHAN" },
+
+  // --- workshop inventory: reorder ---
+  "ws.reorder.title": { en: "Auto Reorder", zh: "自动补货", ms: "Pesanan Semula Auto" },
+  "ws.reorder.subtitle": { en: "Reorder point = avg daily usage × lead time + safety stock (§37)", zh: "补货点 = 平均日用量 × 交货时间 + 安全库存（§37）", ms: "Titik pesanan semula = purata penggunaan harian × masa utama + stok keselamatan (§37)" },
+  "ws.reorder.current-stock": { en: "Current stock", zh: "当前库存", ms: "Stok semasa" },
+  "ws.reorder.est-days-left": { en: "est days left", zh: "预计剩余天数", ms: "anggaran hari lagi" },
+  "ws.reorder.recommended": { en: "Recommended:", zh: "建议补货：", ms: "Disyorkan:" },
+  "ws.reorder.lead": { en: "lead", zh: "交货期", ms: "masa utama" },
+  "ws.reorder.days": { en: "days", zh: "天", ms: "hari" },
+  "ws.reorder.empty": { en: "No reorder recommendations right now.", zh: "暂无补货建议。", ms: "Tiada cadangan pesanan semula buat masa ini." },
+
+  // --- workshop: job detail ---
+  "ws.job.ai-recs": { en: "AI Sales Recommendations", zh: "AI 销售推荐", ms: "Cadangan Jualan AI" },
+  "ws.job.col-description": { en: "Description", zh: "描述", ms: "Penerangan" },
+  "ws.job.created": { en: "Created", zh: "创建于", ms: "Dicipta" },
+  "ws.job.customer-approved": { en: "CUSTOMER APPROVED", zh: "客户已批准", ms: "PELANGGAN MELULUSKAN" },
+  "ws.job.customer-approvals": { en: "Customer Approvals", zh: "客户审批", ms: "Kelulusan Pelanggan" },
+  "ws.job.customer-declined": { en: "CUSTOMER DECLINED", zh: "客户已拒绝", ms: "PELANGGAN MENOLAK" },
+  "ws.job.customer-request": { en: "Customer Request", zh: "客户要求", ms: "Permintaan Pelanggan" },
+  "ws.job.estimated-total": { en: "Estimated Total", zh: "预计总计", ms: "Jumlah Anggaran" },
+  "ws.job.invoice": { en: "Invoice", zh: "发票", ms: "Invois" },
+  "ws.job.lines-title": { en: "Job Lines", zh: "工单明细", ms: "Baris Kerja" },
+  "ws.job.no-findings": { en: "No inspection findings yet.", zh: "暂无检查结果。", ms: "Tiada penemuan pemeriksaan lagi." },
+  "ws.job.no-lines": { en: "No lines yet — add a package or accept recommendations.", zh: "暂无明细——添加套餐或接受推荐。", ms: "Tiada baris lagi — tambah pakej atau terima cadangan." },
+  "ws.job.paid": { en: "Paid", zh: "已支付", ms: "Dibayar" },
+  "ws.job.part": { en: "Part", zh: "零件", ms: "Bahagian" },
+  "ws.job.pending-approval": { en: "pending customer approval", zh: "待客户审批", ms: "menunggu kelulusan pelanggan" },
+  "ws.job.pending-approvals": { en: "pending customer approvals", zh: "待客户审批", ms: "menunggu kelulusan pelanggan" },
+  "ws.job.unassigned": { en: "Unassigned", zh: "未分配", ms: "Tidak Ditugaskan" },
+  "ws.job.waiting-customer": { en: "WAITING CUSTOMER", zh: "等待客户", ms: "MENUNGGU PELANGGAN" },
+
+  // --- workshop: mechanic board ---
+  "ws.mech.owner-hint": { en: "Switch between mechanics to view their assigned tasks.", zh: "切换查看各机械师的任务。", ms: "Tukar antara mekanik untuk melihat tugasan mereka." },
+  "ws.mech.mech-hint": { en: "Your assigned jobs — switch to see other mechanics.", zh: "你分配到的工单——切换查看其他机械师。", ms: "Kerja tugasan anda — tukar untuk melihat mekanik lain." },
+  "ws.mech.unassigned": { en: "Unassigned", zh: "未分配", ms: "Tidak Ditugaskan" },
+
+  // --- workshop: checklists ---
+  "ws.checklist.default": { en: "default", zh: "默认", ms: "lalai" },
+  "ws.checklist.in-progress": { en: "In progress", zh: "进行中", ms: "Dalam proses" },
+  "ws.checklist.subtitle": { en: "Inspection templates used by mechanics", zh: "机械师使用的检查模板", ms: "Templat pemeriksaan yang digunakan oleh mekanik" },
+  "ws.checklist.title": { en: "Inspection Checklist", zh: "检查清单", ms: "Senarai Semak Pemeriksaan" },
+
+  // --- workshop finance: profit dashboard ---
+  "ws.finance.profit.subtitle": { en: "Revenue = Sales · Gross Profit = Revenue − COGS · Margin = GP / Revenue × 100 (§38)", zh: "营收 = 销售额 · 毛利 = 营收 − 成本 · 利润率 = 毛利 / 营收 × 100（§38）", ms: "Hasil = Jualan · Untung Kasar = Hasil − KOS · Margin = UK / Hasil × 100 (§38)" },
+  "ws.finance.sales-90": { en: "Sales (90 days)", zh: "销售额（90 天）", ms: "Jualan (90 hari)" },
+  "ws.finance.net-profit": { en: "Net Profit", zh: "净利润", ms: "Untung Bersih" },
+  "ws.finance.no-opex": { en: "Prototype: no opex model yet", zh: "原型：暂无运营支出模型", ms: "Prototaip: belum ada model opex" },
+  "ws.finance.trend-title": { en: "Revenue & Gross Profit Trend", zh: "营收与毛利趋势", ms: "Trend Hasil & Untung Kasar" },
+  "ws.finance.trend-sub": { en: "Last 90 days · daily", zh: "最近 90 天 · 每日", ms: "90 hari lepas · harian" },
+  "ws.finance.split-title": { en: "Revenue Split", zh: "营收构成", ms: "Pecahan Hasil" },
+  "ws.finance.split-sub": { en: "Service vs parts (90 days)", zh: "服务与配件对比（90 天）", ms: "Servis vs alat ganti (90 hari)" },
+  "ws.finance.parts": { en: "Parts", zh: "配件", ms: "Alat Ganti" },
+  "ws.finance.margin": { en: "Margin", zh: "利润率", ms: "Margin" },
+
+  // --- workshop AI centre ---
+  "ws.ai.subtitle": { en: "Rule-based in the prototype — OpenAI replaces content/summary generation later (§39)", zh: "原型为规则驱动——之后由 OpenAI 替换内容/摘要生成（§39）", ms: "Berasaskan peraturan dalam prototaip — OpenAI menggantikan penjanaan kandungan/ringkasan kemudian (§39)" },
+  "ws.ai.no-recs": { en: "No recommendations — everything is on track. ✅", zh: "暂无推荐——一切正常。✅", ms: "Tiada cadangan — semuanya berjalan lancar. ✅" },
+
+  // --- workshop staff: KPI ---
+  "ws.kpi.my": { en: "My KPI", zh: "我的 KPI", ms: "KPI Saya" },
+  "ws.kpi.board": { en: "Staff KPI Board", zh: "员工 KPI 看板", ms: "Papan KPI Staf" },
+  "ws.kpi.my-sub": { en: "Your performance — deterministic formulas (last 30 days)", zh: "你的表现——确定性公式（最近 30 天）", ms: "Prestasi anda — formula deterministik (30 hari lepas)" },
+  "ws.kpi.sub": { en: "Deterministic formulas — jobs, ticket, package & add-on conversion, checklist, rating (last 30 days)", zh: "确定性公式——工单、客单价、套餐与附加项转化、检查清单、评分（最近 30 天）", ms: "Formula deterministik — kerja, tiket, penukaran pakej & tambahan, senarai semak, penilaian (30 hari lepas)" },
+  "ws.kpi.your-score": { en: "{name} — your score", zh: "{name} —— 你的得分", ms: "{name} — skor anda" },
+  "ws.kpi.top-performer": { en: "{name} — top performer", zh: "{name} —— 最佳表现", ms: "{name} — pencapaian terbaik" },
+  "ws.kpi.top-line": { en: "{jobs} jobs · avg ticket {ticket} · {rating}★", zh: "{jobs} 单 · 平均客单价 {ticket} · {rating}★", ms: "{jobs} kerja · purata tiket {ticket} · {rating}★" },
+  "ws.kpi.col-staff": { en: "Staff", zh: "员工", ms: "Staf" },
+  "ws.kpi.col-jobs": { en: "Jobs", zh: "工单", ms: "Kerja" },
+  "ws.kpi.col-sales": { en: "Sales", zh: "销售额", ms: "Jualan" },
+  "ws.kpi.col-avg-ticket": { en: "Avg Ticket", zh: "平均客单价", ms: "Purata Tiket" },
+  "ws.kpi.col-package": { en: "Package Conv", zh: "套餐转化", ms: "Penukaran Pakej" },
+  "ws.kpi.col-addon": { en: "Add-on Conv", zh: "附加项转化", ms: "Penukaran Tambahan" },
+  "ws.kpi.col-checklist": { en: "Checklist", zh: "检查清单", ms: "Senarai Semak" },
+  "ws.kpi.col-rating": { en: "Rating", zh: "评分", ms: "Penilaian" },
+  "ws.kpi.formula-note": { en: "KPI formulas are deterministic and explainable (§33) — never AI-invented. Score = 30% jobs + 20% ticket + 15% package + 15% add-on + 10% checklist + 10% rating.", zh: "KPI 公式为确定性且可解释（§33）——绝不凭空捏造。得分 = 30% 工单 + 20% 客单价 + 15% 套餐 + 15% 附加项 + 10% 检查清单 + 10% 评分。", ms: "Formula KPI adalah deterministik dan boleh dijelaskan (§33) — tidak pernah direka oleh AI. Skor = 30% kerja + 20% tiket + 15% pakej + 15% tambahan + 10% senarai semak + 10% penilaian." },
+
+  // --- workshop customer passport (detail) ---
+  "ws.cust.since": { en: "Customer Since", zh: "客户自", ms: "Pelanggan Sejak" },
+  "ws.cust.tab-overview": { en: "Overview", zh: "概览", ms: "Ringkasan" },
+  "ws.cust.tab-oil": { en: "Oil History", zh: "机油历史", ms: "Sejarah Minyak" },
+  "ws.cust.tab-tyres": { en: "Tyres", zh: "轮胎", ms: "Tayar" },
+  "ws.cust.tab-spending": { en: "Spending", zh: "消费", ms: "Perbelanjaan" },
+  "ws.cust.tab-notes": { en: "Notes", zh: "备注", ms: "Nota" },
+  "ws.cust.summary-title": { en: "Service Summary", zh: "服务摘要", ms: "Ringkasan Servis" },
+  "ws.cust.last-mileage": { en: "Last Mileage", zh: "上次里程", ms: "Mileage Terakhir" },
+  "ws.cust.estimated": { en: "Estimated", zh: "预计", ms: "Anggaran" },
+  "ws.cust.reminders": { en: "Reminders", zh: "保养提醒", ms: "Peringatan" },
+  "ws.cust.col-items": { en: "Items", zh: "项目", ms: "Item" },
+  "ws.cust.oil-title": { en: "Engine Oil History", zh: "机油历史", ms: "Sejarah Minyak Enjin" },
+  "ws.cust.oil-empty": { en: "No oil changes recorded.", zh: "暂无换油记录。", ms: "Tiada rekod penukaran minyak." },
+  "ws.cust.tyres-title": { en: "Tyre History", zh: "轮胎历史", ms: "Sejarah Tayar" },
+  "ws.cust.tyres-empty": { en: "No tyre work recorded.", zh: "暂无轮胎作业记录。", ms: "Tiada rekod kerja tayar." },
+  "ws.cust.msg-title": { en: "Message History", zh: "消息历史", ms: "Sejarah Mesej" },
+  "ws.cust.msg-empty": { en: "No messages.", zh: "暂无消息。", ms: "Tiada mesej." },
+  "ws.cust.notes-title": { en: "Internal Notes", zh: "内部备注", ms: "Nota Dalaman" },
+  "ws.cust.notes-empty": { en: "No notes.", zh: "暂无备注。", ms: "Tiada nota." },
+  "ws.cust.customer-note": { en: "Customer note: {notes}", zh: "客户备注：{notes}", ms: "Nota pelanggan: {notes}" },
+  "ws.cust.est": { en: "· est {date}", zh: "· 预计 {date}", ms: "· anggaran {date}" },
+
 };
 
 export function t(key: string, lang: Lang): string {
@@ -324,3 +498,4 @@ export function t(key: string, lang: Lang): string {
 export function parseLang(v: string | undefined): Lang {
   return (LANGS as string[]).includes(v ?? "") ? (v as Lang) : "en";
 }
+

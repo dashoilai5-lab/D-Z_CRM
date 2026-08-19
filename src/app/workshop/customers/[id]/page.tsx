@@ -8,8 +8,11 @@ import { CustomerActions } from "@/components/workshop/customer-actions";
 import { customerService } from "@/modules/customers/service";
 import { fmtDate, fmtKM, fmtDateTime } from "@/lib/format";
 import { formatRM } from "@/lib/money";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export default async function CustomerPassportPage({ params }: { params: Promise<{ id: string }> }) {
+  const lang = await getLang();
   const { id } = await params;
   const passport = await customerService.getPassport(id);
   if (!passport) notFound();
@@ -23,22 +26,22 @@ export default async function CustomerPassportPage({ params }: { params: Promise
       <div className="rounded-2xl border bg-card p-5 md:p-6">
         <div className="flex flex-wrap items-start gap-6">
           <div className="flex-1 min-w-52">
-            <h2 className="font-semibold">D&Z Rider Passport</h2>
+            <h2 className="font-semibold">{t("rider.passport", lang)}</h2>
             <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <div className="text-xs text-muted-foreground">Customer Since</div>
+                <div className="text-xs text-muted-foreground">{t("ws.cust.since", lang)}</div>
                 <div className="font-semibold">{customer.joinedAt.getFullYear()}</div>
               </div>
               <div>
-                <div className="text-xs text-muted-foreground">Visits</div>
+                <div className="text-xs text-muted-foreground">{t("ws.customers.col-visits", lang)}</div>
                 <div className="font-semibold tabular-nums">{stats.visits}</div>
               </div>
               <div>
-                <div className="text-xs text-muted-foreground">Lifetime Spend</div>
+                <div className="text-xs text-muted-foreground">{t("ws.customers.col-lifetime-spend", lang)}</div>
                 <div className="font-semibold tabular-nums"><Money sen={stats.lifetimeSpend} /></div>
               </div>
               <div>
-                <div className="text-xs text-muted-foreground">Last Service</div>
+                <div className="text-xs text-muted-foreground">{t("rider.last-service", lang)}</div>
                 <div className="font-semibold">{stats.lastServiceLabel}</div>
               </div>
             </div>
@@ -57,18 +60,18 @@ export default async function CustomerPassportPage({ params }: { params: Promise
                 <div className="text-sm text-muted-foreground">{m.year} · {m.plate}{m.color ? " · " + m.color : ""}</div>
               </div>
               <div className="text-right">
-                <div className="text-xs text-muted-foreground">Mileage</div>
+                <div className="text-xs text-muted-foreground">{t("ws.jobs.col-mileage", lang)}</div>
                 <div className="font-bold tabular-nums">{fmtKM(m.currentMileage)}</div>
               </div>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
               <div className="rounded-lg bg-muted/50 p-2.5">
-                <div className="text-muted-foreground">Last Service</div>
+                <div className="text-muted-foreground">{t("rider.last-service", lang)}</div>
                 <div className="font-semibold mt-0.5">{m.lastServiceDate ? fmtDate(m.lastServiceDate) : "—"} {m.lastServiceMileage != null ? "· " + fmtKM(m.lastServiceMileage) : ""}</div>
               </div>
               <div className="rounded-lg bg-muted/50 p-2.5">
-                <div className="text-muted-foreground">Next Service</div>
-                <div className="font-semibold mt-0.5">{m.nextServiceMileage ? fmtKM(m.nextServiceMileage) : "—"} {m.nextServiceEstDate ? "· est " + fmtDate(m.nextServiceEstDate) : ""}</div>
+                <div className="text-muted-foreground">{t("rider.next-service", lang)}</div>
+                <div className="font-semibold mt-0.5">{m.nextServiceMileage ? fmtKM(m.nextServiceMileage) : "—"} {m.nextServiceEstDate ? t("ws.cust.est", lang).replace("{date}", fmtDate(m.nextServiceEstDate)) : ""}</div>
               </div>
             </div>
           </div>
@@ -78,27 +81,27 @@ export default async function CustomerPassportPage({ params }: { params: Promise
       {/* tabs */}
       <Tabs defaultValue="overview" className="mt-6">
         <TabsList className="flex-wrap h-auto">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="history">Service History</TabsTrigger>
-          <TabsTrigger value="oil">Oil History</TabsTrigger>
-          <TabsTrigger value="tyres">Tyres</TabsTrigger>
-          <TabsTrigger value="spending">Spending</TabsTrigger>
-          <TabsTrigger value="messages">Messages</TabsTrigger>
-          <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="overview">{t("ws.cust.tab-overview", lang)}</TabsTrigger>
+          <TabsTrigger value="history">{t("rider.service-history", lang)}</TabsTrigger>
+          <TabsTrigger value="oil">{t("ws.cust.tab-oil", lang)}</TabsTrigger>
+          <TabsTrigger value="tyres">{t("ws.cust.tab-tyres", lang)}</TabsTrigger>
+          <TabsTrigger value="spending">{t("ws.cust.tab-spending", lang)}</TabsTrigger>
+          <TabsTrigger value="messages">{t("rider.messages", lang)}</TabsTrigger>
+          <TabsTrigger value="notes">{t("ws.cust.tab-notes", lang)}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4">
           <div className="rounded-2xl border bg-card p-5">
-            <h3 className="font-semibold mb-3">Service Summary</h3>
+            <h3 className="font-semibold mb-3">{t("ws.cust.summary-title", lang)}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-              <div><div className="text-xs text-muted-foreground">Last Service</div><div className="font-semibold mt-0.5">{stats.lastServiceLabel}</div></div>
-              <div><div className="text-xs text-muted-foreground">Last Mileage</div><div className="font-semibold mt-0.5">{fmtKM(stats.lastServiceMileage)}</div></div>
-              <div><div className="text-xs text-muted-foreground">Next Service</div><div className="font-semibold mt-0.5">{fmtKM(stats.nextServiceMileage)}</div></div>
-              <div><div className="text-xs text-muted-foreground">Estimated</div><div className="font-semibold mt-0.5">{stats.nextServiceEstDate ? fmtDate(stats.nextServiceEstDate) : "—"}</div></div>
+              <div><div className="text-xs text-muted-foreground">{t("rider.last-service", lang)}</div><div className="font-semibold mt-0.5">{stats.lastServiceLabel}</div></div>
+              <div><div className="text-xs text-muted-foreground">{t("ws.cust.last-mileage", lang)}</div><div className="font-semibold mt-0.5">{fmtKM(stats.lastServiceMileage)}</div></div>
+              <div><div className="text-xs text-muted-foreground">{t("rider.next-service", lang)}</div><div className="font-semibold mt-0.5">{fmtKM(stats.nextServiceMileage)}</div></div>
+              <div><div className="text-xs text-muted-foreground">{t("ws.cust.estimated", lang)}</div><div className="font-semibold mt-0.5">{stats.nextServiceEstDate ? fmtDate(stats.nextServiceEstDate) : "—"}</div></div>
             </div>
             {reminders.length > 0 && (
               <div className="mt-4 border-t pt-4">
-                <h4 className="text-sm font-semibold mb-2">Reminders</h4>
+                <h4 className="text-sm font-semibold mb-2">{t("ws.cust.reminders", lang)}</h4>
                 <div className="space-y-2">
                   {reminders.filter((r) => !r.closedAt).map((r) => (
                     <div key={r.id} className="flex items-center justify-between text-sm">
@@ -117,9 +120,9 @@ export default async function CustomerPassportPage({ params }: { params: Promise
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
-                  <th className="px-4 py-2.5 font-medium">Job</th><th className="px-4 py-2.5 font-medium">Date</th>
-                  <th className="px-4 py-2.5 font-medium">Mileage</th><th className="px-4 py-2.5 font-medium">Service</th>
-                  <th className="px-4 py-2.5 font-medium">Items</th><th className="px-4 py-2.5 font-medium">Total</th>
+                  <th className="px-4 py-2.5 font-medium">{t("ws.jobs.col-job", lang)}</th><th className="px-4 py-2.5 font-medium">{t("common.date", lang)}</th>
+                  <th className="px-4 py-2.5 font-medium">{t("ws.jobs.col-mileage", lang)}</th><th className="px-4 py-2.5 font-medium">{t("rider.service", lang)}</th>
+                  <th className="px-4 py-2.5 font-medium">{t("ws.cust.col-items", lang)}</th><th className="px-4 py-2.5 font-medium">{t("common.total", lang)}</th>
                 </tr></thead>
                 <tbody>
                   {jobs.map((j) => (
@@ -140,8 +143,8 @@ export default async function CustomerPassportPage({ params }: { params: Promise
 
         <TabsContent value="oil" className="mt-4">
           <div className="rounded-2xl border bg-card p-5">
-            <h3 className="font-semibold mb-3">Engine Oil History</h3>
-            {oilHistory.length === 0 ? <p className="text-sm text-muted-foreground">No oil changes recorded.</p> : (
+            <h3 className="font-semibold mb-3">{t("ws.cust.oil-title", lang)}</h3>
+            {oilHistory.length === 0 ? <p className="text-sm text-muted-foreground">{t("ws.cust.oil-empty", lang)}</p> : (
               <div className="space-y-2">
                 {oilHistory.map((o, i) => (
                   <div key={i} className="flex justify-between text-sm border-b last:border-0 pb-2">
@@ -155,8 +158,8 @@ export default async function CustomerPassportPage({ params }: { params: Promise
 
         <TabsContent value="tyres" className="mt-4">
           <div className="rounded-2xl border bg-card p-5">
-            <h3 className="font-semibold mb-3">Tyre History</h3>
-            {tyres.length === 0 ? <p className="text-sm text-muted-foreground">No tyre work recorded.</p> : (
+            <h3 className="font-semibold mb-3">{t("ws.cust.tyres-title", lang)}</h3>
+            {tyres.length === 0 ? <p className="text-sm text-muted-foreground">{t("ws.cust.tyres-empty", lang)}</p> : (
               <div className="space-y-2">{tyres.map((t, i) => (
                 <div key={i} className="flex justify-between text-sm border-b last:border-0 pb-2"><span>{fmtDate(t.at)}</span><span className="tabular-nums">{fmtKM(t.mileage)}</span></div>
               ))}</div>
@@ -167,8 +170,8 @@ export default async function CustomerPassportPage({ params }: { params: Promise
         <TabsContent value="spending" className="mt-4">
           <div className="rounded-2xl border bg-card p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold">Spending</h3>
-              <div className="text-sm text-muted-foreground">Lifetime <strong className="text-foreground tabular-nums">{formatRM(stats.lifetimeSpend)}</strong></div>
+              <h3 className="font-semibold">{t("ws.cust.tab-spending", lang)}</h3>
+              <div className="text-sm text-muted-foreground">{t("rider.lifetime", lang)} <strong className="text-foreground tabular-nums">{formatRM(stats.lifetimeSpend)}</strong></div>
             </div>
             <div className="space-y-2">
               {jobs.map((j) => (
@@ -183,8 +186,8 @@ export default async function CustomerPassportPage({ params }: { params: Promise
 
         <TabsContent value="messages" className="mt-4">
           <div className="rounded-2xl border bg-card p-5">
-            <h3 className="font-semibold mb-3">Message History</h3>
-            {messages.length === 0 ? <p className="text-sm text-muted-foreground">No messages.</p> : (
+            <h3 className="font-semibold mb-3">{t("ws.cust.msg-title", lang)}</h3>
+            {messages.length === 0 ? <p className="text-sm text-muted-foreground">{t("ws.cust.msg-empty", lang)}</p> : (
               <div className="space-y-3">
                 {messages.map((m) => (
                   <div key={m.id} className="text-sm">
@@ -201,9 +204,9 @@ export default async function CustomerPassportPage({ params }: { params: Promise
 
         <TabsContent value="notes" className="mt-4">
           <div className="rounded-2xl border bg-card p-5">
-            <h3 className="font-semibold mb-3">Internal Notes</h3>
-            <p className="text-sm whitespace-pre-wrap">{customer.internalNotes ?? customer.notes ?? "No notes."}</p>
-            {customer.notes && <p className="mt-3 text-xs text-muted-foreground border-t pt-3">Customer note: {customer.notes}</p>}
+            <h3 className="font-semibold mb-3">{t("ws.cust.notes-title", lang)}</h3>
+            <p className="text-sm whitespace-pre-wrap">{customer.internalNotes ?? customer.notes ?? t("ws.cust.notes-empty", lang)}</p>
+            {customer.notes && <p className="mt-3 text-xs text-muted-foreground border-t pt-3">{t("ws.cust.customer-note", lang).replace("{notes}", customer.notes)}</p>}
           </div>
         </TabsContent>
       </Tabs>
