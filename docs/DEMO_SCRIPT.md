@@ -27,3 +27,9 @@ Precondition: pristine demo data (top bar → **RESET DEMO DATA**).
 
 Reset any time. The same journey is the target of the mandatory Playwright test
 `ahmad-complete-service-journey.spec.ts` (§74).
+
+> ⚠️ Rehearsed 19 Aug 2026 — all 20 steps PASS. Note: the seed is **anchored to
+> the run date**, so "today"-scoped numbers drift day to day: Jobs Today 24 (not
+> 28), Critical Stock 3 (not 4), Customers Due 17-18, Ahmad passport 11 visits /
+> RM2,285 / 31,800 km stay stable. Trust the journey steps, not the exact counts —
+> they regenerate deterministically per date.
