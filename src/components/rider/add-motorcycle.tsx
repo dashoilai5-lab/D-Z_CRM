@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { addMotorcycle } from "@/actions/rider";
 import { MOTORCYCLE_TYPES, motorcycleTypeInfo } from "@/lib/motorcycle-types";
 import { servicesForType } from "@/lib/service-catalog";
+import { BIKE_BRANDS, modelsForBrand, OTHERS } from "@/lib/bike-models";
 
-const BRAND_SUGGESTIONS = ["Yamaha", "Honda", "Modenas", "Kawasaki", "Suzuki", "KTM", "Benelli", "Vespa", "SYM", "CFMOTO"];
 const COLORS = ["Black", "Red", "Blue", "White", "Grey", "Silver", "Green", "Orange"];
 const THIS_YEAR = new Date().getFullYear();
 
@@ -19,24 +19,33 @@ export function AddMotorcycle({ customerId, onDone }: { customerId: string; onDo
   const router = useRouter();
   const [pending, start] = useTransition();
   const [brand, setBrand] = useState("Yamaha");
+  const [customBrand, setCustomBrand] = useState("");
   const [model, setModel] = useState("");
+  const [customModel, setCustomModel] = useState("");
   const [year, setYear] = useState(String(THIS_YEAR - 1));
   const [type, setType] = useState("UNDERBONE");
   const [color, setColor] = useState("Black");
   const [mileage, setMileage] = useState("1000");
+
+  const brandIsCustom = brand === OTHERS;
+  const effectiveBrand = brandIsCustom ? customBrand.trim() : brand;
+  const models = modelsForBrand(brand);
+  const modelIsCustom = model === OTHERS;
+  const effectiveModel = modelIsCustom ? customModel.trim() : model;
 
   const typeInfo = motorcycleTypeInfo(type);
   const services = servicesForType(type);
 
   const submit = () =>
     start(async () => {
-      if (!model.trim()) { toast.error("Enter the model name"); return; }
+      if (!effectiveBrand) { toast.error("Enter the brand"); return; }
+      if (!effectiveModel) { toast.error("Enter the model"); return; }
       const y = Number(year);
       if (y < 1990 || y > THIS_YEAR + 1) { toast.error("Enter a valid year"); return; }
       await addMotorcycle({
         customerId,
-        brand,
-        model,
+        brand: effectiveBrand,
+        model: effectiveModel,
         year: y,
         type,
         color,
@@ -52,16 +61,27 @@ export function AddMotorcycle({ customerId, onDone }: { customerId: string; onDo
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label>Brand</Label>
-          <Select value={brand} onValueChange={(v) => setBrand(v ?? "Yamaha")}>
+          <Select value={brand} onValueChange={(v) => { setBrand(v ?? "Yamaha"); setModel(""); setCustomModel(""); }}>
             <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
             <SelectContent>
-              {BRAND_SUGGESTIONS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
+              {BIKE_BRANDS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
             </SelectContent>
           </Select>
+          {brandIsCustom && (
+            <Input value={customBrand} onChange={(e) => setCustomBrand(e.target.value)} placeholder="Brand name" className="mt-1.5" />
+          )}
         </div>
         <div>
           <Label>Model</Label>
-          <Input value={model} onChange={(e) => setModel(e.target.value)} placeholder="e.g. NMAX155" className="mt-1.5" />
+          <Select value={model} onValueChange={(v) => { setModel(v ?? ""); setCustomModel(""); }}>
+            <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {models.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          {modelIsCustom && (
+            <Input value={customModel} onChange={(e) => setCustomModel(e.target.value)} placeholder="Model name" className="mt-1.5" />
+          )}
         </div>
       </div>
       <div className="grid grid-cols-3 gap-3">
@@ -129,7 +149,7 @@ export function AddMotorcycle({ customerId, onDone }: { customerId: string; onDo
         </div>
       )}
 
-      <Button className="w-full" size="lg" disabled={pending || !model.trim()} onClick={submit}>
+      <Button className="w-full" size="lg" disabled={pending || !effectiveModel || !effectiveBrand} onClick={submit}>
         {pending ? "Adding…" : "ADD MOTORCYCLE"}
       </Button>
     </div>
