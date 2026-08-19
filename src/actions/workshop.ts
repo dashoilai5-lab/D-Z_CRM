@@ -109,6 +109,24 @@ export async function receivePurchaseOrder(poId: string) {
   return { ok: true, receivedAt: result.receivedAt };
 }
 
+export async function updateJobDetails(input: {
+  jobId: string;
+  mileage?: number;
+  customerRequest?: string;
+  mechanicId?: string | null;
+}) {
+  const data: Record<string, unknown> = {};
+  if (input.mileage !== undefined) data.mileage = input.mileage;
+  if (input.customerRequest !== undefined) data.customerRequest = input.customerRequest || null;
+  if (input.mechanicId !== undefined) {
+    if (input.mechanicId) data.mechanic = { connect: { id: input.mechanicId } };
+    else data.mechanic = { disconnect: true };
+  }
+  await db.serviceJob.update({ where: { id: input.jobId }, data });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
 export async function addAiRecommendation(input: {
   jobId: string; kind: "item" | "part"; description: string; quantity: number; unitPriceSen: number;
   productId?: string; unitCostSen?: number;

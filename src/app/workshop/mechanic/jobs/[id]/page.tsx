@@ -4,6 +4,8 @@ import { ChevronLeft } from "lucide-react";
 import { jobService } from "@/modules/service-jobs/service";
 import { ChecklistRunner } from "@/components/workshop/checklist-runner";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-form";
+import { db } from "@/lib/db";
 import { fmtKM } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +14,19 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
   const { id } = await params;
   const detail = await jobService.getDetail(id);
   if (!detail) notFound();
+
+  const mechanics = await db.user.findMany({ where: { role: { in: ["MECHANIC", "MANAGER"] }, active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } });
+  const editData: EditJobData = {
+    jobId: detail.id,
+    mileage: detail.mileage,
+    customerRequest: detail.customerRequest ?? null,
+    mechanicId: detail.mechanicId ?? null,
+    motorcycleType: detail.motorcycle.type,
+    items: [
+      ...detail.items.map((i) => ({ id: i.id, description: i.description, kind: "item" as const, unitPriceSen: i.unitPriceSen, status: i.status })),
+      ...detail.parts.map((p) => ({ id: p.id, description: p.product?.name ?? "Part", kind: "part" as const, unitPriceSen: p.unitPriceSen, status: p.status })),
+    ],
+  };
 
   const checklistItems = detail.checklist?.items.map((i) => ({ id: i.id, name: i.name, result: i.result, note: i.note })) ?? [];
   const findings = detail.findings.map((f) => ({
@@ -27,6 +42,8 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
       <div className="flex items-center gap-3 mb-5">
         <h1 className="text-2xl font-bold font-mono tracking-tight">#{detail.jobNumber}</h1>
         <StatusBadge kind="job" value={detail.status} />
+        <div className="flex-1" />
+        <EditJobForm data={editData} mechanics={mechanics} />
       </div>
       <div className="rounded-2xl border bg-card p-4 mb-5 flex flex-wrap items-center justify-between gap-2">
         <div>

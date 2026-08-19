@@ -9,8 +9,10 @@ import { Money } from "@/components/shared/money";
 import { JobActions } from "@/components/workshop/job-actions";
 import { RecommendationActions } from "@/components/workshop/recommendation-actions";
 import { AiRecommendationActions } from "@/components/workshop/ai-recommendation-actions";
+import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-form";
 import { fmtDate, fmtDateTime, fmtKM } from "@/lib/format";
 import { formatRM } from "@/lib/money";
+import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +23,18 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const recs = await aiService.salesRecommendations(id);
   const checklist = detail.checklist;
   const pendingApprovals = detail.approvals.filter((a) => a.status === "PENDING");
+  const mechanics = await db.user.findMany({ where: { role: { in: ["MECHANIC", "MANAGER"] }, active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } });
+  const editData: EditJobData = {
+    jobId: detail.id,
+    mileage: detail.mileage,
+    customerRequest: detail.customerRequest ?? null,
+    mechanicId: detail.mechanicId ?? null,
+    motorcycleType: detail.motorcycle.type,
+    items: [
+      ...detail.items.map((i) => ({ id: i.id, description: i.description, kind: "item" as const, unitPriceSen: i.unitPriceSen, status: i.status })),
+      ...detail.parts.map((p) => ({ id: p.id, description: p.product?.name ?? "Part", kind: "part" as const, unitPriceSen: p.unitPriceSen, status: p.status })),
+    ],
+  };
 
   return (
     <div>
@@ -37,6 +51,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </span>
         )}
         <div className="flex-1" />
+        <EditJobForm data={editData} mechanics={mechanics} />
         <JobActions jobId={detail.id} status={detail.status} />
       </div>
 
