@@ -137,19 +137,21 @@ export default async function RiderHomePage() {
       )}
 
       {livePromos.length > 0 && (
-        <Link href="/rider/book" className="block rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white p-5">
-          <div className="flex items-center gap-2 text-sm font-bold">
-            <Tag className="h-4 w-4" /> SPECIAL OFFER
+        <Link href="/rider/promotions" className="block rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm font-bold">
+              <Tag className="h-4 w-4" /> SPECIAL OFFER
+            </div>
+            <span className="text-xs font-medium opacity-90">View all →</span>
           </div>
           <div className="mt-2 space-y-1.5">
-            {livePromos.map((p) => (
+            {livePromos.slice(0, 2).map((p) => (
               <div key={p.id} className="flex items-center justify-between text-sm">
                 <span>{p.name}</span>
                 {p.discountPercent && <span className="rounded-full bg-white/20 px-2 py-0.5 text-xs font-bold">−{p.discountPercent}%</span>}
               </div>
             ))}
           </div>
-          <div className="mt-3 text-xs opacity-90">Tap to book with the promo applied</div>
         </Link>
       )}
 
