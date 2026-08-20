@@ -38,8 +38,22 @@ export default async function ServiceStatusPage() {
         </div>
       );
     }
+    const pct = Math.round(((idx + 1) / LIFECYCLE_STEPS.length) * 100);
+    const eta = r.job?.estimatedCompletionAt;
     return (
       <div className="mt-5">
+        <div className="mb-4 flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Overall progress</span>
+          <span className="font-bold tabular-nums text-primary">{pct}%</span>
+        </div>
+        <div className="mb-4 h-2 rounded-full bg-muted overflow-hidden">
+          <div className="h-full rounded-full bg-primary transition-all" style={{ width: pct + "%" }} />
+        </div>
+        {eta && idx < 5 && (
+          <div className="mb-4 rounded-lg bg-primary/5 border border-primary/15 px-3 py-2 text-xs">
+            ⏱ Estimated ready: <strong>{eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong> · {eta.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}
+          </div>
+        )}
         {LIFECYCLE_STEPS.map((s, i) => {
           const done = i < idx;
           const isActive = i === idx;

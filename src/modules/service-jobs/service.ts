@@ -158,7 +158,15 @@ export class JobService {
     if (job.status === "COMPLETED" || job.status === "CANCELLED") throw new Error("Job is already closed");
     if (!this.canTransition(job.status, to)) throw new Error("Illegal transition " + job.status + " to " + to);
     const data: Prisma.ServiceJobUpdateInput = { status: to };
-    if (to === "IN_PROGRESS") data.startedAt = job.startedAt ?? new Date();
+    if (to === "IN_PROGRESS") {
+      data.startedAt = job.startedAt ?? new Date();
+      // JOB-016: estimate completion from service duration (package items/type — default 2h)
+      if (!job.estimatedCompletionAt) {
+        const durationMin = await db.serviceType.findFirst({ where: { name: { contains: (job.packageName ?? "").replace(/ .*/, "") } } }).then((st) => st?.durationMin ?? null).catch(() => null);
+        const mins = durationMin ?? 120;
+        data.estimatedCompletionAt = new Date(Date.now() + mins * 60000);
+      }
+    }
     if (to === "READY") data.readyAt = new Date();
     const updated = await this.repo.update(id, data);
     // JOB-022/023: timestamped, user-attributed status history

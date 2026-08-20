@@ -301,6 +301,7 @@ model ServiceJob {
   mileage         Int
   customerRequest String?
   status          JobStatus  @default(WAITING)
+  estimatedCompletionAt DateTime? // JOB-016: estimated ready time (derived from service duration)
   startedAt       DateTime?
   readyAt         DateTime?
   completedAt     DateTime?

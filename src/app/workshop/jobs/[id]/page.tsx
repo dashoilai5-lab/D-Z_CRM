@@ -59,6 +59,34 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         <JobActions jobId={detail.id} status={detail.status} />
       </div>
 
+      {/* JOB-016 / rider lifecycle: customer-facing progress + ETA (linked to rider service-status) */}
+      <div className="rounded-2xl border bg-card p-4 mb-5">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-sm">Rider lifecycle progress</h3>
+          <Link href={"/rider/service-status"} className="text-[11px] text-primary hover:underline">customer view →</Link>
+        </div>
+        {(() => {
+          const order = ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY", "COMPLETED"];
+          const idx = order.indexOf(detail.status);
+          const pct = detail.status === "COMPLETED" ? 100 : detail.status === "READY" ? 85 : idx >= 0 ? Math.round(((idx + 1) / 7) * 100) : 0;
+          const eta = detail.estimatedCompletionAt;
+          return (
+            <div>
+              <div className="flex items-center justify-between text-xs mb-1">
+                <span className="text-muted-foreground">Booking → Ready for collection</span>
+                <span className="font-bold tabular-nums text-primary">{pct}%</span>
+              </div>
+              <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <div className="h-full rounded-full bg-primary" style={{ width: pct + "%" }} />
+              </div>
+              {eta && detail.status !== "COMPLETED" && (
+                <p className="mt-2 text-xs text-muted-foreground">⏱ Estimated ready: <strong>{fmtDateTime(eta)}</strong></p>
+              )}
+            </div>
+          );
+        })()}
+      </div>
+
       {statusHistory.length > 0 && (
         <div className="rounded-2xl border bg-card p-4 mb-5">
           <h3 className="font-semibold text-sm mb-2">Status history</h3>

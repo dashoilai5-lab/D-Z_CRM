@@ -17,16 +17,16 @@ async function main() {
     console.log("-> CHECKED_IN job:", result?.jobNumber);
   }
   if (stage === "inprogress") {
-    const job = await prisma.serviceJob.findFirst({ where: { bookingId: bk.id } });
+    const job = await prisma.serviceJob.findFirst({ where: { booking: { id: bk.id } } });
     if (job && job.status === "WAITING") { await jobService.transition(job.id, "IN_PROGRESS"); console.log("-> IN_PROGRESS"); }
     else console.log("job status:", job?.status);
   }
   if (stage === "qc") {
-    const job = await prisma.serviceJob.findFirst({ where: { bookingId: bk.id } });
+    const job = await prisma.serviceJob.findFirst({ where: { booking: { id: bk.id } } });
     if (job) { await jobService.transition(job.id, "QC_CHECK"); console.log("-> QC_CHECK"); }
   }
   if (stage === "ready") {
-    const job = await prisma.serviceJob.findFirst({ where: { bookingId: bk.id } });
+    const job = await prisma.serviceJob.findFirst({ where: { booking: { id: bk.id } } });
     if (job) { await jobService.transition(job.id, "READY"); console.log("-> READY"); }
   }
   await prisma.$disconnect();

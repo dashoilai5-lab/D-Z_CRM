@@ -12,7 +12,7 @@ export const LIFECYCLE_STEPS: LifecycleStep[] = [
 export interface BikeStatus {
   bike: { id: string; brand: string; model: string; plate: string; year: number; currentMileage: number };
   booking: { id: string; serviceType: string; date: Date; timeSlot: string; status: string; source: string } | null;
-  job: { id: string; jobNumber: string; status: string; packageName: string | null; readyAt: Date | null; completedAt: Date | null; mileage: number } | null;
+  job: { id: string; jobNumber: string; status: string; packageName: string | null; readyAt: Date | null; completedAt: Date | null; mileage: number; estimatedCompletionAt: Date | null } | null;
   /** 0-based index into LIFECYCLE_STEPS; null when cancelled/no-show/completed-outside */
   stepIndex: number | null;
   /** terminal flag: cancelled / no-show / completed */
@@ -82,7 +82,7 @@ export async function getRiderStatus(customerId: string): Promise<BikeStatus[]> 
     out.push({
       bike: { id: bike.id, brand: bike.brand, model: bike.model, plate: bike.plate, year: bike.year, currentMileage: bike.currentMileage },
       booking: activeBooking ? { id: activeBooking.id, serviceType: activeBooking.serviceType, date: activeBooking.date, timeSlot: activeBooking.timeSlot, status: activeBooking.status, source: activeBooking.source } : null,
-      job: job ? { id: job.id, jobNumber: job.jobNumber, status: job.status, packageName: job.packageName, readyAt: job.readyAt, completedAt: job.completedAt, mileage: job.mileage } : null,
+      job: job ? { id: job.id, jobNumber: job.jobNumber, status: job.status, packageName: job.packageName, readyAt: job.readyAt, completedAt: job.completedAt, mileage: job.mileage, estimatedCompletionAt: job.estimatedCompletionAt } : null,
       stepIndex,
       outcome,
       sub: subStatusOf(job?.status ?? null, pendingApprovals),

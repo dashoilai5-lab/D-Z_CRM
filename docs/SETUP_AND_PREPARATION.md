@@ -256,4 +256,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | 段 15 设置中心/UX/性能/可靠性/导航：/workshop/settings 从 ComingSoon 升级为配置中枢（组织资料/分支管理/服务目录 CRUD/丢失原因配置 + 8 个配置子页入口）；Organisation 补 lostReasons 字段（迁移 seg15_org_settings） | ADMIN 26 条核心配置就位；PERF/REL 生产属性标 🟡；§47 导航 23 模块清单核对 |
 | 2026-08-20 | 段 16 端到端工作流+DoD：E2E-SALES/SVC/RET/BR 四流程核对（46✅/5🟡 环节）；DONE 40 条（27✅/13🟡 生产属性归迁移） | 需求验证工程 16 段全部完成：895 条核对，缺失补齐，回归全绿；生产迁移清单见 SETUP §5 |
 | 2026-08-20 | rider 生命周期状态：新增 src/modules/rider/status.ts（booking+job 双状态聚合，7 阶段映射 resolveStep + 副状态 waiting_parts/on_hold/approval）；/rider/service-status 重写（多车状态卡 + 步骤条 + 空态引导 + 其他车辆摘要）；摩托车详情页加 Live status 入口；i18n 三语 svc.* 12 key | 顾客可全程追踪：预约待确认→已确认→已进店→服务中→质检→待取车→完成；实测六步流转全部正确；e2e 75 通过 |
+| 2026-08-20 | 预计完成+进度：ServiceJob.estimatedCompletionAt（迁移 seg16_estimated_completion），IN_PROGRESS 时按服务时长估算（默认 120min）；rider 状态页加进度条+ETA；Workshop 工单详情加 Rider lifecycle 进度区块+customer view 链接 | JOB-016 预计完成时间补齐（需求清单 🟡→✅）；rider 与 Workshop OS 双向链接；实测 DZ1188 ETA 自动设置；e2e 75 通过 |
 | — | （后续改动在此追加） | — |
