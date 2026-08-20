@@ -25,6 +25,35 @@ export async function redeemRewardAction(input: { customerId: string; rewardId: 
   return { ok: true, balance: result.balance };
 }
 
+export async function searchLoyaltyCustomers(q: string) {
+  const org = await db.organisation.findFirst();
+  const customers = await db.customer.findMany({
+    where: { organisationId: org!.id, OR: [{ name: { contains: q } }, { phone: { contains: q } }] },
+    orderBy: { name: "asc" },
+    take: 8,
+    select: { id: true, name: true, phone: true, tags: true, loyaltyAccount: { select: { pointsBalance: true, membershipId: true } } },
+  });
+  return customers;
+}
+
+export async function getLoyaltySnapshot(customerId: string) {
+  const account = await db.loyaltyAccount.findUnique({
+    where: { customerId },
+    include: { tier: true, transactions: { orderBy: { createdAt: "desc" }, take: 5 } },
+  });
+  const customer = await db.customer.findUnique({ where: { id: customerId }, select: { name: true, phone: true, email: true } });
+  return { customer, account: account ? {
+    pointsBalance: account.pointsBalance,
+    totalEarned: account.totalEarned,
+    totalRedeemed: account.totalRedeemed,
+    membershipId: account.membershipId,
+    tierName: account.tier?.name ?? null,
+    tierBenefits: account.tier?.benefits ?? null,
+    memberSince: account.memberSince,
+    recent: account.transactions.map((t) => ({ type: t.type, points: t.points, balanceAfter: t.balanceAfter, reason: t.reason, at: t.createdAt })),
+  } : null };
+}
+
 export async function qualifyReferralAction(referralId: string) {
   const { referralModule } = await import("@/modules/referrals/service");
   await referralModule.qualify(referralId);
