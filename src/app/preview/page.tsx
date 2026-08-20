@@ -39,6 +39,9 @@ export default function PreviewPage() {
     document.cookie = "dz_demo_persona=" + persona + "; path=/";
     document.cookie = "dz_lang=" + lang + "; path=/";
     document.cookie = "dz_hide_demo=1; path=/";
+    // Intentionally sync: cookies must be written before the iframe remounts,
+    // so the frame reloads with the new persona/lang applied.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setFrameKey((k) => k + 1); // reload frame with new cookies
   }, [persona, lang]);
 

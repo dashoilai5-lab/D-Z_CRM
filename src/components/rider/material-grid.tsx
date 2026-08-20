@@ -67,7 +67,7 @@ export function MaterialGrid({ groups }: { groups: MaterialGroup[] }) {
         </section>
         );
       })}
-      <Lightbox images={flat} index={openIndex} onClose={close} />
+      <Lightbox key={openIndex} images={flat} index={openIndex} onClose={close} />
     </>
   );
 }

@@ -19,7 +19,7 @@ export function NewsPosterGrid({ posters }: { posters: { id: string; title: stri
           <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-2 pb-1.5 pt-6 text-left text-[11px] font-medium text-white">{p.title}</span>
         </button>
       ))}
-      <Lightbox images={images} index={openIndex} onClose={close} />
+      <Lightbox key={openIndex} images={images} index={openIndex} onClose={close} />
     </div>
   );
 }

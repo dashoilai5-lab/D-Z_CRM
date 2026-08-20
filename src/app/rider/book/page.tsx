@@ -28,6 +28,8 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
 
   // per-branch widgets: available slots (7d) + rating
   const branchInfo = await Promise.all(branches.map(async (b) => {
+    // force-dynamic page: Date.now() is evaluated per request, not a purity violation here.
+    // eslint-disable-next-line react-hooks/purity
     const future = new Date(Date.now() + 7 * 86400000);
     const [slots, rating] = await Promise.all([
       db.appointmentSlot.count({ where: { branchId: b.id, date: { gte: new Date(), lte: future }, isHoliday: false, bookedCount: { lt: db.appointmentSlot.fields.maxBookings } } }),
@@ -39,6 +41,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   const selected = branch ? branchInfo.find((b) => b.id === branch) : null;
 
   // slots for the selected branch (14d)
+  // eslint-disable-next-line react-hooks/purity
   const future = new Date(Date.now() + 14 * 86400000);
   const rawSlots = selected
     ? await db.appointmentSlot.findMany({ where: { branchId: selected.id, date: { gte: new Date(), lte: future }, isHoliday: false }, select: { date: true, startTime: true, bookedCount: true, maxBookings: true } })

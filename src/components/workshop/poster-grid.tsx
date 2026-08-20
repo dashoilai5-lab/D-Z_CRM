@@ -104,7 +104,7 @@ export function PosterGrid({ posters }: { posters: PosterItem[] }) {
               <div className="p-4 flex-1">
                 <div className="font-medium text-sm">{p.title}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">{p.type}{p.month ? " · " + p.month : ""}</div>
-                {p.description && <p className="mt-2 text-xs text-muted-foreground">"{p.description}"</p>}
+                {p.description && <p className="mt-2 text-xs text-muted-foreground">&quot;{p.description}&quot;</p>}
                 <div className="mt-3 flex items-center gap-2 border-t pt-2.5">
                   <a
                     href={"https://wa.me/?text=" + encodeURIComponent("Check out our new poster: " + p.title + (p.url ? " " + "http://localhost:3002" + p.url : ""))}
@@ -136,7 +136,7 @@ export function PosterGrid({ posters }: { posters: PosterItem[] }) {
           </div>
         ))}
       </div>
-      <Lightbox images={images} index={openIndex} onClose={close} />
+      <Lightbox key={openIndex} images={images} index={openIndex} onClose={close} />
     </>
   );
 }
@@ -181,7 +181,7 @@ export function PosterBroadcast({ poster }: { poster: PosterItem }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setOpen(false)}>
           <div className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl border bg-background p-5" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold text-sm">Send "{poster.title}" via WhatsApp</h2>
+              <h2 className="font-semibold text-sm">Send &quot;{poster.title}&quot; via WhatsApp</h2>
               <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
             </div>
             <div className="flex items-center gap-2 mb-2">

@@ -33,11 +33,8 @@ export function useLightbox() {
 }
 
 export function Lightbox({ images, index, onClose }: { images: LightboxImage[]; index: number | null; onClose: () => void }) {
+  // index changes remount via key={index} at call sites, so initial state is enough.
   const [cur, setCur] = useState(index ?? 0);
-
-  useEffect(() => {
-    setCur(index ?? 0);
-  }, [index]);
 
   useEffect(() => {
     if (index === null) return;
