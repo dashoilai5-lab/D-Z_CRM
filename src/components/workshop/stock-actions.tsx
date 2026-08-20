@@ -23,7 +23,7 @@ export function StockActions({ branchId, productId, branches }: { branchId: stri
     <div className="flex items-center gap-1.5">
       <div className="flex items-center gap-1">
         <input className="w-12 rounded border bg-background px-1 py-0.5 text-xs" value={delta} onChange={(e) => setDelta(e.target.value)} />
-        <button className="text-[11px] text-emerald-600 hover:underline" disabled={busy} onClick={() => run(() => adjustStock({ branchId, productId, delta: parseInt(delta) || 1, reason: "Manual adjustment (+)" }), "+ok")}>+</button>
+        <button className="text-[11px] text-emerald-600 dark:text-emerald-300 hover:underline" disabled={busy} onClick={() => run(() => adjustStock({ branchId, productId, delta: parseInt(delta) || 1, reason: "Manual adjustment (+)" }), "+ok")}>+</button>
         <button className="text-[11px] text-destructive hover:underline" disabled={busy} onClick={() => run(() => adjustStock({ branchId, productId, delta: -(parseInt(delta) || 1), reason: "Manual adjustment (-)" }), "-ok")}>−</button>
       </div>
       <span className="text-muted-foreground/40">|</span>

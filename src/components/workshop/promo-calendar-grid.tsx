@@ -28,7 +28,7 @@ const TYPE_BAR: Record<string, string> = {
 };
 const TYPE_LABEL: Record<string, string> = { PROMO: "Promo", RETURN: "Return", REMINDER: "Reminder", NEWS: "News" };
 const STATUS_TONE: Record<string, string> = {
-  ACTIVE: "text-emerald-600", SCHEDULED: "text-blue-600", DRAFT: "text-slate-400", ENDED: "text-slate-400 line-through",
+  ACTIVE: "text-emerald-600 dark:text-emerald-300", SCHEDULED: "text-blue-600 dark:text-blue-300", DRAFT: "text-slate-400", ENDED: "text-slate-400 line-through",
 };
 type View = "week" | "month" | "year";
 
@@ -190,9 +190,9 @@ export function PromoCalendarGrid({ campaigns }: { campaigns: CalendarCampaign[]
             <div key={c.id} className="flex items-center gap-1.5 text-xs">
               <span className={"h-1.5 w-1.5 rounded-full shrink-0 " + (TYPE_BAR[c.type] ?? "bg-slate-400")} />
               <span className="flex-1 truncate font-medium">{c.name}</span>
-              {c.discountPercent && <span className="text-[10px] font-bold text-purple-600">−{c.discountPercent}%</span>}
+              {c.discountPercent && <span className="text-[10px] font-bold text-purple-600 dark:text-purple-300">−{c.discountPercent}%</span>}
               <span className="text-[9px] font-semibold capitalize text-muted-foreground">{c.status.toLowerCase()}</span>
-              {c.conversions > 0 && <span className="text-[9px] text-emerald-600 font-semibold">{c.conversions} bookings</span>}
+              {c.conversions > 0 && <span className="text-[9px] text-emerald-600 dark:text-emerald-300 font-semibold">{c.conversions} bookings</span>}
             </div>
           ))}
         </div>

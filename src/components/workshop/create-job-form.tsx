@@ -152,7 +152,7 @@ export function CreateJobForm({
                 <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{p.tier}</div>
                 <div className="mt-1 font-semibold">{p.name}</div>
                 <div className="mt-1 text-lg font-bold tabular-nums">{formatRM(p.priceSen)}</div>
-                {p.isBestValue && <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700">BEST VALUE</span>}
+                {p.isBestValue && <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">BEST VALUE</span>}
                 {p.description && <p className="mt-2 text-[11px] text-muted-foreground leading-snug">{p.description}</p>}
               </label>
             ))}

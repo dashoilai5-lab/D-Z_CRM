@@ -66,7 +66,7 @@ export function AiDraftComposer() {
               ))}
             </div>
           )}
-          {customerId && !customers.length && <p className="text-[10px] text-emerald-600 mt-0.5">Selected ✓</p>}
+          {customerId && !customers.length && <p className="text-[10px] text-emerald-600 dark:text-emerald-300 mt-0.5">Selected ✓</p>}
         </div>
         <div>
           <label className={labelCls}>Message type</label>

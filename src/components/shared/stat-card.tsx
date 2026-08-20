@@ -5,8 +5,8 @@ export function StatCard({ label, value, sub, href, tone = "default", icon }: {
   label: string; value: React.ReactNode; sub?: string; href?: string; tone?: "default" | "danger" | "success" | "warn"; icon?: React.ReactNode;
 }) {
   const cls =
-    tone === "danger" ? "text-red-600" :
-    tone === "success" ? "text-emerald-600" :
+    tone === "danger" ? "text-red-600 dark:text-red-300" :
+    tone === "success" ? "text-emerald-600 dark:text-emerald-300" :
     tone === "warn" ? "text-amber-600" : "text-foreground";
   const iconBg =
     tone === "danger" ? "bg-red-50 text-red-600 dark:bg-red-950/40" :

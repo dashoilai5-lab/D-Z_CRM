@@ -9,10 +9,10 @@ import { t } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
 
 const LEVEL: Record<string, string> = {
-  HEALTHY: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-  LOW: "bg-amber-50 text-amber-700 ring-amber-200",
-  CRITICAL: "bg-red-50 text-red-700 ring-red-200",
-  OUT_OF_STOCK: "bg-slate-100 text-slate-700 ring-slate-300",
+  HEALTHY: "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:ring-emerald-900",
+  LOW: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900",
+  CRITICAL: "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950/50 dark:text-red-300 dark:ring-red-900",
+  OUT_OF_STOCK: "bg-slate-100 text-slate-700 dark:bg-slate-950/60 dark:text-slate-300 ring-slate-300",
 };
 
 export default async function StockPage() {

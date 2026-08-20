@@ -13,9 +13,9 @@ export type RideItem = {
 };
 
 const STYLE: Record<string, string> = {
-  PENDING: "bg-amber-500/15 text-amber-600",
-  CONFIRMED: "bg-blue-500/15 text-blue-600",
-  COMPLETED: "bg-emerald-500/15 text-emerald-600",
+  PENDING: "bg-amber-500/15 text-amber-600 dark:text-amber-300",
+  CONFIRMED: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
+  COMPLETED: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
   CANCELLED: "bg-muted text-muted-foreground",
   NO_SHOW: "bg-destructive/10 text-destructive",
 };

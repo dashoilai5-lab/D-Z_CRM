@@ -111,7 +111,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
                 <div className="mt-0.5 text-sm font-semibold leading-tight">{p.name}</div>
                 <div className="mt-1 text-base font-bold tabular-nums">{formatRM(p.priceSen)}</div>
                 {p.isBestValue && (
-                  <span className="mt-1 inline-block rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">BEST VALUE</span>
+                  <span className="mt-1 inline-block rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700 dark:text-emerald-300">BEST VALUE</span>
                 )}
               </button>
             );

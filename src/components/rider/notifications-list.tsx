@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import { markNotificationsRead } from "@/actions/rider";
 
 const TYPE_ICON: Record<string, { icon: typeof Info; cls: string }> = {
-  REMINDER: { icon: CalendarClock, cls: "bg-amber-100 text-amber-700" },
-  APPROVAL: { icon: MessageSquare, cls: "bg-blue-100 text-blue-700" },
-  PROMO: { icon: Megaphone, cls: "bg-purple-100 text-purple-700" },
-  INFO: { icon: Info, cls: "bg-slate-100 text-slate-600" },
+  REMINDER: { icon: CalendarClock, cls: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" },
+  APPROVAL: { icon: MessageSquare, cls: "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300" },
+  PROMO: { icon: Megaphone, cls: "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300" },
+  INFO: { icon: Info, cls: "bg-slate-100 text-slate-600 dark:text-slate-300" },
 };
 
 export interface RiderNotification {

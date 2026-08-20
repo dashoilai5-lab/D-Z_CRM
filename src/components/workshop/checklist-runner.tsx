@@ -141,11 +141,11 @@ export function ChecklistRunner({
             {findings.map((f) => (
               <div key={f.id} className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-sm">
                 <div>
-                  <div className="font-medium">{f.title} <span className={"text-[10px] font-bold uppercase " + (f.severity === "WARNING" ? "text-amber-600" : "text-red-600")}>({f.severity})</span></div>
+                  <div className="font-medium">{f.title} <span className={"text-[10px] font-bold uppercase " + (f.severity === "WARNING" ? "text-amber-600 dark:text-amber-300" : "text-red-600 dark:text-red-300")}>({f.severity})</span></div>
                   {f.recommendedRepair && <div className="text-xs text-muted-foreground">{f.recommendedRepair} · RM{((f.priceSen ?? 0) / 100).toFixed(2)}</div>}
                 </div>
-                {f.approvalStatus === "PENDING" && <span className="text-xs font-semibold text-amber-600 flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" /> WAITING CUSTOMER</span>}
-                {f.approvalStatus === "APPROVED" && <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> CUSTOMER APPROVED</span>}
+                {f.approvalStatus === "PENDING" && <span className="text-xs font-semibold text-amber-600 dark:text-amber-300 flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" /> WAITING CUSTOMER</span>}
+                {f.approvalStatus === "APPROVED" && <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-300 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> CUSTOMER APPROVED</span>}
                 {f.approvalStatus === "DECLINED" && <span className="text-xs font-semibold text-red-500 flex items-center gap-1"><XCircle className="h-3.5 w-3.5" /> CUSTOMER DECLINED</span>}
               </div>
             ))}

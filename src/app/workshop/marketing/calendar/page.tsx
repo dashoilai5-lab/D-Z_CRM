@@ -25,9 +25,9 @@ const statusKey: Record<string, string> = {
   ENDED: "ws.mkt.status.ENDED",
 };
 const statusTone: Record<string, string> = {
-  ACTIVE: "bg-emerald-100 text-emerald-700",
-  SCHEDULED: "bg-blue-100 text-blue-700",
-  DRAFT: "bg-slate-100 text-slate-600",
+  ACTIVE: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
+  SCHEDULED: "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300",
+  DRAFT: "bg-slate-100 text-slate-600 dark:text-slate-300",
   ENDED: "bg-slate-100 text-slate-400",
 };
 
@@ -75,9 +75,9 @@ export default async function MarketingCalendarPage() {
                   <div className="text-xs text-muted-foreground">{(typeKey[c.type] ? t(typeKey[c.type], lang) : c.type)} · {c.audience ?? t("ws.mkt.calendar.all", lang)} · {fmtDate(c.startDate)}{c.endDate ? " → " + fmtDate(c.endDate) : ""}</div>
                 </div>
                 {c.type === "PROMO" && c.discountPercent && (
-                  <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-700">−{c.discountPercent}%</span>
+                  <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 dark:text-amber-300">−{c.discountPercent}%</span>
                 )}
-                <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (statusTone[c.status] ?? "bg-slate-100 text-slate-600")}>{statusKey[c.status] ? t(statusKey[c.status], lang) : c.status}</span>
+                <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (statusTone[c.status] ?? "bg-slate-100 text-slate-600 dark:text-slate-300")}>{statusKey[c.status] ? t(statusKey[c.status], lang) : c.status}</span>
                 <CampaignForm
                   initial={{ id: c.id, name: c.name, type: c.type, status: c.status, audience: c.audience ?? null, startDate: c.startDate, endDate: c.endDate, discountPercent: c.discountPercent }}
                 />
@@ -89,7 +89,7 @@ export default async function MarketingCalendarPage() {
                 <span className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2.5 py-1">
                   <span className="font-semibold text-foreground">{dueCustomers}</span> {t("ws.mkt.calendar.customers-due-label", lang)}
                 </span>
-                <span className={"inline-flex items-center gap-1 rounded-full px-2.5 py-1 " + (conversions > 0 ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "bg-muted/50")}>
+                <span className={"inline-flex items-center gap-1 rounded-full px-2.5 py-1 " + (conversions > 0 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 ring-1 ring-emerald-200" : "bg-muted/50")}>
                   <span className={"font-semibold " + (conversions > 0 ? "text-emerald-700" : "text-foreground")}>{conversions}</span> {t("ws.mkt.calendar.bookings-driven", lang)}
                 </span>
               </div>

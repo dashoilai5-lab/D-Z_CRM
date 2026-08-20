@@ -61,10 +61,10 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
                   <td className="px-4 py-3 tabular-nums font-medium"><Money sen={c.lifetimeSpendSen} /></td>
                   <td className="px-4 py-3 text-muted-foreground">{c.lastVisitAt ? fmtDate(c.lastVisitAt) : "—"}</td>
                   <td className="px-4 py-3">
-                    {c.dueStatus === "DUE" && <span className="inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 ring-1 ring-red-200">{t("ws.customers.due", lang)}</span>}
-                    {c.dueStatus === "DUE_SOON" && <span className="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-200">{t("ws.customers.due-soon", lang)}</span>}
-                    {c.dueStatus === "UPCOMING" && <span className="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 ring-1 ring-blue-200">{t("ws.customers.upcoming", lang)}</span>}
-                    {c.dueStatus === "BOOKED" && <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-200">{t("ws.customers.booked", lang)}</span>}
+                    {c.dueStatus === "DUE" && <span className="inline-flex rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700 dark:text-red-300 ring-1 ring-red-200">{t("ws.customers.due", lang)}</span>}
+                    {c.dueStatus === "DUE_SOON" && <span className="inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:text-amber-300 ring-1 ring-amber-200">{t("ws.customers.due-soon", lang)}</span>}
+                    {c.dueStatus === "UPCOMING" && <span className="inline-flex rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300 ring-1 ring-blue-200">{t("ws.customers.upcoming", lang)}</span>}
+                    {c.dueStatus === "BOOKED" && <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">{t("ws.customers.booked", lang)}</span>}
                     {c.dueStatus === "NONE" && <span className="text-xs text-muted-foreground">—</span>}
                   </td>
                 </tr>

@@ -16,7 +16,7 @@ export function ApprovalCard({ approval }: { approval: { id: string; title: stri
       <div className="rounded-2xl border bg-card p-4 opacity-70">
         <div className="text-sm font-semibold">{approval.title}</div>
         <div className="text-xs text-muted-foreground mt-0.5">{approval.job.jobNumber} · {approval.job.motorcycle.plate}</div>
-        <div className="mt-1 text-xs font-semibold uppercase text-emerald-600">{approval.status === "APPROVED" ? "Approved ✓" : "Declined ✗"}</div>
+        <div className="mt-1 text-xs font-semibold uppercase text-emerald-600 dark:text-emerald-300">{approval.status === "APPROVED" ? "Approved ✓" : "Declined ✗"}</div>
       </div>
     );
   }
@@ -30,7 +30,7 @@ export function ApprovalCard({ approval }: { approval: { id: string; title: stri
 
   return (
     <div data-testid="approval-card" className="rounded-2xl border-2 border-amber-200 bg-card p-5">
-      <div className="text-[11px] font-bold uppercase tracking-wide text-amber-600">Additional Work Required</div>
+      <div className="text-[11px] font-bold uppercase tracking-wide text-amber-600 dark:text-amber-300">Additional Work Required</div>
       <h3 className="mt-1 text-lg font-bold uppercase">{approval.title}</h3>
       <p className="text-xs text-muted-foreground mt-1">{approval.job.motorcycle.brand} {approval.job.motorcycle.model} · {approval.job.motorcycle.plate}</p>
       {approval.description && (

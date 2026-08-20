@@ -63,8 +63,8 @@ export function MechanicBoard({ mechanics, initialMechanicId, ownerView }: {
               </div>
               {(m.approvals > 0 || m.ready > 0) && (
                 <div className="mt-2 flex gap-2 text-[10px] font-medium">
-                  {m.approvals > 0 && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700">⏳ {m.approvals}</span>}
-                  {m.ready > 0 && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700">✓ {m.ready} ready</span>}
+                  {m.approvals > 0 && <span className="rounded-full bg-amber-100 px-2 py-0.5 text-amber-700 dark:text-amber-300">⏳ {m.approvals}</span>}
+                  {m.ready > 0 && <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-emerald-700 dark:text-emerald-300">✓ {m.ready} ready</span>}
                 </div>
               )}
             </button>
@@ -80,8 +80,8 @@ export function MechanicBoard({ mechanics, initialMechanicId, ownerView }: {
           <span className="text-xs text-muted-foreground">— {current?.jobs.length} active job{(current?.jobs.length ?? 0) !== 1 ? "s" : ""}</span>
           <div className="flex-1" />
           <div className="flex gap-3 text-xs text-muted-foreground">
-            <span><span className="font-semibold text-amber-600">{current?.approvals ?? 0}</span> approvals</span>
-            <span><span className="font-semibold text-emerald-600">{current?.ready ?? 0}</span> ready</span>
+            <span><span className="font-semibold text-amber-600 dark:text-amber-300">{current?.approvals ?? 0}</span> approvals</span>
+            <span><span className="font-semibold text-emerald-600 dark:text-emerald-300">{current?.ready ?? 0}</span> ready</span>
           </div>
         </div>
       </div>
@@ -96,7 +96,7 @@ export function MechanicBoard({ mechanics, initialMechanicId, ownerView }: {
             <div className="mt-2 font-semibold">{j.motorcycle.brand} {j.motorcycle.model}</div>
             <div className="text-xs text-muted-foreground mt-0.5">{j.motorcycle.plate} · {j.customer.name}</div>
             <div className="mt-1.5 text-xs font-medium">{fmtKM(j.mileage)}{j.packageName ? " · " + j.packageName : ""}</div>
-            {j.pendingApprovals > 0 && <div className="mt-2 text-xs font-semibold text-amber-600">⏳ {j.pendingApprovals} customer approval pending</div>}
+            {j.pendingApprovals > 0 && <div className="mt-2 text-xs font-semibold text-amber-600 dark:text-amber-300">⏳ {j.pendingApprovals} customer approval pending</div>}
           </Link>
         ))}
         {(current?.jobs.length ?? 0) === 0 && <p className="text-sm text-muted-foreground text-center py-10">No active jobs for {current?.name}.</p>}

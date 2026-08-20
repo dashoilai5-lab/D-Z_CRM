@@ -30,7 +30,7 @@ export default async function AiCentrePage() {
         <div className="space-y-3">
         {recs.map((r, i) => (
           <Link key={i} href={r.href} className="group flex items-start gap-4 rounded-2xl border bg-card p-5 hover:border-primary/40 transition-colors">
-            <div className={"h-10 w-10 shrink-0 rounded-xl flex items-center justify-center " + (r.tone === "danger" ? "bg-red-50 text-red-600" : r.tone === "warn" ? "bg-amber-50 text-amber-600" : "bg-primary/10 text-primary")}>
+            <div className={"h-10 w-10 shrink-0 rounded-xl flex items-center justify-center " + (r.tone === "danger" ? "bg-red-50 text-red-600 dark:bg-red-950/50 dark:text-red-300" : r.tone === "warn" ? "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-300" : "bg-primary/10 text-primary")}>
               <Sparkles className="h-5 w-5" />
             </div>
             <div className="flex-1">

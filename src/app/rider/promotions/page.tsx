@@ -34,7 +34,7 @@ export default async function RiderPromotionsPage() {
       {livePromos.length > 0 && (
         <section>
           <div className="flex items-center gap-1.5 mb-2">
-            <Tag className="h-4 w-4 text-purple-600" />
+            <Tag className="h-4 w-4 text-purple-600 dark:text-purple-300" />
             <h2 className="font-semibold">Active Promotions</h2>
           </div>
           <div className="space-y-2">

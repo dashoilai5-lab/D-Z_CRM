@@ -73,7 +73,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
                   <Link key={j.id} href={"/workshop/jobs/" + j.id} className="dz-card-link block rounded-xl border bg-card p-3">
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-[11px] font-semibold">{j.jobNumber}</span>
-                      {j.pendingApprovals > 0 && <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">{t("ws.jobs.pending-approvals", lang).replace("{n}", String(j.pendingApprovals))}</span>}
+                      {j.pendingApprovals > 0 && <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">{t("ws.jobs.pending-approvals", lang).replace("{n}", String(j.pendingApprovals))}</span>}
                     </div>
                     <div className="mt-1 text-sm font-semibold">{j.motorcycle.brand} {j.motorcycle.model}</div>
                     <div className="text-[11px] text-muted-foreground">{j.motorcycle.plate} · {j.customer.name}</div>

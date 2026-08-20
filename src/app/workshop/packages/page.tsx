@@ -44,7 +44,7 @@ export default async function PackagesPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{p.tier}</span>
               <div className="flex items-center gap-1.5">
-                {p.isBestValue && <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">{t("ws.packages.best-value", lang)}</Badge>}
+                {p.isBestValue && <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200">{t("ws.packages.best-value", lang)}</Badge>}
                 {!p.active && <Badge className="bg-muted text-muted-foreground">Inactive</Badge>}
               </div>
             </div>
@@ -56,8 +56,8 @@ export default async function PackagesPage() {
                 const dups = dupMap[i.name] ?? [];
                 return (
                   <li key={i.id} className="flex items-center gap-2 flex-wrap">
-                    <span className="text-emerald-600">{i.kind === "GIFT" ? "🎁" : "✓"}</span> {i.name}
-                    {i.kind === "GIFT" && <span className="rounded-full bg-violet-500/15 text-violet-600 text-[10px] px-1.5 py-0.5 font-semibold">FREE</span>}
+                    <span className="text-emerald-600 dark:text-emerald-300">{i.kind === "GIFT" ? "🎁" : "✓"}</span> {i.name}
+                    {i.kind === "GIFT" && <span className="rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300 text-[10px] px-1.5 py-0.5 font-semibold">FREE</span>}
                     {dups.length > 0 && (
                       <span className="rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 text-[10px] px-1.5 py-0.5 font-medium">
                         ⚠ also in {dups.join(", ")}

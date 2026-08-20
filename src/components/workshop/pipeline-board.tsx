@@ -36,7 +36,7 @@ export function PipelineBoard({ stages, leads }: { stages: BoardStage[]; leads: 
                   <div className="flex items-start justify-between gap-2">
                     <Link href={"/workshop/leads/" + l.id} className="font-medium text-sm hover:underline">{l.customerName}</Link>
                     {l.isStale && (
-                      <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/15 text-amber-600 text-[10px] px-1.5 py-0.5">
+                      <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-300 text-[10px] px-1.5 py-0.5">
                         <AlertTriangle className="h-3 w-3" /> stale
                       </span>
                     )}

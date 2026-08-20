@@ -39,7 +39,7 @@ export default async function SlotsPage() {
                 <td className="px-3 py-2 text-xs">{s.startTime}</td>
                 <td className="px-3 py-2 text-xs">{s.bookedCount}/{s.maxBookings}</td>
                 <td className="px-3 py-2 text-xs">
-                  {s.isHoliday ? <span className="rounded-full bg-destructive/10 text-destructive px-2 py-0.5">Holiday</span> : s.bookedCount >= s.maxBookings ? <span className="rounded-full bg-amber-500/15 text-amber-600 px-2 py-0.5">Full</span> : <span className="rounded-full bg-emerald-500/15 text-emerald-600 px-2 py-0.5">Open</span>}
+                  {s.isHoliday ? <span className="rounded-full bg-destructive/10 text-destructive px-2 py-0.5">Holiday</span> : s.bookedCount >= s.maxBookings ? <span className="rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-300 px-2 py-0.5">Full</span> : <span className="rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 px-2 py-0.5">Open</span>}
                 </td>
                 <td className="px-3 py-2 text-right">
                   <SlotRowActions slotId={s.id} maxBookings={s.maxBookings} isHoliday={s.isHoliday} />

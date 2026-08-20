@@ -228,7 +228,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                     <div className="flex items-center justify-between">
                       <span className={"text-[11px] font-bold uppercase " + (f.severity === "WARNING" ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400")}>{f.severity}</span>
                       {f.approval && (
-                        <span className={"inline-flex items-center gap-1 text-[11px] font-semibold " + (f.approval.status === "PENDING" ? "text-amber-600" : f.approval.status === "APPROVED" ? "text-emerald-600" : "text-red-500")}>
+                        <span className={"inline-flex items-center gap-1 text-[11px] font-semibold " + (f.approval.status === "PENDING" ? "text-amber-600 dark:text-amber-300" : f.approval.status === "APPROVED" ? "text-emerald-600 dark:text-emerald-300" : "text-red-500")}>
                           {f.approval.status === "PENDING" ? t("ws.job.waiting-customer", lang) : f.approval.status === "APPROVED" ? <><CheckCircle2 className="h-3.5 w-3.5" /> {t("ws.job.customer-approved", lang)}</> : <><XCircle className="h-3.5 w-3.5" /> {t("ws.job.customer-declined", lang)}</>}
                         </span>
                       )}
@@ -251,7 +251,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             <section className="dz-panel p-5">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold">{t("ws.job.invoice", lang)}</h3>
-                <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (detail.invoice.status === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}>{detail.invoice.status}</span>
+                <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (detail.invoice.status === "PAID" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300")}>{detail.invoice.status}</span>
               </div>
               <div className="font-mono text-sm">{detail.invoice.invoiceNumber}</div>
               <div className="mt-3 space-y-1.5 text-sm">

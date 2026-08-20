@@ -21,7 +21,7 @@ export function TaskList({ items }: { items: TaskItem[] }) {
       {items.map((t) => (
         <div key={t.id} className="px-4 py-3 flex items-start gap-3 transition-colors hover:bg-muted/30" data-testid="task-row">
           {t.effectiveStatus === "COMPLETED" ? (
-            <button onClick={async () => { await reopenTask(t.id); router.refresh(); }} className="mt-0.5 text-emerald-600 hover:opacity-70" title="Reopen"><CheckCircle2 className="h-5 w-5" /></button>
+            <button onClick={async () => { await reopenTask(t.id); router.refresh(); }} className="mt-0.5 text-emerald-600 dark:text-emerald-300 hover:opacity-70" title="Reopen"><CheckCircle2 className="h-5 w-5" /></button>
           ) : (
             <button onClick={async () => { await completeTask(t.id); router.refresh(); }} className="mt-0.5 text-muted-foreground hover:text-emerald-600" title="Complete"><CheckCircle2 className="h-5 w-5" /></button>
           )}

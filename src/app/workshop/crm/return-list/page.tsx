@@ -9,10 +9,10 @@ import { t } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
 
 const SEGMENT: Record<string, { cls: string }> = {
-  "30_PLUS": { cls: "bg-blue-50 text-blue-700 ring-blue-200" },
-  "60_PLUS": { cls: "bg-amber-50 text-amber-700 ring-amber-200" },
-  "90_PLUS": { cls: "bg-orange-50 text-orange-700 ring-orange-200" },
-  LOST_CUSTOMER: { cls: "bg-red-50 text-red-700 ring-red-200" },
+  "30_PLUS": { cls: "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-900" },
+  "60_PLUS": { cls: "bg-amber-50 text-amber-700 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900" },
+  "90_PLUS": { cls: "bg-orange-50 text-orange-700 ring-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:ring-orange-900" },
+  LOST_CUSTOMER: { cls: "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950/50 dark:text-red-300 dark:ring-red-900" },
 };
 
 export default async function ReturnListPage() {
@@ -40,7 +40,7 @@ export default async function ReturnListPage() {
             </tr></thead>
             <tbody>
               {rows.map((r) => {
-                const seg = SEGMENT[r.segment] ?? { cls: "bg-slate-100 text-slate-700" };
+                const seg = SEGMENT[r.segment] ?? { cls: "bg-slate-100 text-slate-700 dark:bg-slate-950/60 dark:text-slate-300" };
                 const segLabel = SEGMENT[r.segment] ? t("ws.crm.return.seg." + r.segment, lang) : r.segment;
                 return (
                   <tr key={r.customerId} className="border-b last:border-0 hover:bg-muted/30">

@@ -41,10 +41,10 @@ export default async function RiderHistoryPage() {
             <div className="mt-1 font-semibold">{j.packageName ?? t("rider.general-service", lang)} <span className="text-xs font-normal text-muted-foreground">· {j.jobNumber}</span></div>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {j.items.filter((i) => i.unitPriceSen === 0).slice(0, 5).map((i) => (
-                <span key={i.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200">✓ {i.description}</span>
+                <span key={i.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">✓ {i.description}</span>
               ))}
               {j.parts.map((p) => (
-                <span key={p.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200">✓ {p.product.name} ×{p.quantity}</span>
+                <span key={p.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">✓ {p.product.name} ×{p.quantity}</span>
               ))}
             </div>
             <div className="mt-2.5 flex items-center justify-between text-xs text-muted-foreground">

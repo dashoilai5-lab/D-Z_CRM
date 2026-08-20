@@ -67,7 +67,7 @@ export function ReviewManager({ reviews }: { reviews: ReviewRow[] }) {
             {r.comment && <p className="mt-2 text-sm text-muted-foreground">“{r.comment}”</p>}
             <div className="mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
               <span>{r.source} · {fmtDate(r.createdAt)}</span>
-              <span className={"rounded-full px-2 py-0.5 font-semibold " + (r.status === "PUBLISHED" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700")}>{r.status}</span>
+              <span className={"rounded-full px-2 py-0.5 font-semibold " + (r.status === "PUBLISHED" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300" : "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300")}>{r.status}</span>
             </div>
 
             {r.reply && (
@@ -90,7 +90,7 @@ export function ReviewManager({ reviews }: { reviews: ReviewRow[] }) {
                 <div className="flex gap-2">
                   {r.status !== "PUBLISHED" && (
                     <button onClick={() => publish(r.id)} disabled={pending} className="flex-1 inline-flex items-center justify-center gap-1 rounded-lg border py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-40">
-                      <Check className="h-3.5 w-3.5 text-emerald-600" /> Publish
+                      <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" /> Publish
                     </button>
                   )}
                   <button onClick={() => setReplying(r.id)} disabled={pending} className={cn("inline-flex items-center justify-center gap-1 rounded-lg py-1.5 text-xs font-medium", r.status === "PUBLISHED" ? "flex-1 bg-primary text-primary-foreground" : "flex-1 border hover:bg-muted")}>

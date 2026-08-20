@@ -45,7 +45,7 @@ export function LoyaltyManager({ rewards }: { rewards: { id: string; name: strin
             ))}
           </div>
         )}
-        {customerId && <p className="text-[11px] text-emerald-600 mt-1">Selected ✓</p>}
+        {customerId && <p className="text-[11px] text-emerald-600 dark:text-emerald-300 mt-1">Selected ✓</p>}
       </div>
       <div className="grid grid-cols-3 gap-2">
         <div>

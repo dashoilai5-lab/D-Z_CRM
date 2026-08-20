@@ -80,8 +80,8 @@ export default function ImportPage() {
         <div className="rounded-xl border bg-card p-4">
           <h2 className="font-semibold text-sm mb-2">Result</h2>
           <div className="grid grid-cols-3 gap-2 text-sm">
-            <div className="rounded-lg bg-emerald-500/10 text-emerald-600 p-2 text-center font-bold">{result.imported} imported</div>
-            <div className="rounded-lg bg-amber-500/10 text-amber-600 p-2 text-center font-bold">{result.duplicates} duplicates skipped</div>
+            <div className="rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 p-2 text-center font-bold">{result.imported} imported</div>
+            <div className="rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300 p-2 text-center font-bold">{result.duplicates} duplicates skipped</div>
             <div className="rounded-lg bg-destructive/10 text-destructive p-2 text-center font-bold">{result.failed} failed</div>
           </div>
           {result.errors.length > 0 && (

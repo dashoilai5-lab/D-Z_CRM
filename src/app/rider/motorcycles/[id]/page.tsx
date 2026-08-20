@@ -140,7 +140,7 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
               <div key={f.id} className="rounded-xl border p-3">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-medium">{f.title}</span>
-                  <span className={"shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold " + (f.severity === "FAIL" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700")}>{f.severity}</span>
+                  <span className={"shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold " + (f.severity === "FAIL" ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300")}>{f.severity}</span>
                 </div>
                 {f.note && <p className="mt-1 text-xs text-muted-foreground">{f.note}</p>}
                 <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground">
@@ -170,10 +170,10 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
             <div className="mt-1 font-semibold">{j.packageName ?? t("rider.general-service", lang)}</div>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {j.items.filter((i) => i.unitPriceSen === 0 || i.quantity > 0).slice(0, 6).map((i) => (
-                <span key={i.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200">✓ {i.description}</span>
+                <span key={i.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">✓ {i.description}</span>
               ))}
               {j.parts.map((p) => (
-                <span key={p.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-200">✓ {p.product.name} ×{p.quantity}</span>
+                <span key={p.id} className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">✓ {p.product.name} ×{p.quantity}</span>
               ))}
             </div>
             <div className="mt-2.5 flex items-center justify-between text-xs text-muted-foreground">

@@ -144,7 +144,7 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
               })}
             </div>
             {Object.keys(extra).length > 0 && (
-              <p className="mt-1.5 text-[11px] text-emerald-700">
+              <p className="mt-1.5 text-[11px] text-emerald-700 dark:text-emerald-300">
                 {Object.keys(extra).length} service(s) will be added — +{formatRM(Object.values(extra).reduce((s, x) => s + x.priceSen, 0))}
               </p>
             )}

@@ -17,14 +17,14 @@ export default async function ServiceStatusPage() {
   const stepLabel = (s: string) => t("svc." + s, lang);
 
   const stepIcon = (state: "done" | "active" | "todo") =>
-    state === "done" ? <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+    state === "done" ? <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
     : state === "active" ? <Loader2 className="h-5 w-5 animate-spin text-primary" />
     : <Circle className="h-5 w-5 text-slate-300" />;
 
   const badgeFor = (r: (typeof rows)[number]) => {
     if (r.sub?.kind === "waiting_parts") return <span className="rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 text-[11px] px-2.5 py-0.5 font-semibold">⏳ {t("svc.waiting_parts", lang)}</span>;
     if (r.sub?.kind === "on_hold") return <span className="rounded-full bg-slate-500/15 text-slate-600 dark:text-slate-300 text-[11px] px-2.5 py-0.5 font-semibold">⏸ {t("svc.on_hold", lang)}</span>;
-    if (r.sub?.kind === "approval") return <Link href="/rider/approvals" className="rounded-full bg-rose-500/15 text-rose-600 text-[11px] px-2.5 py-0.5 font-semibold hover:underline">✋ {t("svc.approval", lang)}</Link>;
+    if (r.sub?.kind === "approval") return <Link href="/rider/approvals" className="rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-300 text-[11px] px-2.5 py-0.5 font-semibold hover:underline">✋ {t("svc.approval", lang)}</Link>;
     return null;
   };
 

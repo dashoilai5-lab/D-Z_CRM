@@ -33,7 +33,7 @@ export default async function ProductsPage() {
                     <td className="px-4 py-2.5 text-xs">{p.brand}</td>
                     <td className="px-4 py-2.5 tabular-nums">{formatRM(p.costPriceSen)}</td>
                     <td className="px-4 py-2.5 font-semibold tabular-nums">{formatRM(p.sellPriceSen)}</td>
-                    <td className="px-4 py-2.5 tabular-nums text-emerald-600">{margin}%</td>
+                    <td className="px-4 py-2.5 tabular-nums text-emerald-600 dark:text-emerald-300">{margin}%</td>
                   </tr>
                 );
               })}

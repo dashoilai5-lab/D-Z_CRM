@@ -100,7 +100,7 @@ export default async function RiderProfilePage() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <h2 className="font-semibold">{t("rider.messages", lang)}</h2>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-200">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300 ring-1 ring-emerald-200">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" /> WhatsApp
             </span>
           </div>

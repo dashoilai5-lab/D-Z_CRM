@@ -48,7 +48,7 @@ export default async function LoyaltyPage({ searchParams }: { searchParams: Prom
                       {a.transactions.map((t) => (
                         <div key={t.id} className="text-[11px] text-muted-foreground flex justify-between gap-4">
                           <span>{t.type} · {t.reason}</span>
-                          <span className={t.points > 0 ? "text-emerald-600" : "text-destructive"}>{t.points > 0 ? "+" : ""}{t.points} → {t.balanceAfter}</span>
+                          <span className={t.points > 0 ? "text-emerald-600 dark:text-emerald-300" : "text-destructive"}>{t.points > 0 ? "+" : ""}{t.points} → {t.balanceAfter}</span>
                         </div>
                       ))}
                     </div>

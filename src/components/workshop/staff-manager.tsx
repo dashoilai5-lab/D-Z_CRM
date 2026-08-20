@@ -24,10 +24,10 @@ const ROLE_OPTIONS = [
 ] as const;
 
 const ROLE_BADGE: Record<string, string> = {
-  OWNER: "bg-purple-100 text-purple-700", SUPER_ADMIN: "bg-purple-100 text-purple-700",
-  MANAGER: "bg-blue-100 text-blue-700", COUNTER_STAFF: "bg-cyan-100 text-cyan-700",
-  SERVICE_ADVISOR: "bg-teal-100 text-teal-700", MECHANIC: "bg-amber-100 text-amber-700",
-  INVENTORY: "bg-slate-100 text-slate-700", MARKETING: "bg-fuchsia-100 text-fuchsia-700",
+  OWNER: "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300", SUPER_ADMIN: "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300",
+  MANAGER: "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300", COUNTER_STAFF: "bg-cyan-100 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300",
+  SERVICE_ADVISOR: "bg-teal-100 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300", MECHANIC: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300",
+  INVENTORY: "bg-slate-100 text-slate-700 dark:bg-slate-950/60 dark:text-slate-300", MARKETING: "bg-fuchsia-100 text-fuchsia-700",
 };
 
 export function StaffManager({ staff }: { staff: StaffRow[] }) {
@@ -104,12 +104,12 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
                 <tr key={s.id} className={"border-b last:border-0 " + (s.active ? "" : "opacity-50")}>
                   <td className="px-4 py-3 font-medium">{s.name}</td>
                   <td className="px-4 py-3">
-                    <span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold " + (ROLE_BADGE[s.role] ?? "bg-slate-100 text-slate-600")}>{s.role.replace("_", " ")}</span>
+                    <span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold " + (ROLE_BADGE[s.role] ?? "bg-slate-100 text-slate-600 dark:text-slate-300")}>{s.role.replace("_", " ")}</span>
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">{s.phone ?? "—"}{s.email ? " · " + s.email : ""}</td>
                   <td className="px-4 py-3 tabular-nums">{s.jobCount}</td>
                   <td className="px-4 py-3">
-                    <span className={"text-[11px] font-semibold " + (s.active ? "text-emerald-600" : "text-slate-400")}>{s.active ? "Active" : "Inactive"}</span>
+                    <span className={"text-[11px] font-semibold " + (s.active ? "text-emerald-600 dark:text-emerald-300" : "text-slate-400")}>{s.active ? "Active" : "Inactive"}</span>
                   </td>
                   <td className="px-4 py-3 text-right">
                     {s.role !== "OWNER" && s.role !== "SUPER_ADMIN" && (
