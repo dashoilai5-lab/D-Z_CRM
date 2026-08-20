@@ -19,7 +19,7 @@
 **剩余主线不变**：① 经销商验证（dtodo 59e04e5e）② 生产迁移 §65（dtodo 92b29072）——生产属性项（真实 provider/HTTPS/备份/索引/限流/PDPA）在 SETUP §5 清单与追踪文档各段 🟡 备注。
 
 ## 一句话状态
-原型功能已齐备且全绿：全模块（workshop/rider/营销闭环）+ 三语言 i18n + 手机预览框架 + 真实海报素材，75/75 Playwright 通过；剩余主线是经销商验证和生产迁移。
+原型功能已齐备且全绿：全模块（workshop/rider/营销闭环）+ 三语言 i18n + 手机预览框架 + 真实海报素材，75/75 Playwright 通过。2026-08-20 追加完成：Loading 全链路（A 类 17 页路由骨架 + B 类交互反馈：PendingForm/ExportCsvButton/搜索防抖）+ UI 高级感去 AI 味（emoji 清零/图标统一/语义色/品牌橙）；剩余主线是经销商验证和生产迁移。
 
 ## 会话信息
 - 原会话 ID：session-ec4b081f-efca-4e4f-a187-4302bb0ce385
@@ -41,7 +41,7 @@
 ## 下一步（按优先级）
 1. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策
 2. 生产迁移 §65：Supabase PG+Auth+RLS、provider 换真（WhatsApp/OpenAI/Storage/Payment）、Vercel、Sentry、k6（清单在 SETUP §5）
-3. 可选打磨：剩余 i18n（部分 toast/AI 动态文案）、分页、里程修正审计流
+3. 可选打磨：剩余 i18n（部分 toast/AI 动态文案）、分页、里程修正审计流、视觉模型剩余建议（数据卡单位/语言切换高亮/AI 卡洞察标签）
 
 ## 基线测试（命令 + 期望通过数）
 - \`pnpm test\`：20 个通过（money/state-machine/prediction/promo）
