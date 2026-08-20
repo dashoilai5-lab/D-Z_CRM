@@ -10,12 +10,15 @@ export const dynamic = "force-dynamic";
 export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ type?: string; all?: string }> }) {
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
-  const where: Record<string, unknown> = { OR: [{ branch: { organisationId: org!.id } }, { branchId: null }] };
+  // base scope (branch or system-wide) — independent of the active type filter
+  const baseWhere: Record<string, unknown> = { OR: [{ branch: { organisationId: org!.id } }, { branchId: null }] };
+  const where: Record<string, unknown> = { ...baseWhere };
   if (sp.type) where.type = sp.type;
   const [items, unread, typeCounts] = await Promise.all([
     db.notification.findMany({ where, orderBy: { createdAt: "desc" }, take: 100, include: { branch: { select: { city: true } } } }),
     db.notification.count({ where: { ...where, readAt: null } }),
-    db.notification.groupBy({ by: ["type"], where, _count: true }),
+    // all-type grouping (no type filter) so every filter button stays visible
+    db.notification.groupBy({ by: ["type"], where: baseWhere, _count: true }),
   ]);
   const visible = sp.all ? items : items.filter((n) => n.userId === null || n.userId === undefined);
 

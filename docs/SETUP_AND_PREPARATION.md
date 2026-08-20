@@ -258,4 +258,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | rider 生命周期状态：新增 src/modules/rider/status.ts（booking+job 双状态聚合，7 阶段映射 resolveStep + 副状态 waiting_parts/on_hold/approval）；/rider/service-status 重写（多车状态卡 + 步骤条 + 空态引导 + 其他车辆摘要）；摩托车详情页加 Live status 入口；i18n 三语 svc.* 12 key | 顾客可全程追踪：预约待确认→已确认→已进店→服务中→质检→待取车→完成；实测六步流转全部正确；e2e 75 通过 |
 | 2026-08-20 | 预计完成+进度：ServiceJob.estimatedCompletionAt（迁移 seg16_estimated_completion），IN_PROGRESS 时按服务时长估算（默认 120min）；rider 状态页加进度条+ETA；Workshop 工单详情加 Rider lifecycle 进度区块+customer view 链接 | JOB-016 预计完成时间补齐（需求清单 🟡→✅）；rider 与 Workshop OS 双向链接；实测 DZ1188 ETA 自动设置；e2e 75 通过 |
 | 2026-08-20 | rider 三步增强：① 完成评价引导（service-status 已完成车辆加 Rate 链接→service-history ReviewCard，Workshop reviews 页已有管理）② 工单状态变化→顾客通知（IN_PROGRESS/APPROVAL/QC/WAITING_PARTS/ON_HOLD/READY/COMPLETED，link 到状态页）③ Workshop dashboard 加 Service lifecycle 分布（按顾客可见 7 阶段分桶） | 三步均双向链接 rider↔Workshop OS；回归全绿 |
+| 2026-08-20 | 修复通知页筛选按钮：typeCounts 分组改用不含 type 筛选的 baseWhere——点击任一类型 filter 后所有按钮（All/INFO/JOB_READY 等）保持可见 | 实测：点 Info 后 JOB_READY 按钮仍在，点 JOB_READY 后 INFO 仍在；回归全绿 |
 | — | （后续改动在此追加） | — |
