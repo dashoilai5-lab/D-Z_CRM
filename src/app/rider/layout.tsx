@@ -15,7 +15,7 @@ export default async function RiderLayout({ children }: { children: React.ReactN
   return (
     <div className="flex min-h-screen flex-col bg-muted/40">
       {!hideDemo && <DemoBar persona={persona} compact lang={lang} />}
-      <main className="flex-1 w-full max-w-md mx-auto px-4 py-5 pb-28">{children}</main>
+      <main className="flex-1 w-full max-w-md mx-auto px-4 py-6 pb-28">{children}</main>
       <BottomNav lang={lang} />
     </div>
   );

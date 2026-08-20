@@ -265,4 +265,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | UI 增强第三轮（rider+详情页，纯视觉）：bookings 行卡加状态色条（7 色 border-l-4 + hover 变主色）；customers/[id] header 改 dz-panel+UserRound 图标+数据格卡片化（rounded-xl bg-muted/50 p-3）、车辆卡 hover；rider home 护照入口 dz-card-link | 回归全绿；截图 polish3-bookings/customer |
 | 2026-08-20 | UI 增强第四轮（详情页，纯视觉）：leads/[id] 时间线升级——垂直引导线+环形节点+时间徽章（dz-panel）；motorcycles/[id] 护照卡与服务历史表升级 dz-panel/dz-table | 回归全绿；截图 polish4-lead-detail/motorcycle |
 | 2026-08-20 | UI 增强第五轮（列表统一，纯视觉）：reminders 页升级 dz-panel/dz-table（sticky 表头+行 hover）；tasks 列表行 hover 提升 | 回归全绿；截图 polish5-reminders/tasks |
+| 2026-08-20 | UI 增强第六轮（rider，纯视觉）：rider bookings 卡加状态色条（7 色 border-l-4，与 workshop bookings 呼应）+ NO_SHOW 徽章；rider layout 主区上间距 py-5→py-6 | 回归全绿；截图 polish6-rider-bookings |
 | — | （后续改动在此追加） | — |

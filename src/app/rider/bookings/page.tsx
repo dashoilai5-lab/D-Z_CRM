@@ -8,13 +8,14 @@ import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-const STATUS_LABEL: Record<string, { key: string; cls: string }> = {
-  REQUESTED: { key: "book.REQUESTED", cls: "bg-amber-50 text-amber-700 ring-amber-200" },
-  CONFIRMED: { key: "book.CONFIRMED", cls: "bg-blue-50 text-blue-700 ring-blue-200" },
-  RESCHEDULED: { key: "book.RESCHEDULED", cls: "bg-purple-50 text-purple-700 ring-purple-200" },
-  CHECKED_IN: { key: "book.CHECKED_IN", cls: "bg-cyan-50 text-cyan-700 ring-cyan-200" },
-  COMPLETED: { key: "book.COMPLETED", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
-  CANCELLED: { key: "book.CANCELLED", cls: "bg-red-50 text-red-600 ring-red-200" },
+const STATUS_LABEL: Record<string, { key: string; cls: string; stripe: string }> = {
+  REQUESTED: { key: "book.REQUESTED", cls: "bg-amber-50 text-amber-700 ring-amber-200", stripe: "border-l-amber-400" },
+  CONFIRMED: { key: "book.CONFIRMED", cls: "bg-blue-50 text-blue-700 ring-blue-200", stripe: "border-l-blue-400" },
+  RESCHEDULED: { key: "book.RESCHEDULED", cls: "bg-purple-50 text-purple-700 ring-purple-200", stripe: "border-l-purple-400" },
+  CHECKED_IN: { key: "book.CHECKED_IN", cls: "bg-cyan-50 text-cyan-700 ring-cyan-200", stripe: "border-l-cyan-400" },
+  COMPLETED: { key: "book.COMPLETED", cls: "bg-emerald-50 text-emerald-700 ring-emerald-200", stripe: "border-l-emerald-400" },
+  CANCELLED: { key: "book.CANCELLED", cls: "bg-red-50 text-red-600 ring-red-200", stripe: "border-l-red-400" },
+  NO_SHOW: { key: "book.NO_SHOW", cls: "bg-slate-100 text-slate-600 ring-slate-300", stripe: "border-l-slate-300" },
 };
 
 export default async function RiderBookingsPage() {
@@ -34,7 +35,7 @@ export default async function RiderBookingsPage() {
         {bookings.map((b) => {
           const s = STATUS_LABEL[b.status] ?? null;
           return (
-            <div key={b.id} className="rounded-2xl border bg-card p-4">
+            <div key={b.id} className={"rounded-2xl border bg-card p-4 border-l-4 " + (s?.stripe ?? "border-l-border")}>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold">{b.serviceType}</span>
                 <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 " + (s?.cls ?? "")}>{s ? t(s.key, lang) : b.status}</span>
