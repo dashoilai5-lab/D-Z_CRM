@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
+import { AiDraftComposer } from "@/components/workshop/ai-draft-composer";
 import { aiService } from "@/modules/ai/service";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
@@ -13,16 +14,30 @@ export default async function AiCentrePage() {
   const branch = await db.branch.findFirst({ where: { isMain: true } });
   const recs = await aiService.recommendations(branch?.id);
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader title={t("dash.ai-centre", lang)} subtitle={t("ws.ai.subtitle", lang)} />
-      <div className="space-y-3">
+
+      {/* AI-011/013..019: message drafts */}
+      <div className="rounded-2xl border bg-card p-5">
+        <h2 className="font-semibold mb-1 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> AI Message Drafts</h2>
+        <p className="text-xs text-muted-foreground mb-4">Drafts are generated from structured CRM data only — review and edit before sending (AI-018/019).</p>
+        <AiDraftComposer />
+      </div>
+
+      {/* AI-020..027: business insights (rule-based) */}
+      <div>
+        <h2 className="font-semibold mb-3 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> AI Business Insights</h2>
+        <div className="space-y-3">
         {recs.map((r, i) => (
           <Link key={i} href={r.href} className="group flex items-start gap-4 rounded-2xl border bg-card p-5 hover:border-primary/40 transition-colors">
             <div className={"h-10 w-10 shrink-0 rounded-xl flex items-center justify-center " + (r.tone === "danger" ? "bg-red-50 text-red-600" : r.tone === "warn" ? "bg-amber-50 text-amber-600" : "bg-primary/10 text-primary")}>
               <Sparkles className="h-5 w-5" />
             </div>
             <div className="flex-1">
-              <p className="font-semibold">{r.title}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold">{r.title}</p>
+                <span className="rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-400 text-[10px] px-2 py-0.5 font-semibold">AI</span>
+              </div>
               <p className="text-sm text-muted-foreground mt-0.5">{r.detail}</p>
               <span className="mt-2 inline-block text-xs font-bold text-primary group-hover:underline">{r.action} →</span>
             </div>
@@ -31,6 +46,7 @@ export default async function AiCentrePage() {
         {recs.length === 0 && (
           <div className="rounded-2xl border bg-card p-10 text-center text-sm text-muted-foreground">{t("ws.ai.no-recs", lang)}</div>
         )}
+        </div>
       </div>
     </div>
   );
