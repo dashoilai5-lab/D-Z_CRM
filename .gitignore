@@ -50,3 +50,4 @@ prisma/e2e.db-journal
 playwright-report/
 test-results/
 storage/
+browser-screenshots/
