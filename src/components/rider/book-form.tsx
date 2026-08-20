@@ -20,8 +20,8 @@ const TOMORROW = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 export interface BikeOption { id: string; brand: string; model: string; plate: string; type: string }
 export interface PackageOption { id: string; name: string; tier: string; priceSen: number; isBestValue?: boolean; description?: string | null }
 
-export function BookForm({ customerId, bikes, packages, campaignId }: {
-  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null;
+export function BookForm({ customerId, bikes, packages, campaignId, availableSlots = [] }: {
+  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string }[];
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -30,6 +30,11 @@ export function BookForm({ customerId, bikes, packages, campaignId }: {
   const [extras, setExtras] = useState<Record<string, { label: string; priceSen: number }>>({});
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("10:00");
+  // BOOK-008: only slots configured & available for the picked date
+  const daySlots = date
+    ? [...new Set(availableSlots.filter((s) => s.date === date).map((s) => s.time))].sort()
+    : [];
+  const slotOptions = daySlots.length > 0 ? daySlots : ["10:00", "11:00", "14:00", "16:00"];
   const [notes, setNotes] = useState("");
 
   const selectedBike = bikes.find((b) => b.id === motorcycleId);
@@ -45,6 +50,7 @@ export function BookForm({ customerId, bikes, packages, campaignId }: {
   const submit = () =>
     start(async () => {
       if (!date) { toast.error("Pick a date"); return; }
+      if (!timeSlot) { toast.error("Pick a time"); return; }
       // build a readable service summary: package + selected extras
       const serviceType = [
         pkg?.name,
@@ -178,20 +184,21 @@ export function BookForm({ customerId, bikes, packages, campaignId }: {
         <div>
           <Label>Time</Label>
           <Select value={timeSlot} onValueChange={(v) => setTimeSlot(v ?? "")}>
-            <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="mt-1.5"><SelectValue placeholder={daySlots.length > 0 ? "Pick a slot" : "Pick a time"} /></SelectTrigger>
             <SelectContent>
-              {["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:00", "14:30", "15:00", "16:00"].map((t) => (
+              {slotOptions.map((t) => (
                 <SelectItem key={t} value={t}>{t}</SelectItem>
               ))}
             </SelectContent>
           </Select>
+          {daySlots.length === 0 && date && <p className="mt-1 text-[11px] text-muted-foreground">No configured slots that day — a default time will be used.</p>}
         </div>
       </div>
       <div>
         <Label>Notes (optional)</Label>
         <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Anything we should know?" className="mt-1.5" rows={3} />
       </div>
-      <Button className="w-full" size="lg" data-testid="book-submit" disabled={pending || !motorcycleId || !date} onClick={submit}>
+      <Button className="w-full" size="lg" data-testid="book-submit" disabled={pending || !motorcycleId || !date || !timeSlot} onClick={submit}>
         <Bike className="h-4 w-4 mr-2" /> {pending ? "Sending…" : "REQUEST BOOKING"}
       </Button>
       <p className="text-center text-[11px] text-muted-foreground">The workshop receives your request instantly and confirms the slot.</p>

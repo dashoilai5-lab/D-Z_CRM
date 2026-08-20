@@ -19,13 +19,14 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
   const [mileage, setMileage] = useState("");
   const [packageId, setPackageId] = useState("");
 
-  const run = (action: "CONFIRMED" | "RESCHEDULED" | "CANCELLED") =>
-    start(async () => { await bookingAction(bookingId, action); router.refresh(); toast.success("Booking " + action.toLowerCase()); });
+  const run = (action: "CONFIRMED" | "RESCHEDULED" | "CANCELLED" | "NO_SHOW") =>
+    start(async () => { await bookingAction(bookingId, action); router.refresh(); toast.success("Booking " + action.toLowerCase().replace(/_/g, " ")); });
 
   return (
     <div className="flex flex-wrap gap-1.5 justify-end">
       {status === "REQUESTED" && <Button size="sm" variant="outline" disabled={pending} onClick={() => run("CONFIRMED")}>Confirm</Button>}
       {status === "REQUESTED" && <Button size="sm" variant="ghost" disabled={pending} onClick={() => run("CANCELLED")}>Cancel</Button>}
+      {(status === "REQUESTED" || status === "CONFIRMED") && <Button size="sm" variant="ghost" disabled={pending} onClick={() => run("NO_SHOW")}>No Show</Button>}
       {status === "CONFIRMED" && <Button size="sm" variant="ghost" disabled={pending} onClick={() => run("RESCHEDULED")}>Reschedule</Button>}
       {(status === "REQUESTED" || status === "CONFIRMED") && (
         <Dialog open={open} onOpenChange={setOpen}>

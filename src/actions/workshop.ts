@@ -55,7 +55,7 @@ export async function assignMechanic(id: string, mechanicId: string | null) {
   return { ok: true };
 }
 
-export async function bookingAction(id: string, action: "CONFIRMED" | "RESCHEDULED" | "CANCELLED" | "CHECKED_IN", extra?: { date?: string; timeSlot?: string; mileage?: number; packageId?: string; mechanicId?: string }) {
+export async function bookingAction(id: string, action: "CONFIRMED" | "RESCHEDULED" | "CANCELLED" | "CHECKED_IN" | "NO_SHOW", extra?: { date?: string; timeSlot?: string; mileage?: number; packageId?: string; mechanicId?: string }) {
   if (action === "CHECKED_IN") {
     const org = await db.organisation.findFirst();
     const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });

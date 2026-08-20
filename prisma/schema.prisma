@@ -223,6 +223,7 @@ enum BookingStatus {
   CHECKED_IN
   COMPLETED
   CANCELLED
+  NO_SHOW
 }
 
 enum BookingSource {

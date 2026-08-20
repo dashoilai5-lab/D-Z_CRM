@@ -33,12 +33,19 @@ export class BookingService {
     };
   }
 
-  /** Create a booking (rider app or counter). */
+  /** Create a booking (rider app or counter). BOOK-008/031-035: slot capacity guard. */
   async create(input: {
     branchId: string; customerId: string; motorcycleId: string;
     serviceType: string; date: Date; timeSlot: string; notes?: string; source: BookingSource; campaignId?: string;
   }) {
-    return this.repo.create({
+    // prevent overbooking: if an AppointmentSlot is configured for this branch/date/time, respect its capacity
+    const slot = await db.appointmentSlot.findUnique({
+      where: { branchId_date_startTime: { branchId: input.branchId, date: input.date, startTime: input.timeSlot } },
+    });
+    if (slot && !slot.isHoliday && slot.bookedCount >= slot.maxBookings) {
+      throw new Error("SLOT_FULL");
+    }
+    const created = await this.repo.create({
       branch: { connect: { id: input.branchId } },
       customer: { connect: { id: input.customerId } },
       motorcycle: { connect: { id: input.motorcycleId } },
@@ -49,14 +56,52 @@ export class BookingService {
       source: input.source,
       campaign: input.campaignId ? { connect: { id: input.campaignId } } : undefined,
     });
+    if (slot) {
+      await db.appointmentSlot.update({ where: { id: slot.id }, data: { bookedCount: { increment: 1 } } });
+    }
+    const org = await db.organisation.findFirst();
+    if (org) {
+      await db.auditLog.create({
+        data: { organisationId: org.id, branchId: input.branchId, action: "BOOKING_CREATED", entity: "BOOKING", entityId: String((created as { id: string }).id), after: JSON.stringify({ serviceType: input.serviceType, date: input.date, timeSlot: input.timeSlot }) },
+      });
+    }
+    return created;
   }
 
-  /** Workshop booking actions (§20): confirm / reschedule / cancel / check in. */
+  /** Workshop booking actions (§20): confirm / reschedule / cancel / check in / no show. */
   async transition(id: string, status: BookingStatusInput, extra?: { date?: Date; timeSlot?: string }) {
     const data: Record<string, unknown> = { status };
     if (extra?.date) data.date = extra.date;
     if (extra?.timeSlot) data.timeSlot = extra.timeSlot;
-    return this.repo.update(id, data as never);
+    const updated = await this.repo.update(id, data as never);
+    // BOOK-011..019: confirmation message on CONFIRMED (recorded in Message history)
+    if (status === "CONFIRMED") {
+      try {
+        const booking = await db.booking.findUnique({ where: { id }, include: { customer: true, motorcycle: true, branch: true } });
+        if (booking) {
+          await db.message.create({
+            data: {
+              organisationId: booking.branch.organisationId,
+              branchId: booking.branchId,
+              customerId: booking.customerId,
+              direction: "OUT",
+              channel: "WHATSAPP",
+              body: "Hi " + booking.customer.name + ", your " + booking.serviceType + " booking for " + booking.motorcycle.brand + " " + booking.motorcycle.model + " at " + booking.branch.name + " is confirmed for " + booking.date.toISOString().slice(0, 10) + " " + booking.timeSlot + ". Ref: " + booking.id.slice(-6).toUpperCase(),
+              status: "SENT",
+              referenceType: "BOOKING",
+              referenceId: booking.id,
+            },
+          });
+        }
+      } catch { /* messaging must never break the transition */ }
+    }
+    const org = await db.organisation.findFirst();
+    if (org) {
+      await db.auditLog.create({
+        data: { organisationId: org.id, branchId: null, action: "BOOKING_STATUS_" + status, entity: "BOOKING", entityId: id, after: JSON.stringify({ status }) },
+      });
+    }
+    return updated;
   }
 
   async stats() {

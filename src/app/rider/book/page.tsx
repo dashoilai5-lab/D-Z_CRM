@@ -20,6 +20,18 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   });
   const campaignId = campaign || null;
   const promoName = promo || null;
+  // BOOK-006/007/008: only offer configured, non-full slots (branch = main)
+  const mainBranch = await db.branch.findFirst({ where: { organisationId: customer.organisationId, isMain: true } });
+  const future = new Date(Date.now() + 14 * 86400000);
+  const slots = mainBranch
+    ? await db.appointmentSlot.findMany({
+        where: { branchId: mainBranch.id, date: { gte: new Date(), lte: future }, isHoliday: false },
+        select: { date: true, startTime: true, bookedCount: true, maxBookings: true },
+      })
+    : [];
+  const availableSlots = slots
+    .filter((s) => s.bookedCount < s.maxBookings)
+    .map((s) => ({ date: s.date.toISOString().slice(0, 10), time: s.startTime }));
   return (
     <div className="space-y-5">
       <div>
@@ -31,6 +43,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
         bikes={bikes}
         packages={packages.map((p) => ({ id: p.id, name: p.name, tier: p.tier, priceSen: p.priceSen, isBestValue: p.isBestValue, description: p.description }))}
         campaignId={campaignId}
+        availableSlots={availableSlots}
       />
     </div>
   );
