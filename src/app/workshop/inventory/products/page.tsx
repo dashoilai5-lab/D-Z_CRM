@@ -17,7 +17,7 @@ export default async function ProductsPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
-              <th className="px-4 py-3 font-medium">{t("ws.products.col.name", lang)}</th><th className="px-4 py-3 font-medium">SKU</th>
+              <th className="px-4 py-3 font-medium">{t("ws.products.col.name", lang)}</th><th className="px-4 py-3 font-medium">SKU</th><th className="px-4 py-3 font-medium">Mfr No</th>
               <th className="px-4 py-3 font-medium">{t("ws.products.col.category", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.brand", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.products.col.cost", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.sell", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.margin", lang)}</th>
             </tr></thead>
@@ -28,6 +28,7 @@ export default async function ProductsPage() {
                   <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30">
                     <td className="px-4 py-2.5 font-medium">{p.name}</td>
                     <td className="px-4 py-2.5 font-mono text-xs">{p.sku}</td>
+                    <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground">{p.manufacturerPartNo ?? "—"}</td>
                     <td className="px-4 py-2.5 text-xs">{p.category?.replace("_", " ")}</td>
                     <td className="px-4 py-2.5 text-xs">{p.brand}</td>
                     <td className="px-4 py-2.5 tabular-nums">{formatRM(p.costPriceSen)}</td>

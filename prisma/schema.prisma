@@ -480,6 +480,8 @@ model Product {
   organisation   Organisation @relation(fields: [organisationId], references: [id])
   name           String
   sku            String   @unique
+  manufacturerPartNo String?
+  barcode        String?
   category       String?
   brand          String?
   unit           String   @default("unit")

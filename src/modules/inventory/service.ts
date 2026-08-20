@@ -116,6 +116,20 @@ export class InventoryService {
     await this.repo.createMovement({ branchId, productId, quantity: qty, reason, referenceType: "PURCHASE_ORDER", referenceId }, tx);
   }
 
+  /** Branch-to-branch stock transfer (INV-010): deduct source, add target, dual ledger entries. */
+  async transferStock(fromBranchId: string, toBranchId: string, productId: string, qty: number) {
+    if (qty <= 0) throw new Error("Quantity must be positive");
+    if (fromBranchId === toBranchId) throw new Error("Source and target branches are the same");
+    return db.$transaction(async (tx: DbLike) => {
+      await this.deductStockTx(fromBranchId, productId, qty, "Transfer out to branch " + toBranchId.slice(-4), undefined, tx);
+      const inv = await this.repo.getInventory(toBranchId, productId, tx);
+      const current = inv?.quantity ?? 0;
+      await this.repo.upsertInventory(toBranchId, productId, current + qty, tx);
+      await this.repo.createMovement({ branchId: toBranchId, productId, quantity: qty, reason: "Transfer in from branch " + fromBranchId.slice(-4), referenceType: "TRANSFER", referenceId: fromBranchId }, tx);
+      return { ok: true };
+    });
+  }
+
   async suppliers() {
     const rows = await this.repo.listSuppliers();
     return rows.map((s) => ({ id: s.id, name: s.name, contactName: s.contactName, phone: s.phone, leadTimeDays: s.leadTimeDays, productCount: s.products.length }));
@@ -165,12 +179,12 @@ export class InventoryService {
 
   async searchProducts(q: string) {
     const rows = await this.repo.searchProducts(q);
-    return rows.map((p) => ({ id: p.id, name: p.name, sku: p.sku, sellPriceSen: p.sellPriceSen, costPriceSen: p.costPriceSen, category: p.category, brand: p.brand, unit: p.unit }));
+    return rows.map((p) => ({ id: p.id, name: p.name, sku: p.sku, sellPriceSen: p.sellPriceSen, costPriceSen: p.costPriceSen, category: p.category, brand: p.brand, unit: p.unit, manufacturerPartNo: p.manufacturerPartNo, barcode: p.barcode }));
   }
 
   async productOptions() {
     const rows = await this.repo.listProducts();
-    return rows.map((p) => ({ id: p.id, name: p.name, sku: p.sku, category: p.category, brand: p.brand, sellPriceSen: p.sellPriceSen, costPriceSen: p.costPriceSen }));
+    return rows.map((p) => ({ id: p.id, name: p.name, sku: p.sku, category: p.category, brand: p.brand, sellPriceSen: p.sellPriceSen, costPriceSen: p.costPriceSen, manufacturerPartNo: p.manufacturerPartNo, barcode: p.barcode }));
   }
 }
 
