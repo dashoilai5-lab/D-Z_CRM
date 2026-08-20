@@ -150,6 +150,7 @@ model Customer {
   source         String?
   notes          String?
   internalNotes  String?
+  tags           String?
   authProfile    CustomerAuthProfile?
   motorcycles    Motorcycle[]
   bookings       Booking[]
@@ -190,9 +191,14 @@ model Motorcycle {
   year                 Int
   plate                String    @unique
   vin                  String?
+  engineNo             String?
   color                String?
   type                 String    @default("UNDERBONE") // MotorcycleType key (lib/motorcycle-types)
   currentMileage       Int       @default(0)
+  purchaseDate         DateTime?
+  warrantyExpiry       DateTime?
+  warrantyKm           Int?
+  notes                String?
   // denormalised service snapshot (updated transactionally on completion)
   lastServiceDate      DateTime?
   lastServiceMileage   Int?

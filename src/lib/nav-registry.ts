@@ -7,7 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, Users, UserCheck, BellRing, CalendarClock, Wrench, ClipboardList, ListChecks, Package,
   Store, Megaphone, MessageSquare, Star, Users2, Gauge, Boxes, AlertTriangle, Archive, RefreshCw,
-  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo,
+  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike,
 } from "lucide-react";
 import type { DemoPersona } from "@/lib/persona";
 
@@ -59,6 +59,7 @@ export const NAV_SECTIONS: readonly NavSection[] = [
     section: "CUSTOMERS",
     items: [
       { key: "customers", label: "Customers", labelKey: "nav.customers", href: "/workshop/customers", icon: Users, access: ["OWNER", "COUNTER_STAFF"] },
+      { key: "motorcycles", label: "Motorcycles", labelKey: "nav.motorcycles", href: "/workshop/motorcycles", icon: Bike, access: ["OWNER", "COUNTER_STAFF"] },
       { key: "return-list", label: "Customer Return List", labelKey: "nav.return-list", href: "/workshop/crm/return-list", icon: UserCheck, access: ["OWNER", "COUNTER_STAFF"] },
       { key: "reminders", label: "Service Reminders", labelKey: "nav.reminders", href: "/workshop/crm/reminders", icon: BellRing, access: ["OWNER", "COUNTER_STAFF"] },
     ],

@@ -67,7 +67,7 @@ export class CustomerService {
       .filter((j) => j.items.some((i) => /tyre|tayar/i.test(i.description)))
       .map((j) => ({ at: j.completedAt ?? j.createdAt, mileage: j.mileage }));
     return {
-      customer: { id: c.id, name: c.name, phone: c.phone, email: c.email, joinedAt: c.joinedAt, notes: c.notes, internalNotes: c.internalNotes },
+      customer: { id: c.id, name: c.name, phone: c.phone, email: c.email, joinedAt: c.joinedAt, notes: c.notes, internalNotes: c.internalNotes, tags: c.tags },
       motorcycles: c.motorcycles,
       stats: {
         visits,

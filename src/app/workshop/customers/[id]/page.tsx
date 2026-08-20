@@ -6,6 +6,8 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Money } from "@/components/shared/money";
 import { CustomerActions } from "@/components/workshop/customer-actions";
 import { customerService } from "@/modules/customers/service";
+import { customerTimeline } from "@/modules/customers/timeline";
+import { db } from "@/lib/db";
 import { fmtDate, fmtKM, fmtDateTime } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { getLang } from "@/lib/get-lang";
@@ -17,6 +19,13 @@ export default async function CustomerPassportPage({ params }: { params: Promise
   const passport = await customerService.getPassport(id);
   if (!passport) notFound();
   const { customer, motorcycles, stats, jobs, oilHistory, tyres, messages, reminders } = passport;
+  const [timeline, loyalty, consent, attachments, referralCount] = await Promise.all([
+    customerTimeline(id),
+    db.loyaltyAccount.findUnique({ where: { customerId: id }, include: { tier: true } }),
+    db.customerConsent.findUnique({ where: { customerId: id } }),
+    db.attachment.findMany({ where: { relatedType: "CUSTOMER", relatedId: id }, orderBy: { createdAt: "desc" }, take: 20 }),
+    db.referral.count({ where: { referringCustomerId: id } }),
+  ]);
 
   return (
     <div>
@@ -45,6 +54,26 @@ export default async function CustomerPassportPage({ params }: { params: Promise
                 <div className="font-semibold">{stats.lastServiceLabel}</div>
               </div>
             </div>
+            {(loyalty || customer.tags || consent || referralCount > 0) && (
+              <div className="mt-4 flex flex-wrap gap-2 text-xs border-t pt-3">
+                {loyalty && (
+                  <span className="rounded-full bg-primary/10 text-primary px-2.5 py-1 font-medium">
+                    {loyalty.tier?.name ?? "Member"} · {loyalty.pointsBalance} pts
+                  </span>
+                )}
+                {referralCount > 0 && (
+                  <span className="rounded-full bg-muted px-2.5 py-1">{referralCount} referral{referralCount > 1 ? "s" : ""} made</span>
+                )}
+                {customer.tags?.split(",").map((tg) => tg.trim()).filter(Boolean).map((tg) => (
+                  <span key={tg} className="rounded-full bg-accent px-2.5 py-1">{tg}</span>
+                ))}
+                {consent && (
+                  <span className={"rounded-full px-2.5 py-1 " + (consent.marketingOptIn ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground")}>
+                    Marketing {consent.marketingOptIn ? "opted in" : "opted out"} · prefers {consent.communicationPreference.toLowerCase()}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <CustomerActions customerId={customer.id} motorcycleId={motorcycles[0]?.id ?? ""} nextServiceMileage={stats.nextServiceMileage} />
         </div>
@@ -88,6 +117,7 @@ export default async function CustomerPassportPage({ params }: { params: Promise
           <TabsTrigger value="spending">{t("ws.cust.tab-spending", lang)}</TabsTrigger>
           <TabsTrigger value="messages">{t("rider.messages", lang)}</TabsTrigger>
           <TabsTrigger value="notes">{t("ws.cust.tab-notes", lang)}</TabsTrigger>
+          <TabsTrigger value="timeline">Timeline</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4">
@@ -207,6 +237,29 @@ export default async function CustomerPassportPage({ params }: { params: Promise
             <h3 className="font-semibold mb-3">{t("ws.cust.notes-title", lang)}</h3>
             <p className="text-sm whitespace-pre-wrap">{customer.internalNotes ?? customer.notes ?? t("ws.cust.notes-empty", lang)}</p>
             {customer.notes && <p className="mt-3 text-xs text-muted-foreground border-t pt-3">{t("ws.cust.customer-note", lang).replace("{notes}", customer.notes)}</p>}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="timeline" className="mt-4">
+          <div className="rounded-2xl border bg-card p-5">
+            <h3 className="font-semibold mb-4">Customer timeline</h3>
+            {timeline.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No events yet.</p>
+            ) : (
+              <ol className="relative border-l border-border ml-2 space-y-5">
+                {timeline.map((ev, i) => (
+                  <li key={i} className="ml-4">
+                    <span className="absolute -left-[5px] mt-1.5 h-2.5 w-2.5 rounded-full bg-primary/60" />
+                    <div className="flex flex-wrap items-baseline gap-2">
+                      <span className="font-medium text-sm">{ev.title}</span>
+                      <span className="text-[11px] text-muted-foreground">{fmtDateTime(ev.time)}</span>
+                    </div>
+                    {ev.detail && <p className="text-xs text-muted-foreground mt-0.5">{ev.detail}</p>}
+                    {ev.ref?.href && <Link className="text-xs text-primary hover:underline" href={ev.ref.href}>{ev.ref.label}</Link>}
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
         </TabsContent>
       </Tabs>
