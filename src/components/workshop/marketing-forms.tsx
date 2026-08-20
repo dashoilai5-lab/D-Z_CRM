@@ -150,8 +150,14 @@ export function PosterForm() {
     });
     const data = await res.json();
     setBusy(false);
-    if (data.ok) { setResult({ url: data.url }); router.refresh(); }
-    else setResult({ error: data.error ?? "Generation failed" });
+    if (data.ok) {
+      setResult({ url: data.url });
+      toast.success("Poster generated — added to the library");
+      setOpen(false); // auto-close so the flow never feels stuck
+      router.refresh();
+    } else {
+      setResult({ error: data.error ?? "Generation failed" });
+    }
   }
 
   return (

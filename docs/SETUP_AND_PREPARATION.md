@@ -272,4 +272,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | 浅色徽章批量补齐（scripts/dark-batch.cjs 安全正则，跳过含 dark 行）：29 文件 / 95 行追加 dark: 变体（bg-*-50/100→bg-*-950/50·60 + text-*-300 + ring-*-900），覆盖 staff-manager/checklist-runner/calendar/packages/import/loyalty 等剩余页面 | 关键文件抽查确认生效；剩余 ~157 处为非徽章装饰色低风险；tsc/build/e2e 75 全绿 |
 | 2026-08-20 | 暗色主题重设计（从暗色角度设计，非反转）：.dark token 全面重写——冷蓝黑分层表面（bg 0.145→card 0.185→muted 0.235→accent 0.27 明度阶梯）、主色恢复品牌橙（oklch 0.76 0.17 45，原暗色为白色 oklch 0.922 0 0）、文字三级层级（0.965/0.73）、柔和语义色+图表亮色板、侧边栏更深作 app 框架、细透明边框 | 实测 token：primary lab(71% 橙)、背景/卡片分层；e2e 75 全绿；截图 dark-redesign-dashboard |
 | 2026-08-20 | Poster AI 自动生成：src/modules/marketing/poster-gen.ts（程序化 SVG 海报——4 色调×3 尺寸、标题/副标/促销/参考图嵌入、品牌装饰）；/api/poster/generate；PosterForm 升级为 Generate with AI（上传素材→/api/upload POSTER_REF + 要求→生成→预览→入库 MarketingAsset）；新增 /api/storage/[...key] 文件读取路由；LocalStorageProvider URL 改 /api/storage/ | 实测：API+UI 生成 3 张海报入库（SQUARE/banner/STORY）SVG 可访问；回归全绿；未来可换真图像生成 provider |
+| 2026-08-20 | 修复海报生成卡住：生成成功后 Dialog 自动关闭 + toast 提示「Poster generated」——不再需要点击空白处返回 | 实测：Auto Close Test 生成后 dialog 关闭、海报入库列表显示；回归全绿 |
 | — | （后续改动在此追加） | — |
