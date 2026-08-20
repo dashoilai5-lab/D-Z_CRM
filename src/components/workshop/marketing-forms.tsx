@@ -9,7 +9,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Sparkles, Upload } from "lucide-react";
 import { createCampaign, createPoster, createScript, updateCampaign } from "@/actions/marketing";
+
+const TONES = [
+  { id: "brand", label: "Brand", swatch: "bg-gradient-to-br from-slate-800 to-orange-500" },
+  { id: "deep", label: "Deep Blue", swatch: "bg-gradient-to-br from-slate-900 to-sky-700" },
+  { id: "fresh", label: "Fresh", swatch: "bg-gradient-to-br from-emerald-950 to-emerald-500" },
+  { id: "bold", label: "Bold", swatch: "bg-gradient-to-br from-rose-950 to-rose-500" },
+];
+const SIZES = [
+  { id: "SQUARE", label: "1:1 · Instagram" },
+  { id: "STORY", label: "9:16 · Story" },
+  { id: "BANNER", label: "16:9 · Banner" },
+];
 
 function useForm() {
   const router = useRouter();
@@ -98,30 +111,112 @@ export function CampaignForm({ initial, onDone }: { initial?: CampaignDraft; onD
 }
 
 export function PosterForm() {
-  const { pending, open, setOpen, run } = useForm();
-  const [title, setTitle] = useState(""); const [month, setMonth] = useState(""); const [description, setDescription] = useState(""); const [url, setUrl] = useState("");
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [promo, setPromo] = useState("");
+  const [tone, setTone] = useState("brand");
+  const [size, setSize] = useState("SQUARE");
+  const [assetUrl, setAssetUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<{ url?: string; error?: string } | null>(null);
+
+  async function onAsset(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("relatedType", "POSTER_REF");
+    fd.append("relatedId", "poster-ref");
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.ok) setAssetUrl(data.url);
+    } catch { /* ignore */ }
+    setUploading(false);
+    e.target.value = "";
+  }
+
+  async function generate() {
+    if (!title.trim()) return;
+    setBusy(true); setResult(null);
+    const res = await fetch("/api/poster/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, subtitle, promo, tone, size, assetUrl: assetUrl || undefined }),
+    });
+    const data = await res.json();
+    setBusy(false);
+    if (data.ok) { setResult({ url: data.url }); router.refresh(); }
+    else setResult({ error: data.error ?? "Generation failed" });
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-        New Poster
+      <DialogTrigger className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
+        <Sparkles className="h-4 w-4" /> Generate with AI
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>New poster</DialogTitle>
-          <DialogDescription>Add a monthly poster pack (mocked AI content in the prototype).</DialogDescription>
+          <DialogTitle>Generate poster</DialogTitle>
+          <DialogDescription>Upload a reference asset (optional), describe what you need — we compose a branded poster automatically.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
-          <div><Label>Title</Label><Input data-testid="poster-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Servis Musim Ini" className="mt-1.5" /></div>
-          <div><Label>Month</Label><Input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className="mt-1.5" /></div>
-          <div><Label>Image URL (optional)</Label><Input data-testid="poster-url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://…/poster.png — real image replaces the placeholder" className="mt-1.5" /></div>
-          <div><Label>Description</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short tagline for the poster" className="mt-1.5" rows={3} /></div>
+          <div>
+            <Label>Poster title *</Label>
+            <Input data-testid="poster-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Servis Musim Ini" className="mt-1.5" />
+          </div>
+          <div>
+            <Label>Subtitle / message</Label>
+            <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="e.g. Keep your bike ready for the season" className="mt-1.5" />
+          </div>
+          <div>
+            <Label>Promo (optional)</Label>
+            <Input value={promo} onChange={(e) => setPromo(e.target.value)} placeholder="e.g. RM20 OFF · July" className="mt-1.5" />
+          </div>
+          <div>
+            <Label>Tone</Label>
+            <div className="mt-1.5 flex gap-2 flex-wrap">
+              {TONES.map((t) => (
+                <button key={t.id} type="button" onClick={() => setTone(t.id)} className={"flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs " + (tone === t.id ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
+                  <span className={"h-3 w-3 rounded-full " + t.swatch} /> {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Size</Label>
+            <div className="mt-1.5 flex gap-2 flex-wrap">
+              {SIZES.map((s) => (
+                <button key={s.id} type="button" onClick={() => setSize(s.id)} className={"rounded-lg border px-2.5 py-1.5 text-xs " + (size === s.id ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Reference asset (optional — used as a visual in the poster)</Label>
+            <label className="mt-1.5 flex cursor-pointer items-center gap-2 rounded-lg border border-dashed px-3 py-2 text-xs text-muted-foreground hover:bg-accent/40">
+              <Upload className="h-4 w-4" /> {uploading ? "Uploading…" : assetUrl ? "✓ " + assetUrl.split("/").pop() : "Upload image…"}
+              <input type="file" accept="image/*" className="hidden" onChange={onAsset} disabled={uploading} />
+            </label>
+          </div>
+          {result?.url && (
+            <div className="rounded-lg border p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={result.url} alt="Generated poster" className="w-full rounded-md border" />
+            </div>
+          )}
+          {result?.error && <p className="text-xs text-destructive">{result.error}</p>}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button data-testid="poster-submit" disabled={!title || pending} onClick={() => run(
-            () => createPoster({ title, month: month || undefined, description: description || undefined, url: url || undefined }),
-            "Poster added"
-          )}>Add Poster</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>Close</Button>
+          <Button data-testid="poster-generate" disabled={!title.trim() || busy} onClick={generate}>
+            <Sparkles className="h-4 w-4 mr-1.5" /> {busy ? "Generating…" : "Generate poster"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

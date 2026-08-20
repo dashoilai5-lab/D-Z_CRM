@@ -15,7 +15,7 @@ export class LocalStorageProvider implements StorageProvider {
     const safe = key.replace(/[^a-zA-Z0-9._-]/g, "_");
     const file = path.join(this.dir, safe);
     fs.writeFileSync(file, data);
-    return "/storage/" + safe + (contentType === "image/jpeg" ? "" : "");
+    return "/api/storage/" + safe + (contentType === "image/jpeg" ? "" : "");
   }
 
   async get(key: string): Promise<Uint8Array | null> {
