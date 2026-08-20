@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { UserRound } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -33,26 +34,29 @@ export default async function CustomerPassportPage({ params }: { params: Promise
       <PageHeader title={customer.name} subtitle={(customer.phone ?? "") + (customer.email ? " · " + customer.email : "")} backHref="/workshop/customers" />
 
       {/* header card */}
-      <div className="rounded-2xl border bg-card p-5 md:p-6">
+      <div className="dz-panel p-5 md:p-6">
         <div className="flex flex-wrap items-start gap-6">
           <div className="flex-1 min-w-52">
-            <h2 className="font-semibold">{t("rider.passport", lang)}</h2>
-            <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div>
-                <div className="text-xs text-muted-foreground">{t("ws.cust.since", lang)}</div>
-                <div className="font-semibold">{customer.joinedAt.getFullYear()}</div>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary"><UserRound className="h-4 w-4" /></span>
+              <h2 className="font-semibold">{t("rider.passport", lang)}</h2>
+            </div>
+            <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="rounded-xl bg-muted/50 p-3">
+                <div className="text-[11px] text-muted-foreground">{t("ws.cust.since", lang)}</div>
+                <div className="mt-0.5 font-semibold">{customer.joinedAt.getFullYear()}</div>
               </div>
-              <div>
-                <div className="text-xs text-muted-foreground">{t("ws.customers.col-visits", lang)}</div>
-                <div className="font-semibold tabular-nums">{stats.visits}</div>
+              <div className="rounded-xl bg-muted/50 p-3">
+                <div className="text-[11px] text-muted-foreground">{t("ws.customers.col-visits", lang)}</div>
+                <div className="mt-0.5 font-semibold tabular-nums">{stats.visits}</div>
               </div>
-              <div>
-                <div className="text-xs text-muted-foreground">{t("ws.customers.col-lifetime-spend", lang)}</div>
-                <div className="font-semibold tabular-nums"><Money sen={stats.lifetimeSpend} /></div>
+              <div className="rounded-xl bg-muted/50 p-3">
+                <div className="text-[11px] text-muted-foreground">{t("ws.customers.col-lifetime-spend", lang)}</div>
+                <div className="mt-0.5 font-semibold tabular-nums"><Money sen={stats.lifetimeSpend} /></div>
               </div>
-              <div>
-                <div className="text-xs text-muted-foreground">{t("rider.last-service", lang)}</div>
-                <div className="font-semibold">{stats.lastServiceLabel}</div>
+              <div className="rounded-xl bg-muted/50 p-3">
+                <div className="text-[11px] text-muted-foreground">{t("rider.last-service", lang)}</div>
+                <div className="mt-0.5 font-semibold">{stats.lastServiceLabel}</div>
               </div>
             </div>
             {(loyalty || customer.tags || consent || referralCount > 0) && (
@@ -83,7 +87,7 @@ export default async function CustomerPassportPage({ params }: { params: Promise
       {/* motorcycles */}
       <div className="mt-5 grid sm:grid-cols-2 gap-3">
         {motorcycles.map((m) => (
-          <div key={m.id} className="rounded-2xl border bg-card p-4">
+          <div key={m.id} className="dz-panel p-4 transition-colors hover:border-primary/30">
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-semibold">{m.brand} {m.model}</div>

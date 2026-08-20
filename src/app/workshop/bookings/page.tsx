@@ -97,8 +97,13 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
         </div>
       ) : (
         <div className="space-y-2">
-          {sorted.map((b) => (
-            <div key={b.id} data-testid="booking-row" className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
+          {sorted.map((b) => {
+            const stripe = {
+              REQUESTED: "border-l-amber-400", CONFIRMED: "border-l-blue-400", RESCHEDULED: "border-l-purple-400",
+              CHECKED_IN: "border-l-cyan-400", COMPLETED: "border-l-emerald-400", CANCELLED: "border-l-red-400", NO_SHOW: "border-l-slate-300",
+            }[b.status] ?? "border-l-border";
+            return (
+            <div key={b.id} data-testid="booking-row" className={"flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4 border-l-4 transition-colors hover:border-l-primary " + stripe}>
               <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
                 <CalendarClock className="h-5 w-5" />
               </div>
@@ -115,7 +120,8 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
               {b.job && <Link href={"/workshop/jobs/" + b.job.id} className="text-xs font-mono text-primary hover:underline">{b.job.jobNumber}</Link>}
               <BookingActions bookingId={b.id} status={b.status} packages={packages} />
             </div>
-          ))}
+            );
+          })}
           {sorted.length === 0 && <div className="rounded-2xl border bg-card p-10 text-center text-sm text-muted-foreground">No bookings match.</div>}
         </div>
       )}

@@ -159,7 +159,7 @@ export default async function RiderHomePage() {
       )}
 
       {bike && (
-        <Link href={"/rider/motorcycles/" + bike.id} className="flex items-center justify-between rounded-2xl border bg-card p-4">
+        <Link href={"/rider/motorcycles/" + bike.id} className="dz-card-link flex items-center justify-between rounded-2xl border bg-card p-4">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><Wrench className="h-4 w-4" /></div>
             <div>
