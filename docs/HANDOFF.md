@@ -1,6 +1,22 @@
-# HANDOFF — D&Z Platform（2026-08-19 17:31）
+# HANDOFF — D&Z Platform（2026-08-19 17:31，续 2026-08-20）
 
 > 本文件由 session-pack 生成，session-resume 可续接。Day-1 历史版见 docs/HANDOFF-day1.md。
+
+## ⚠️ 2026-08-20 追加：需求验证工程完成（session-3685dd91）
+
+按 docs/D&Z AI CRM — Detailed Product Requirements Checklist.md 的 **895 条编号需求**分 16 段完成验证与补齐（18 提交 / 144 文件 / +10.2k 行）。追踪：docs/REQUIREMENTS_VERIFICATION.md（全段 ✅）。
+
+**新增能力**（段 1-16）：
+- 数据模型：+27 实体（Lead/Task/TestRide/Loyalty×5/Referral/Automation/AuditLog/Attachment/Consent/RBAC 等）+ 9 迁移
+- 认证：/login + scrypt + HMAC 会话 + TOTP MFA + 锁定 + 16 角色 + RBAC 权限引擎 + middleware 双模式
+- 销售：公开网站（目录/咨询/试驾→Lead）、管道 Kanban、任务、试驾生命周期
+- 服务：槽位防超卖、9 状态工单机、服务历史、库存转移
+- 增长：自动化引擎（10 触发×5 动作）、消息模板、忠诚积分、推荐
+- 平台：通知中心、CSV 导入导出、附件、审计页、集成页、分析中枢、设置中枢
+
+**回归**：tsc 0 错 / unit 20 / Playwright 75 passed + 6 skipped（全程保持）。
+
+**剩余主线不变**：① 经销商验证（dtodo 59e04e5e）② 生产迁移 §65（dtodo 92b29072）——生产属性项（真实 provider/HTTPS/备份/索引/限流/PDPA）在 SETUP §5 清单与追踪文档各段 🟡 备注。
 
 ## 一句话状态
 原型功能已齐备且全绿：全模块（workshop/rider/营销闭环）+ 三语言 i18n + 手机预览框架 + 真实海报素材，75/75 Playwright 通过；剩余主线是经销商验证和生产迁移。
