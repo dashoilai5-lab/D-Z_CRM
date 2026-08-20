@@ -259,4 +259,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | 预计完成+进度：ServiceJob.estimatedCompletionAt（迁移 seg16_estimated_completion），IN_PROGRESS 时按服务时长估算（默认 120min）；rider 状态页加进度条+ETA；Workshop 工单详情加 Rider lifecycle 进度区块+customer view 链接 | JOB-016 预计完成时间补齐（需求清单 🟡→✅）；rider 与 Workshop OS 双向链接；实测 DZ1188 ETA 自动设置；e2e 75 通过 |
 | 2026-08-20 | rider 三步增强：① 完成评价引导（service-status 已完成车辆加 Rate 链接→service-history ReviewCard，Workshop reviews 页已有管理）② 工单状态变化→顾客通知（IN_PROGRESS/APPROVAL/QC/WAITING_PARTS/ON_HOLD/READY/COMPLETED，link 到状态页）③ Workshop dashboard 加 Service lifecycle 分布（按顾客可见 7 阶段分桶） | 三步均双向链接 rider↔Workshop OS；回归全绿 |
 | 2026-08-20 | 修复通知页筛选按钮：typeCounts 分组改用不含 type 筛选的 baseWhere——点击任一类型 filter 后所有按钮（All/INFO/JOB_READY 等）保持可见 | 实测：点 Info 后 JOB_READY 按钮仍在，点 JOB_READY 后 INFO 仍在；回归全绿 |
+| 2026-08-20 | 服务套餐编辑：/workshop/packages 升级——每套餐 Edit 按钮 + PackageEditor（勾选包含项/名称价格描述/最佳值/启停 + 赠品添加 kind=GIFT）；跨套餐重复检测 dupMap（列表 ⚠ also in X + 编辑器内 ⚠ 警告）；候选列表 = 服务目录+零件+既有自由项目 | 实测：Basic 编辑含 3 个重复警告、添加赠品保存后列表显示 🎁 FREE；actions/packages.ts updatePackage 支持 diff 重写 items |
 | — | （后续改动在此追加） | — |
