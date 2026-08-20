@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Image as ImageIcon, ZoomIn, Trash2, Pencil, X, Check } from "lucide-react";
+import { Image as ImageIcon, ZoomIn, Trash2, Pencil, X, Check, MessageCircle } from "lucide-react";
 import { Lightbox, useLightbox, type LightboxImage } from "@/components/shared/lightbox";
 
 export interface PosterItem {
@@ -105,6 +105,15 @@ export function PosterGrid({ posters }: { posters: PosterItem[] }) {
                 <div className="text-xs text-muted-foreground mt-0.5">{p.type}{p.month ? " · " + p.month : ""}</div>
                 {p.description && <p className="mt-2 text-xs text-muted-foreground">"{p.description}"</p>}
                 <div className="mt-3 flex items-center gap-2 border-t pt-2.5">
+                  <a
+                    href={"https://wa.me/?text=" + encodeURIComponent("Check out our new poster: " + p.title + (p.url ? " " + "http://localhost:3002" + p.url : ""))}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-[11px] font-medium text-white hover:bg-emerald-700"
+                    title="Share to WhatsApp"
+                  >
+                    <MessageCircle className="h-3 w-3" /> Share
+                  </a>
                   <button className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-medium hover:bg-accent" onClick={() => startEdit(p)}>
                     <Pencil className="h-3 w-3" /> Edit
                   </button>

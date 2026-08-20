@@ -36,7 +36,7 @@ export default async function RemindersPage() {
                   <td className="px-4 py-3 font-semibold tabular-nums">{fmtKM(r.nextServiceMileage)}{r.estimatedDate ? <div className="text-xs font-normal text-muted-foreground">{t("ws.crm.reminders.est", lang)} {fmtDate(r.estimatedDate)}</div> : null}</td>
                   <td className="px-4 py-3 tabular-nums text-xs">{r.kmGap > 0 ? "+" + r.kmGap.toLocaleString() : r.kmGap.toLocaleString()} km</td>
                   <td className="px-4 py-3"><StatusBadge kind="reminder" value={r.status} /></td>
-                  <td className="px-4 py-3"><ReminderRowActions customerId={r.customer.id} motorcycleId={r.motorcycle.id} nextServiceMileage={r.nextServiceMileage} /></td>
+                  <td className="px-4 py-3"><ReminderRowActions reminderId={r.id} customerId={r.customer.id} motorcycleId={r.motorcycle.id} nextServiceMileage={r.nextServiceMileage} /></td>
                 </tr>
               ))}
             </tbody>
