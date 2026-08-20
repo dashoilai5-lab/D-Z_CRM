@@ -118,6 +118,8 @@ export function PosterForm() {
   const [promo, setPromo] = useState("");
   const [tone, setTone] = useState("brand");
   const [size, setSize] = useState("SQUARE");
+  const [visual, setVisual] = useState("poster");
+  const [count, setCount] = useState("1");
   const [assetUrl, setAssetUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -146,7 +148,7 @@ export function PosterForm() {
     const res = await fetch("/api/poster/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, subtitle, promo, tone, size, assetUrl: assetUrl || undefined }),
+      body: JSON.stringify({ title, subtitle, promo, tone, size, visual, count: parseInt(count) || 1, assetUrl: assetUrl || undefined }),
     });
     const data = await res.json();
     setBusy(false);
@@ -199,6 +201,26 @@ export function PosterForm() {
               {SIZES.map((s) => (
                 <button key={s.id} type="button" onClick={() => setSize(s.id)} className={"rounded-lg border px-2.5 py-1.5 text-xs " + (size === s.id ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
                   {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Style</Label>
+            <div className="mt-1.5 flex gap-2 flex-wrap">
+              {[["poster", "Graphic poster"], ["photo", "Photo style"]].map(([v, label]) => (
+                <button key={v} type="button" onClick={() => setVisual(v)} className={"rounded-lg border px-2.5 py-1.5 text-xs " + (visual === v ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>How many variants</Label>
+            <div className="mt-1.5 flex gap-2">
+              {["1", "2", "4"].map((c) => (
+                <button key={c} type="button" onClick={() => setCount(c)} className={"rounded-lg border px-3 py-1.5 text-xs " + (count === c ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
+                  {c} {c === "1" ? "poster" : "posters"}
                 </button>
               ))}
             </div>

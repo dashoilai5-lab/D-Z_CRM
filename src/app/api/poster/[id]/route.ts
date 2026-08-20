@@ -16,15 +16,17 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   if (!asset) return NextResponse.json({ ok: false, error: "Poster not found" }, { status: 404 });
   const body = await req.json();
   const title = String(body.title ?? asset.title).trim() || asset.title;
-  const { url } = await generatePoster({
+  const results = await generatePoster({
     branchId: asset.branchId,
     title,
     subtitle: body.subtitle ? String(body.subtitle) : undefined,
     promo: body.promo ? String(body.promo) : undefined,
     tone: body.tone ?? "brand",
     size: body.size ?? "SQUARE",
+    visual: body.visual ?? "poster",
     assetUrl: body.assetUrl ? String(body.assetUrl) : undefined,
   });
+  const { url } = results[0];
   const updated = await db.marketingAsset.update({
     where: { id },
     data: { title, url, description: "AI-generated · " + (body.size ?? "SQUARE") + " · " + (body.tone ?? "brand") },

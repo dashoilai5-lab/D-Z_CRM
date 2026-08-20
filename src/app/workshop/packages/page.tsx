@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
 import { Badge } from "@/components/ui/badge";
 import { PackageEditor } from "@/components/workshop/package-editor";
+import { NewPackageForm } from "@/components/workshop/new-package-form";
+import { PackageSorter } from "@/components/workshop/package-sorter";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 
@@ -37,10 +39,16 @@ export default async function PackagesPage() {
 
   return (
     <div>
-      <PageHeader title={t("ws.packages.title", lang)} subtitle={t("ws.packages.subtitle", lang)} />
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="flex items-center justify-between mb-4">
+        <PageHeader title={t("ws.packages.title", lang)} subtitle={t("ws.packages.subtitle", lang)} />
+        <div className="flex items-center gap-2">
+          <PackageSorter />
+          <NewPackageForm candidates={allCandidates} />
+        </div>
+      </div>
+      <div className="grid md:grid-cols-3 gap-4" id="package-grid">
         {packages.map((p) => (
-          <div key={p.id} className={"rounded-3xl border p-6 flex flex-col " + (p.isBestValue ? "border-primary ring-2 ring-primary/20" : "bg-card")}>
+          <div key={p.id} data-price={p.priceSen} data-tier={p.tier} className={"rounded-3xl border p-6 flex flex-col " + (p.isBestValue ? "border-primary ring-2 ring-primary/20" : "bg-card")}>
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{p.tier}</span>
               <div className="flex items-center gap-1.5">

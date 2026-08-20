@@ -6,6 +6,7 @@ import { db } from "@/lib/db";
 
 export type PosterSize = "SQUARE" | "STORY" | "BANNER";
 export type PosterTone = "brand" | "deep" | "fresh" | "bold";
+export type PosterVisual = "poster" | "photo";
 
 export interface PosterInput {
   title: string;
@@ -13,7 +14,9 @@ export interface PosterInput {
   promo?: string;
   tone?: PosterTone;
   size?: PosterSize;
+  visual?: PosterVisual; // poster = graphic layout · photo = photographic-style scene
   assetUrl?: string;
+  count?: number; // batch: generate N variants
 }
 
 const SIZES: Record<PosterSize, { w: number; h: number; label: string }> = {
@@ -47,6 +50,7 @@ export function buildPosterSvg(input: PosterInput): string {
   const asset = input.assetUrl ? esc(input.assetUrl) : null;
   const assetR = Math.round(Math.min(w, h) * 0.16);
 
+  const isPhoto = (input.visual ?? "poster") === "photo";
   let s = "";
   s += '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '">';
   s += "<defs>";
@@ -59,6 +63,16 @@ export function buildPosterSvg(input: PosterInput): string {
   s += '<polygon points="0,' + Math.round(h * 0.94) + " " + Math.round(w * 0.28) + "," + h + ' 0,' + h + '" fill="' + tone.accent + '" fill-opacity="0.12"/>';
   s += '<polygon points="' + Math.round(w * 0.86) + "," + h + " " + w + "," + Math.round(h * 0.82) + " " + w + "," + h + '" fill="' + tone.accent + '" fill-opacity="0.10"/>';
   s += '<text x="' + Math.round(w * 0.07) + '" y="' + Math.round(h * 0.11) + '" font-family="Arial, sans-serif" font-size="' + Math.round(w / 28) + '" font-weight="800" letter-spacing="4" fill="' + tone.accent + '">D&amp;Z SMART WORKSHOP</text>';
+  if (isPhoto) {
+    // photographic-style scene: gradient sky + sun glow + motorcycle silhouette + vignette
+    s += '<circle cx="' + Math.round(w * 0.7) + '" cy="' + Math.round(h * 0.25) + '" r="' + Math.round(Math.min(w, h) * 0.18) + '" fill="' + tone.accent + '" opacity="0.55"/>';
+    s += '<ellipse cx="' + Math.round(w * 0.5) + '" cy="' + Math.round(h * 0.82) + '" rx="' + Math.round(w * 0.75) + '" ry="' + Math.round(h * 0.08) + '" fill="#000" opacity="0.35"/>';
+    // simple motorcycle silhouette (wheels + body)
+    s += '<circle cx="' + Math.round(w * 0.34) + '" cy="' + Math.round(h * 0.72) + '" r="' + Math.round(h * 0.09) + '" fill="none" stroke="#0b0e1a" stroke-width="' + Math.round(h * 0.02) + '"/>';
+    s += '<circle cx="' + Math.round(w * 0.66) + '" cy="' + Math.round(h * 0.72) + '" r="' + Math.round(h * 0.09) + '" fill="none" stroke="#0b0e1a" stroke-width="' + Math.round(h * 0.02) + '"/>';
+    s += '<path d="M ' + Math.round(w * 0.34) + ' ' + Math.round(h * 0.72) + ' L ' + Math.round(w * 0.42) + ' ' + Math.round(h * 0.58) + ' L ' + Math.round(w * 0.62) + ' ' + Math.round(h * 0.58) + ' L ' + Math.round(w * 0.66) + ' ' + Math.round(h * 0.72) + '" fill="none" stroke="#0b0e1a" stroke-width="' + Math.round(h * 0.028) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+    s += '<rect x="' + Math.round(w * 0.05) + '" y="' + Math.round(h * 0.05) + '" width="' + Math.round(w * 0.9) + '" height="' + Math.round(h * 0.9) + '" fill="none" stroke="' + tone.accent + '" stroke-opacity="0.18" stroke-width="' + Math.round(w / 300) + '"/>';
+  }
   if (asset) {
     s += '<circle cx="' + Math.round(w * 0.85) + '" cy="' + Math.round(h * 0.2) + '" r="' + assetR + '" fill="' + tone.accent + '" fill-opacity="0.15"/>';
     s += '<clipPath id="assetClip"><circle cx="' + Math.round(w * 0.85) + '" cy="' + Math.round(h * 0.2) + '" r="' + (assetR - 6) + '"/></clipPath>';
@@ -77,20 +91,28 @@ export function buildPosterSvg(input: PosterInput): string {
   return s;
 }
 
-/** Generate a poster: compose SVG, persist to storage, record MarketingAsset. */
+/** Generate poster(s): compose SVG(s), persist to storage, record MarketingAsset(s). */
 export async function generatePoster(input: PosterInput & { branchId: string }) {
-  const svg = buildPosterSvg(input);
-  const key = "posters/" + Date.now() + "-" + input.title.replace(/[^a-z0-9]+/gi, "-").slice(0, 24) + ".svg";
-  const url = await storageProvider.put(key, new TextEncoder().encode(svg), "image/svg+xml");
-  const asset = await db.marketingAsset.create({
-    data: {
-      branchId: input.branchId,
-      title: input.title,
-      type: "POSTER",
-      month: new Date().toISOString().slice(0, 7),
-      description: "AI-generated · " + (input.size ?? "SQUARE") + " · " + (input.tone ?? "brand"),
-      url,
-    },
-  });
-  return { asset, url };
+  const count = Math.min(Math.max(input.count ?? 1, 1), 4);
+  const base = input.title.replace(/[^a-z0-9]+/gi, "-").slice(0, 20) || "poster";
+  const results = [];
+  for (let i = 0; i < count; i++) {
+    const variantTitle = count > 1 ? input.title + " #" + (i + 1) : input.title;
+    const tone = (["brand", "deep", "fresh", "bold"] as const)[i % 4];
+    const svg = buildPosterSvg({ ...input, title: variantTitle, tone: input.tone ?? tone });
+    const key = "posters/" + Date.now() + "-" + base + "-" + i + ".svg";
+    const url = await storageProvider.put(key, new TextEncoder().encode(svg), "image/svg+xml");
+    const asset = await db.marketingAsset.create({
+      data: {
+        branchId: input.branchId,
+        title: variantTitle,
+        type: input.visual === "photo" ? "PHOTO" : "POSTER",
+        month: new Date().toISOString().slice(0, 7),
+        description: "AI-generated · " + (input.size ?? "SQUARE") + " · " + (input.tone ?? tone) + (input.visual === "photo" ? " · photo" : ""),
+        url,
+      },
+    });
+    results.push({ asset, url });
+  }
+  return results;
 }
