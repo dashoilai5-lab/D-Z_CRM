@@ -49,3 +49,4 @@ prisma/e2e.db
 prisma/e2e.db-journal
 playwright-report/
 test-results/
+storage/
