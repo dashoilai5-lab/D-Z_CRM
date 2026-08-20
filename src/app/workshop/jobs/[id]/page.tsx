@@ -50,7 +50,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <StatusBadge kind="job" value={detail.status} />
         {pendingApprovals.length > 0 && (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900">
             <AlertTriangle className="h-3.5 w-3.5" /> {pendingApprovals.length} {t(pendingApprovals.length > 1 ? "ws.job.pending-approvals" : "ws.job.pending-approval", lang)}
           </span>
         )}
@@ -149,7 +149,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                       <td className="px-5 py-2.5">{i.description}</td>
                       <td className="px-3 py-2.5 tabular-nums">{i.quantity}</td>
                       <td className="px-3 py-2.5 tabular-nums">{formatRM(i.unitPriceSen)}</td>
-                      <td className="px-3 py-2.5"><span className={"text-[11px] font-semibold uppercase " + (i.status === "INCLUDED" ? "text-slate-500" : i.status === "ACCEPTED" ? "text-emerald-600" : i.status === "DECLINED" ? "text-red-500 line-through" : "text-amber-600")}>{i.status}</span></td>
+                      <td className="px-3 py-2.5"><span className={"text-[11px] font-semibold uppercase " + (i.status === "INCLUDED" ? "text-slate-500 dark:text-slate-400" : i.status === "ACCEPTED" ? "text-emerald-600 dark:text-emerald-400" : i.status === "DECLINED" ? "text-red-500 line-through dark:text-red-400" : "text-amber-600 dark:text-amber-400")}>{i.status}</span></td>
                       <td className="px-3 py-2.5"><RecommendationActions jobId={detail.id} kind="item" id={i.id} status={i.status} /></td>
                     </tr>
                   ))}
@@ -158,7 +158,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                       <td className="px-5 py-2.5">{p.product.name}<div className="text-xs text-muted-foreground">{t("ws.job.part", lang)} · SKU {p.product.sku}</div></td>
                       <td className="px-3 py-2.5 tabular-nums">{p.quantity}</td>
                       <td className="px-3 py-2.5 tabular-nums">{formatRM(p.unitPriceSen)}</td>
-                      <td className="px-3 py-2.5"><span className={"text-[11px] font-semibold uppercase " + (p.status === "INCLUDED" ? "text-slate-500" : p.status === "ACCEPTED" ? "text-emerald-600" : p.status === "DECLINED" ? "text-red-500 line-through" : "text-amber-600")}>{p.status}</span></td>
+                      <td className="px-3 py-2.5"><span className={"text-[11px] font-semibold uppercase " + (p.status === "INCLUDED" ? "text-slate-500 dark:text-slate-400" : p.status === "ACCEPTED" ? "text-emerald-600 dark:text-emerald-400" : p.status === "DECLINED" ? "text-red-500 line-through dark:text-red-400" : "text-amber-600 dark:text-amber-400")}>{p.status}</span></td>
                       <td className="px-3 py-2.5"><RecommendationActions jobId={detail.id} kind="part" id={p.id} status={p.status} /></td>
                     </tr>
                   ))}
@@ -207,7 +207,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 {checklist.items.map((i) => (
                   <div key={i.id} className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2 text-sm">
                     <span>{i.name}</span>
-                    <span className={"text-[11px] font-bold uppercase " + (i.result === "PASS" ? "text-emerald-600" : i.result === "WARNING" ? "text-amber-600" : i.result === "FAIL" ? "text-red-600" : "text-muted-foreground")}>{i.result}</span>
+                    <span className={"text-[11px] font-bold uppercase " + (i.result === "PASS" ? "text-emerald-600 dark:text-emerald-400" : i.result === "WARNING" ? "text-amber-600 dark:text-amber-400" : i.result === "FAIL" ? "text-red-600 dark:text-red-400" : "text-muted-foreground")}>{i.result}</span>
                   </div>
                 ))}
               </div>
@@ -226,7 +226,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 {detail.findings.map((f) => (
                   <div key={f.id} className="rounded-xl border p-3.5">
                     <div className="flex items-center justify-between">
-                      <span className={"text-[11px] font-bold uppercase " + (f.severity === "WARNING" ? "text-amber-600" : "text-red-600")}>{f.severity}</span>
+                      <span className={"text-[11px] font-bold uppercase " + (f.severity === "WARNING" ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400")}>{f.severity}</span>
                       {f.approval && (
                         <span className={"inline-flex items-center gap-1 text-[11px] font-semibold " + (f.approval.status === "PENDING" ? "text-amber-600" : f.approval.status === "APPROVED" ? "text-emerald-600" : "text-red-500")}>
                           {f.approval.status === "PENDING" ? t("ws.job.waiting-customer", lang) : f.approval.status === "APPROVED" ? <><CheckCircle2 className="h-3.5 w-3.5" /> {t("ws.job.customer-approved", lang)}</> : <><XCircle className="h-3.5 w-3.5" /> {t("ws.job.customer-declined", lang)}</>}

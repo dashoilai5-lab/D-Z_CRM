@@ -104,9 +104,9 @@ export default async function RiderHomePage() {
 
           {/* service reminder banner */}
           {reminder && kmLeft != null && (
-            <div className={"mt-4 rounded-2xl p-4 " + (isDue ? "bg-red-50 ring-1 ring-red-200" : isSoon ? "bg-amber-50 ring-1 ring-amber-200" : "bg-muted/40")}>
+            <div className={"mt-4 rounded-2xl p-4 " + (isDue ? "bg-red-50 ring-1 ring-red-200 dark:bg-red-950/40 dark:ring-red-900" : isSoon ? "bg-amber-50 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:ring-amber-900" : "bg-muted/40")}>
               <div className="flex items-center justify-between text-xs">
-                <span className={"inline-flex items-center gap-1.5 font-semibold " + (isDue ? "text-red-700" : isSoon ? "text-amber-700" : "text-muted-foreground")}>
+                <span className={"inline-flex items-center gap-1.5 font-semibold " + (isDue ? "text-red-700 dark:text-red-300" : isSoon ? "text-amber-700 dark:text-amber-300" : "text-muted-foreground")}>
                   {isDue ? <AlertTriangle className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
                   {isDue ? "Service is due" : isSoon ? "Service coming up" : "Next service"}
                 </span>

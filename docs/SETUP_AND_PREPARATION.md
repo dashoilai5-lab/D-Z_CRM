@@ -268,4 +268,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | UI 增强第六轮（rider，纯视觉）：rider bookings 卡加状态色条（7 色 border-l-4，与 workshop bookings 呼应）+ NO_SHOW 徽章；rider layout 主区上间距 py-5→py-6 | 回归全绿；截图 polish6-rider-bookings |
 | 2026-08-20 | UI 增强第七轮（剩余页统一，纯视觉）：inventory alerts/reorder/suppliers/purchase-orders、finance profit、checklists 卡片行统一 dz-panel；staff/kpi、dead-stock 表格升级 dz-table；analytics 趋势线加端点圆点+加粗 | 回归全绿；截图 polish7-alerts/profit |
 | 2026-08-20 | 移动端真机间距抽查（iPhone 390×844 视口，playwright-core 脚本 scripts/mobile-audit.ts）：11 页（rider 6 + workshop 5）全部无水平溢出；rider main pb-28=112px 底部导航不遮挡；表格容器 overflow-hidden→overflow-x-auto（leads/customers/reminders/motorcycles/slots/audit-logs/dead-stock/kpi 内部滚动不压扁）；截图 mobile-*.png | 回归全绿 |
+| 2026-08-20 | 深色模式专项核对（next-themes dark class）：StatusBadge 全 22 状态加 dark: 变体（bg-*-950/50 + text-*-300 + border-*-900）；task-list 优先级徽章、jobs/[id] 状态文本系列、rider home 服务提醒卡 dark 适配；审计脚本 scripts/dark-audit.ts（9 页暗色截图验证生效） | 剩余硬编码浅色（staff-manager/checklist-runner/calendar 等）标注后续轮次；回归全绿 |
 | — | （后续改动在此追加） | — |

@@ -13,7 +13,7 @@ export type TaskItem = {
 
 export function TaskList({ items }: { items: TaskItem[] }) {
   const router = useRouter();
-  const prio = (p: string) => p === "HIGH" ? "bg-rose-500/15 text-rose-600" : p === "LOW" ? "bg-muted text-muted-foreground" : "bg-amber-500/15 text-amber-600";
+  const prio = (p: string) => p === "HIGH" ? "bg-rose-500/15 text-rose-600 dark:text-rose-300" : p === "LOW" ? "bg-muted text-muted-foreground" : "bg-amber-500/15 text-amber-600 dark:text-amber-300";
 
   return (
     <div className="rounded-xl border bg-card divide-y">
