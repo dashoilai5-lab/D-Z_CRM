@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Bike } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SignOutButton } from "@/components/workshop/sign-out-button";
 import { navForPersona } from "@/lib/nav-registry";
 import { t, type Lang } from "@/lib/i18n";
 import type { DemoUserInfo } from "@/lib/demo-user";
@@ -91,8 +92,11 @@ export function Sidebar({ persona, user, lang = "en" }: { persona: DemoPersona; 
           </div>
         ))}
       </nav>
-      <div className={cn("py-4 border-t border-sidebar-border text-[11px] text-sidebar-foreground/50", expanded ? "px-5 text-left" : "px-0 text-center")}>
-        {expanded ? "D&Z PLATFORM · v0.1" : "v0.1"}
+      <div className={cn("py-3 border-t border-sidebar-border space-y-1", expanded ? "px-2.5" : "px-1")}>
+        <SignOutButton expanded={expanded} />
+        <div className={cn("text-[11px] text-sidebar-foreground/50", expanded ? "px-2.5 text-left" : "text-center")}>
+          {expanded ? "D&Z PLATFORM · v0.1" : "v0.1"}
+        </div>
       </div>
     </aside>
   );

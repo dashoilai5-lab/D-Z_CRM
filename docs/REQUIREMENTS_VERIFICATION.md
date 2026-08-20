@@ -9,7 +9,7 @@
 
 | 段 | 范围 | 章节 | 需求数 | 状态 |
 |---|---|---|---|---|
-| 1 | 数据模型地基（租户/多分支/核心实体） | §2 + §30 | 60 | ⏳ |
+| 1 | 数据模型地基（租户/多分支/核心实体） | §2 + §30 | 60 | ✅ 补齐完成|
 | 2 | 认证与权限（登录/角色/RBAC） | §3 | 42 | ⏳ |
 | 3 | 网站与线索捕获 | §5 + §6 | 46 | ⏳ |
 | 4 | 销售管道/跟进任务/试驾 | §7-9 | 52 | ⏳ |
@@ -103,48 +103,48 @@
 
 | ID | 需求 | 状态 | 证据/备注 |
 |---|---|---|---|
-| AUTH-001 | Use | ⏳ |  |
-| AUTH-002 | System must suppo | ⏳ |  |
-| AUTH-003 | Passwo | ⏳ |  |
-| AUTH-004 | System must suppo | ⏳ |  |
-| AUTH-005 | System must suppo | ⏳ |  |
-| AUTH-006 | System must suppo | ⏳ |  |
-| AUTH-007 | System must suppo | ⏳ |  |
-| AUTH-008 | System must suppo | ⏳ |  |
-| AUTH-009 | System must p | ⏳ |  |
-| AUTH-010 | System must suppo | ⏳ |  |
-| AUTH-011 | Authe | ⏳ |  |
-| AUTH-012 | Failed logi | ⏳ |  |
-| AUTH-013 | Platfo | ⏳ |  |
-| RBAC-001 | Pe | ⏳ |  |
-| RBAC-002 | Admi | ⏳ |  |
-| RBAC-003 | Roles must suppo | ⏳ |  |
-| RBAC-004 | Roles must suppo | ⏳ |  |
-| RBAC-005 | Roles must suppo | ⏳ |  |
-| RBAC-006 | Roles must suppo | ⏳ |  |
-| RBAC-007 | Roles must suppo | ⏳ |  |
-| RBAC-008 | Roles must suppo | ⏳ |  |
-| RBAC-009 | Roles must suppo | ⏳ |  |
-| RBAC-010 | Roles must suppo | ⏳ |  |
-| RBAC-011 | Head office use | ⏳ |  |
-| RBAC-012 | B | ⏳ |  |
-| RBAC-013 | Tech | ⏳ |  |
-| RBAC-014 | Eve | ⏳ |  |
-| ROLE-001 | Supe | ⏳ |  |
-| ROLE-002 | Deale | ⏳ |  |
-| ROLE-003 | Head Office Admi | ⏳ |  |
-| ROLE-004 | B | ⏳ |  |
-| ROLE-005 | Sales Ma | ⏳ |  |
-| ROLE-006 | Sales Adviso | ⏳ |  |
-| ROLE-007 | Se | ⏳ |  |
-| ROLE-008 | Se | ⏳ |  |
-| ROLE-009 | Tech | ⏳ |  |
-| ROLE-010 | Pa | ⏳ |  |
-| ROLE-011 | Pa | ⏳ |  |
-| ROLE-012 | Ma | ⏳ |  |
-| ROLE-013 | Custome | ⏳ |  |
-| ROLE-014 | Fi | ⏳ |  |
-| ROLE-015 | Read-O | ⏳ |  |
+| AUTH-001 | Use | ������🟡 audit() helper+登录审计已接，业务埋点随各段|  |
+| AUTH-002 | System must suppo | ❌ 无 email/password 登录|  |
+| AUTH-003 | Passwo | ❌ 无密码存储（CustomerAuthProfile.pin 明文）|  |
+| AUTH-004 | System must suppo | ❌ 无密码重置|  |
+| AUTH-005 | System must suppo | ❌ 无邮箱验证|  |
+| AUTH-006 | System must suppo | ❌ 无会话过期|  |
+| AUTH-007 | System must suppo | ❌ 无登出|  |
+| AUTH-008 | System must suppo | 🟡 User.active 字段有，无禁用 UI/强制|  |
+| AUTH-009 | System must p | ❌ 无登录入口|  |
+| AUTH-010 | System must suppo | ❌ 无 MFA|  |
+| AUTH-011 | Authe | ❌ AuditLog 实体已建未接入|  |
+| AUTH-012 | Failed logi | ❌ 无|  |
+| AUTH-013 | Platfo | ❌ 无|  |
+| RBAC-001 | Pe | ✅ SUPER_ADMIN|  |
+| RBAC-002 | Admi | ✅ OWNER|  |
+| RBAC-003 | Roles must suppo | ❌ 无 HEAD_OFFICE_ADMIN|  |
+| RBAC-004 | Roles must suppo | ✅ MANAGER|  |
+| RBAC-005 | Roles must suppo | ❌ 无 SALES_MANAGER|  |
+| RBAC-006 | Roles must suppo | ❌ 无 SALES_ADVISOR|  |
+| RBAC-007 | Roles must suppo | ❌ 无 SERVICE_MANAGER|  |
+| RBAC-008 | Roles must suppo | ✅ SERVICE_ADVISOR|  |
+| RBAC-009 | Roles must suppo | ✅ MECHANIC|  |
+| RBAC-010 | Roles must suppo | ❌ 无 PARTS_MANAGER|  |
+| RBAC-011 | Head office use | ✅ INVENTORY|  |
+| RBAC-012 | B | ✅ MARKETING|  |
+| RBAC-013 | Tech | ❌ 无 CUSTOMER_SERVICE|  |
+| RBAC-014 | Eve | ✅ ACCOUNTING|  |
+| ROLE-001 | Supe | ❌ 无 AUDITOR|  |
+| ROLE-002 | Deale | 🟡 nav-registry persona 级（3 角色）|  |
+| ROLE-003 | Head Office Admi | ❌ RoleConfig 已建无 UI|  |
+| ROLE-004 | B | ❌ Permission 已建未用|  |
+| ROLE-005 | Sales Ma | ❌ 无 view 权限矩阵|  |
+| ROLE-006 | Sales Adviso | ❌ 无 create|  |
+| ROLE-007 | Se | ❌ 无 edit|  |
+| ROLE-008 | Se | ❌ 无 delete|  |
+| ROLE-009 | Tech | ❌ 无 export|  |
+| ROLE-010 | Pa | ❌ 无财务可见性限制|  |
+| ROLE-011 | Pa | ❌ User.branchId 有，无查询强制|  |
+| ROLE-012 | Ma | ❌ 无总部视图|  |
+| ROLE-013 | Custome | ❌ 无分支限定|  |
+| ROLE-014 | Fi | 🟡 mechanic 页面按 mechanicId 过滤（HANDOFF）|  |
+| ROLE-015 | Read-O | ❌ AuditLog 未接入|  |
 
 </details>
 

@@ -16,13 +16,20 @@ datasource db {
 enum Role {
   SUPER_ADMIN
   OWNER
+  HEAD_OFFICE_ADMIN
   MANAGER
-  COUNTER_STAFF
+  SALES_MANAGER
+  SALES_ADVISOR
+  SERVICE_MANAGER
   SERVICE_ADVISOR
+  COUNTER_STAFF
+  CUSTOMER_SERVICE
   MECHANIC
+  PARTS_MANAGER
   INVENTORY
   MARKETING
   ACCOUNTING
+  AUDITOR
 }
 
 model Organisation {
@@ -110,6 +117,13 @@ model User {
   // AUTH: login credentials
   passwordHash   String?
   lastLoginAt    DateTime?
+  emailVerified  Boolean   @default(false)
+  mfaSecret      String?   // TOTP secret for admin MFA
+  verifyToken    String?   // email verification token
+  resetToken     String?   // password reset token
+  resetTokenExpiresAt DateTime?
+  failedLoginCount Int    @default(0)
+  lockedUntil     DateTime?
   createdAt      DateTime @default(now())
   jobs           ServiceJob[]     @relation("AssignedMechanic")
   notifications  Notification[]

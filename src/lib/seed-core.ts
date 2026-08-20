@@ -858,7 +858,7 @@ export async function runSeed(): Promise<Record<string, number>> {
     { organisationId: org.id, provider: "PAYMENT", enabled: false },
   ] });
   // system roles mirror enum Role (ROLE-001..)
-  const roleNames = ["SUPER_ADMIN", "OWNER", "MANAGER", "COUNTER_STAFF", "SERVICE_ADVISOR", "MECHANIC", "INVENTORY", "MARKETING", "ACCOUNTING"];
+  const roleNames = ["SUPER_ADMIN", "OWNER", "HEAD_OFFICE_ADMIN", "MANAGER", "SALES_MANAGER", "SALES_ADVISOR", "SERVICE_MANAGER", "SERVICE_ADVISOR", "COUNTER_STAFF", "CUSTOMER_SERVICE", "MECHANIC", "PARTS_MANAGER", "INVENTORY", "MARKETING", "ACCOUNTING", "AUDITOR"];
   for (const rn of roleNames) {
     await prisma.roleConfig.create({ data: { organisationId: org.id, name: rn, isSystem: true } });
   }
