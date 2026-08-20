@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { leadsModule } from "@/modules/leads/service";
 import { formatRM } from "@/lib/money";
 import { fmtDate } from "@/lib/format";
+import { PendingForm } from "@/components/shared/search-form";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +38,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
         </Link>
       </div>
 
-      <form method="get" className="flex flex-wrap gap-2">
+      <PendingForm className="flex flex-wrap gap-2">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input name="q" defaultValue={sp.q} placeholder="Search name, phone, email, lead #…" className="w-full rounded-md border bg-background pl-8 pr-3 py-2 text-sm" />
@@ -57,7 +58,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           <option value="LOST">Lost</option>
         </select>
         <button className="rounded-lg border bg-card px-3 py-2 text-sm font-medium shadow-sm hover:bg-accent transition-colors">Filter</button>
-      </form>
+      </PendingForm>
 
       <div className="dz-panel overflow-x-auto">
         <table className="dz-table">

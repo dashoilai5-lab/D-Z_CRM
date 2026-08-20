@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar as RBar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { ExportCsvButton } from "@/components/shared/search-form";
 
 type KV = { label: string; value: number };
 function ChartBar({ data, color = "var(--primary)" }: { data: KV[]; color?: string }) {
@@ -21,23 +22,12 @@ function ChartBar({ data, color = "var(--primary)" }: { data: KV[]; color?: stri
   );
 }
 
-function toCSV(rows: { label: string; value: number }[]): string {
-  return "label,value\n" + rows.map((r) => r.label + "," + r.value).join("\n");
-}
-function download(name: string, rows: { label: string; value: number }[]) {
-  const blob = new Blob([toCSV(rows)], { type: "text/csv" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = name + ".csv";
-  a.click();
-}
-
 function Section({ title, data, csv }: { title: string; data: KV[]; csv: string }) {
   return (
     <div className="rounded-xl border bg-card p-4">
       <div className="flex items-center justify-between mb-2">
         <h3 className="font-semibold text-sm">{title}</h3>
-        <button className="text-[11px] text-primary hover:underline" onClick={() => download(csv, data)}>Export CSV</button>
+        <ExportCsvButton name={csv} data={data} className="text-[11px] text-primary hover:underline" />
       </div>
       <ChartBar data={data} />
     </div>

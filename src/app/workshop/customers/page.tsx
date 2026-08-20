@@ -5,6 +5,7 @@ import { Money } from "@/components/shared/money";
 import { fmtDate, fmtKM } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { PendingForm, ExportCsvButton } from "@/components/shared/search-form";
 
 export const dynamic = "force-dynamic";
 
@@ -21,11 +22,11 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           <h1 className="text-2xl font-bold tracking-tight">{t("ws.customers.title", lang)}</h1>
           <p className="text-sm text-muted-foreground mt-0.5">{t("ws.customers.summary", lang).replace("{n}", String(summaries.length))}</p>
         </div>
-        <form className="relative w-full sm:w-72">
+        <PendingForm className="w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input name="q" defaultValue={q ?? ""} placeholder={t("ws.customers.search-placeholder", lang)} className="h-9 w-full rounded-lg border bg-card pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
-        </form>
-        <Link href="/api/export?type=customers" className="rounded-lg border px-3 py-2 text-sm font-medium hover:bg-accent">Export CSV</Link>
+        </PendingForm>
+        <ExportCsvButton href="/api/export?type=customers" className="rounded-lg border px-3 py-2 text-sm font-medium hover:bg-accent" />
         <Link href="/workshop/import" className="rounded-lg border px-3 py-2 text-sm font-medium hover:bg-accent">Import CSV</Link>
       </div>
 

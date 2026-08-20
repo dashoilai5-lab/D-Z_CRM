@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { draftMessage, sendDraft } from "@/actions/ai";
 
@@ -21,14 +21,27 @@ export function AiDraftComposer() {
   const [facts, setFacts] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchSeq = useRef(0);
 
   async function search(v: string) {
     setQ(v);
-    if (v.length < 2) { setCustomers([]); return; }
-    const res = await fetch("/api/search?q=" + encodeURIComponent(v));
-    const data = await res.json();
-    const hits = (data.hits ?? []).filter((h: { type: string }) => h.type === "customer").slice(0, 5);
-    setCustomers(hits.map((h: { label: string; sub: string; href: string }) => ({ id: h.href.split("/").pop() ?? "", name: h.label, phone: h.sub.split("·")[0]?.trim() ?? "" })));
+    const seq = ++searchSeq.current;
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    if (v.length < 2) { setCustomers([]); setSearching(false); return; }
+    setSearching(true);
+    searchTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch("/api/search?q=" + encodeURIComponent(v));
+        const data = await res.json();
+        if (seq !== searchSeq.current) return; // stale response — ignore
+        const hits = (data.hits ?? []).filter((h: { type: string }) => h.type === "customer").slice(0, 5);
+        setCustomers(hits.map((h: { label: string; sub: string; href: string }) => ({ id: h.href.split("/").pop() ?? "", name: h.label, phone: h.sub.split("·")[0]?.trim() ?? "" })));
+      } finally {
+        if (seq === searchSeq.current) setSearching(false);
+      }
+    }, 300);
   }
 
   async function generate() {
@@ -57,6 +70,7 @@ export function AiDraftComposer() {
         <div>
           <label className={labelCls}>Customer</label>
           <input className={inputCls + " w-full"} value={q} onChange={(e) => search(e.target.value)} placeholder="Search customer…" />
+          {searching && <p className="text-[10px] text-muted-foreground mt-0.5 animate-pulse">Searching…</p>}
           {customers.length > 0 && (
             <div className="mt-1 rounded-md border max-h-32 overflow-y-auto">
               {customers.map((c) => (

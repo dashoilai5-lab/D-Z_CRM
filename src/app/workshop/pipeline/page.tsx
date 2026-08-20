@@ -5,6 +5,7 @@ import { pipelineStats } from "@/modules/leads/pipeline";
 import { tasksModule } from "@/modules/tasks/service";
 import { PipelineBoard } from "@/components/workshop/pipeline-board";
 import { formatRM } from "@/lib/money";
+import { PendingForm } from "@/components/shared/search-form";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
         </Link>
       </div>
 
-      <form method="get" className="flex flex-wrap gap-2 text-sm">
+      <PendingForm className="flex flex-wrap gap-2 text-sm">
         <select name="owner" defaultValue={sp.owner} className="rounded-md border bg-background px-3 py-2">
           <option value="">All salespeople</option>
           {salespeople.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
@@ -56,7 +57,7 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
         </select>
         <input name="q" defaultValue={sp.q} placeholder="Search name…" className="rounded-md border bg-background px-3 py-2" />
         <button className="rounded-md border px-3 py-2 font-medium"><Filter className="inline h-3.5 w-3.5 mr-1" />Filter</button>
-      </form>
+      </PendingForm>
 
       <PipelineBoard
         stages={stats.stages}

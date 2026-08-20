@@ -4,6 +4,7 @@ import { referralModule } from "@/modules/referrals/service";
 import { LoyaltyManager } from "@/components/workshop/loyalty-manager";
 import { ReferralManager } from "@/components/workshop/referral-manager";
 import { fmtDateTime } from "@/lib/format";
+import { PendingForm } from "@/components/shared/search-form";
 
 export const dynamic = "force-dynamic";
 
@@ -27,9 +28,9 @@ export default async function LoyaltyPage({ searchParams }: { searchParams: Prom
 
       <div className="rounded-xl border bg-card overflow-hidden">
         <h2 className="font-semibold text-sm px-4 pt-3 pb-2">Members ({accounts.length})</h2>
-        <form method="get" className="px-4 pb-3">
+        <PendingForm className="px-4 pb-3">
           <input name="q" defaultValue={sp.q} placeholder="Search member…" className="w-full max-w-sm rounded-md border bg-background px-3 py-1.5 text-sm" />
-        </form>
+        </PendingForm>
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
             <tr><th className="px-4 py-2 font-medium">Member</th><th className="px-4 py-2 font-medium">Tier</th><th className="px-4 py-2 font-medium">Points</th><th className="px-4 py-2 font-medium">Member since</th><th className="px-4 py-2 font-medium">Ledger</th></tr>

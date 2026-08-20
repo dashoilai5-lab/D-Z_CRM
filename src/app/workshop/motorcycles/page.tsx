@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Search, Plus } from "lucide-react";
 import { db } from "@/lib/db";
 import { fmtKM, fmtDate } from "@/lib/format";
+import { PendingForm } from "@/components/shared/search-form";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
         </Link>
       </div>
 
-      <form method="get" className="flex gap-2">
+      <PendingForm className="flex gap-2">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input name="q" defaultValue={sp.q} placeholder="Search plate, VIN, brand, model…" className="w-full rounded-md border bg-background pl-8 pr-3 py-2 text-sm" />
@@ -45,7 +46,7 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
           {brands.map((b) => <option key={b.brand} value={b.brand}>{b.brand}</option>)}
         </select>
         <button className="rounded-md border px-3 py-2 text-sm font-medium">Search</button>
-      </form>
+      </PendingForm>
 
       <div className="rounded-xl border bg-card overflow-x-auto">
         <table className="dz-table">

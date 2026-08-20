@@ -3,6 +3,7 @@ import { Search, Bike, Phone, MessageCircle } from "lucide-react";
 import { db } from "@/lib/db";
 import { BIKE_BRANDS, BRAND_MODEL_MAP } from "@/lib/bike-models";
 import { formatRM } from "@/lib/money";
+import { PendingForm } from "@/components/shared/search-form";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
           <p className="text-muted-foreground mt-1">Browse available models across {branches.length} branches. Enquire and we&apos;ll get back to you.</p>
         </div>
 
-        <form className="flex gap-2" method="get">
+        <PendingForm className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input name="q" defaultValue={sp.q} placeholder="Search models…" className="w-full rounded-lg border bg-background pl-8 pr-3 py-2 text-sm" />
@@ -44,7 +45,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
             {BIKE_BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
           <button className="rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium">Go</button>
-        </form>
+        </PendingForm>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {models.map((m) => {
