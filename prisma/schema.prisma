@@ -44,6 +44,7 @@ model Organisation {
   taxId         String?
   timezone      String   @default("Asia/Kuala_Lumpur")
   operatingHours String? // JSON {mon:"09:00-18:00",...}
+  lostReasons    String? // JSON array of configurable closed-lost reasons (PIPE-013)
   createdAt     DateTime @default(now())
   branches      Branch[]
   users         User[]
