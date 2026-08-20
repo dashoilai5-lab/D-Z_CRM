@@ -18,6 +18,25 @@ export class DashboardService {
     const criticalStock = branchId ? await inventoryService.criticalStockCount(branchId) : 0;
     const deadStockValue = branchId ? await inventoryService.deadStockValue(branchId) : 0;
     const customersDue = reminders.filter((r) => r.status === "DUE" || r.status === "OVERDUE").length;
+    // DASH-002..023: leads / repeat % / upcoming bookings / open tasks / lead trend
+    const org = await db.organisation.findFirst();
+    const orgId = org!.id;
+    const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+    const [totalLeads, newLeads, leadTrend, openTasks, repeatStats, upcoming] = await Promise.all([
+      db.lead.count({ where: { organisationId: orgId } }),
+      db.lead.count({ where: { organisationId: orgId, createdAt: { gte: monthStart } } }),
+      db.lead.groupBy({ by: ["createdAt"], where: { organisationId: orgId }, _count: true }).then((rows) => {
+        const byDay: Record<string, number> = {};
+        for (const r of rows) { const k = r.createdAt.toISOString().slice(0, 10); byDay[k] = (byDay[k] ?? 0) + 1; }
+        return Object.entries(byDay).sort((a, b) => a[0].localeCompare(b[0])).slice(-14).map(([label, value]) => ({ label, value }));
+      }),
+      db.task.count({ where: { organisationId: orgId, status: "OPEN", OR: [{ dueAt: null }, { dueAt: { lte: new Date(Date.now() + 7 * 86400000) } }] } }),
+      db.customer.findMany({ where: { organisationId: orgId }, select: { jobs: { select: { id: true } } } }).then((cs) => {
+        const repeat = cs.filter((c) => c.jobs.length >= 2).length;
+        return { total: cs.length, repeatPct: cs.length > 0 ? Math.round((repeat / cs.length) * 100) : 0 };
+      }),
+      db.booking.count({ where: { date: { gte: new Date() }, status: { in: ["REQUESTED", "CONFIRMED", "RESCHEDULED"] } } }),
+    ]);
     return {
       todaySales: finance.revenue,
       todayGrossProfit: finance.grossProfit,
@@ -30,6 +49,7 @@ export class DashboardService {
       avgRating: Math.round(reviews.avg * 10) / 10,
       topPerformer: kpi.top,
       board,
+      totalLeads, newLeads, leadTrend, openTasks, repeatPct: repeatStats.repeatPct, upcomingBookings: upcoming,
     };
   }
 

@@ -75,6 +75,14 @@ export default async function DashboardPage() {
         </div>
       )}
 
+      {/* DASH-002..023: leads / repeat / upcoming / tasks */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <StatCard label="Total Leads" value={dash.totalLeads ?? 0} sub={"+" + (dash.newLeads ?? 0) + " this month"} href="/workshop/leads" />
+        <StatCard label="Repeat customers" value={(dash.repeatPct ?? 0) + "%"} href="/workshop/customers" tone="success" />
+        <StatCard label="Upcoming bookings" value={dash.upcomingBookings ?? 0} href="/workshop/bookings" />
+        <StatCard label="Open follow-up tasks" value={dash.openTasks ?? 0} href="/workshop/tasks" />
+      </div>
+
       {/* workshop status */}
       <section>
         <div className="flex items-center justify-between mb-3">
