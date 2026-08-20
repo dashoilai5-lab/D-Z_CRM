@@ -64,8 +64,11 @@ test.describe("master journey", () => {
     await expect(page.getByText("34,800 km", { exact: false }).first()).toBeVisible();
     await expect(page.getByText("November 2026", { exact: false }).first()).toBeVisible();
 
-    // 9. Rider history has the verified service at 31,800 km
-    await page.goto(BASE_URL + "/rider/service-history");
+    // 9. Bike passport (My Bike) shows the verified service at 31,800 km
+    //    (service history lives inside each motorcycle's passport since the redesign)
+    await page.goto(BASE_URL + "/rider/motorcycles");
+    const passport = page.locator('a[href*="/rider/motorcycles/"]').first();
+    await passport.click();
     await expect(page.getByText("STANDARD SERVICE", { exact: false }).first()).toBeVisible();
 
     await ctx.close();

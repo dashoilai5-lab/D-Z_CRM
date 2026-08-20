@@ -89,7 +89,17 @@ export const DICT: Dict = {
   "navr.home": { en: "Home", zh: "首页", ms: "Utama" },
   "navr.my-bike": { en: "My Bike", zh: "我的摩托", ms: "Motosikal Saya" },
   "navr.book": { en: "Book", zh: "预约", ms: "Tempah" },
-  "navr.history": { en: "History", zh: "历史", ms: "Sejarah" },
+  "navr.news": { en: "News", zh: "资讯", ms: "Berita" },
+  "news.title": { en: "Latest News", zh: "最新资讯", ms: "Berita Terkini" },
+  "news.desc": { en: "Promotions, posters and new products — what's new at the workshop.", zh: "促销、海报与新品——门店最新动态。", ms: "Promosi, poster dan produk baharu — apa yang baharu di bengkel." },
+  "news.offers": { en: "Special offers", zh: "特别优惠", ms: "Tawaran Istimewa" },
+  "news.posters": { en: "Latest posters", zh: "最新海报", ms: "Poster Terkini" },
+  "news.products": { en: "New products", zh: "最新产品", ms: "Produk Baharu" },
+  "news.view-all": { en: "View all", zh: "查看全部", ms: "Lihat semua" },
+  "news.view-poster": { en: "View poster", zh: "查看海报", ms: "Lihat poster" },
+  "news.no-offers": { en: "No active promotions right now.", zh: "暂无进行中的促销。", ms: "Tiada promosi aktif buat masa ini." },
+  "news.no-posters": { en: "No posters yet.", zh: "暂无海报。", ms: "Tiada poster lagi." },
+  "news.no-products": { en: "No new products yet.", zh: "暂无新品。", ms: "Tiada produk baharu." },
   "navr.profile": { en: "Profile", zh: "我的", ms: "Profil" },
 
   // --- common buttons & labels ---

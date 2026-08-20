@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Bike, CalendarPlus, History, User } from "lucide-react";
+import { Home, Bike, CalendarPlus, Newspaper, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { t, type Lang } from "@/lib/i18n";
 
@@ -12,7 +12,7 @@ export function BottomNav({ lang = "en" }: { lang?: Lang }) {
     { href: "/rider/home", label: t("navr.home", lang), icon: Home },
     { href: "/rider/motorcycles", label: t("navr.my-bike", lang), icon: Bike },
     { href: "/rider/book", label: t("navr.book", lang), icon: CalendarPlus },
-    { href: "/rider/service-history", label: t("navr.history", lang), icon: History },
+    { href: "/rider/service-history", label: t("navr.news", lang), icon: Newspaper },
     { href: "/rider/profile", label: t("navr.profile", lang), icon: User },
   ];
   return (
