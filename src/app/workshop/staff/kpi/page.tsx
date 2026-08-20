@@ -32,7 +32,7 @@ export default async function KpiPage() {
       )}
       <div className="rounded-2xl border bg-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
               <th className="px-4 py-3 font-medium">{t("ws.kpi.col-staff", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.kpi.col-jobs", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.kpi.col-sales", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.kpi.col-avg-ticket", lang)}</th>

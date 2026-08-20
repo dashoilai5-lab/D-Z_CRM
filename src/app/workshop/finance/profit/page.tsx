@@ -22,12 +22,12 @@ export default async function ProfitPage() {
         <StatCard label={t("dash.avg-ticket", lang)} value={<Money sen={p.avgTicket} />} />
       </div>
       <div className="grid lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 rounded-2xl border bg-card p-5">
+        <div className="lg:col-span-2 dz-panel p-5">
           <h3 className="font-semibold mb-1">{t("ws.finance.trend-title", lang)}</h3>
           <p className="text-xs text-muted-foreground mb-3">{t("ws.finance.trend-sub", lang)}</p>
           <RevenueTrendChart data={p.trend} />
         </div>
-        <div className="rounded-2xl border bg-card p-5">
+        <div className="dz-panel p-5">
           <h3 className="font-semibold mb-1">{t("ws.finance.split-title", lang)}</h3>
           <p className="text-xs text-muted-foreground mb-3">{t("ws.finance.split-sub", lang)}</p>
           <RevenueSplitChart service={p.serviceRevenue} parts={p.partsRevenue} />

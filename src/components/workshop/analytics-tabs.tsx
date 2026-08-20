@@ -110,7 +110,7 @@ export function AnalyticsTabs(props: {
                 <XAxis dataKey="label" tick={{ fontSize: 9 }} interval={3} />
                 <YAxis tick={{ fontSize: 10 }} />
                 <Tooltip contentStyle={{ background: "var(--background)", border: "1px solid var(--border)", fontSize: 12 }} />
-                <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="value" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--primary)", strokeWidth: 0 }} activeDot={{ r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

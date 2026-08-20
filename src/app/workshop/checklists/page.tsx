@@ -13,7 +13,7 @@ export default async function ChecklistsPage() {
       <PageHeader title={t("nav.checklists", lang)} subtitle={t("ws.checklist.subtitle", lang)} />
       <div className="grid md:grid-cols-2 gap-4">
         {templates.map((tmpl) => (
-          <div key={tmpl.id} className="rounded-2xl border bg-card p-5">
+          <div key={tmpl.id} className="dz-panel p-5">
             <div className="font-semibold">{tmpl.name} {tmpl.isDefault && <Badge className="ml-1 bg-primary/10 text-primary">{t("ws.checklist.default", lang)}</Badge>}</div>
             <div className="mt-3 grid grid-cols-2 gap-1.5">
               {tmpl.items.map((i) => (

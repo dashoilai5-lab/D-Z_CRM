@@ -16,7 +16,7 @@ export default async function PurchaseOrdersPage() {
       <PageHeader title={t("ws.po.title", lang)} subtitle={t("ws.po.subtitle", lang)} />
       <div className="space-y-2">
         {rows.map((po) => (
-          <div key={po.id} className="rounded-2xl border bg-card p-4">
+          <div key={po.id} className="dz-panel p-4">
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex-1">
                 <div className="font-medium text-sm">{po.supplier.name}</div>

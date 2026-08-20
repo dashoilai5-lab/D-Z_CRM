@@ -20,7 +20,7 @@ export default async function ReorderPage() {
         {recs.map((r) => {
           const sup = suppliers.find((s) => s.id === r.supplierId);
           return (
-            <div key={r.productId} className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4">
+            <div key={r.productId} className="flex flex-wrap items-center gap-3 dz-panel p-4">
               <div className="flex-1 min-w-44">
                 <div className="font-medium text-sm">{r.name}</div>
                 <div className="text-xs text-muted-foreground">{t("ws.reorder.current-stock", lang)} {r.quantity} · {t("ws.reorder.est-days-left", lang)} {r.daysRemaining ?? "—"} · {r.reason}</div>

@@ -17,7 +17,7 @@ export default async function DeadStockPage() {
       <PageHeader title={t("ws.dead.title", lang)} subtitle={t("ws.dead.subtitle", lang).replace("{n}", (total / 100).toFixed(0))} />
       <div className="rounded-2xl border bg-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
               <th className="px-4 py-3 font-medium">{t("ws.dead.col.product", lang)}</th><th className="px-4 py-3 font-medium">{t("common.qty", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.dead.col.stock-value", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.dead.col.last-sale", lang)}</th>
