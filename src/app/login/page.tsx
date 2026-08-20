@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Bike } from "lucide-react";
 import { login, forgotPassword, resetPassword } from "@/actions/auth";
 import { setPersona } from "@/actions/demo";
 
@@ -63,10 +64,17 @@ export default function LoginPage() {
   const labelCls = "text-xs font-medium text-muted-foreground mb-1 block";
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4">
-      <div className="w-full max-w-sm">
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <h1 className="text-xl font-semibold mb-1">D&Z AI CRM</h1>
+    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 relative overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" aria-hidden />
+      <div className="w-full max-w-sm relative">
+        <div className="mb-6 flex flex-col items-center text-center">
+          <div className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/25">
+            <Bike className="h-7 w-7" />
+          </div>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight">D&Z AI CRM</h1>
+          <p className="text-sm text-muted-foreground">Dealer · Workshop · Rider — one platform</p>
+        </div>
+        <div className="rounded-2xl border bg-card/95 backdrop-blur p-6 shadow-xl shadow-black/5">
           <p className="text-sm text-muted-foreground mb-5">
             {mode === "login" && "Sign in to your dealer workspace"}
             {mode === "forgot" && "Reset your password"}

@@ -60,7 +60,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       {/* JOB-016 / rider lifecycle: customer-facing progress + ETA (linked to rider service-status) */}
-      <div className="rounded-2xl border bg-card p-4 mb-5">
+      <div className="dz-panel p-4 mb-5">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold text-sm">Rider lifecycle progress</h3>
           <Link href={"/rider/service-status"} className="text-[11px] text-primary hover:underline">customer view →</Link>
@@ -88,7 +88,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       </div>
 
       {statusHistory.length > 0 && (
-        <div className="rounded-2xl border bg-card p-4 mb-5">
+        <div className="dz-panel p-4 mb-5">
           <h3 className="font-semibold text-sm mb-2">Status history</h3>
           <ol className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
             {statusHistory.map((h, i) => (
@@ -105,7 +105,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 space-y-5">
           {/* customer & bike */}
-          <section className="rounded-2xl border bg-card p-5">
+          <section className="dz-panel p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <Link href={"/workshop/customers/" + detail.customerId} className="font-semibold hover:text-primary">{detail.customer.name}</Link>
@@ -135,7 +135,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </section>
 
           {/* items & parts */}
-          <section className="rounded-2xl border bg-card">
+          <section className="dz-panel">
             <div className="px-5 pt-4 pb-2 font-semibold">{t("ws.job.lines-title", lang)}</div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -176,7 +176,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
           {/* AI recommendations */}
           {recs.length > 0 && (
-            <section className="rounded-2xl border bg-card p-5">
+            <section className="dz-panel p-5">
               <h3 className="font-semibold mb-3">{t("ws.job.ai-recs", lang)}</h3>
               <div className="space-y-3">
                 {recs.map((r) => (
@@ -198,7 +198,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
           {/* checklist */}
           {checklist && (
-            <section className="rounded-2xl border bg-card">
+            <section className="dz-panel">
               <div className="px-5 pt-4 pb-2 font-semibold flex items-center justify-between">
                 <span>{t("ws.checklist.title", lang)}</span>
                 {checklist.completedAt ? <span className="text-xs text-emerald-600 font-medium flex items-center gap-1"><BadgeCheck className="h-3.5 w-3.5" /> {t("common.completed", lang)} {fmtDate(checklist.completedAt)}</span> : <span className="text-xs text-muted-foreground">{t("ws.checklist.in-progress", lang)}</span>}
@@ -217,7 +217,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
         <div className="space-y-5">
           {/* approvals */}
-          <section className="rounded-2xl border bg-card p-5">
+          <section className="dz-panel p-5">
             <h3 className="font-semibold mb-3">{t("ws.job.customer-approvals", lang)}</h3>
             {detail.findings.length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("ws.job.no-findings", lang)}</p>
@@ -248,7 +248,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
           {/* invoice */}
           {detail.invoice && (
-            <section className="rounded-2xl border bg-card p-5">
+            <section className="dz-panel p-5">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold">{t("ws.job.invoice", lang)}</h3>
                 <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (detail.invoice.status === "PAID" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700")}>{detail.invoice.status}</span>

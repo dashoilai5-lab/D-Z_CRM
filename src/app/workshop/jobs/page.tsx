@@ -61,13 +61,16 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
       {isKanban ? (
         <div className="grid md:grid-cols-3 xl:grid-cols-5 gap-3">
           {columns.map((col) => (
-            <div key={col.id} className="rounded-2xl border bg-muted/20 p-2.5 min-h-40">
-              <div className="flex items-center gap-2 px-1.5 pb-2 text-xs font-semibold text-muted-foreground">
-                <span className={"h-2 w-2 rounded-full " + col.dot} />{col.title} <span className="tabular-nums">{board.counts[col.id]}</span>
+            <div key={col.id} className="rounded-2xl border bg-muted/30 p-2.5 min-h-40 flex flex-col">
+              <div className="flex items-center justify-between px-1.5 pb-2">
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+                  <span className={"h-2 w-2 rounded-full " + col.dot} />{col.title}
+                </span>
+                <span className="rounded-full bg-card border px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-muted-foreground">{board.counts[col.id]}</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 flex-1">
                 {board.jobs.filter((j) => j.status === col.id).slice(0, 12).map((j) => (
-                  <Link key={j.id} href={"/workshop/jobs/" + j.id} className="block rounded-xl border bg-card p-3 hover:border-primary/40 transition-colors">
+                  <Link key={j.id} href={"/workshop/jobs/" + j.id} className="dz-card-link block rounded-xl border bg-card p-3">
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-[11px] font-semibold">{j.jobNumber}</span>
                       {j.pendingApprovals > 0 && <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">{t("ws.jobs.pending-approvals", lang).replace("{n}", String(j.pendingApprovals))}</span>}

@@ -261,4 +261,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | 修复通知页筛选按钮：typeCounts 分组改用不含 type 筛选的 baseWhere——点击任一类型 filter 后所有按钮（All/INFO/JOB_READY 等）保持可见 | 实测：点 Info 后 JOB_READY 按钮仍在，点 JOB_READY 后 INFO 仍在；回归全绿 |
 | 2026-08-20 | 服务套餐编辑：/workshop/packages 升级——每套餐 Edit 按钮 + PackageEditor（勾选包含项/名称价格描述/最佳值/启停 + 赠品添加 kind=GIFT）；跨套餐重复检测 dupMap（列表 ⚠ also in X + 编辑器内 ⚠ 警告）；候选列表 = 服务目录+零件+既有自由项目 | 实测：Basic 编辑含 3 个重复警告、添加赠品保存后列表显示 🎁 FREE；actions/packages.ts updatePackage 支持 diff 重写 items |
 | 2026-08-20 | UI 全局增强（ui-ux-pro-max 技能驱动，不动核心逻辑）：globals.css 加 .dz-table/.dz-panel/.dz-section-title/.dz-card-link + focus-visible 无障碍环；StatCard 加 icon 槽+shadow+hover 上浮；EmptyState 加 action；StatusBadge 补 QC_CHECK/WAITING_PARTS/ON_HOLD/NO_SHOW 配色；8 个表格页升级 dz-table（sticky thead/行 hover）；leads/customers 筛选控件统一 | 回归全绿（75 e2e 无核心逻辑改动）；截图 polish-dashboard/leads/customers |
+| 2026-08-20 | UI 增强第二轮（逐页深化，纯视觉）：dashboard 统计卡全部加图标（Wallet/TrendingUp/Wrench/Receipt/Filter/Users/CalendarClock/ListTodo）；jobs Kanban 列头计数徽章+卡片 dz-card-link hover；工单详情 section 统一 dz-panel；登录页品牌化（logo 图标+渐变背景+tagline+毛玻璃卡） | 回归全绿；截图 polish2-dashboard/kanban/login |
 | — | （后续改动在此追加） | — |

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Wallet, TrendingUp, Wrench, Receipt, Filter, Users, CalendarClock, ListTodo } from "lucide-react";
 import { dashboardService } from "@/services/dashboard";
 import { aiService } from "@/modules/ai/service";
 import { StatCard } from "@/components/shared/stat-card";
@@ -61,10 +61,10 @@ export default async function DashboardPage() {
         </div>
       ) : isOwner ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <StatCard label={t("dash.today-sales", lang)} value={<Money sen={dash.todaySales} />} href="/workshop/finance/profit" />
-          <StatCard label={t("dash.gross-profit", lang)} value={<Money sen={dash.todayGrossProfit} />} href="/workshop/finance/profit" tone="success" />
-          <StatCard label={t("dash.jobs-today", lang)} value={dash.jobsToday} href="/workshop/jobs" />
-          <StatCard label={t("dash.avg-ticket", lang)} value={<Money sen={dash.avgTicket} />} href="/workshop/finance/profit" />
+          <StatCard icon={<Wallet className="h-4 w-4" />} label={t("dash.today-sales", lang)} value={<Money sen={dash.todaySales} />} href="/workshop/finance/profit" />
+          <StatCard icon={<TrendingUp className="h-4 w-4" />} label={t("dash.gross-profit", lang)} value={<Money sen={dash.todayGrossProfit} />} href="/workshop/finance/profit" tone="success" />
+          <StatCard icon={<Wrench className="h-4 w-4" />} label={t("dash.jobs-today", lang)} value={dash.jobsToday} href="/workshop/jobs" />
+          <StatCard icon={<Receipt className="h-4 w-4" />} label={t("dash.avg-ticket", lang)} value={<Money sen={dash.avgTicket} />} href="/workshop/finance/profit" />
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
@@ -77,10 +77,10 @@ export default async function DashboardPage() {
 
       {/* DASH-002..023: leads / repeat / upcoming / tasks */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <StatCard label="Total Leads" value={dash.totalLeads ?? 0} sub={"+" + (dash.newLeads ?? 0) + " this month"} href="/workshop/leads" />
-        <StatCard label="Repeat customers" value={(dash.repeatPct ?? 0) + "%"} href="/workshop/customers" tone="success" />
-        <StatCard label="Upcoming bookings" value={dash.upcomingBookings ?? 0} href="/workshop/bookings" />
-        <StatCard label="Open follow-up tasks" value={dash.openTasks ?? 0} href="/workshop/tasks" />
+        <StatCard icon={<Filter className="h-4 w-4" />} label="Total Leads" value={dash.totalLeads ?? 0} sub={"+" + (dash.newLeads ?? 0) + " this month"} href="/workshop/leads" />
+        <StatCard icon={<Users className="h-4 w-4" />} label="Repeat customers" value={(dash.repeatPct ?? 0) + "%"} href="/workshop/customers" tone="success" />
+        <StatCard icon={<CalendarClock className="h-4 w-4" />} label="Upcoming bookings" value={dash.upcomingBookings ?? 0} href="/workshop/bookings" />
+        <StatCard icon={<ListTodo className="h-4 w-4" />} label="Open follow-up tasks" value={dash.openTasks ?? 0} href="/workshop/tasks" />
       </div>
 
       {/* customer-facing service lifecycle distribution */}
