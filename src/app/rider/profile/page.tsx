@@ -13,11 +13,12 @@ export default async function RiderProfilePage() {
   const lang = await getLang();
   const customer = await getDemoCustomer();
   if (!customer) return null;
-  const [visits, reviews, notifications, messages] = await Promise.all([
+  const [visits, reviews, notifications, messages, loyalty] = await Promise.all([
     db.serviceJob.count({ where: { customerId: customer.id, status: "COMPLETED" } }),
     db.review.count({ where: { customerId: customer.id } }),
     db.notification.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" }, take: 5 }),
     db.message.findMany({ where: { customerId: customer.id }, orderBy: { createdAt: "desc" }, take: 8 }),
+    db.loyaltyAccount.findUnique({ where: { customerId: customer.id }, include: { tier: true } }),
   ]);
   return (
     <div className="space-y-5">
@@ -37,6 +38,25 @@ export default async function RiderProfilePage() {
           <div className="text-xs text-muted-foreground">{t("rider.profile-reviews", lang)}</div>
         </div>
       </div>
+
+      {loyalty && (
+        <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary/70 text-primary-foreground p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">D&Z Member Card</span>
+            <span className="text-[11px] font-mono opacity-80">{loyalty.membershipId}</span>
+          </div>
+          <div className="mt-4 flex items-end justify-between">
+            <div>
+              <div className="text-3xl font-bold tabular-nums">{loyalty.pointsBalance}</div>
+              <div className="text-[11px] opacity-80">loyalty points</div>
+            </div>
+            <div className="text-right">
+              <div className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold">{loyalty.tier?.name ?? "Member"}</div>
+              <div className="mt-1 text-[10px] opacity-80">{loyalty.tier?.benefits ?? "Earn points on every service"}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {messages[0] && (
         <div className="rounded-2xl border bg-emerald-50/70 ring-1 ring-emerald-200 dark:bg-emerald-950/40 dark:ring-emerald-900 p-4">

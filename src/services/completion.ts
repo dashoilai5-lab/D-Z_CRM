@@ -174,6 +174,23 @@ export class CompletionService {
       await tx.jobStatusHistory.create({
         data: { jobId: job.id, fromStatus: job.status, toStatus: "COMPLETED", changedAt: new Date() },
       });
+      // LOY-017: award service-based loyalty points (1 pt per RM1 spent, rounded)
+      try {
+        const pts = Math.max(10, Math.round(subtotal / 100));
+        await tx.loyaltyAccount.upsert({
+          where: { customerId: job.customerId },
+          create: { organisationId: job.customer.organisationId, customerId: job.customerId, membershipId: "DZ-M-" + Date.now().toString(36).toUpperCase(), pointsBalance: pts, totalEarned: pts },
+          update: { pointsBalance: { increment: pts }, totalEarned: { increment: pts } },
+        });
+        const acct = await tx.loyaltyAccount.findUnique({ where: { customerId: job.customerId } });
+        if (acct) {
+          await tx.loyaltyTransaction.create({
+            data: { accountId: acct.id, type: "EARN", points: pts, balanceAfter: acct.pointsBalance, reason: "Service completed " + job.jobNumber, referenceType: "JOB", referenceId: job.id },
+          });
+          const tier = await tx.loyaltyTier.findFirst({ where: { organisationId: job.customer.organisationId, active: true, minPoints: { lte: acct.totalEarned } }, orderBy: { minPoints: "desc" } });
+          if (tier) await tx.loyaltyAccount.update({ where: { id: acct.id }, data: { tierId: tier.id } });
+        }
+      } catch { /* loyalty must never break completion */ }
 
       // 6. Mark job completed + booking completed
       await tx.serviceJob.update({ where: { id: job.id }, data: { status: "COMPLETED", completedAt: new Date() } });

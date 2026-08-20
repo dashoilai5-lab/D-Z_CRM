@@ -60,6 +60,7 @@ export const NAV_SECTIONS: readonly NavSection[] = [
     items: [
       { key: "automations", label: "Automations", labelKey: "nav.automations", href: "/workshop/automations", icon: Sparkles, access: ["OWNER"] },
       { key: "templates", label: "Message Templates", labelKey: "nav.templates", href: "/workshop/messaging/templates", icon: MessageSquare, access: ["OWNER", "COUNTER_STAFF"] },
+      { key: "loyalty", label: "Loyalty & Referrals", labelKey: "nav.loyalty", href: "/workshop/loyalty", icon: Star, access: ["OWNER", "COUNTER_STAFF"] },
     ],
   },
   {

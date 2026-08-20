@@ -20,6 +20,7 @@ export const DICT: Dict = {
   "nav.motorcycles": { en: "Motorcycles", zh: "摩托车", ms: "Motorsikal" },
   "nav.automations": { en: "Automations", zh: "自动化", ms: "Automasi" },
   "nav.templates": { en: "Message Templates", zh: "消息模板", ms: "Templat Mesej" },
+  "nav.loyalty": { en: "Loyalty & Referrals", zh: "忠诚度与推荐", ms: "Kesetiaan & Rujukan" },
   "nav.return-list": { en: "Customer Return List", zh: "客户回流名单", ms: "Senarai Pulangan Pelanggan" },
   "nav.reminders": { en: "Service Reminders", zh: "保养提醒", ms: "Peringatan Servis" },
   "nav.bookings": { en: "Bookings", zh: "预约", ms: "Tempahan" },
