@@ -870,6 +870,47 @@ export async function runSeed(): Promise<Record<string, number>> {
       await prisma.appointmentSlot.create({ data: { branchId: kl.id, date: daysFromNow(d), startTime: st, maxBookings: 2 } });
     }
   }
+  // demo leads (segment 3): website/whatsapp enquiries in various pipeline stages
+  const srcById: Record<string, string> = {};
+  for (const nm of sourceNames) {
+    const s = await prisma.leadSource.findFirst({ where: { organisationId: org.id, name: nm } });
+    if (s) srcById[nm] = s.id;
+  }
+  const stageById: Record<string, string> = {};
+  for (const [i, nm] of stageNames.entries()) {
+    const s = await prisma.leadStage.findFirst({ where: { organisationId: org.id, name: nm } });
+    if (s) stageById[nm] = s.id;
+  }
+  const leadDefs: [string, string, string, string, string, number, string][] = [
+    // name, phone, source, stage, model, valueRM, assignedFirst
+    ["Farid Zulkifli", "011-2233 4455", "WhatsApp", "Contacted", "Yamaha Y16ZR", 11000, "Syafiq"],
+    ["Siti Nurhaliza", "013-9988 7766", "Website", "Qualified", "Honda ADV160", 13500, "Daniel"],
+    ["Kevin Lim", "016-5544 3322", "Walk-in", "Test Ride", "Kawasaki Ninja 250", 24000, "Syafiq"],
+    ["Aina Mardhiah", "017-1122 3344", "Social Media", "New Enquiry", "Modenas Dominar D400", 19000, ""],
+    ["Raj Kumar", "012-7788 9900", "Phone", "Proposal", "Suzuki GSX-R150", 16500, "Daniel"],
+  ];
+  let leadCount = 0;
+  for (const [name, phone, src, stage, model, valRM, assigned] of leadDefs) {
+    const u = assigned ? staff[assigned] : null;
+    await prisma.lead.create({
+      data: {
+        leadNumber: "LD-" + Date.now().toString().slice(-8) + "-" + String(leadCount + 1).padStart(3, "0"),
+        organisationId: org.id,
+        branchId: kl.id,
+        customerName: name,
+        phone,
+        sourceId: srcById[src],
+        stageId: stageById[stage],
+        motorcycleInterest: model,
+        estimatedValueSen: RM(valRM),
+        assignedUserId: u,
+        nextFollowUpAt: u ? daysFromNow(int(0, 3)) : null,
+        status: "OPEN",
+      },
+    });
+    leadCount++;
+  }
+  counts.leads = leadCount;
   counts.leadStages = stageNames.length; counts.leadSources = sourceNames.length;
   counts.serviceTypes = svcDefs.length; counts.loyaltyTiers = tierDefs.length; counts.rewards = 2;
   counts.messageTemplates = 3; counts.appointmentSlots = 7 * slotTimes.length;

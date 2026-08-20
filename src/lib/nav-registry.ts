@@ -7,7 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, Users, UserCheck, BellRing, CalendarClock, Wrench, ClipboardList, ListChecks, Package,
   Store, Megaphone, MessageSquare, Star, Users2, Gauge, Boxes, AlertTriangle, Archive, RefreshCw,
-  ShoppingCart, Truck, Wallet, Sparkles, Settings,
+  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter,
 } from "lucide-react";
 import type { DemoPersona } from "@/lib/persona";
 
@@ -42,6 +42,12 @@ export const NAV_SECTIONS: readonly NavSection[] = [
   {
     section: null,
     items: [{ key: "dashboard", label: "Dashboard", labelKey: "nav.dashboard", href: "/workshop/dashboard", icon: LayoutDashboard }],
+  },
+  {
+    section: "SALES",
+    items: [
+      { key: "leads", label: "Leads", labelKey: "nav.leads", href: "/workshop/leads", icon: Filter, access: ["OWNER", "COUNTER_STAFF"] },
+    ],
   },
   {
     section: "CUSTOMERS",

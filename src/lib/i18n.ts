@@ -13,6 +13,7 @@ export const DICT: Dict = {
   // --- sidebar navigation ---
   "nav.dashboard": { en: "Dashboard", zh: "仪表盘", ms: "Papan Pemuka" },
   "nav.customers": { en: "Customers", zh: "客户", ms: "Pelanggan" },
+  "nav.leads": { en: "Leads", zh: "线索", ms: "Prospek" },
   "nav.return-list": { en: "Customer Return List", zh: "客户回流名单", ms: "Senarai Pulangan Pelanggan" },
   "nav.reminders": { en: "Service Reminders", zh: "保养提醒", ms: "Peringatan Servis" },
   "nav.bookings": { en: "Bookings", zh: "预约", ms: "Tempahan" },

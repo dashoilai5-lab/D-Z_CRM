@@ -50,6 +50,24 @@ export default async function LandingPage() {
           </Link>
         </div>
 
+        <div className="grid sm:grid-cols-3 gap-4 mt-6">
+          <Link href="/catalogue" className="rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
+            <div className="text-2xl">🏍️</div>
+            <h3 className="font-semibold mt-2">Motorcycle Catalogue</h3>
+            <p className="text-xs text-muted-foreground mt-1">Browse new bikes across our branches.</p>
+          </Link>
+          <Link href="/test-ride" className="rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
+            <div className="text-2xl">⏱️</div>
+            <h3 className="font-semibold mt-2">Book a Test Ride</h3>
+            <p className="text-xs text-muted-foreground mt-1">Try before you buy — pick a slot.</p>
+          </Link>
+          <Link href="/contact" className="rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
+            <div className="text-2xl">💬</div>
+            <h3 className="font-semibold mt-2">Contact / Enquire</h3>
+            <p className="text-xs text-muted-foreground mt-1">Questions? We reply fast on WhatsApp.</p>
+          </Link>
+        </div>
+
         <div className="mt-10 grid grid-cols-3 gap-4 max-w-xl">
           <div className="rounded-2xl border bg-card p-4 text-center">
             <div className="text-2xl font-bold">{customers.toLocaleString()}</div>
