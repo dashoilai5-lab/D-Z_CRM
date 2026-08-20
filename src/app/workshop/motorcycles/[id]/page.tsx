@@ -29,7 +29,7 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
         <ChevronLeft className="h-4 w-4" /> Motorcycles
       </Link>
 
-      <div className="rounded-xl border bg-card p-5">
+      <div className="dz-panel p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold">{bike.brand} {bike.model}</h1>
@@ -70,11 +70,11 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
         </div>
       </div>
 
-      <div className="rounded-xl border bg-card overflow-hidden">
+      <div className="dz-panel overflow-hidden">
         <h2 className="font-semibold px-5 pt-4">Service history ({bike.jobs.length})</h2>
         <div className="overflow-x-auto mt-2">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
+          <table className="dz-table">
+            <thead>
               <tr>
                 <th className="px-4 py-2.5 font-medium">Job</th><th className="px-4 py-2.5 font-medium">Date</th>
                 <th className="px-4 py-2.5 font-medium">Mileage</th><th className="px-4 py-2.5 font-medium">Status</th>
@@ -83,7 +83,7 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
             </thead>
             <tbody>
               {bike.jobs.map((j) => (
-                <tr key={j.id} className="border-t">
+                <tr key={j.id}>
                   <td className="px-4 py-2.5"><Link className="font-mono text-xs font-semibold hover:text-primary" href={"/workshop/jobs/" + j.id}>{j.jobNumber}</Link></td>
                   <td className="px-4 py-2.5">{fmtDate(j.completedAt ?? j.createdAt)}</td>
                   <td className="px-4 py-2.5 tabular-nums">{fmtKM(j.mileage)}</td>

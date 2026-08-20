@@ -56,23 +56,25 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           <h2 className="font-semibold mb-3">Update lead</h2>
           <LeadActions leadId={lead.id} stages={stages} salespeople={salespeople} currentStageId={lead.stageId} currentOwnerId={lead.assignedUserId} />
         </div>
-        <div className="rounded-xl border bg-card p-5">
+        <div className="dz-panel p-5">
           <h2 className="font-semibold mb-3">Timeline</h2>
           {lead.activities.length === 0 ? (
             <p className="text-sm text-muted-foreground">No activity yet.</p>
           ) : (
-            <ul className="space-y-3">
+            <ol className="relative ml-2 space-y-4 before:absolute before:left-[7px] before:top-2 before:bottom-2 before:w-px before:bg-border">
               {lead.activities.map((a) => (
-                <li key={a.id} className="flex gap-3 text-sm">
-                  <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary/60" />
+                <li key={a.id} className="relative flex gap-3 pl-5 text-sm">
+                  <span className="absolute left-0 top-1.5 h-[15px] w-[15px] rounded-full border-2 border-primary/30 bg-background" />
                   <div>
-                    <div className="font-medium">{a.type.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</div>
-                    {a.note && <div className="text-muted-foreground text-xs">{a.note}</div>}
-                    <div className="text-[11px] text-muted-foreground/70">{fmtDateTime(a.createdAt)}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{a.type.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
+                      <span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">{fmtDateTime(a.createdAt)}</span>
+                    </div>
+                    {a.note && <div className="mt-0.5 text-muted-foreground text-xs">{a.note}</div>}
                   </div>
                 </li>
               ))}
-            </ul>
+            </ol>
           )}
         </div>
       </div>
