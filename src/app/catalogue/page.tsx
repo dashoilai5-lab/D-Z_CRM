@@ -53,7 +53,7 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
             const price = priceFor(m);
             return (
               <div key={m} className="rounded-xl border bg-card p-4 flex flex-col">
-                <div className="aspect-[4/3] rounded-lg bg-muted/60 flex items-center justify-center text-4xl">🏍️</div>
+                <div className="aspect-[4/3] rounded-lg bg-muted/60 flex items-center justify-center text-muted-foreground/60"><Bike className="h-10 w-10" /></div>
                 <div className="mt-3 font-semibold">{brand} {m}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">From {formatRM(price * 100)}</div>
                 <div className="mt-1"><span className="inline-flex rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 text-[11px] px-2 py-0.5">In stock</span></div>

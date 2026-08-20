@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Tag, Megaphone, Package, ChevronRight } from "lucide-react";
+import { Tag, Megaphone, Package, ChevronRight, Wrench } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
@@ -73,7 +73,7 @@ export default async function NewsPage() {
           <div className="grid grid-cols-2 gap-2.5">
             {products.map((p) => (
               <div key={p.id} className="dz-panel p-3">
-                <div className="aspect-[4/3] rounded-lg bg-muted/60 flex items-center justify-center text-2xl">🔩</div>
+                <div className="aspect-[4/3] rounded-lg bg-muted/60 flex items-center justify-center text-muted-foreground/60"><Wrench className="h-8 w-8" /></div>
                 <div className="mt-2 text-sm font-medium leading-tight line-clamp-2">{p.name}</div>
                 <div className="text-xs text-muted-foreground">{p.brand ?? p.category ?? ""}</div>
                 <div className="mt-1 text-sm font-bold tabular-nums text-primary">{formatRM(p.sellPriceSen)}</div>

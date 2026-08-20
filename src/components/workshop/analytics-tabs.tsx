@@ -139,7 +139,11 @@ export function AnalyticsTabs(props: {
                   <td className="px-4 py-2.5 tabular-nums">{b.bookings}</td>
                   <td className="px-4 py-2.5 tabular-nums">{b.customers}</td>
                   <td className="px-4 py-2.5 tabular-nums font-semibold">{b.revenueLabel}</td>
-                  <td className="px-4 py-2.5">{i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "#" + (i + 1)}</td>
+                  <td className="px-4 py-2.5">
+                    <span className={"inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold " + (i === 0 ? "bg-amber-500/15 text-amber-600 dark:text-amber-300" : i === 1 ? "bg-slate-500/15 text-slate-500 dark:text-slate-300" : i === 2 ? "bg-orange-500/15 text-orange-600 dark:text-orange-300" : "bg-muted text-muted-foreground")}>
+                      {i + 1}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

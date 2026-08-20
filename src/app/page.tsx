@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bike, Wrench, ArrowRight } from "lucide-react";
+import { Bike, Clock, MessageCircle, ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
 import { getPersona } from "@/lib/demo";
@@ -16,17 +16,17 @@ export default async function LandingPage() {
   return (
     <main className="flex-1 flex flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-5xl">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-11 w-11 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center">
+        <div className="flex items-center gap-3.5 mb-2">
+          <div className="h-11 w-11 shrink-0 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center">
             <Bike className="h-6 w-6" />
           </div>
-          <div>
+          <div className="leading-tight">
             <h1 className="text-2xl font-bold tracking-tight">D&Z PLATFORM</h1>
-            <p className="text-sm text-muted-foreground">{org?.name ?? "D&Z Smart Workshop"}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{org?.name ?? "D&Z Smart Workshop"}</p>
           </div>
         </div>
         <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-balance mt-6">
-          The workshop and the rider, <span className="text-primary">connected</span>.
+          The workshop and the rider, <span className="text-primary font-semibold">connected</span>.
         </h2>
         <p className="mt-4 text-muted-foreground max-w-2xl text-lg">
           One shared business system. Two experiences — D&Z Workshop OS for the team, D&Z Rider for motorcycle owners.
@@ -46,19 +46,19 @@ export default async function LandingPage() {
         </div>
 
         <div className="grid sm:grid-cols-3 gap-4 mt-6">
-          <Link href="/catalogue" className="rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
-            <div className="text-2xl">🏍️</div>
-            <h3 className="font-semibold mt-2">Motorcycle Catalogue</h3>
+          <Link href="/catalogue" className="group rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><Bike className="h-5 w-5" /></div>
+            <h3 className="font-semibold mt-3">Motorcycle Catalogue</h3>
             <p className="text-xs text-muted-foreground mt-1">Browse new bikes across our branches.</p>
           </Link>
-          <Link href="/test-ride" className="rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
-            <div className="text-2xl">⏱️</div>
-            <h3 className="font-semibold mt-2">Book a Test Ride</h3>
+          <Link href="/test-ride" className="group rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><Clock className="h-5 w-5" /></div>
+            <h3 className="font-semibold mt-3">Book a Test Ride</h3>
             <p className="text-xs text-muted-foreground mt-1">Try before you buy — pick a slot.</p>
           </Link>
-          <Link href="/contact" className="rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
-            <div className="text-2xl">💬</div>
-            <h3 className="font-semibold mt-2">Contact / Enquire</h3>
+          <Link href="/contact" className="group rounded-2xl border bg-card p-5 hover:border-primary/50 transition-colors">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><MessageCircle className="h-5 w-5" /></div>
+            <h3 className="font-semibold mt-3">Contact / Enquire</h3>
             <p className="text-xs text-muted-foreground mt-1">Questions? We reply fast on WhatsApp.</p>
           </Link>
         </div>

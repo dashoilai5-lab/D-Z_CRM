@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Bike } from "lucide-react";
 import { submitTestRideRequest } from "@/actions/website";
 
 export function TestRideForm({ defaultModel, branches, slots }: { defaultModel?: string; branches: { id: string; label: string }[]; slots: string[] }) {
@@ -26,8 +27,8 @@ export function TestRideForm({ defaultModel, branches, slots }: { defaultModel?:
   if (done?.ok) {
     return (
       <div className="rounded-xl border bg-card p-6 text-center">
-        <div className="text-3xl">🏍️</div>
-        <h2 className="text-lg font-semibold mt-2">Test ride requested!</h2>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"><Bike className="h-6 w-6" /></div>
+        <h2 className="text-lg font-semibold mt-3">Test ride requested!</h2>
         <p className="text-sm text-muted-foreground mt-1">Ref: <span className="font-mono">{done.leadNumber}</span> — we&apos;ll confirm your slot.</p>
       </div>
     );

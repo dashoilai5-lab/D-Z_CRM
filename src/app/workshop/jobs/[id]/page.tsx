@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AlertTriangle, BadgeCheck, CheckCircle2, XCircle } from "lucide-react";
+import { AlertTriangle, BadgeCheck, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { jobService } from "@/modules/service-jobs/service";
 import { aiService } from "@/modules/ai/service";
 import { PageHeader } from "@/components/shared/page-header";
@@ -80,7 +80,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 <div className="h-full rounded-full bg-primary" style={{ width: pct + "%" }} />
               </div>
               {eta && detail.status !== "COMPLETED" && (
-                <p className="mt-2 text-xs text-muted-foreground">⏱ Estimated ready: <strong>{fmtDateTime(eta)}</strong></p>
+                <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><Clock className="h-3.5 w-3.5" /> Estimated ready: <strong>{fmtDateTime(eta)}</strong></p>
               )}
             </div>
           );

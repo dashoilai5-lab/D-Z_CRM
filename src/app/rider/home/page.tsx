@@ -58,7 +58,7 @@ export default async function RiderHomePage() {
       <header className="flex items-start justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{greeting},</p>
-          <h1 className="text-2xl font-bold">{customer.name.split(" ")[0]} 👋</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{customer.name.split(" ")[0]}</h1>
         </div>
         <div className="flex items-center gap-2">
           {kmLeft != null && (
@@ -110,7 +110,7 @@ export default async function RiderHomePage() {
                   {isDue ? <AlertTriangle className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
                   {isDue ? "Service is due" : isSoon ? "Service coming up" : "Next service"}
                 </span>
-                <span className="font-bold tabular-nums">{fmtKM(kmLeft)} left</span>
+                <span className="font-bold tabular-nums">{kmLeft >= 0 ? fmtKM(kmLeft) + " left" : fmtKM(-kmLeft) + " overdue"}</span>
               </div>
               <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
                 <div className={"h-full rounded-full transition-all " + (isDue ? "bg-red-500" : isSoon ? "bg-amber-500" : "bg-emerald-500")} style={{ width: progress + "%" }} />
@@ -140,7 +140,7 @@ export default async function RiderHomePage() {
       )}
 
       {livePromos.length > 0 && (
-        <Link href="/rider/promotions" className="block rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white p-5">
+        <Link href="/rider/promotions" className="block rounded-2xl bg-gradient-to-br from-primary to-orange-500 p-5 text-primary-foreground">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-bold">
               <Tag className="h-4 w-4" /> SPECIAL OFFER

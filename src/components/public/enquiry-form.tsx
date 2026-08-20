@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Send } from "lucide-react";
+import { Send, CheckCircle2 } from "lucide-react";
 import { submitWebsiteEnquiry } from "@/actions/website";
 
 export function EnquiryForm({ defaultModel, branches }: { defaultModel?: string; branches: { id: string; label: string }[] }) {
@@ -26,8 +26,8 @@ export function EnquiryForm({ defaultModel, branches }: { defaultModel?: string;
   if (done?.ok) {
     return (
       <div className="rounded-xl border bg-card p-6 text-center">
-        <div className="text-3xl">✅</div>
-        <h2 className="text-lg font-semibold mt-2">Enquiry received!</h2>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-300"><CheckCircle2 className="h-6 w-6" /></div>
+        <h2 className="text-lg font-semibold mt-3">Enquiry received!</h2>
         <p className="text-sm text-muted-foreground mt-1">Reference: <span className="font-mono">{done.leadNumber}</span></p>
         <p className="text-sm text-muted-foreground">Our team will contact you shortly.</p>
       </div>

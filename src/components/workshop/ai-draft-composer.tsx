@@ -95,7 +95,7 @@ export function AiDraftComposer() {
           </select>
         </div>
       </div>
-      <button className="rounded-md bg-violet-600 text-white px-4 py-2 text-sm font-medium disabled:opacity-50" disabled={busy || !customerId} onClick={generate}>
+      <button className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50" disabled={busy || !customerId} onClick={generate}>
         Generate draft (AI)
       </button>
       {body && (

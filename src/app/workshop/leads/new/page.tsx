@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
 import { createLead } from "@/actions/leads";
 
 export default function NewLeadPage() {
@@ -48,9 +49,10 @@ export default function NewLeadPage() {
       </div>
 
       {dupes != null && (
-        <div className="rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm px-3 py-2">
-          ⚠️ {dupes} similar lead{dupes > 1 ? "s" : ""} found with the same phone/email. Lead saved anyway — review duplicates before converting.
-          <button className="ml-2 underline" onClick={() => { setDupes(null); router.push("/workshop/leads"); }}>View leads</button>
+        <div className="flex items-start gap-2 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm px-3 py-2">
+          <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+          <span>{dupes} similar lead{dupes > 1 ? "s" : ""} found with the same phone/email. Lead saved anyway — review duplicates before converting.</span>
+          <button className="ml-auto shrink-0 underline" onClick={() => { setDupes(null); router.push("/workshop/leads"); }}>View leads</button>
         </div>
       )}
       {error && <p className="rounded-md bg-destructive/10 text-destructive text-sm px-3 py-2">{error}</p>}

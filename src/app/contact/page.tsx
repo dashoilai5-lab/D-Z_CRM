@@ -1,4 +1,4 @@
-import { Bike, Phone, MapPin, Clock, MessageCircle, Send } from "lucide-react";
+import { Bike, Phone, Mail, MapPin, Clock, MessageCircle, Send } from "lucide-react";
 import { db } from "@/lib/db";
 import { EnquiryForm } from "@/components/public/enquiry-form";
 
@@ -33,7 +33,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
           </div>
           <div className="rounded-xl border bg-card p-4 space-y-3 text-sm">
             {org?.contactPhone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-muted-foreground" />{org.contactPhone}</div>}
-            {org?.contactEmail && <div className="flex items-center gap-2"><span className="text-muted-foreground">✉️</span>{org.contactEmail}</div>}
+            {org?.contactEmail && <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-muted-foreground" />{org.contactEmail}</div>}
             {org?.address && <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-muted-foreground" />{org.address}</div>}
             {hours && (
               <div className="flex items-start gap-2"><Clock className="h-4 w-4 text-muted-foreground mt-0.5" />

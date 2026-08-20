@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle2, Circle, Loader2, XCircle, CalendarDays, Wrench } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, XCircle, CalendarDays, Wrench, Clock } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
@@ -50,8 +50,8 @@ export default async function ServiceStatusPage() {
           <div className="h-full rounded-full bg-primary transition-all" style={{ width: pct + "%" }} />
         </div>
         {eta && idx < 5 && (
-          <div className="mb-4 rounded-lg bg-primary/5 border border-primary/15 px-3 py-2 text-xs">
-            ⏱ Estimated ready: <strong>{eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong> · {eta.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}
+          <div className="mb-4 flex items-center gap-1.5 rounded-lg bg-primary/5 border border-primary/15 px-3 py-2 text-xs">
+            <Clock className="h-3.5 w-3.5 shrink-0" /> Estimated ready: <strong>{eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong> · {eta.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}
           </div>
         )}
         {LIFECYCLE_STEPS.map((s, i) => {
@@ -83,7 +83,7 @@ export default async function ServiceStatusPage() {
 
       {active.length === 0 && (
         <div className="text-center py-14 space-y-3">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground text-2xl">🔧</div>
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-muted flex items-center justify-center text-muted-foreground"><Wrench className="h-6 w-6" /></div>
           <h2 className="text-lg font-semibold">{t("svc.no_active", lang)}</h2>
           <p className="text-sm text-muted-foreground max-w-xs mx-auto">{t("svc.no_active_desc", lang)}</p>
           <Link href="/rider/book" className="inline-flex items-center gap-1.5 rounded-2xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">

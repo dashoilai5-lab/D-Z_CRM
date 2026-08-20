@@ -45,7 +45,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName} 👋</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           {isMechanic ? t("dash.mechanic-sub", lang) : isOwner ? t("dash.owner-sub", lang) : t("dash.counter-sub", lang)}
         </p>
@@ -91,15 +91,26 @@ export default async function DashboardPage() {
         </div>
         {(dash.lifecycleDist ?? []).some((s) => s.count > 0) ? (
           <div className="space-y-2">
-            {dash.lifecycleDist.map((s, i) => (
-              <Link key={s.label} href={s.href ?? "/workshop/jobs"} className="flex items-center gap-3 text-xs rounded-md px-1 -mx-1 hover:bg-muted/40 transition-colors">
-                <span className="w-32 shrink-0 text-muted-foreground group-hover:text-foreground">{s.label.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
-                <div className="flex-1 h-5 rounded-md bg-muted/60 overflow-hidden">
-                  <div className="h-full rounded-md bg-primary/70" style={{ width: Math.max(4, (s.count / Math.max(1, ...dash.lifecycleDist.map((x) => x.count))) * 100) + "%" }} />
-                </div>
-                <span className="w-6 text-right font-semibold tabular-nums">{s.count}</span>
-              </Link>
-            ))}
+            {(() => {
+              const STEP_COLOR: Record<string, string> = {
+                book_requested: "bg-blue-500/80",
+                book_confirmed: "bg-sky-500/80",
+                checked_in: "bg-amber-500/80",
+                in_service: "bg-primary/80",
+                qc_check: "bg-cyan-500/80",
+                ready: "bg-emerald-500/80",
+                completed: "bg-emerald-700/80",
+              };
+              return dash.lifecycleDist.map((s, i) => (
+                <Link key={s.label} href={s.href ?? "/workshop/jobs"} className="group flex items-center gap-3 text-xs rounded-md px-1 -mx-1 hover:bg-muted/40 transition-colors">
+                  <span className="w-32 shrink-0 text-muted-foreground group-hover:text-foreground">{s.label.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
+                  <div className="flex-1 h-5 rounded-md bg-muted/60 overflow-hidden">
+                    <div className={"h-full rounded-md " + (STEP_COLOR[s.label] ?? "bg-primary/70")} style={{ width: Math.max(4, (s.count / Math.max(1, ...dash.lifecycleDist.map((x) => x.count))) * 100) + "%" }} />
+                  </div>
+                  <span className="w-6 text-right font-semibold tabular-nums">{s.count}</span>
+                </Link>
+              ));
+            })()}
           </div>
         ) : (
           <p className="text-xs text-muted-foreground">No active service jobs right now.</p>
@@ -148,7 +159,7 @@ export default async function DashboardPage() {
               <Link key={i} href={r.href} className="group rounded-2xl border bg-card p-4 hover:border-primary/40 transition-colors">
                 <p className="font-medium text-sm">{r.title}</p>
                 <p className="text-xs text-muted-foreground mt-1">{r.detail}</p>
-                <span className="inline-block mt-3 text-xs font-semibold text-primary group-hover:underline">{r.action} →</span>
+                <span className="mt-3 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary transition-colors group-hover:bg-primary/15">{r.action} →</span>
               </Link>
             ))}
             {recs.length === 0 && <p className="text-sm text-muted-foreground col-span-2">{t("dash.no-recs", lang)}</p>}

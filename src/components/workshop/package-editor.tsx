@@ -105,7 +105,7 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
             </div>
 
             <div className="mt-3">
-              <label className={labelCls}>Free gift (optional) 🎁</label>
+              <label className={labelCls}>Free gift (optional)</label>
               <div className="flex gap-2">
                 <input className={inputCls + " flex-1"} value={giftName} onChange={(e) => setGiftName(e.target.value)} placeholder="e.g. Free keychain / chain lube sachet" />
                 <button
@@ -123,7 +123,7 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
               <div className="flex flex-wrap gap-1.5">
                 {items.map((i) => (
                   <span key={i.name} className="inline-flex items-center gap-1 rounded-full border bg-background px-2 py-0.5 text-xs">
-                    {i.kind === "GIFT" ? "🎁" : i.kind === "PART" ? "🔩" : "✓"} {i.name}
+                    {i.kind === "GIFT" ? "+" : i.kind === "PART" ? "⚙" : "✓"} {i.name}
                     <button onClick={() => setItems((p) => p.filter((x) => x.name !== i.name))} className="text-muted-foreground hover:text-destructive"><X className="h-3 w-3" /></button>
                   </span>
                 ))}
