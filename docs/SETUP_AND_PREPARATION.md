@@ -252,4 +252,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | 段 11 仪表盘/营收/分析/多分支：新增 analytics 模块（销售/服务/客户/营收/库存 5 视图 + 分支对比）+ /workshop/analytics 页（recharts 图表 + CSV 导出 + 分支排名）；dashboard 补 Total Leads/Repeat %/Upcoming/Open tasks + 14 天线索趋势；nav 加 Analytics | DASH/REV/ANA/BR 111 条补齐（约 85✅/26🟡）；日期/分支过滤与对比期归段 15 |
 | 2026-08-20 | 段 12 搜索/通知/导入导出/文件：search API 扩展（email/VIN/lead/booking）；通知中心 /workshop/notifications（read/unread+类型筛选+link）；CSV 导入 /workshop/import（客户，查重不覆盖）；导出 /api/export（客户/线索/预约/产品 CSV）；附件上传 /api/upload（storage provider+Attachment 记录）；Notification 加 link 字段（迁移 seg12_notif_link）；nav 加 Notifications/Import | 实测：导入 1 成功 1 重复跳过 1 失败报告；PDF 附件上传成功；SEARCH/IMPORT/EXPORT/FILE 补齐；车辆/线索/零件导入与部分导出归后续 |
 | 2026-08-20 | 段 13 AI-Native：新增 AI 草稿服务 src/modules/ai/draft.ts（5 类型×3 语气，仅引用结构数据）+ AI 页草稿合成器（搜索客户/生成/编辑/发送）+ 洞察 AI 徽章 | 实测草稿引用真实数据（Ahmad Y15ZR 下次 31500km）；AI-018/019 满足；异常检测类归生产迁移 |
+| 2026-08-20 | 段 14 API/审计/安全/隐私：审计查看页 /workshop/settings/audit-logs（action/entity 筛选+before/after）、集成配置页 /workshop/integrations（provider 启停+审计）、loyalty adjust 补 AuditLog 埋点 | 实测 LOYALTY_ADJUST 审计写入；SEC 生产属性（HTTPS/加密/备份）标 🟡 归生产迁移；PRIV 核心（consent/opt-out/权限）就位 |
 | — | （后续改动在此追加） | — |

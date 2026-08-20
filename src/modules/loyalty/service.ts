@@ -73,6 +73,8 @@ export const loyaltyModule = {
     await db.loyaltyTransaction.create({
       data: { accountId: account.id, type: "ADJUST", points: input.delta, balanceAfter: balance, reason: input.reason },
     });
+    // AUDIT-013: loyalty adjustments are auditable
+    await db.auditLog.create({ data: { organisationId: input.organisationId, action: "LOYALTY_ADJUST", entity: "LOYALTY_ACCOUNT", entityId: account.id, after: JSON.stringify({ delta: input.delta, balance, reason: input.reason }) } }).catch(() => {});
     return { accountId: account.id, balance };
   },
 

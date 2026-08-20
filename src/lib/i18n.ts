@@ -24,6 +24,8 @@ export const DICT: Dict = {
   "nav.analytics": { en: "Analytics", zh: "分析", ms: "Analitik" },
   "nav.notifications": { en: "Notifications", zh: "通知", ms: "Pemberitahuan" },
   "nav.import": { en: "CSV Import", zh: "CSV 导入", ms: "Import CSV" },
+  "nav.integrations": { en: "Integrations", zh: "集成", ms: "Integrasi" },
+  "nav.audit-logs": { en: "Audit Logs", zh: "审计日志", ms: "Log Audit" },
   "nav.return-list": { en: "Customer Return List", zh: "客户回流名单", ms: "Senarai Pulangan Pelanggan" },
   "nav.reminders": { en: "Service Reminders", zh: "保养提醒", ms: "Peringatan Servis" },
   "nav.bookings": { en: "Bookings", zh: "预约", ms: "Tempahan" },
