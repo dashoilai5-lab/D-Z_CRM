@@ -22,7 +22,7 @@ export class DashboardService {
     const org = await db.organisation.findFirst();
     const orgId = org!.id;
     const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
-    const [totalLeads, newLeads, leadTrend, openTasks, repeatStats, upcoming] = await Promise.all([
+    const [totalLeads, newLeads, leadTrend, openTasks, lifecycleDist, repeatStats, upcoming] = await Promise.all([
       db.lead.count({ where: { organisationId: orgId } }),
       db.lead.count({ where: { organisationId: orgId, createdAt: { gte: monthStart } } }),
       db.lead.groupBy({ by: ["createdAt"], where: { organisationId: orgId }, _count: true }).then((rows) => {
@@ -31,6 +31,25 @@ export class DashboardService {
         return Object.entries(byDay).sort((a, b) => a[0].localeCompare(b[0])).slice(-14).map(([label, value]) => ({ label, value }));
       }),
       db.task.count({ where: { organisationId: orgId, status: "OPEN", OR: [{ dueAt: null }, { dueAt: { lte: new Date(Date.now() + 7 * 86400000) } }] } }),
+      // lifecycle distribution: active bookings+jobs bucketed by customer-facing step
+      (async () => {
+        const { resolveStep, LIFECYCLE_STEPS } = await import("@/modules/rider/status");
+        const [jobs, bookings] = await Promise.all([
+          db.serviceJob.findMany({ where: { branch: { organisationId: orgId }, status: { in: ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY"] } }, select: { status: true } }),
+          db.booking.findMany({ where: { branch: { organisationId: orgId }, status: { in: ["REQUESTED", "CONFIRMED", "RESCHEDULED", "CHECKED_IN"] } }, select: { status: true, jobId: true } }),
+        ]);
+        const buckets = new Array(LIFECYCLE_STEPS.length).fill(0) as number[];
+        for (const bk of bookings) {
+          if (bk.jobId) continue; // counted via its job
+          const { stepIndex } = resolveStep(bk.status, null);
+          if (stepIndex != null) buckets[stepIndex]++;
+        }
+        for (const j of jobs) {
+          const { stepIndex } = resolveStep(null, j.status);
+          if (stepIndex != null) buckets[stepIndex]++;
+        }
+        return LIFECYCLE_STEPS.map((label, i) => ({ label, count: buckets[i] }));
+      })(),
       db.customer.findMany({ where: { organisationId: orgId }, select: { jobs: { select: { id: true } } } }).then((cs) => {
         const repeat = cs.filter((c) => c.jobs.length >= 2).length;
         return { total: cs.length, repeatPct: cs.length > 0 ? Math.round((repeat / cs.length) * 100) : 0 };
@@ -50,6 +69,7 @@ export class DashboardService {
       topPerformer: kpi.top,
       board,
       totalLeads, newLeads, leadTrend, openTasks, repeatPct: repeatStats.repeatPct, upcomingBookings: upcoming,
+      lifecycleDist,
     };
   }
 

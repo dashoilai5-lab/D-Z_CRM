@@ -122,8 +122,13 @@ export default async function ServiceStatusPage() {
             {rest.map((r) => (
               <div key={r.bike.id} className="flex items-center justify-between rounded-xl bg-card px-3 py-2 text-sm">
                 <span>{r.bike.brand} {r.bike.model} <span className="text-muted-foreground">· {r.bike.plate}</span></span>
-                <span className="text-xs text-muted-foreground">
-                  {r.outcome === "completed" ? t("svc.completed", lang) : r.outcome === "cancelled" ? t("svc.cancelled", lang) : r.outcome === "no_show" ? t("svc.no_show", lang) : "—"}
+                <span className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {r.outcome === "completed" ? t("svc.completed", lang) : r.outcome === "cancelled" ? t("svc.cancelled", lang) : r.outcome === "no_show" ? t("svc.no_show", lang) : "—"}
+                  </span>
+                  {r.outcome === "completed" && (
+                    <Link href="/rider/service-history" className="text-xs font-medium text-primary hover:underline">★ Rate this service</Link>
+                  )}
                 </span>
               </div>
             ))}

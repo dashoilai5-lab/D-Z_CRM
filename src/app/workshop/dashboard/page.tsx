@@ -83,6 +83,29 @@ export default async function DashboardPage() {
         <StatCard label="Open follow-up tasks" value={dash.openTasks ?? 0} href="/workshop/tasks" />
       </div>
 
+      {/* customer-facing service lifecycle distribution */}
+      <section className="rounded-2xl border bg-card p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold">Service lifecycle (customer view)</h2>
+          <Link href="/workshop/jobs" className="text-xs font-medium text-primary hover:underline">jobs →</Link>
+        </div>
+        {(dash.lifecycleDist ?? []).some((s) => s.count > 0) ? (
+          <div className="space-y-2">
+            {dash.lifecycleDist.map((s, i) => (
+              <div key={s.label} className="flex items-center gap-3 text-xs">
+                <span className="w-32 shrink-0 text-muted-foreground">{s.label.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
+                <div className="flex-1 h-5 rounded-md bg-muted/60 overflow-hidden">
+                  <div className="h-full rounded-md bg-primary/70" style={{ width: Math.max(4, (s.count / Math.max(1, ...dash.lifecycleDist.map((x) => x.count))) * 100) + "%" }} />
+                </div>
+                <span className="w-6 text-right font-semibold tabular-nums">{s.count}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">No active service jobs right now.</p>
+        )}
+      </section>
+
       {/* workshop status */}
       <section>
         <div className="flex items-center justify-between mb-3">

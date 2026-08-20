@@ -173,11 +173,25 @@ export class JobService {
     await db.jobStatusHistory.create({
       data: { jobId: id, fromStatus: job.status, toStatus: to, changedAt: new Date() },
     });
-    if (to === "READY") {
-      // JOB-025: ready triggers customer notification
+    // customer status notifications on every state change (rider feed + workshop center)
+    const NOTIF: Record<string, { title: string; body: string; type: string }> = {
+      IN_PROGRESS: { title: "Service started", body: job.jobNumber + " — work has begun on your motorcycle.", type: "JOB_IN_PROGRESS" },
+      AWAITING_APPROVAL: { title: "Approval needed", body: "The mechanic found extra work — please review in the app.", type: "JOB_APPROVAL" },
+      QC_CHECK: { title: "QC check in progress", body: job.jobNumber + " — final quality check underway.", type: "JOB_QC" },
+      WAITING_PARTS: { title: "Waiting for parts", body: job.jobNumber + " — your motorcycle is waiting for parts to arrive.", type: "JOB_WAITING_PARTS" },
+      ON_HOLD: { title: "Job on hold", body: job.jobNumber + " — service has been paused.", type: "JOB_ON_HOLD" },
+      READY: { title: "Your motorcycle is ready", body: job.jobNumber + " — ready for collection.", type: "JOB_READY" },
+      COMPLETED: { title: "Service completed", body: job.jobNumber + " — thank you for choosing us.", type: "JOB_COMPLETED" },
+    };
+    const n = NOTIF[to];
+    if (n) {
       await db.notification.create({
-        data: { customerId: job.customerId, branchId: job.branchId, title: "Your motorcycle is ready", body: job.jobNumber + " — ready for collection.", type: "JOB_READY" },
+        data: { customerId: job.customerId, branchId: job.branchId, title: n.title, body: n.body, type: n.type, link: "/rider/service-status" },
       }).catch(() => {});
+    }
+    if (to === "READY") {
+      // JOB-025: ready triggers customer notification (link included above)
+      void null;
       // AUTO-012: JOB_READY trigger
       try {
         const { automationModule } = await import("@/modules/automation/service");
