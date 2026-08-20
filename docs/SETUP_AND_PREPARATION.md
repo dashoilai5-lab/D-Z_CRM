@@ -260,4 +260,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | rider 三步增强：① 完成评价引导（service-status 已完成车辆加 Rate 链接→service-history ReviewCard，Workshop reviews 页已有管理）② 工单状态变化→顾客通知（IN_PROGRESS/APPROVAL/QC/WAITING_PARTS/ON_HOLD/READY/COMPLETED，link 到状态页）③ Workshop dashboard 加 Service lifecycle 分布（按顾客可见 7 阶段分桶） | 三步均双向链接 rider↔Workshop OS；回归全绿 |
 | 2026-08-20 | 修复通知页筛选按钮：typeCounts 分组改用不含 type 筛选的 baseWhere——点击任一类型 filter 后所有按钮（All/INFO/JOB_READY 等）保持可见 | 实测：点 Info 后 JOB_READY 按钮仍在，点 JOB_READY 后 INFO 仍在；回归全绿 |
 | 2026-08-20 | 服务套餐编辑：/workshop/packages 升级——每套餐 Edit 按钮 + PackageEditor（勾选包含项/名称价格描述/最佳值/启停 + 赠品添加 kind=GIFT）；跨套餐重复检测 dupMap（列表 ⚠ also in X + 编辑器内 ⚠ 警告）；候选列表 = 服务目录+零件+既有自由项目 | 实测：Basic 编辑含 3 个重复警告、添加赠品保存后列表显示 🎁 FREE；actions/packages.ts updatePackage 支持 diff 重写 items |
+| 2026-08-20 | UI 全局增强（ui-ux-pro-max 技能驱动，不动核心逻辑）：globals.css 加 .dz-table/.dz-panel/.dz-section-title/.dz-card-link + focus-visible 无障碍环；StatCard 加 icon 槽+shadow+hover 上浮；EmptyState 加 action；StatusBadge 补 QC_CHECK/WAITING_PARTS/ON_HOLD/NO_SHOW 配色；8 个表格页升级 dz-table（sticky thead/行 hover）；leads/customers 筛选控件统一 | 回归全绿（75 e2e 无核心逻辑改动）；截图 polish-dashboard/leads/customers |
 | — | （后续改动在此追加） | — |

@@ -137,4 +137,40 @@
 :root[data-font-size="xl"] { --app-font-size: 19px; }
 /* D&Z tweaks */
 body { font-feature-settings: "cv11"; }
+
+/* ---------- shared visual primitives (UI polish pass) ---------- */
+@layer components {
+  /* unified data table: sticky header, subtle row hover, clean spacing */
+  .dz-table {
+    @apply w-full text-sm;
+  }
+  .dz-table thead th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-muted-foreground bg-muted/50 sticky top-0 z-[1] whitespace-nowrap;
+  }
+  .dz-table thead tr { @apply border-b; }
+  .dz-table tbody tr {
+    @apply border-b border-border/60 last:border-0 transition-colors hover:bg-muted/40;
+  }
+  .dz-table tbody td { @apply px-4 py-3 align-middle; }
+
+  /* page section heading */
+  .dz-section-title {
+    @apply text-base font-semibold tracking-tight;
+  }
+
+  /* subtle card for grouped content */
+  .dz-panel {
+    @apply rounded-2xl border bg-card shadow-sm;
+  }
+
+  /* accessible focus ring everywhere (no removed focus outlines) */
+  :is(a, button, input, select, textarea, [role="button"]):focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  /* consistent interactive hover lift for tappable cards */
+  .dz-card-link {
+    @apply transition-all duration-150 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md;
+  }
+}
 .text-balance { text-wrap: balance; }

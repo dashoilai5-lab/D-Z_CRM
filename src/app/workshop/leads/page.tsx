@@ -42,26 +42,26 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input name="q" defaultValue={sp.q} placeholder="Search name, phone, email, lead #…" className="w-full rounded-md border bg-background pl-8 pr-3 py-2 text-sm" />
         </div>
-        <select name="stage" defaultValue={sp.stage} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select name="stage" defaultValue={sp.stage} className="rounded-lg border bg-card px-3 py-2 text-sm shadow-sm">
           <option value="">All stages</option>
           {stages.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
-        <select name="source" defaultValue={sp.source} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select name="source" defaultValue={sp.source} className="rounded-lg border bg-card px-3 py-2 text-sm shadow-sm">
           <option value="">All sources</option>
           {sources.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
-        <select name="status" defaultValue={sp.status} className="rounded-md border bg-background px-3 py-2 text-sm">
+        <select name="status" defaultValue={sp.status} className="rounded-lg border bg-card px-3 py-2 text-sm shadow-sm">
           <option value="">All status</option>
           <option value="OPEN">Open</option>
           <option value="WON">Won</option>
           <option value="LOST">Lost</option>
         </select>
-        <button className="rounded-md border px-3 py-2 text-sm font-medium">Filter</button>
+        <button className="rounded-lg border bg-card px-3 py-2 text-sm font-medium shadow-sm hover:bg-accent transition-colors">Filter</button>
       </form>
 
-      <div className="rounded-xl border bg-card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
+      <div className="dz-panel overflow-hidden">
+        <table className="dz-table">
+          <thead>
             <tr>
               <th className="px-3 py-2.5 font-medium">Lead</th>
               <th className="px-3 py-2.5 font-medium">Contact</th>
@@ -75,7 +75,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           </thead>
           <tbody>
             {items.map((l) => (
-              <tr key={l.id} className="border-t hover:bg-muted/40" data-testid="lead-row">
+              <tr key={l.id} data-testid="lead-row">
                 <td className="px-3 py-2.5">
                   <div className="font-medium">{l.customerName}</div>
                   <div className="text-xs text-muted-foreground">{l.leadNumber}</div>

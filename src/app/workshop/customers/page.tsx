@@ -29,11 +29,11 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         <Link href="/workshop/import" className="rounded-lg border px-3 py-2 text-sm font-medium hover:bg-accent">Import CSV</Link>
       </div>
 
-      <div className="rounded-2xl border bg-card overflow-hidden">
+      <div className="dz-panel overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="dz-table">
             <thead>
-              <tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
+              <tr>
                 <th className="px-4 py-3 font-medium">{t("ws.customers.col-customer", lang)}</th>
                 <th className="px-4 py-3 font-medium">{t("ws.customers.col-motorcycle", lang)}</th>
                 <th className="px-4 py-3 font-medium">{t("ws.customers.col-visits", lang)}</th>
@@ -44,7 +44,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
             </thead>
             <tbody>
               {filtered.map((c) => (
-                <tr key={c.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                <tr key={c.id}>
                   <td className="px-4 py-3">
                     <Link href={"/workshop/customers/" + c.id} className="font-medium hover:text-primary">{c.name}</Link>
                     <div className="text-xs text-muted-foreground">{c.phone ?? "—"} · {t("ws.customers.since", lang)} {fmtDate(c.joinedAt)}</div>

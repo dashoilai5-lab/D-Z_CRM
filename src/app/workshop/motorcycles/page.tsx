@@ -48,7 +48,7 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
       </form>
 
       <div className="rounded-xl border bg-card overflow-hidden">
-        <table className="w-full text-sm">
+        <table className="dz-table">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
             <tr>
               <th className="px-3 py-2.5 font-medium">Motorcycle</th>

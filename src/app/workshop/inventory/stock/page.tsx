@@ -25,7 +25,7 @@ export default async function StockPage() {
       <PageHeader title={t("ws.stock.title", lang)} subtitle={t("ws.stock.subtitle", lang).replace("{branch}", "Kuala Lumpur")} />
       <div className="rounded-2xl border bg-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
               <th className="px-4 py-3 font-medium">{t("ws.stock.col.product", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.stock.col.qty", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.stock.col.min", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.stock.col.value", lang)}</th>

@@ -15,7 +15,7 @@ export default async function ProductsPage() {
       <PageHeader title={t("ws.products.title", lang)} subtitle={t("ws.products.subtitle", lang).replace("{n}", String(rows.length))} />
       <div className="rounded-2xl border bg-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
               <th className="px-4 py-3 font-medium">{t("ws.products.col.name", lang)}</th><th className="px-4 py-3 font-medium">SKU</th><th className="px-4 py-3 font-medium">Mfr No</th>
               <th className="px-4 py-3 font-medium">{t("ws.products.col.category", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.brand", lang)}</th>
