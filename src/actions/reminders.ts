@@ -13,6 +13,7 @@ export async function sendReminder(reminderId: string) {
   if (!reminder) return { ok: false, error: "Reminder not found" };
   const template = await db.messageTemplate.findFirst({ where: { name: { contains: "Service Reminder" } } });
   if (!template) return { ok: false, error: "Service Reminder template not found — create one in Message Templates" };
+  const base = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3002";
   const sent = await messagingModule.sendFromTemplate({
     customerId: reminder.customerId,
     templateId: template.id,
@@ -20,6 +21,7 @@ export async function sendReminder(reminderId: string) {
       bike: reminder.motorcycle.brand + " " + reminder.motorcycle.model + " (" + reminder.motorcycle.plate + ")",
       date: reminder.estimatedDate ? reminder.estimatedDate.toISOString().slice(0, 10) : "soon",
       next: reminder.nextServiceMileage.toLocaleString(),
+      link: base + "/rider/book", // real booking link (REM-015)
     },
     referenceType: "SERVICE_REMINDER",
   });
@@ -30,4 +32,25 @@ export async function sendReminder(reminderId: string) {
   });
   revalidatePath("/", "layout");
   return { ok: true, sent: sent.sent };
+}
+
+/** Batch-send all due / overdue service reminders (manual trigger of the scheduled job). */
+export async function sendDueReminders(): Promise<{ ok: boolean; sent: number; failed: number }> {
+  const due = await db.serviceReminder.findMany({
+    where: { closedAt: null, OR: [{ status: "DUE" }, { status: "OVERDUE" }, { estimatedDate: { lte: new Date() } }] },
+    take: 50,
+  });
+  let sent = 0;
+  let failed = 0;
+  for (const r of due) {
+    try {
+      const res = await sendReminder(r.id);
+      if (res.ok && res.sent) sent++;
+      else failed++;
+    } catch {
+      failed++;
+    }
+  }
+  revalidatePath("/", "layout");
+  return { ok: true, sent, failed };
 }

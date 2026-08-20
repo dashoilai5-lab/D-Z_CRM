@@ -1,6 +1,7 @@
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { ReminderRowActions } from "@/components/workshop/reminder-actions";
+import { SendDueButton } from "@/components/workshop/send-due-button";
 import { crmService } from "@/modules/crm/service";
 import { fmtDate, fmtKM } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
@@ -13,10 +14,14 @@ export default async function RemindersPage() {
   const lang = await getLang();
   const order = { OVERDUE: 0, DUE: 1, DUE_SOON: 2, UPCOMING: 3, BOOKED: 4 } as const;
   const sorted = [...reminders].sort((a, b) => (order[a.status as keyof typeof order] ?? 9) - (order[b.status as keyof typeof order] ?? 9));
+  const dueCount = reminders.filter((r) => r.status === "DUE" || r.status === "OVERDUE").length;
 
   return (
     <div>
-      <PageHeader title={t("ws.crm.reminders.title", lang)} subtitle={t("ws.crm.reminders.subtitle", lang)} />
+      <div className="flex items-center justify-between">
+        <PageHeader title={t("ws.crm.reminders.title", lang)} subtitle={t("ws.crm.reminders.subtitle", lang)} />
+        <SendDueButton dueCount={dueCount} />
+      </div>
       <div className="dz-panel overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="dz-table">
