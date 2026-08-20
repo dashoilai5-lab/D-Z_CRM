@@ -48,7 +48,16 @@ export class DashboardService {
           const { stepIndex } = resolveStep(null, j.status);
           if (stepIndex != null) buckets[stepIndex]++;
         }
-        return LIFECYCLE_STEPS.map((label, i) => ({ label, count: buckets[i] }));
+        const HREF: Record<string, string> = {
+          book_requested: "/workshop/bookings?status=REQUESTED",
+          book_confirmed: "/workshop/bookings?status=CONFIRMED",
+          checked_in: "/workshop/jobs?status=WAITING",
+          in_service: "/workshop/jobs?status=IN_PROGRESS",
+          qc_check: "/workshop/jobs?status=QC_CHECK",
+          ready: "/workshop/jobs?status=READY",
+          completed: "/workshop/jobs?status=COMPLETED",
+        };
+        return LIFECYCLE_STEPS.map((label, i) => ({ label, count: buckets[i], href: HREF[label] }));
       })(),
       db.customer.findMany({ where: { organisationId: orgId }, select: { jobs: { select: { id: true } } } }).then((cs) => {
         const repeat = cs.filter((c) => c.jobs.length >= 2).length;

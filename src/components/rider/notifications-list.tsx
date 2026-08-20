@@ -50,7 +50,7 @@ export function NotificationsList({ customerId, notifications }: { customerId: s
         {notifications.map((n) => {
           const meta = TYPE_ICON[n.type] ?? TYPE_ICON.INFO;
           return (
-            <div key={n.id} className={cn("flex gap-3 rounded-2xl border bg-card p-4", !n.readAt && "ring-1 ring-primary/30")}>
+            <div key={n.id} className={cn("flex gap-3 dz-panel p-4", !n.readAt && "ring-1 ring-primary/30")}>
               <div className={cn("h-9 w-9 shrink-0 rounded-xl flex items-center justify-center", meta.cls)}>
                 <meta.icon className="h-4 w-4" />
               </div>

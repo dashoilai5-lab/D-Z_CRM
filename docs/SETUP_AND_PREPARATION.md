@@ -275,4 +275,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | 修复海报生成卡住：生成成功后 Dialog 自动关闭 + toast 提示「Poster generated」——不再需要点击空白处返回 | 实测：Auto Close Test 生成后 dialog 关闭、海报入库列表显示；回归全绿 |
 | 2026-08-20 | Poster 编辑/删除：/api/poster/[id]（DELETE 删除 + POST 重新生成更新）；PosterGrid 每卡加 Edit（内联表单：标题/促销/色调/尺寸预填原值→Regenerate）+ Delete（确认 Delete?/Yes/No） | 实测：删除流程（确认→删→列表+DB 同步）；重新生成 url 更新为新文件；回归全绿 |
 | 2026-08-20 | 功能增强 ① Poster 批量+照片：生成器加 visual（poster/photo——照片风=光斑+摩托剪影+暗角+描边）+ count 批量（最多 4，自动编号+轮换色调，type=PHOTO）；UI 加 Style/数量选择 ② 服务套餐：New Package 按钮+表单（名称/层级/价格/描述+勾选项目，createPackage 落地）+ PackageSorter（价格/层级切换排序） | 实测：批量 4 张 PHOTO 入库；Annual Care 套餐创建成功；回归全绿 |
+| 2026-08-20 | 功能增强 ③④⑤：③ 预约改期/取消推送给顾客（Booking rescheduled/cancelled 通知，link 到 rider/bookings）+ 评价后自动感谢消息（submitReview→Message）④ dashboard 生命周期分布行可点击下钻（步骤→工单/预约过滤）+ analytics 营收对比期（Prev 30d + Change %）⑤ rider invoices/notifications/approvals、mechanic-board 卡片统一 dz-panel | 实测：改期通知含新日期；下钻 10 链接；对比卡显示；回归全绿 |
 | — | （后续改动在此追加） | — |

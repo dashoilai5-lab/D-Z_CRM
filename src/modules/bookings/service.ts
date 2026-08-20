@@ -100,6 +100,27 @@ export class BookingService {
         }
       } catch { /* messaging must never break the transition */ }
     }
+    // customer notifications on booking changes (rider feed + workshop center)
+    if (status === "RESCHEDULED" || status === "CANCELLED") {
+      try {
+        const booking = await db.booking.findUnique({ where: { id } });
+        if (booking) {
+          const when = booking.date.toISOString().slice(0, 10) + " " + booking.timeSlot;
+          await db.notification.create({
+            data: {
+              customerId: booking.customerId,
+              branchId: booking.branchId,
+              title: status === "CANCELLED" ? "Booking cancelled" : "Booking rescheduled",
+              body: status === "CANCELLED"
+                ? "Your " + booking.serviceType + " booking on " + when + " was cancelled. Book a new slot anytime."
+                : "Your " + booking.serviceType + " booking has been rescheduled to " + when + ".",
+              type: status === "CANCELLED" ? "BOOKING_CANCELLED" : "BOOKING_RESCHEDULED",
+              link: "/rider/bookings",
+            },
+          }).catch(() => {});
+        }
+      } catch { /* notifications must never break the transition */ }
+    }
     const org = await db.organisation.findFirst();
     if (org) {
       await db.auditLog.create({

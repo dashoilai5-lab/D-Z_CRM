@@ -73,7 +73,7 @@ export function MechanicBoard({ mechanics, initialMechanicId, ownerView }: {
       </div>
 
       {/* selected mechanic's summary + jobs */}
-      <div className="rounded-2xl border bg-card p-5">
+      <div className="dz-panel p-5">
         <div className="flex items-center gap-2">
           <Wrench className="h-4 w-4 text-primary" />
           <span className="font-semibold">{current?.name}</span>
@@ -88,7 +88,7 @@ export function MechanicBoard({ mechanics, initialMechanicId, ownerView }: {
 
       <div className="space-y-3">
         {(current?.jobs ?? []).map((j) => (
-          <Link key={j.id} href={"/workshop/mechanic/jobs/" + j.id} className="block rounded-2xl border bg-card p-4 hover:border-primary/40 transition-colors">
+          <Link key={j.id} href={"/workshop/mechanic/jobs/" + j.id} className="block dz-panel p-4 hover:border-primary/40 transition-colors">
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs font-semibold">#{j.jobNumber}</span>
               <StatusBadge kind="job" value={j.status} />

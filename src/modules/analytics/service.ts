@@ -106,8 +106,17 @@ export async function revenueAnalytics(orgId: string, sinceDays = 30) {
   for (const inv of invoices) perCustomer[inv.customer.name] = (perCustomer[inv.customer.name] ?? 0) + inv.totalSen;
   const repeatRevenue = invoices.filter((i) => perCustomer[i.customer.name] > 0 && invoices.filter((x) => x.customerId === i.customerId).length >= 2)
     .reduce((s, i) => s + i.totalSen, 0);
+  // comparison period: previous window (daysAgo 2x .. daysAgo x)
+  const prev = await db.invoice.aggregate({
+    _sum: { totalSen: true },
+    where: { branch: { organisationId: orgId }, issuedAt: { gte: daysAgo(sinceDays * 2), lt: since }, status: { not: "DRAFT" } },
+  });
+  const prevTotal = prev._sum.totalSen ?? 0;
+  const pctChange = prevTotal > 0 ? Math.round(((total - prevTotal) / prevTotal) * 100) : 0;
   return {
     total,
+    prevTotal,
+    pctChange,
     trend: Object.entries(daily).map(([label, value]) => ({ label, value })),
     byBranch: Object.entries(byBranch).map(([label, value]) => ({ label, value })),
     bySource: Object.entries(bySource).map(([label, value]) => ({ label, value })),

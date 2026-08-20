@@ -21,7 +21,7 @@ export default async function AnalyticsPage() {
         sales={sales}
         service={service}
         customers={customers}
-        revenue={{ ...revenue, totalLabel: formatRM(revenue.total), repeatLabel: formatRM(revenue.repeatRevenue), avgLabel: formatRM(revenue.avgPerCustomer) }}
+        revenue={{ ...revenue, totalLabel: formatRM(revenue.total), prevLabel: formatRM(revenue.prevTotal), repeatLabel: formatRM(revenue.repeatRevenue), avgLabel: formatRM(revenue.avgPerCustomer) }}
         inventory={{ ...inventory, lowStockList: inventory.lowStockList.map((i) => ({ label: i.label, value: i.qty })) }}
         branches={branches.map((b) => ({ ...b, revenueLabel: formatRM(b.revenue) }))}
       />

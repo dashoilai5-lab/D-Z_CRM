@@ -49,6 +49,7 @@ export async function markNotificationsRead(customerId: string, ids?: string[]) 
 }
 
 export async function submitReview(input: { customerId: string; branchId: string; jobId?: string; rating: number; comment?: string }) {
+  const customer = await db.customer.findUnique({ where: { id: input.customerId } });
   await db.review.create({
     data: {
       branchId: input.branchId,
@@ -61,6 +62,24 @@ export async function submitReview(input: { customerId: string; branchId: string
       requestedAt: new Date(),
     },
   });
+  // thank-you message after a review (customer appreciation loop)
+  if (customer) {
+    try {
+      const org = await db.organisation.findFirst();
+      await db.message.create({
+        data: {
+          organisationId: org!.id,
+          branchId: input.branchId,
+          customerId: input.customerId,
+          direction: "OUT",
+          channel: "WHATSAPP",
+          body: "Thank you " + customer.name.split(" ")[0] + " for your " + Math.min(5, Math.max(1, Math.round(input.rating))) + "★ review! We really appreciate it — see you at the next service. 🏍️",
+          status: "SENT",
+          referenceType: "REVIEW",
+        },
+      });
+    } catch { /* messaging must never break review submission */ }
+  }
   revalidatePath("/", "layout");
   return { ok: true };
 }

@@ -92,13 +92,13 @@ export default async function DashboardPage() {
         {(dash.lifecycleDist ?? []).some((s) => s.count > 0) ? (
           <div className="space-y-2">
             {dash.lifecycleDist.map((s, i) => (
-              <div key={s.label} className="flex items-center gap-3 text-xs">
-                <span className="w-32 shrink-0 text-muted-foreground">{s.label.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
+              <Link key={s.label} href={s.href ?? "/workshop/jobs"} className="flex items-center gap-3 text-xs rounded-md px-1 -mx-1 hover:bg-muted/40 transition-colors">
+                <span className="w-32 shrink-0 text-muted-foreground group-hover:text-foreground">{s.label.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
                 <div className="flex-1 h-5 rounded-md bg-muted/60 overflow-hidden">
                   <div className="h-full rounded-md bg-primary/70" style={{ width: Math.max(4, (s.count / Math.max(1, ...dash.lifecycleDist.map((x) => x.count))) * 100) + "%" }} />
                 </div>
                 <span className="w-6 text-right font-semibold tabular-nums">{s.count}</span>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (

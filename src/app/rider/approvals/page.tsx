@@ -23,7 +23,7 @@ export default async function ApprovalsPage() {
         </>
       )}
       {pending.length === 0 && (
-        <div className="rounded-2xl border bg-card p-8 text-center text-sm text-muted-foreground">
+        <div className="dz-panel p-8 text-center text-sm text-muted-foreground">
           No pending approvals — all clear. 🎉
         </div>
       )}

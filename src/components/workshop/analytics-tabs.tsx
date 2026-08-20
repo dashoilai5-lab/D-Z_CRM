@@ -48,7 +48,7 @@ export function AnalyticsTabs(props: {
   sales: { total: number; won: number; lost: number; conversionRate: number; bySource: KV[]; byStage: KV[]; bySalesperson: KV[]; byModel: KV[]; lostReasons: KV[]; stale: number };
   service: { total: number; completed: number; cancelled: number; noShow: number; throughput: number; avgCompletionDays: number; waitingParts: number; technicianWorkload: KV[]; topServices: KV[] };
   customers: { total: number; new: number; repeat: number; retentionRate: number; avgServiceFrequency: number; inactive: number; members: number; referrals: number };
-  revenue: { total: number; totalLabel: string; repeatLabel: string; avgLabel: string; trend: KV[]; byBranch: KV[]; bySource: KV[]; byServiceType: KV[]; perCustomer: KV[] };
+  revenue: { total: number; totalLabel: string; prevTotal: number; prevLabel?: string; pctChange: number; repeatLabel: string; avgLabel: string; trend: KV[]; byBranch: KV[]; bySource: KV[]; byServiceType: KV[]; perCustomer: KV[] };
   inventory: { totalItems: number; lowStock: number; outOfStock: number; totalQty: number; byBranch: KV[]; movements: number; lowStockList: KV[] };
   branches: { id: string; city: string; leads: number; bookings: number; revenue: number; revenueLabel: string; customers: number }[];
 }) {
@@ -99,7 +99,8 @@ export function AnalyticsTabs(props: {
 
       <TabsContent value="revenue" className="mt-4 space-y-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          <K label="Total (30d)" v={r.totalLabel} /><K label="Repeat" v={r.repeatLabel} /><K label="Avg/customer" v={r.avgLabel} />
+          <K label="Total (30d)" v={r.totalLabel} /><K label="Prev 30d" v={r.prevLabel ?? "—"} /><K label="Change" v={(r.pctChange >= 0 ? "+" : "") + r.pctChange + "%"} />
+          <K label="Repeat" v={r.repeatLabel} /><K label="Avg/customer" v={r.avgLabel} />
         </div>
         <div className="rounded-xl border bg-card p-4">
           <h3 className="font-semibold text-sm mb-2">Revenue trend</h3>

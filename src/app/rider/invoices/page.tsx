@@ -21,7 +21,7 @@ export default async function RiderInvoicesPage() {
       <h1 className="text-2xl font-bold">{t("rider.invoices", lang)}</h1>
       <div className="space-y-3">
         {invoices.map((inv) => (
-          <div key={inv.id} className="rounded-2xl border bg-card p-4">
+          <div key={inv.id} className="dz-panel p-4">
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs font-semibold">{inv.invoiceNumber}</span>
               <span className={"rounded-full px-2.5 py-0.5 text-[11px] font-bold " + (inv.status === "PAID" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300")}>{inv.status}</span>
