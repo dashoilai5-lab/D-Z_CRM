@@ -7,7 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, Users, UserCheck, BellRing, CalendarClock, Wrench, ClipboardList, ListChecks, Package,
   Store, Megaphone, MessageSquare, Star, Users2, Gauge, Boxes, AlertTriangle, Archive, RefreshCw,
-  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike,
+  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike, Bell, Upload,
 } from "lucide-react";
 import type { DemoPersona } from "@/lib/persona";
 
@@ -62,6 +62,8 @@ export const NAV_SECTIONS: readonly NavSection[] = [
       { key: "templates", label: "Message Templates", labelKey: "nav.templates", href: "/workshop/messaging/templates", icon: MessageSquare, access: ["OWNER", "COUNTER_STAFF"] },
       { key: "loyalty", label: "Loyalty & Referrals", labelKey: "nav.loyalty", href: "/workshop/loyalty", icon: Star, access: ["OWNER", "COUNTER_STAFF"] },
       { key: "analytics", label: "Analytics", labelKey: "nav.analytics", href: "/workshop/analytics", icon: Gauge, access: ["OWNER"] },
+      { key: "notifications", label: "Notifications", labelKey: "nav.notifications", href: "/workshop/notifications", icon: Bell, access: ["OWNER", "COUNTER_STAFF", "MECHANIC"] },
+      { key: "import", label: "CSV Import", labelKey: "nav.import", href: "/workshop/import", icon: Upload, access: ["OWNER"] },
     ],
   },
   {

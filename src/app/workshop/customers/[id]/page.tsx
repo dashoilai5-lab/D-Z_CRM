@@ -7,6 +7,7 @@ import { Money } from "@/components/shared/money";
 import { CustomerActions } from "@/components/workshop/customer-actions";
 import { customerService } from "@/modules/customers/service";
 import { customerTimeline } from "@/modules/customers/timeline";
+import { AttachmentUpload } from "@/components/workshop/attachment-upload";
 import { db } from "@/lib/db";
 import { fmtDate, fmtKM, fmtDateTime } from "@/lib/format";
 import { formatRM } from "@/lib/money";
@@ -105,6 +106,26 @@ export default async function CustomerPassportPage({ params }: { params: Promise
             </div>
           </div>
         ))}
+      </div>
+
+      {/* FILE-001..010: attachments */}
+      <div className="mt-5 rounded-2xl border bg-card p-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-sm">Attachments</h3>
+          <AttachmentUpload customerId={id} />
+        </div>
+        {attachments.length === 0 ? (
+          <p className="text-xs text-muted-foreground">No attachments yet.</p>
+        ) : (
+          <ul className="space-y-1.5">
+            {attachments.map((a) => (
+              <li key={a.id} className="flex items-center justify-between text-xs">
+                <a href={a.url} target="_blank" rel="noreferrer" className="text-primary hover:underline">{a.fileName}</a>
+                <span className="text-muted-foreground/60">{a.mimeType ?? ""} · {a.sizeBytes ? Math.round(a.sizeBytes / 1024) + " KB" : ""}</span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* tabs */}
