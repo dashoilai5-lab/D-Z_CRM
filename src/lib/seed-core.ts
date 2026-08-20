@@ -812,6 +812,68 @@ export async function runSeed(): Promise<Record<string, number>> {
     });
   }
 
+
+  // ---------- requirements §30: base dictionaries for new entities ----------
+  // standard sales pipeline (PIPE-001..): New Enquiry -> Contacted -> Qualified -> Test Ride -> Proposal (Closed via lead.status)
+  const stageNames = ["New Enquiry", "Contacted", "Qualified", "Test Ride", "Proposal"];
+  for (const [i, nm] of stageNames.entries()) {
+    await prisma.leadStage.create({ data: { organisationId: org.id, name: nm, order: i } });
+  }
+  const sourceNames = ["Website", "WhatsApp", "Walk-in", "Phone", "Social Media", "Referral", "Other"];
+  for (const nm of sourceNames) {
+    await prisma.leadSource.create({ data: { organisationId: org.id, name: nm } });
+  }
+  // service catalogue (DATA-018)
+  const svcDefs: [string, string, number][] = [
+    ["Engine Oil Change", "MAINTENANCE", 45], ["General Service", "MAINTENANCE", 90], ["Major Service", "MAINTENANCE", 180],
+    ["Brake Service", "REPAIR", 60], ["Tyre Replacement", "REPAIR", 30], ["Electrical Check", "DIAGNOSTIC", 45],
+    ["Full Inspection", "DIAGNOSTIC", 60], ["Engine Tune-up", "REPAIR", 75],
+  ];
+  for (const [nm, cat, dur] of svcDefs) {
+    await prisma.serviceType.create({ data: { organisationId: org.id, name: nm, category: cat, durationMin: dur } });
+  }
+  // loyalty tiers + rewards (DATA-034..038)
+  const tierDefs: [string, number, string][] = [
+    ["Bronze", 0, "Base membership"], ["Silver", 1000, "5% off parts"], ["Gold", 3000, "10% off parts + priority slot"],
+  ];
+  for (const [nm, min, ben] of tierDefs) {
+    await prisma.loyaltyTier.create({ data: { organisationId: org.id, name: nm, minPoints: min, benefits: ben } });
+  }
+  await prisma.reward.createMany({ data: [
+    { organisationId: org.id, name: "RM50 Service Voucher", pointsRequired: 500, description: "RM50 off any service" },
+    { organisationId: org.id, name: "Free Oil Change", pointsRequired: 800, description: "Engine oil change service" },
+  ] });
+  // message templates (DATA-032)
+  await prisma.messageTemplate.createMany({ data: [
+    { organisationId: org.id, name: "Booking Confirmation", channel: "WHATSAPP", body: "Hi {name}, your {service} booking for {bike} at {branch} is confirmed for {date} {time}. Ref: {ref}" },
+    { organisationId: org.id, name: "Service Reminder", channel: "WHATSAPP", body: "Hi {name}, your {bike} is due for service. Book now: {link}" },
+    { organisationId: org.id, name: "Invoice Ready", channel: "WHATSAPP", body: "Hi {name}, invoice {invoice} is ready for collection. Total: {total}" },
+  ] });
+  // integration configs (DATA-044) — disabled by default; providers abstracted in src/providers
+  await prisma.integrationConfig.createMany({ data: [
+    { organisationId: org.id, provider: "WHATSAPP", enabled: false },
+    { organisationId: org.id, provider: "SMS", enabled: false },
+    { organisationId: org.id, provider: "EMAIL", enabled: false },
+    { organisationId: org.id, provider: "OPENAI", enabled: false },
+    { organisationId: org.id, provider: "PAYMENT", enabled: false },
+  ] });
+  // system roles mirror enum Role (ROLE-001..)
+  const roleNames = ["SUPER_ADMIN", "OWNER", "MANAGER", "COUNTER_STAFF", "SERVICE_ADVISOR", "MECHANIC", "INVENTORY", "MARKETING", "ACCOUNTING"];
+  for (const rn of roleNames) {
+    await prisma.roleConfig.create({ data: { organisationId: org.id, name: rn, isSystem: true } });
+  }
+  // inventory location + appointment slot samples (KL branch)
+  await prisma.inventoryLocation.create({ data: { branchId: kl.id, name: "Main Store", code: "KL-01" } });
+  const slotTimes = ["09:00", "11:00", "14:00", "16:00"];
+  for (let d = 0; d < 7; d++) {
+    for (const st of slotTimes) {
+      await prisma.appointmentSlot.create({ data: { branchId: kl.id, date: daysFromNow(d), startTime: st, maxBookings: 2 } });
+    }
+  }
+  counts.leadStages = stageNames.length; counts.leadSources = sourceNames.length;
+  counts.serviceTypes = svcDefs.length; counts.loyaltyTiers = tierDefs.length; counts.rewards = 2;
+  counts.messageTemplates = 3; counts.appointmentSlots = 7 * slotTimes.length;
+
   counts.orgs = 1; counts.branches = branches.length; counts.customers = customers.length; counts.motorcycles = bikeIds.length;
   counts.jobs = jobNumbers.length; counts.users = staffDefs.length;
   return counts;
