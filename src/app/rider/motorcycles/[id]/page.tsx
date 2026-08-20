@@ -35,6 +35,10 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
   const verified = jobs.length;
   const lifetime = jobs.reduce((s, j) => s + (j.invoice?.totalSen ?? 0), 0);
 
+  // active booking/job → show live status entry
+  const activeBooking = await db.booking.findFirst({ where: { motorcycleId: id, status: { in: ["REQUESTED", "CONFIRMED", "RESCHEDULED", "CHECKED_IN"] } } });
+  const activeJob = await db.serviceJob.findFirst({ where: { motorcycleId: id, status: { in: ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY"] } } });
+
   // inspection findings across this bike's jobs (WARNING/FAIL history)
   const findings = await db.inspectionFinding.findMany({
     where: { job: { motorcycleId: id } },
@@ -46,6 +50,16 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
   return (
     <div className="space-y-4">
       <Link href="/rider/motorcycles" className="inline-flex items-center gap-1 text-sm text-muted-foreground"><ChevronLeft className="h-4 w-4" /> {t("rider.my-bikes", lang)}</Link>
+
+      {(activeBooking || activeJob) && (
+        <Link href="/rider/service-status" className="block rounded-2xl border border-primary/30 bg-primary/5 p-4">
+          <div className="text-xs text-muted-foreground">Live service status</div>
+          <div className="mt-0.5 text-sm font-semibold text-primary">
+            {activeJob?.status === "READY" ? "✓ Ready for collection" : activeJob ? "Being serviced — Job " + activeJob.jobNumber : "Booking " + activeBooking?.status.replace(/_/g, " ").toLowerCase()}
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted-foreground">Tap to see the full timeline →</div>
+        </Link>
+      )}
 
       <div className="rounded-3xl border bg-card p-6 text-center">
         <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><ShieldCheck className="h-7 w-7" /></div>
