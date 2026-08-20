@@ -1,15 +1,18 @@
 // Pure, deterministic business rules — unit-testable without a database (§68).
 
-export type JobStatus = "WAITING" | "IN_PROGRESS" | "AWAITING_APPROVAL" | "READY" | "COMPLETED" | "CANCELLED";
+export type JobStatus = "WAITING" | "IN_PROGRESS" | "AWAITING_APPROVAL" | "QC_CHECK" | "WAITING_PARTS" | "ON_HOLD" | "READY" | "COMPLETED" | "CANCELLED";
 export type BookingStatus = "REQUESTED" | "CONFIRMED" | "RESCHEDULED" | "CHECKED_IN" | "COMPLETED" | "CANCELLED";
 export type StockLevel = "HEALTHY" | "LOW" | "CRITICAL" | "OUT_OF_STOCK";
 
-/** §21 job transitions. */
+/** §21 job transitions: Received → Diagnosis → In Progress → QC → Ready → Delivered (+ Waiting Parts / On Hold / Cancelled). */
 export const JOB_TRANSITIONS: Record<JobStatus, JobStatus[]> = {
-  WAITING: ["IN_PROGRESS", "CANCELLED"],
-  IN_PROGRESS: ["AWAITING_APPROVAL", "READY", "CANCELLED"],
-  AWAITING_APPROVAL: ["IN_PROGRESS", "READY", "CANCELLED"],
-  READY: ["COMPLETED", "CANCELLED"],
+  WAITING: ["IN_PROGRESS", "WAITING_PARTS", "ON_HOLD", "CANCELLED"],
+  IN_PROGRESS: ["AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY", "CANCELLED"],
+  AWAITING_APPROVAL: ["IN_PROGRESS", "QC_CHECK", "READY", "ON_HOLD", "CANCELLED"],
+  QC_CHECK: ["IN_PROGRESS", "READY", "WAITING_PARTS", "ON_HOLD", "CANCELLED"],
+  WAITING_PARTS: ["IN_PROGRESS", "ON_HOLD", "CANCELLED"],
+  ON_HOLD: ["IN_PROGRESS", "WAITING_PARTS", "CANCELLED"],
+  READY: ["COMPLETED", "ON_HOLD", "CANCELLED"],
   COMPLETED: [],
   CANCELLED: [],
 };

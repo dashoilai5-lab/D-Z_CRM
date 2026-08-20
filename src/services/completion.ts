@@ -151,6 +151,30 @@ export class CompletionService {
         data: { customerId: job.customerId, branchId, title: "Your motorcycle is ready", body: job.jobNumber + " — ready for collection.", type: "JOB_READY" },
       });
 
+      // 5.5 Service history — permanent, immutable record (HIST-001..018)
+      await tx.serviceHistory.create({
+        data: {
+          organisationId: job.customer.organisationId,
+          branchId: job.branchId,
+          customerId: job.customerId,
+          motorcycleId: job.motorcycleId,
+          jobId: job.id,
+          serviceDate: new Date(),
+          mileage: job.mileage,
+          serviceAdvisorId: null,
+          technicianId: job.mechanicId,
+          serviceItems: JSON.stringify(acceptedItems.filter((i) => i.kind !== "PART").map((i) => ({ description: i.description, quantity: i.quantity, lineTotalSen: i.lineTotalSen }))),
+          partsUsed: JSON.stringify(acceptedParts.map((p) => ({ name: p.product.name, quantity: p.quantity, lineTotalSen: p.lineTotalSen }))),
+          labour: JSON.stringify(acceptedItems.filter((i) => i.kind === "PART").map((i) => ({ description: i.description, quantity: i.quantity }))),
+          totalSen: subtotal,
+          nextServiceMileage: nextMileage,
+          nextServiceDate: nextDate,
+        },
+      });
+      await tx.jobStatusHistory.create({
+        data: { jobId: job.id, fromStatus: job.status, toStatus: "COMPLETED", changedAt: new Date() },
+      });
+
       // 6. Mark job completed + booking completed
       await tx.serviceJob.update({ where: { id: job.id }, data: { status: "COMPLETED", completedAt: new Date() } });
       if (job.booking?.id) {

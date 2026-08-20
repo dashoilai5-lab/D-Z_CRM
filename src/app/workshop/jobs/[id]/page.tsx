@@ -27,6 +27,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
   const checklist = detail.checklist;
   const pendingApprovals = detail.approvals.filter((a) => a.status === "PENDING");
   const mechanics = await db.user.findMany({ where: { role: { in: ["MECHANIC", "MANAGER"] }, active: true }, select: { id: true, name: true }, orderBy: { name: "asc" } });
+  const statusHistory = await db.jobStatusHistory.findMany({ where: { jobId: id }, orderBy: { changedAt: "desc" } });
   const editData: EditJobData = {
     jobId: detail.id,
     mileage: detail.mileage,
@@ -57,6 +58,21 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         <EditJobForm data={editData} mechanics={mechanics} />
         <JobActions jobId={detail.id} status={detail.status} />
       </div>
+
+      {statusHistory.length > 0 && (
+        <div className="rounded-2xl border bg-card p-4 mb-5">
+          <h3 className="font-semibold text-sm mb-2">Status history</h3>
+          <ol className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+            {statusHistory.map((h, i) => (
+              <li key={i} className="flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/50" />
+                <span className="font-mono">{h.fromStatus ?? "—"} → <strong>{h.toStatus}</strong></span>
+                <span>{fmtDateTime(h.changedAt)}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 space-y-5">

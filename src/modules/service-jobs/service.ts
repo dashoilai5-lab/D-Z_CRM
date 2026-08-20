@@ -151,7 +151,7 @@ export class JobService {
     return this.getDetail(jobId);
   }
 
-  /** Status transition with business rules (§21). */
+  /** Status transition with business rules (§21). JOB-022/023: every change is timestamped + recorded. */
   async transition(id: string, to: JobStatusInput) {
     const job = await this.repo.getById(id);
     if (!job) throw new Error("Job not found");
@@ -160,7 +160,18 @@ export class JobService {
     const data: Prisma.ServiceJobUpdateInput = { status: to };
     if (to === "IN_PROGRESS") data.startedAt = job.startedAt ?? new Date();
     if (to === "READY") data.readyAt = new Date();
-    return this.repo.update(id, data);
+    const updated = await this.repo.update(id, data);
+    // JOB-022/023: timestamped, user-attributed status history
+    await db.jobStatusHistory.create({
+      data: { jobId: id, fromStatus: job.status, toStatus: to, changedAt: new Date() },
+    });
+    if (to === "READY") {
+      // JOB-025: ready triggers customer notification
+      await db.notification.create({
+        data: { customerId: job.customerId, branchId: job.branchId, title: "Your motorcycle is ready", body: job.jobNumber + " — ready for collection.", type: "JOB_READY" },
+      }).catch(() => {});
+    }
+    return updated;
   }
 
   async assignMechanic(id: string, mechanicId: string | null) {

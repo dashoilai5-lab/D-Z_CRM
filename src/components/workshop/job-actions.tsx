@@ -10,7 +10,7 @@ export function JobActions({ jobId, status }: { jobId: string; status: string })
   const router = useRouter();
   const [pending, start] = useTransition();
 
-  const run = async (to: "WAITING" | "IN_PROGRESS" | "READY" | "COMPLETED" | "CANCELLED", msg?: string) => {
+  const run = async (to: "WAITING" | "IN_PROGRESS" | "AWAITING_APPROVAL" | "QC_CHECK" | "WAITING_PARTS" | "ON_HOLD" | "READY" | "COMPLETED" | "CANCELLED", msg?: string) => {
     start(async () => {
       try {
         const r = await transitionJob(jobId, to);
@@ -26,10 +26,19 @@ export function JobActions({ jobId, status }: { jobId: string; status: string })
   return (
     <div className="flex flex-wrap gap-2">
       {status === "WAITING" && <Button size="sm" disabled={pending} onClick={() => run("IN_PROGRESS", "Job started")}>Start Service</Button>}
-      {(status === "IN_PROGRESS" || status === "AWAITING_APPROVAL") && (
+      {["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK"].includes(status) && (
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("QC_CHECK", "Sent to QC")}>QC Check</Button>
+      )}
+      {["IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD"].includes(status) && (
         <Button size="sm" variant="outline" disabled={pending} onClick={() => run("READY", "Marked ready for collection")}>Mark Ready</Button>
       )}
-      {(status === "READY" || status === "IN_PROGRESS" || status === "AWAITING_APPROVAL") && (
+      {["IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "ON_HOLD"].includes(status) && (
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("WAITING_PARTS", "Waiting for parts")}>Waiting Parts</Button>
+      )}
+      {["IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS"].includes(status) && (
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("ON_HOLD", "On hold")}>On Hold</Button>
+      )}
+      {["READY", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK"].includes(status) && (
         <Button size="sm" disabled={pending} onClick={() => run("COMPLETED")}>Complete Job</Button>
       )}
       {status !== "COMPLETED" && status !== "CANCELLED" && (

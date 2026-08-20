@@ -38,7 +38,7 @@ export async function createJob(input: {
   return { ok: true, id: job.id, jobNumber: job.jobNumber };
 }
 
-export async function transitionJob(id: string, to: "WAITING" | "IN_PROGRESS" | "AWAITING_APPROVAL" | "READY" | "COMPLETED" | "CANCELLED") {
+export async function transitionJob(id: string, to: "WAITING" | "IN_PROGRESS" | "AWAITING_APPROVAL" | "QC_CHECK" | "WAITING_PARTS" | "ON_HOLD" | "READY" | "COMPLETED" | "CANCELLED") {
   if (to === "COMPLETED") {
     const result = await completionService.complete(id);
     revalidatePath("/", "layout");
