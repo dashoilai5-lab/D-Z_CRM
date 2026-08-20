@@ -7,10 +7,12 @@ import { db } from "@/lib/db";
 import { fmtKM } from "@/lib/format";
 
 export async function bookService(input: {
-  customerId: string; motorcycleId: string; serviceType: string; date: string; timeSlot: string; notes?: string; campaignId?: string;
+  customerId: string; motorcycleId: string; serviceType: string; date: string; timeSlot: string; notes?: string; campaignId?: string; branchId?: string;
 }) {
   const org = await db.organisation.findFirst();
-  const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
+  const branch = input.branchId
+    ? await db.branch.findFirst({ where: { id: input.branchId, organisationId: org!.id } })
+    : await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
   await bookingService.create({
     branchId: branch!.id,
     customerId: input.customerId,

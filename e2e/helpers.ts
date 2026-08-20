@@ -41,6 +41,9 @@ export async function bookViaRider(page: Page, ctx: BrowserContext, days = 2) {
   await setPersona(ctx, "CUSTOMER");
   await page.goto(BASE_URL + "/rider/book");
   await settle(page);
+  // branch locator: pick the main branch first, then the booking form appears
+  await page.locator('a[href*="branch="]').first().click();
+  await settle(page);
   const date = isoInDays(days);
   await page.fill('input[type="date"]', date);
   await page.getByTestId("book-submit").click();

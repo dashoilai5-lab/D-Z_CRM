@@ -20,8 +20,8 @@ const TOMORROW = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 export interface BikeOption { id: string; brand: string; model: string; plate: string; type: string }
 export interface PackageOption { id: string; name: string; tier: string; priceSen: number; isBestValue?: boolean; description?: string | null }
 
-export function BookForm({ customerId, bikes, packages, campaignId, availableSlots = [] }: {
-  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string }[];
+export function BookForm({ customerId, bikes, packages, campaignId, availableSlots = [], branchId }: {
+  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string }[]; branchId?: string;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -56,7 +56,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
         pkg?.name,
         ...extrasList.map((x) => x.label),
       ].filter(Boolean).join(" + ") || "General Checkup";
-      await bookService({ customerId, motorcycleId, serviceType, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined });
+      await bookService({ customerId, motorcycleId, serviceType, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
       router.push("/rider/bookings");
       toast.success("Booking requested — the workshop will confirm");
     });
