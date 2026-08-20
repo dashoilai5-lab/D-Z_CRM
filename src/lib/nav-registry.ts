@@ -56,6 +56,13 @@ export const NAV_SECTIONS: readonly NavSection[] = [
     items: [{ key: "tasks", label: "Tasks", labelKey: "nav.tasks", href: "/workshop/tasks", icon: ListTodo, access: ["OWNER", "COUNTER_STAFF", "MECHANIC"] }],
   },
   {
+    section: "CRM AUTOMATION",
+    items: [
+      { key: "automations", label: "Automations", labelKey: "nav.automations", href: "/workshop/automations", icon: Sparkles, access: ["OWNER"] },
+      { key: "templates", label: "Message Templates", labelKey: "nav.templates", href: "/workshop/messaging/templates", icon: MessageSquare, access: ["OWNER", "COUNTER_STAFF"] },
+    ],
+  },
+  {
     section: "CUSTOMERS",
     items: [
       { key: "customers", label: "Customers", labelKey: "nav.customers", href: "/workshop/customers", icon: Users, access: ["OWNER", "COUNTER_STAFF"] },

@@ -910,6 +910,18 @@ export async function runSeed(): Promise<Record<string, number>> {
     });
     leadCount++;
   }
+  // demo automation rule: auto-create follow-up task on new lead (AUTO-006/016)
+  await prisma.automationRule.create({
+    data: {
+      organisationId: org.id,
+      name: "Auto follow-up on new lead",
+      triggerType: "EVENT",
+      trigger: "LEAD_CREATED",
+      actions: JSON.stringify([{ type: "CREATE_TASK", title: "Follow up new lead", dueInDays: 1, priority: "NORMAL" }]),
+      active: true,
+    },
+  });
+  counts.automationRules = 1;
   counts.leads = leadCount;
   counts.leadStages = stageNames.length; counts.leadSources = sourceNames.length;
   counts.serviceTypes = svcDefs.length; counts.loyaltyTiers = tierDefs.length; counts.rewards = 2;

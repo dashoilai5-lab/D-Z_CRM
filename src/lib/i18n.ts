@@ -18,6 +18,8 @@ export const DICT: Dict = {
   "nav.test-rides": { en: "Test Rides", zh: "试驾", ms: "Ujian Tunggang" },
   "nav.tasks": { en: "Tasks", zh: "任务", ms: "Tugas" },
   "nav.motorcycles": { en: "Motorcycles", zh: "摩托车", ms: "Motorsikal" },
+  "nav.automations": { en: "Automations", zh: "自动化", ms: "Automasi" },
+  "nav.templates": { en: "Message Templates", zh: "消息模板", ms: "Templat Mesej" },
   "nav.return-list": { en: "Customer Return List", zh: "客户回流名单", ms: "Senarai Pulangan Pelanggan" },
   "nav.reminders": { en: "Service Reminders", zh: "保养提醒", ms: "Peringatan Servis" },
   "nav.bookings": { en: "Bookings", zh: "预约", ms: "Tempahan" },

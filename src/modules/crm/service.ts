@@ -91,9 +91,14 @@ export class CrmService {
   }
 
   /** Send a WhatsApp-style message via the mock provider and persist to history (§31). */
-  async sendMessage(input: { customerId: string; body: string; channel?: "WHATSAPP" | "SMS" | "APP" | "SYSTEM"; jobId?: string }) {
+  async sendMessage(input: { customerId: string; body: string; channel?: "WHATSAPP" | "SMS" | "APP" | "SYSTEM"; jobId?: string; isMarketing?: boolean }) {
     const customer = await db.customer.findUnique({ where: { id: input.customerId } });
     if (!customer) throw new Error("Customer not found");
+    // MSG-017: block marketing sends to opted-out customers
+    if (input.isMarketing) {
+      const consent = await db.customerConsent.findUnique({ where: { customerId: customer.id } });
+      if (consent && !consent.marketingOptIn) throw new Error("CUSTOMER_OPTED_OUT");
+    }
     const result = await messagingProvider.send(customer.phone ?? customer.name, input.body);
     const message = await this.repo.createMessage({
       customerId: input.customerId,

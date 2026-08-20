@@ -64,6 +64,11 @@ export class BookingService {
       await db.auditLog.create({
         data: { organisationId: org.id, branchId: input.branchId, action: "BOOKING_CREATED", entity: "BOOKING", entityId: String((created as { id: string }).id), after: JSON.stringify({ serviceType: input.serviceType, date: input.date, timeSlot: input.timeSlot }) },
       });
+      // AUTO-008: BOOKING_CREATED trigger
+      try {
+        const { automationModule } = await import("@/modules/automation/service");
+        await automationModule.run(org.id, "BOOKING_CREATED", { customerId: input.customerId, dedupeKey: String((created as { id: string }).id), bookingId: (created as { id: string }).id, motorcycleId: input.motorcycleId, relatedType: "BOOKING", relatedId: (created as { id: string }).id });
+      } catch { /* automation must never break booking */ }
     }
     return created;
   }

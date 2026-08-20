@@ -170,6 +170,11 @@ export class JobService {
       await db.notification.create({
         data: { customerId: job.customerId, branchId: job.branchId, title: "Your motorcycle is ready", body: job.jobNumber + " — ready for collection.", type: "JOB_READY" },
       }).catch(() => {});
+      // AUTO-012: JOB_READY trigger
+      try {
+        const { automationModule } = await import("@/modules/automation/service");
+        await automationModule.run(job.customer.organisationId, "JOB_READY", { customerId: job.customerId, dedupeKey: id, jobId: id, motorcycleId: job.motorcycleId, relatedType: "JOB", relatedId: id });
+      } catch { /* automation must never break transition */ }
     }
     return updated;
   }

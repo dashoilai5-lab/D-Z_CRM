@@ -68,6 +68,11 @@ export const leadsModule = {
       },
     });
     await db.leadActivity.create({ data: { leadId: lead.id, type: "CREATED", note: "Lead created", userId: input.assignedUserId ?? null } });
+    // AUTO-006: LEAD_CREATED trigger
+    try {
+      const { automationModule } = await import("@/modules/automation/service");
+      await automationModule.run(input.organisationId, "LEAD_CREATED", { leadId: lead.id, dedupeKey: lead.id, assignedUserId: input.assignedUserId, relatedType: "LEAD", relatedId: lead.id });
+    } catch { /* automation must never break lead creation */ }
     return lead;
   },
 
