@@ -17,17 +17,19 @@ export default async function RemindersPage() {
   return (
     <div>
       <PageHeader title={t("ws.crm.reminders.title", lang)} subtitle={t("ws.crm.reminders.subtitle", lang)} />
-      <div className="rounded-2xl border bg-card overflow-hidden">
+      <div className="dz-panel overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
-              <th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.customer", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.motorcycle", lang)}</th>
-              <th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.last-service", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.next-service", lang)}</th>
-              <th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.gap", lang)}</th><th className="px-4 py-3 font-medium">{t("common.status", lang)}</th><th className="px-4 py-3" />
-            </tr></thead>
+          <table className="dz-table">
+            <thead>
+              <tr>
+                <th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.customer", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.motorcycle", lang)}</th>
+                <th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.last-service", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.next-service", lang)}</th>
+                <th className="px-4 py-3 font-medium">{t("ws.crm.reminders.col.gap", lang)}</th><th className="px-4 py-3 font-medium">{t("common.status", lang)}</th><th className="px-4 py-3" />
+              </tr>
+            </thead>
             <tbody>
               {sorted.map((r) => (
-                <tr key={r.id} className="border-b last:border-0 hover:bg-muted/30">
+                <tr key={r.id}>
                   <td className="px-4 py-3 font-medium">{r.customer.name}<div className="text-xs text-muted-foreground">{r.customer.phone}</div></td>
                   <td className="px-4 py-3 text-xs">{r.motorcycle.brand} {r.motorcycle.model}<div className="text-muted-foreground">{r.motorcycle.plate}</div></td>
                   <td className="px-4 py-3 text-xs tabular-nums">{fmtKM(r.lastServiceMileage)}</td>

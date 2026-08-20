@@ -264,4 +264,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | UI 增强第二轮（逐页深化，纯视觉）：dashboard 统计卡全部加图标（Wallet/TrendingUp/Wrench/Receipt/Filter/Users/CalendarClock/ListTodo）；jobs Kanban 列头计数徽章+卡片 dz-card-link hover；工单详情 section 统一 dz-panel；登录页品牌化（logo 图标+渐变背景+tagline+毛玻璃卡） | 回归全绿；截图 polish2-dashboard/kanban/login |
 | 2026-08-20 | UI 增强第三轮（rider+详情页，纯视觉）：bookings 行卡加状态色条（7 色 border-l-4 + hover 变主色）；customers/[id] header 改 dz-panel+UserRound 图标+数据格卡片化（rounded-xl bg-muted/50 p-3）、车辆卡 hover；rider home 护照入口 dz-card-link | 回归全绿；截图 polish3-bookings/customer |
 | 2026-08-20 | UI 增强第四轮（详情页，纯视觉）：leads/[id] 时间线升级——垂直引导线+环形节点+时间徽章（dz-panel）；motorcycles/[id] 护照卡与服务历史表升级 dz-panel/dz-table | 回归全绿；截图 polish4-lead-detail/motorcycle |
+| 2026-08-20 | UI 增强第五轮（列表统一，纯视觉）：reminders 页升级 dz-panel/dz-table（sticky 表头+行 hover）；tasks 列表行 hover 提升 | 回归全绿；截图 polish5-reminders/tasks |
 | — | （后续改动在此追加） | — |
