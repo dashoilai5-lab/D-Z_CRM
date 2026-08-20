@@ -527,12 +527,57 @@ export const DICT: Dict = {
   "ws.cust.customer-note": { en: "Customer note: {notes}", zh: "客户备注：{notes}", ms: "Nota pelanggan: {notes}" },
   "ws.cust.est": { en: "· est {date}", zh: "· 预计 {date}", ms: "· anggaran {date}" },
 
+  // --- toast / feedback copy (en kept byte-identical to current UI) ---
+  "toast.pick-date": { en: "Pick a date", zh: "请选择日期", ms: "Pilih tarikh" },
+  "toast.pick-time": { en: "Pick a time", zh: "请选择时间", ms: "Pilih masa" },
+  "toast.booking-requested": { en: "Booking requested — the workshop will confirm", zh: "预约已提交 — 门店将确认", ms: "Tempahan dihantar — bengkel akan sahkan" },
+  "toast.pick-rating": { en: "Pick a star rating", zh: "请选择星级", ms: "Pilih penilaian bintang" },
+  "toast.review-thanks": { en: "Thanks! Your review helps the workshop.", zh: "谢谢！您的评价会帮助门店改进。", ms: "Terima kasih! Ulasan anda membantu bengkel." },
+  "toast.enter-brand": { en: "Enter the brand", zh: "请输入品牌", ms: "Masukkan jenama" },
+  "toast.enter-model": { en: "Enter the model", zh: "请输入型号", ms: "Masukkan model" },
+  "toast.valid-year": { en: "Enter a valid year", zh: "请输入有效年份", ms: "Masukkan tahun yang sah" },
+  "toast.bike-updated": { en: "Motorcycle updated", zh: "摩托车已更新", ms: "Motorsikal dikemas kini" },
+  "toast.bike-added": { en: "Motorcycle added to your garage", zh: "摩托车已添加到您的车库", ms: "Motorsikal ditambah ke garaj anda" },
+  "toast.approved": { en: "Approved — the workshop has been notified", zh: "已批准 — 已通知门店", ms: "Diluluskan — bengkel telah dimaklumkan" },
+  "toast.declined": { en: "Declined — the workshop has been notified", zh: "已拒绝 — 已通知门店", ms: "Ditolak — bengkel telah dimaklumkan" },
+  "toast.review-published": { en: "Review published", zh: "评价已发布", ms: "Ulasan diterbitkan" },
+  "toast.write-reply": { en: "Write a reply", zh: "请填写回复", ms: "Tulis balasan" },
+  "toast.reply-posted": { en: "Reply posted", zh: "回复已发布", ms: "Balasan disiarkan" },
+  "toast.enter-staff-name": { en: "Enter staff name", zh: "请输入员工姓名", ms: "Masukkan nama kakitangan" },
+  "toast.staff-added": { en: "Staff added — they now appear in job assignment and the mechanic board", zh: "员工已添加 — 现可见于工单分配与技师看板", ms: "Kakitangan ditambah — kini muncul dalam tugasan kerja dan papan mekanik" },
+  "toast.staff-deactivated": { en: "{name} deactivated", zh: "{name} 已停用", ms: "{name} dinyahaktifkan" },
+  "toast.staff-activated": { en: "{name} activated", zh: "{name} 已启用", ms: "{name} diaktifkan" },
+  "toast.job-fields-required": { en: "Customer, motorcycle and mileage are required", zh: "客户、摩托车与里程为必填", ms: "Pelanggan, motorsikal dan mileage diperlukan" },
+  "toast.job-created": { en: "Job {job} created", zh: "工单 {job} 已创建", ms: "Job {job} dicipta" },
+  "toast.job-updated": { en: "Job updated", zh: "工单已更新", ms: "Job dikemas kini" },
+  "toast.service-completed": { en: "Service completed — invoice {inv} · GP {gp}", zh: "服务完成 — 发票 {inv} · 毛利 {gp}", ms: "Servis selesai — invois {inv} · GP {gp}" },
+  "toast.checked-in": { en: "Checked in — job {job} created", zh: "已进店 — 工单 {job} 已创建", ms: "Daftar masuk — job {job} dicipta" },
+  "toast.booking-action": { en: "Booking {action}", zh: "预约{action}", ms: "Tempahan {action}" },
+  "toast.action-confirmed": { en: "confirmed", zh: "已确认", ms: "disahkan" },
+  "toast.action-rescheduled": { en: "rescheduled", zh: "已改期", ms: "dijadualkan semula" },
+  "toast.action-cancelled": { en: "cancelled", zh: "已取消", ms: "dibatalkan" },
+  "toast.action-no-show": { en: "no show", zh: "未到场", ms: "tidak hadir" },
+  "toast.transferred": { en: "Transferred ✓ — history preserved", zh: "已转移 ✓ — 历史记录保留", ms: "Dipindah ✓ — sejarah dikekalkan" },
+  "toast.failed": { en: "Failed", zh: "失败", ms: "Gagal" },
+  "toast.pick-customer-first": { en: "Pick a customer first", zh: "请先选择客户", ms: "Pilih pelanggan dahulu" },
+  "toast.sent-recorded": { en: "Sent ✓ (recorded in message history)", zh: "已发送 ✓（已记录到消息历史）", ms: "Dihantar ✓ (direkod dalam sejarah mesej)" },
+  "toast.saved": { en: "Saved ✓", zh: "已保存 ✓", ms: "Disimpan ✓" },
+  "toast.no-loyalty-account": { en: "No loyalty account yet — Earn or Adjust will create one.", zh: "暂无忠诚度账户 — 赚取或调整积分将自动创建。", ms: "Tiada akaun kesetiaan lagi — Earn atau Adjust akan cipta satu." },
+  "toast.balance-updated": { en: "{msg} ✓ — balance updated", zh: "{msg} ✓ — 余额已更新", ms: "{msg} ✓ — baki dikemas kini" },
+
 };
 
 export function t(key: string, lang: Lang): string {
   const entry = DICT[key];
   if (!entry) return key;
   return entry[lang];
+}
+
+/** t() with {placeholder} substitution — for dynamic toast/feedback copy. */
+export function tpl(key: string, lang: Lang, vars: Record<string, string | number>): string {
+  let s = t(key, lang);
+  for (const [k, v] of Object.entries(vars)) s = s.split("{" + k + "}").join(String(v));
+  return s;
 }
 
 export function parseLang(v: string | undefined): Lang {

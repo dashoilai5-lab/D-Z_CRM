@@ -9,18 +9,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { bookingAction } from "@/actions/workshop";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export interface PackageOption { id: string; name: string; priceSen: number; isBestValue?: boolean }
 
 export function BookingActions({ bookingId, status, packages }: { bookingId: string; status: string; packages: PackageOption[] }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   const [mileage, setMileage] = useState("");
   const [packageId, setPackageId] = useState("");
 
   const run = (action: "CONFIRMED" | "RESCHEDULED" | "CANCELLED" | "NO_SHOW") =>
-    start(async () => { await bookingAction(bookingId, action); router.refresh(); toast.success("Booking " + action.toLowerCase().replace(/_/g, " ")); });
+    start(async () => {
+      await bookingAction(bookingId, action); router.refresh();
+      const label = action === "CONFIRMED" ? t("toast.action-confirmed", lang) : action === "RESCHEDULED" ? t("toast.action-rescheduled", lang) : action === "CANCELLED" ? t("toast.action-cancelled", lang) : t("toast.action-no-show", lang);
+      toast.success(tpl("toast.booking-action", lang, { action: label }));
+    });
 
   return (
     <div className="flex flex-wrap gap-1.5 justify-end">
@@ -62,7 +69,7 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
                 const result = await bookingAction(bookingId, "CHECKED_IN", { mileage: Number(mileage), packageId: packageId === "none" ? undefined : packageId });
                 setOpen(false);
                 router.refresh();
-                if (result.ok && result.result) { toast.success("Checked in — job " + result.result.jobNumber + " created"); router.push("/workshop/jobs/" + result.result.jobId); }
+                if (result.ok && result.result) { toast.success(tpl("toast.checked-in", lang, { job: result.result.jobNumber })); router.push("/workshop/jobs/" + result.result.jobId); }
               })}>Check In</Button>
             </DialogFooter>
           </DialogContent>

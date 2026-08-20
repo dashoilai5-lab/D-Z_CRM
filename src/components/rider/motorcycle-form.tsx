@@ -11,6 +11,8 @@ import { addMotorcycle, updateMotorcycle } from "@/actions/rider";
 import { MOTORCYCLE_TYPES, motorcycleTypeInfo } from "@/lib/motorcycle-types";
 import { servicesForType } from "@/lib/service-catalog";
 import { BIKE_BRANDS, modelsForBrand, OTHERS } from "@/lib/bike-models";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 const COLORS = ["Black", "Red", "Blue", "White", "Grey", "Silver", "Green", "Orange"];
 const THIS_YEAR = new Date().getFullYear();
@@ -43,6 +45,7 @@ export function MotorcycleForm({
   submitLabel?: string;
 }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
 
   const [brand, setBrand] = useState(initial?.brand ?? "Yamaha");
@@ -68,17 +71,17 @@ export function MotorcycleForm({
 
   const submit = () =>
     start(async () => {
-      if (!effectiveBrand) { toast.error("Enter the brand"); return; }
-      if (!effectiveModel) { toast.error("Enter the model"); return; }
+      if (!effectiveBrand) { toast.error(t("toast.enter-brand", lang)); return; }
+      if (!effectiveModel) { toast.error(t("toast.enter-model", lang)); return; }
       const y = Number(year);
-      if (y < 1990 || y > THIS_YEAR + 1) { toast.error("Enter a valid year"); return; }
+      if (y < 1990 || y > THIS_YEAR + 1) { toast.error(t("toast.valid-year", lang)); return; }
       const km = Math.max(0, Number(mileage) || 0);
       if (motorcycleId) {
         await updateMotorcycle({ motorcycleId, brand: effectiveBrand, model: effectiveModel, year: y, type, color, currentMileage: km });
-        toast.success("Motorcycle updated");
+        toast.success(t("toast.bike-updated", lang));
       } else if (customerId) {
         await addMotorcycle({ customerId, brand: effectiveBrand, model: effectiveModel, year: y, type, color, currentMileage: km });
-        toast.success("Motorcycle added to your garage");
+        toast.success(t("toast.bike-added", lang));
       }
       onDone();
       router.refresh();

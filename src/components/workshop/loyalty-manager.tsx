@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, User, Plus, Minus, Gift, Crown } from "lucide-react";
 import { earnPointsAction, adjustPointsAction, redeemRewardAction, searchLoyaltyCustomers, getLoyaltySnapshot } from "@/actions/loyalty";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 type Snapshot = {
   customerId: string;
@@ -17,6 +19,7 @@ type Snapshot = {
 
 export function LoyaltyManager({ rewards }: { rewards: { id: string; name: string; pointsRequired: number; active: boolean }[] }) {
   const router = useRouter();
+  const lang = useLang();
   const [q, setQ] = useState("");
   const [customers, setCustomers] = useState<{ id: string; name: string; phone: string | null; tags: string | null; loyaltyAccount: { pointsBalance: number; membershipId: string } | null }[]>([]);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
@@ -39,7 +42,7 @@ export function LoyaltyManager({ rewards }: { rewards: { id: string; name: strin
     const snap = await getLoyaltySnapshot(id);
     setSnapshot(snap ? { customerId: id, ...snap } : null);
     setBusy(false);
-    if (snap && !snap.account) setMsg("No loyalty account yet — Earn or Adjust will create one.");
+    if (snap && !snap.account) setMsg(t("toast.no-loyalty-account", lang));
   }
 
   /** run an action, then refetch the snapshot so the balance updates live */
@@ -50,7 +53,7 @@ export function LoyaltyManager({ rewards }: { rewards: { id: string; name: strin
       await fn();
       const snap = await getLoyaltySnapshot(snapshot.customerId);
       setSnapshot(snap ? { customerId: snapshot.customerId, ...snap } : snapshot);
-      setMsg(okMsg + " ✓ — balance updated");
+      setMsg(tpl("toast.balance-updated", lang, { msg: okMsg }));
       setBusy(false);
       router.refresh();
     } catch (e) {

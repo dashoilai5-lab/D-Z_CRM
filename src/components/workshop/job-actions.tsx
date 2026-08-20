@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { transitionJob } from "@/actions/workshop";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export function JobActions({ jobId, status }: { jobId: string; status: string }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
 
   const run = async (to: "WAITING" | "IN_PROGRESS" | "AWAITING_APPROVAL" | "QC_CHECK" | "WAITING_PARTS" | "ON_HOLD" | "READY" | "COMPLETED" | "CANCELLED", msg?: string) => {
@@ -15,8 +18,8 @@ export function JobActions({ jobId, status }: { jobId: string; status: string })
       try {
         const r = await transitionJob(jobId, to);
         router.refresh();
-        if (r.ok && r.result) toast.success("Service completed — invoice " + r.result.invoiceNumber + " · GP " + "RM" + (r.result.grossProfitSen / 100));
-        else toast.success(msg ?? "Job updated");
+        if (r.ok && r.result) toast.success(tpl("toast.service-completed", lang, { inv: r.result.invoiceNumber, gp: "RM" + (r.result.grossProfitSen / 100) }));
+        else toast.success(msg ?? t("toast.job-updated", lang));
       } catch (e) {
         toast.error((e as Error).message);
       }

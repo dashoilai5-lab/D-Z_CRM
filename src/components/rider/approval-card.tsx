@@ -6,9 +6,12 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { respondApproval } from "@/actions/rider";
 import { formatRM } from "@/lib/money";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export function ApprovalCard({ approval }: { approval: { id: string; title: string; description: string | null; amountSen: number; status: string; job: { jobNumber: string; motorcycle: { brand: string; model: string; plate: string } } } }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
 
   if (approval.status !== "PENDING") {
@@ -25,7 +28,7 @@ export function ApprovalCard({ approval }: { approval: { id: string; title: stri
     start(async () => {
       await respondApproval(approval.id, d);
       router.refresh();
-      toast.success(d === "APPROVED" ? "Approved — the workshop has been notified" : "Declined — the workshop has been notified");
+      toast.success(d === "APPROVED" ? t("toast.approved", lang) : t("toast.declined", lang));
     });
 
   return (

@@ -7,6 +7,8 @@ import { Star, Check, MessageSquare, Reply } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { publishReview, replyToReview } from "@/actions/marketing";
 import { fmtDate } from "@/lib/format";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface ReviewRow {
   id: string; customer: string; rating: number | null; comment: string | null; source: string; status: string;
@@ -15,6 +17,7 @@ export interface ReviewRow {
 
 export function ReviewManager({ reviews }: { reviews: ReviewRow[] }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [filter, setFilter] = useState<"ALL" | "SUBMITTED" | "PUBLISHED" | "APP" | "GOOGLE">("ALL");
   const [replying, setReplying] = useState<string | null>(null);
@@ -28,15 +31,15 @@ export function ReviewManager({ reviews }: { reviews: ReviewRow[] }) {
   });
 
   const publish = (id: string) =>
-    start(async () => { await publishReview(id); router.refresh(); toast.success("Review published"); });
+    start(async () => { await publishReview(id); router.refresh(); toast.success(t("toast.review-published", lang)); });
 
   const submitReply = (id: string) =>
     start(async () => {
-      if (!replyText.trim()) { toast.error("Write a reply"); return; }
+      if (!replyText.trim()) { toast.error(t("toast.write-reply", lang)); return; }
       await replyToReview(id, replyText.trim());
       setReplying(null); setReplyText("");
       router.refresh();
-      toast.success("Reply posted");
+      toast.success(t("toast.reply-posted", lang));
     });
 
   const filters: { key: typeof filter; label: string }[] = [

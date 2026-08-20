@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Pencil, Gift, X } from "lucide-react";
 import { updatePackage, type PackageItemInput } from "@/actions/packages";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 type PkgItem = { id: string; name: string; kind: string; defaultQty: number; priceSen: number; productId: string | null };
 type Pkg = { id: string; name: string; tier: string; priceSen: number; description: string | null; isBestValue: boolean; active: boolean; items: PkgItem[] };
@@ -15,6 +17,7 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
   dupMap: Record<string, string[]>;
 }) {
   const router = useRouter();
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(pkg.name);
   const [price, setPrice] = useState(String(pkg.priceSen / 100));
@@ -43,8 +46,8 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
       isBestValue, active, items: payload,
     });
     setBusy(false);
-    if (!res.ok) { setMsg(res.error ?? "Failed"); return; }
-    setOpen(false); setMsg("Saved ✓");
+    if (!res.ok) { setMsg(res.error ?? t("toast.failed", lang)); return; }
+    setOpen(false); setMsg(t("toast.saved", lang));
     router.refresh();
   }
 

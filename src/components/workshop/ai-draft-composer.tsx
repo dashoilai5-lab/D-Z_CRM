@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { draftMessage, sendDraft } from "@/actions/ai";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 const KINDS = [
   { value: "follow_up", label: "Follow-up" }, { value: "booking_reminder", label: "Booking reminder" },
@@ -12,6 +14,7 @@ const TONES = ["friendly", "professional", "casual"];
 
 export function AiDraftComposer() {
   const router = useRouter();
+  const lang = useLang();
   const [q, setQ] = useState("");
   const [customers, setCustomers] = useState<{ id: string; name: string; phone: string | null }[]>([]);
   const [customerId, setCustomerId] = useState("");
@@ -45,11 +48,11 @@ export function AiDraftComposer() {
   }
 
   async function generate() {
-    if (!customerId) { setMsg("Pick a customer first"); return; }
+    if (!customerId) { setMsg(t("toast.pick-customer-first", lang)); return; }
     setBusy(true); setMsg("");
     const res = await draftMessage({ customerId, kind: kind as "follow_up", tone });
     setBusy(false);
-    if (!res.ok) { setMsg("Failed"); return; }
+    if (!res.ok) { setMsg(t("toast.failed", lang)); return; }
     setBody(res.body); setFacts(res.facts);
   }
 
@@ -57,7 +60,7 @@ export function AiDraftComposer() {
     setBusy(true); setMsg("");
     const res = await sendDraft({ customerId, body, isMarketing: kind === "promo" });
     setBusy(false);
-    setMsg(res.ok ? "Sent ✓ (recorded in message history)" : "Failed");
+    setMsg(res.ok ? t("toast.sent-recorded", lang) : t("toast.failed", lang));
     router.refresh();
   }
 

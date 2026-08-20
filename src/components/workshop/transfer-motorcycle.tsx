@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { transferMotorcycle } from "@/actions/motorcycles";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export function TransferMotorcycle({ bikeId, currentOwnerId, customers }: { bikeId: string; currentOwnerId: string; customers: { id: string; name: string }[] }) {
   const router = useRouter();
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const [targetId, setTargetId] = useState("");
   const [busy, setBusy] = useState(false);
@@ -15,8 +18,8 @@ export function TransferMotorcycle({ bikeId, currentOwnerId, customers }: { bike
     setBusy(true); setMsg("");
     const res = await transferMotorcycle(bikeId, targetId);
     setBusy(false);
-    if (!res.ok) { setMsg(res.error ?? "Failed"); return; }
-    setMsg("Transferred ✓ — history preserved"); setOpen(false);
+    if (!res.ok) { setMsg(res.error ?? t("toast.failed", lang)); return; }
+    setMsg(t("toast.transferred", lang)); setOpen(false);
     router.refresh();
   }
 

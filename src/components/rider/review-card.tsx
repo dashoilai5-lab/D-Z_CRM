@@ -6,9 +6,12 @@ import { toast } from "sonner";
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { submitReview } from "@/actions/rider";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export function ReviewCard({ customerId, branchId, jobId, existingRating }: { customerId: string; branchId: string; jobId: string; existingRating: number | null }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
@@ -30,11 +33,11 @@ export function ReviewCard({ customerId, branchId, jobId, existingRating }: { cu
 
   const submit = () =>
     start(async () => {
-      if (rating === 0) { toast.error("Pick a star rating"); return; }
+      if (rating === 0) { toast.error(t("toast.pick-rating", lang)); return; }
       await submitReview({ customerId, branchId, jobId, rating, comment: comment || undefined });
       setOpen(false);
       router.refresh();
-      toast.success("Thanks! Your review helps the workshop.");
+      toast.success(t("toast.review-thanks", lang));
     });
 
   return (

@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createStaff, toggleStaffActive } from "@/actions/workshop";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export interface StaffRow {
   id: string; name: string; role: string; phone: string | null; email: string | null; active: boolean; jobCount: number;
@@ -32,6 +34,7 @@ const ROLE_BADGE: Record<string, string> = {
 
 export function StaffManager({ staff }: { staff: StaffRow[] }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
@@ -41,18 +44,18 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
 
   const submit = () =>
     start(async () => {
-      if (!name.trim()) { toast.error("Enter staff name"); return; }
+      if (!name.trim()) { toast.error(t("toast.enter-staff-name", lang)); return; }
       await createStaff({ name, role, phone: phone || undefined, email: email || undefined });
       setName(""); setPhone(""); setEmail(""); setAdding(false);
       router.refresh();
-      toast.success("Staff added — they now appear in job assignment and the mechanic board");
+      toast.success(t("toast.staff-added", lang));
     });
 
   const toggle = (id: string, active: boolean, name: string) =>
     start(async () => {
       await toggleStaffActive(id);
       router.refresh();
-      toast.success(active ? name + " deactivated" : name + " activated");
+      toast.success(active ? tpl("toast.staff-deactivated", lang, { name }) : tpl("toast.staff-activated", lang, { name }));
     });
 
   return (

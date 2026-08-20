@@ -12,6 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { createJob } from "@/actions/workshop";
 import { formatRM } from "@/lib/money";
 import { SERVICE_CATALOG, servicesForType } from "@/lib/service-catalog";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export interface CustomerOption { id: string; name: string; phone: string | null }
 export interface MotorcycleOption { id: string; brand: string; model: string; plate: string; year: number; type: string; currentMileage: number }
@@ -29,6 +31,7 @@ export function CreateJobForm({
   preselectCustomer: string | null;
 }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [customerId, setCustomerId] = useState(preselectCustomer ?? "");
   const [motorcycleId, setMotorcycleId] = useState("");
@@ -71,7 +74,7 @@ export function CreateJobForm({
   const estimated = (pkg?.priceSen ?? 0) + totalAddons;
 
   const submit = () => {
-    if (!customerId || !motorcycleId || !mileage) { toast.error("Customer, motorcycle and mileage are required"); return; }
+    if (!customerId || !motorcycleId || !mileage) { toast.error(t("toast.job-fields-required", lang)); return; }
     start(async () => {
       try {
         const r = await createJob({
@@ -83,7 +86,7 @@ export function CreateJobForm({
           ],
         });
         router.push("/workshop/jobs/" + r.id);
-        toast.success("Job " + r.jobNumber + " created");
+        toast.success(tpl("toast.job-created", lang, { job: r.jobNumber }));
       } catch (e) {
         toast.error((e as Error).message);
       }

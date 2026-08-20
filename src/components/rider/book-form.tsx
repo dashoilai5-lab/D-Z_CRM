@@ -13,6 +13,8 @@ import { SERVICE_CATALOG, servicesForType } from "@/lib/service-catalog";
 import { motorcycleTypeInfo, MOTORCYCLE_TYPE_LABELS } from "@/lib/motorcycle-types";
 import { cn } from "@/lib/utils";
 import { formatRM } from "@/lib/money";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 /** Module-level constant — Date.now() at module load, not per render. */
 const TOMORROW = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
@@ -24,6 +26,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
   customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string }[]; branchId?: string;
 }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [motorcycleId, setMotorcycleId] = useState(bikes[0]?.id ?? "");
   const [packageId, setPackageId] = useState("");
@@ -49,8 +52,8 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
 
   const submit = () =>
     start(async () => {
-      if (!date) { toast.error("Pick a date"); return; }
-      if (!timeSlot) { toast.error("Pick a time"); return; }
+      if (!date) { toast.error(t("toast.pick-date", lang)); return; }
+      if (!timeSlot) { toast.error(t("toast.pick-time", lang)); return; }
       // build a readable service summary: package + selected extras
       const serviceType = [
         pkg?.name,
@@ -58,7 +61,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
       ].filter(Boolean).join(" + ") || "General Checkup";
       await bookService({ customerId, motorcycleId, serviceType, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
       router.push("/rider/bookings");
-      toast.success("Booking requested — the workshop will confirm");
+      toast.success(t("toast.booking-requested", lang));
     });
 
   return (
