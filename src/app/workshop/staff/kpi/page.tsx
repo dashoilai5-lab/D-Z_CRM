@@ -30,7 +30,7 @@ export default async function KpiPage() {
           </div>
         </div>
       )}
-      <div className="rounded-2xl border bg-card overflow-hidden">
+      <div className="rounded-2xl border bg-card overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">

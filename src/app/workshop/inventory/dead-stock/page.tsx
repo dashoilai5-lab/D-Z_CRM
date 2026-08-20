@@ -15,7 +15,7 @@ export default async function DeadStockPage() {
   return (
     <div>
       <PageHeader title={t("ws.dead.title", lang)} subtitle={t("ws.dead.subtitle", lang).replace("{n}", (total / 100).toFixed(0))} />
-      <div className="rounded-2xl border bg-card overflow-hidden">
+      <div className="rounded-2xl border bg-card overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">

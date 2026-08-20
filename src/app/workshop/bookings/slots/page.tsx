@@ -26,7 +26,7 @@ export default async function SlotsPage() {
         <p className="text-sm text-muted-foreground">{stats.total} slots · {stats.full} full · {stats.holidays} holidays · capacity guard active (BOOK-008/035)</p>
       </div>
       <SlotManager branches={branches.map((b) => ({ id: b.id, label: b.name + " · " + b.city }))} />
-      <div className="rounded-xl border bg-card overflow-hidden">
+      <div className="rounded-xl border bg-card overflow-x-auto">
         <table className="dz-table">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
             <tr><th className="px-3 py-2.5 font-medium">Branch</th><th className="px-3 py-2.5 font-medium">Date</th><th className="px-3 py-2.5 font-medium">Time</th><th className="px-3 py-2.5 font-medium">Capacity</th><th className="px-3 py-2.5 font-medium">Status</th><th className="px-3 py-2.5 font-medium"></th></tr>

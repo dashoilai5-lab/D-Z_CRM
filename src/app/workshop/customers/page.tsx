@@ -29,7 +29,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
         <Link href="/workshop/import" className="rounded-lg border px-3 py-2 text-sm font-medium hover:bg-accent">Import CSV</Link>
       </div>
 
-      <div className="dz-panel overflow-hidden">
+      <div className="dz-panel overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="dz-table">
             <thead>

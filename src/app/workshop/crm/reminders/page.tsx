@@ -17,7 +17,7 @@ export default async function RemindersPage() {
   return (
     <div>
       <PageHeader title={t("ws.crm.reminders.title", lang)} subtitle={t("ws.crm.reminders.subtitle", lang)} />
-      <div className="dz-panel overflow-hidden">
+      <div className="dz-panel overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="dz-table">
             <thead>

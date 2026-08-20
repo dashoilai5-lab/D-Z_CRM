@@ -59,7 +59,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
         <button className="rounded-lg border bg-card px-3 py-2 text-sm font-medium shadow-sm hover:bg-accent transition-colors">Filter</button>
       </form>
 
-      <div className="dz-panel overflow-hidden">
+      <div className="dz-panel overflow-x-auto">
         <table className="dz-table">
           <thead>
             <tr>

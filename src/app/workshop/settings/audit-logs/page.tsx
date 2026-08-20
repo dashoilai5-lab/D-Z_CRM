@@ -27,7 +27,7 @@ export default async function AuditLogsPage({ searchParams }: { searchParams: Pr
           </a>
         ))}
       </div>
-      <div className="rounded-xl border bg-card overflow-hidden">
+      <div className="rounded-xl border bg-card overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="dz-table">
             <thead className="bg-muted/50 text-left text-xs text-muted-foreground">

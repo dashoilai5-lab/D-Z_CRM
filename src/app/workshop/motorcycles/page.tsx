@@ -47,7 +47,7 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
         <button className="rounded-md border px-3 py-2 text-sm font-medium">Search</button>
       </form>
 
-      <div className="rounded-xl border bg-card overflow-hidden">
+      <div className="rounded-xl border bg-card overflow-x-auto">
         <table className="dz-table">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
             <tr>
