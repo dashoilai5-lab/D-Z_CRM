@@ -254,4 +254,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-20 | 段 13 AI-Native：新增 AI 草稿服务 src/modules/ai/draft.ts（5 类型×3 语气，仅引用结构数据）+ AI 页草稿合成器（搜索客户/生成/编辑/发送）+ 洞察 AI 徽章 | 实测草稿引用真实数据（Ahmad Y15ZR 下次 31500km）；AI-018/019 满足；异常检测类归生产迁移 |
 | 2026-08-20 | 段 14 API/审计/安全/隐私：审计查看页 /workshop/settings/audit-logs（action/entity 筛选+before/after）、集成配置页 /workshop/integrations（provider 启停+审计）、loyalty adjust 补 AuditLog 埋点 | 实测 LOYALTY_ADJUST 审计写入；SEC 生产属性（HTTPS/加密/备份）标 🟡 归生产迁移；PRIV 核心（consent/opt-out/权限）就位 |
 | 2026-08-20 | 段 15 设置中心/UX/性能/可靠性/导航：/workshop/settings 从 ComingSoon 升级为配置中枢（组织资料/分支管理/服务目录 CRUD/丢失原因配置 + 8 个配置子页入口）；Organisation 补 lostReasons 字段（迁移 seg15_org_settings） | ADMIN 26 条核心配置就位；PERF/REL 生产属性标 🟡；§47 导航 23 模块清单核对 |
+| 2026-08-20 | 段 16 端到端工作流+DoD：E2E-SALES/SVC/RET/BR 四流程核对（46✅/5🟡 环节）；DONE 40 条（27✅/13🟡 生产属性归迁移） | 需求验证工程 16 段全部完成：895 条核对，缺失补齐，回归全绿；生产迁移清单见 SETUP §5 |
 | — | （后续改动在此追加） | — |
