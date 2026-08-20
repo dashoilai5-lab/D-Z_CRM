@@ -26,15 +26,41 @@ enum Role {
 }
 
 model Organisation {
-  id        String   @id @default(cuid())
-  name      String
-  currency  String   @default("MYR")
-  createdAt DateTime @default(now())
-  branches  Branch[]
-  users     User[]
-  customers Customer[]
-  products  Product[]
-  suppliers Supplier[]
+  id            String   @id @default(cuid())
+  name          String
+  currency      String   @default("MYR")
+  // PLT-005 company profile
+  logo          String?
+  address       String?
+  contactPhone  String?
+  contactEmail  String?
+  taxId         String?
+  timezone      String   @default("Asia/Kuala_Lumpur")
+  operatingHours String? // JSON {mon:"09:00-18:00",...}
+  createdAt     DateTime @default(now())
+  branches      Branch[]
+  users         User[]
+  customers     Customer[]
+  products      Product[]
+  suppliers     Supplier[]
+  leads         Lead[]
+  leadSources   LeadSource[]
+  leadStages    LeadStage[]
+  tasks         Task[]
+  testRides     TestRide[]
+  serviceTypes  ServiceType[]
+  automationRules AutomationRule[]
+  messageTemplates MessageTemplate[]
+  loyaltyTiers  LoyaltyTier[]
+  loyaltyAccounts LoyaltyAccount[]
+  rewards       Reward[]
+  referrals     Referral[]
+  attachments   Attachment[]
+  auditLogs     AuditLog[]
+  integrationConfigs IntegrationConfig[]
+  permissions   Permission[]
+  roleConfigs   RoleConfig[]
+  serviceHistory ServiceHistory[]
 }
 
 model Branch {
@@ -46,6 +72,8 @@ model Branch {
   phone          String?
   address        String?
   isMain         Boolean      @default(false)
+  operatingHours String?      // JSON {mon:"09:00-18:00",...}
+  appointmentCapacity Int     @default(1)
   users          User[]
   customers      Customer[]
   bookings       Booking[]
@@ -60,6 +88,12 @@ model Branch {
   contentScripts ContentScript[]
   messages       Message[]
   notifications  Notification[]
+  testRides      TestRide[]
+  appointmentSlots AppointmentSlot[]
+  inventoryLocations InventoryLocation[]
+  leads          Lead[]
+  tasks          Task[]
+  serviceHistory ServiceHistory[]
 }
 
 model User {
@@ -73,9 +107,16 @@ model User {
   email          String?
   role           Role     @default(MECHANIC)
   active         Boolean  @default(true)
+  // AUTH: login credentials
+  passwordHash   String?
+  lastLoginAt    DateTime?
   createdAt      DateTime @default(now())
   jobs           ServiceJob[]     @relation("AssignedMechanic")
   notifications  Notification[]
+  leadsAssigned  Lead[]           @relation("AssignedLeads")
+  tasksOwned     Task[]           @relation("OwnedTasks")
+  tasksCompleted Task[]           @relation("CompletedTasks")
+  testRidesAssigned TestRide[]    @relation("SalespersonTestRides")
 }
 
 // ---------- Customers ----------
@@ -105,6 +146,14 @@ model Customer {
   invoices       Invoice[]
   notifications  Notification[]
   createdAt      DateTime @default(now())
+  addresses      CustomerAddress[]
+  consent        CustomerConsent?
+  loyaltyAccount LoyaltyAccount?
+  leadsConverted Lead[]
+  testRides      TestRide[]
+  serviceHistory ServiceHistory[]
+  referralsMade  Referral[]     @relation("ReferralsMade")
+  referralsReceived Referral[]   @relation("ReferralsReceived")
 }
 
 model CustomerAuthProfile {
@@ -141,6 +190,8 @@ model Motorcycle {
   jobs                 ServiceJob[]
   bookings             Booking[]
   reminders            ServiceReminder[]
+  testRides            TestRide[]
+  serviceHistory       ServiceHistory[]
 }
 
 // ---------- Bookings ----------
@@ -239,6 +290,8 @@ model ServiceJob {
   invoice         Invoice?
   reminder        ServiceReminder?
   messages        Message[]  @relation("JobMessages")
+  statusHistory   JobStatusHistory[]
+  serviceHistory  ServiceHistory?
 }
 
 model ServiceJobItem {
@@ -414,6 +467,7 @@ model Product {
   supplierId     String?
   supplier       Supplier? @relation(fields: [supplierId], references: [id])
   active         Boolean  @default(true)
+  compatibleModels String? // JSON array of motorcycle-type keys
   createdAt      DateTime @default(now())
   inventories    Inventory[]
   stockMovements StockMovement[]
@@ -442,6 +496,7 @@ model StockMovement {
   reason        String
   referenceType String?
   referenceId   String?
+  userId        String?
   createdAt     DateTime @default(now())
 }
 
@@ -721,3 +776,400 @@ model ContentScript {
   tone       String?
   createdAt  DateTime @default(now())
 }
+// ---------- Requirements §30 DATA: missing entities ----------
+
+model RoleConfig {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  description    String?
+  isSystem       Boolean  @default(false)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  @@unique([organisationId, name])
+}
+
+model Permission {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  roleName       String
+  module         String
+  canView        Boolean  @default(false)
+  canCreate      Boolean  @default(false)
+  canEdit        Boolean  @default(false)
+  canDelete      Boolean  @default(false)
+  canExport      Boolean  @default(false)
+  scope          String   @default("BRANCH") // BRANCH | ALL_BRANCHES
+  createdAt      DateTime @default(now())
+  @@unique([organisationId, roleName, module])
+}
+
+model CustomerAddress {
+  id         String   @id @default(cuid())
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  type       String   @default("HOME") // HOME | WORK | BILLING
+  line1      String?
+  line2      String?
+  city       String?
+  state      String?
+  postcode   String?
+  country    String   @default("MY")
+  isDefault  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model CustomerConsent {
+  id                      String   @id @default(cuid())
+  customerId              String   @unique
+  customer                Customer @relation(fields: [customerId], references: [id])
+  marketingOptIn          Boolean  @default(false)
+  whatsappOptIn           Boolean  @default(false)
+  smsOptIn                Boolean  @default(false)
+  emailOptIn              Boolean  @default(false)
+  communicationPreference String   @default("WHATSAPP") // WHATSAPP | SMS | EMAIL | PHONE | APP
+  consentedAt             DateTime?
+  updatedAt               DateTime @updatedAt
+}
+
+model LeadSource {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  leads          Lead[]
+}
+
+model LeadStage {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  order          Int      @default(0)
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  leads          Lead[]
+}
+
+model Lead {
+  id                  String     @id @default(cuid())
+  leadNumber          String     @unique
+  organisationId      String
+  organisation        Organisation @relation(fields: [organisationId], references: [id])
+  branchId            String?
+  branch              Branch?    @relation(fields: [branchId], references: [id])
+  sourceId            String?
+  source              LeadSource? @relation(fields: [sourceId], references: [id])
+  stageId             String?
+  stage               LeadStage?  @relation(fields: [stageId], references: [id])
+  customerName        String
+  phone               String?
+  email               String?
+  motorcycleInterest  String?
+  modelInterest       String?
+  notes               String?
+  estimatedValueSen   Int?
+  assignedUserId      String?
+  assignedUser        User?      @relation("AssignedLeads", fields: [assignedUserId], references: [id])
+  nextFollowUpAt      DateTime?
+  tags                String?
+  status              String     @default("OPEN") // OPEN | WON | LOST
+  lostReason          String?
+  convertedCustomerId String?
+  convertedCustomer   Customer?  @relation(fields: [convertedCustomerId], references: [id])
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  activities          LeadActivity[]
+  testRides           TestRide[]
+}
+
+model LeadActivity {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id])
+  type      String   // CREATED | ASSIGNED | STAGE_CHANGED | NOTE | FOLLOW_UP | TEST_RIDE | WON | LOST
+  note      String?
+  userId    String?
+  createdAt DateTime @default(now())
+}
+
+model Task {
+  id            String    @id @default(cuid())
+  organisationId String
+  organisation  Organisation @relation(fields: [organisationId], references: [id])
+  branchId      String?
+  branch        Branch?   @relation(fields: [branchId], references: [id])
+  ownerId       String?
+  owner         User?     @relation("OwnedTasks", fields: [ownerId], references: [id])
+  title         String
+  description   String?
+  relatedType   String?   // LEAD | CUSTOMER | BOOKING | VEHICLE | JOB
+  relatedId     String?
+  dueAt         DateTime?
+  priority      String    @default("NORMAL") // LOW | NORMAL | HIGH
+  status        String    @default("OPEN") // OPEN | COMPLETED | CANCELLED
+  createdAt     DateTime  @default(now())
+  completedAt   DateTime?
+  completedById String?
+  completedBy   User?     @relation("CompletedTasks", fields: [completedById], references: [id])
+}
+
+model TestRide {
+  id            String     @id @default(cuid())
+  organisationId String
+  organisation  Organisation @relation(fields: [organisationId], references: [id])
+  branchId      String
+  branch        Branch     @relation(fields: [branchId], references: [id])
+  leadId        String?
+  lead          Lead?      @relation(fields: [leadId], references: [id])
+  customerId    String?
+  customer      Customer?  @relation(fields: [customerId], references: [id])
+  motorcycleModel String
+  motorcycleId  String?
+  motorcycle    Motorcycle? @relation(fields: [motorcycleId], references: [id])
+  rideDate      DateTime
+  timeSlot      String?
+  salespersonId String?
+  salesperson   User?      @relation("SalespersonTestRides", fields: [salespersonId], references: [id])
+  status        String     @default("PENDING") // PENDING | CONFIRMED | COMPLETED | CANCELLED | NO_SHOW
+  notes         String?
+  createdAt     DateTime   @default(now())
+}
+
+model AppointmentSlot {
+  id          String   @id @default(cuid())
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+  date        DateTime
+  startTime   String
+  endTime     String?
+  maxBookings Int      @default(1)
+  bookedCount Int      @default(0)
+  isHoliday   Boolean  @default(false)
+  @@unique([branchId, date, startTime])
+}
+
+model ServiceType {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  code           String?
+  category       String?
+  durationMin    Int?
+  priceSen       Int?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+}
+
+model JobStatusHistory {
+  id         String     @id @default(cuid())
+  jobId      String
+  job        ServiceJob @relation(fields: [jobId], references: [id])
+  fromStatus String?
+  toStatus   String
+  userId     String?
+  note       String?
+  changedAt  DateTime   @default(now())
+}
+
+model ServiceHistory {
+  id                String       @id @default(cuid())
+  organisationId    String
+  organisation      Organisation @relation(fields: [organisationId], references: [id])
+  branchId          String
+  branch            Branch       @relation(fields: [branchId], references: [id])
+  customerId        String
+  customer          Customer     @relation(fields: [customerId], references: [id])
+  motorcycleId      String
+  motorcycle        Motorcycle   @relation(fields: [motorcycleId], references: [id])
+  jobId             String?      @unique
+  job               ServiceJob?  @relation(fields: [jobId], references: [id])
+  serviceDate       DateTime
+  mileage           Int
+  serviceAdvisorId  String?
+  technicianId      String?
+  serviceItems      String?      // JSON
+  partsUsed         String?      // JSON
+  labour            String?      // JSON
+  totalSen          Int          @default(0)
+  nextServiceMileage Int?
+  nextServiceDate   DateTime?
+  createdAt         DateTime     @default(now())
+}
+
+model InventoryLocation {
+  id        String   @id @default(cuid())
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  name      String
+  code      String?
+  createdAt DateTime @default(now())
+}
+
+model AutomationRule {
+  id             String    @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  triggerType    String    // EVENT | TIME
+  trigger        String    // LEAD_CREATED | LEAD_STAGE_CHANGED | BOOKING_CREATED | BOOKING_APPROACHING | SERVICE_COMPLETED | SERVICE_DUE | JOB_READY | CUSTOMER_INACTIVE | LOYALTY_EVENT | LOW_STOCK
+  conditions     String?   // JSON
+  actions        String    // JSON array
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  executions     AutomationExecution[]
+}
+
+model AutomationExecution {
+  id         String         @id @default(cuid())
+  ruleId     String
+  rule       AutomationRule @relation(fields: [ruleId], references: [id])
+  trigger    String
+  status     String         @default("SUCCESS") // SUCCESS | FAILED
+  error      String?
+  executedAt DateTime       @default(now())
+}
+
+model MessageTemplate {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  name           String
+  channel        String   @default("WHATSAPP") // WHATSAPP | SMS | EMAIL | APP
+  subject        String?
+  body           String
+  placeholders   String?  // JSON
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+}
+
+model LoyaltyTier {
+  id             String           @id @default(cuid())
+  organisationId String
+  organisation   Organisation     @relation(fields: [organisationId], references: [id])
+  name           String
+  minPoints      Int              @default(0)
+  benefits       String?
+  active         Boolean          @default(true)
+  accounts       LoyaltyAccount[]
+}
+
+model LoyaltyAccount {
+  id             String            @id @default(cuid())
+  organisationId String
+  organisation   Organisation      @relation(fields: [organisationId], references: [id])
+  customerId     String            @unique
+  customer       Customer          @relation(fields: [customerId], references: [id])
+  tierId         String?
+  tier           LoyaltyTier?      @relation(fields: [tierId], references: [id])
+  membershipId   String            @unique
+  pointsBalance  Int               @default(0)
+  totalEarned    Int               @default(0)
+  totalRedeemed  Int               @default(0)
+  memberSince    DateTime          @default(now())
+  createdAt      DateTime          @default(now())
+  transactions   LoyaltyTransaction[]
+  redemptions    RewardRedemption[]
+}
+
+model LoyaltyTransaction {
+  id            String         @id @default(cuid())
+  accountId     String
+  account       LoyaltyAccount @relation(fields: [accountId], references: [id])
+  type          String         // EARN | REDEEM | ADJUST | EXPIRE
+  points        Int            // signed
+  balanceAfter  Int
+  reason        String?
+  referenceType String?
+  referenceId   String?
+  userId        String?
+  createdAt     DateTime       @default(now())
+}
+
+model Reward {
+  id             String           @id @default(cuid())
+  organisationId String
+  organisation   Organisation     @relation(fields: [organisationId], references: [id])
+  name           String
+  description    String?
+  pointsRequired Int
+  active         Boolean          @default(true)
+  singleUse      Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  redemptions    RewardRedemption[]
+}
+
+model RewardRedemption {
+  id          String         @id @default(cuid())
+  accountId   String
+  account     LoyaltyAccount @relation(fields: [accountId], references: [id])
+  rewardId    String
+  reward      Reward         @relation(fields: [rewardId], references: [id])
+  pointsSpent Int
+  status      String         @default("REDEEMED") // REDEEMED | CANCELLED
+  redeemedAt  DateTime       @default(now())
+}
+
+model Referral {
+  id                  String    @id @default(cuid())
+  organisationId      String
+  organisation        Organisation @relation(fields: [organisationId], references: [id])
+  referringCustomerId String
+  referringCustomer   Customer  @relation("ReferralsMade", fields: [referringCustomerId], references: [id])
+  referredCustomerId  String?
+  referredCustomer    Customer? @relation("ReferralsReceived", fields: [referredCustomerId], references: [id])
+  referredLeadId      String?
+  code                String
+  status              String    @default("PENDING") // PENDING | QUALIFIED | REWARDED | EXPIRED
+  rewardStatus        String?
+  qualifiedAt         DateTime?
+  createdAt           DateTime  @default(now())
+}
+
+model Attachment {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  relatedType    String   // CUSTOMER | LEAD | VEHICLE | JOB | ...
+  relatedId      String
+  fileName       String
+  mimeType       String?
+  sizeBytes      Int?
+  url            String
+  uploadedById   String?
+  createdAt      DateTime @default(now())
+}
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  branchId       String?
+  userId         String?
+  action         String
+  entity         String
+  entityId       String?
+  before         String?
+  after          String?
+  ip             String?
+  createdAt      DateTime @default(now())
+}
+
+model IntegrationConfig {
+  id              String   @id @default(cuid())
+  organisationId  String
+  organisation    Organisation @relation(fields: [organisationId], references: [id])
+  provider        String   // WHATSAPP | SMS | EMAIL | PAYMENT | STORAGE | OPENAI
+  channel         String?
+  configEncrypted String?
+  enabled         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@unique([organisationId, provider])
+}
+
