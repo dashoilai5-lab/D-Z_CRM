@@ -16,7 +16,7 @@ export interface PosterItem {
   published: boolean;
 }
 
-export function PosterGrid({ posters }: { posters: PosterItem[] }) {
+export function PosterGrid({ posters, baseUrl = "http://localhost:3002" }: { posters: PosterItem[]; baseUrl?: string }) {
   const router = useRouter();
   const { openIndex, open, close } = useLightbox();
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
@@ -119,7 +119,7 @@ export function PosterGrid({ posters }: { posters: PosterItem[] }) {
                 {p.description && <p className="mt-2 text-xs text-muted-foreground">&quot;{p.description}&quot;</p>}
                 <div className="mt-3 flex items-center gap-2 border-t pt-2.5">
                   <a
-                    href={"https://wa.me/?text=" + encodeURIComponent("Check out our new poster: " + p.title + (p.url ? " " + "http://localhost:3002" + p.url : ""))}
+                    href={"https://wa.me/?text=" + encodeURIComponent("Check out our new poster: " + p.title + (p.url ? " " + baseUrl + p.url : ""))}
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-[11px] font-medium text-white hover:bg-emerald-700"

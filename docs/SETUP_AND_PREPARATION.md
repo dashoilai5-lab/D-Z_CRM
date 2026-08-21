@@ -50,6 +50,7 @@ plist 文件：`com.dz-platform.server.plist` / `com.dz-platform.e2e.plist`
 | 变量 | 本地值 | 生产（迁移后） | 用途 |
 | --- | --- | --- | --- |
 | `DATABASE_URL` | `file:./dev.db` | Supabase Postgres 连接串 | 主数据库 |
+| `NEXT_PUBLIC_BASE_URL` | `http://192.168.100.240:3002` | 生产域名 | 分享/提醒链接基准；真机预览时=Mac 局域网 IP（`ipconfig getifaddr en0`，IP 变化需改此值并 rebuild） |
 
 ### 生产需要新增的 env（预留给 §5 迁移）
 | 变量 | 用途 | 来源 |
@@ -105,6 +106,14 @@ pnpm db:studio    # Prisma Studio 可视化
 ### 3.5 E2E 数据库注意
 `e2e/global-setup.ts` 每次跑测试前：**删 e2e.db → migrate deploy → seed → 重启 e2e launchd**（SQLite 句柄过期）。
 改 schema 后若 e2e 报「列不存在」，先手动 `DATABASE_URL=file:./e2e.db pnpm exec prisma migrate deploy` + kickstart。
+
+### 3.6 真机预览 Rider（手机同 Wi-Fi）
+三种预览方式：
+1. /preview 页（电脑浏览器）——手机设备外壳 + 真实 Rider 页面，可切页面/语言/角色/设备。
+2. Chrome DevTools 移动模拟——F12 → 手机模式（iPhone/Pixel）。
+3. 真机访问（最真实）：手机连同一 Wi-Fi，浏览器打开 http://192.168.100.240:3002 → 点 Demo bar 切到 CUSTOMER → 进 /rider/home。
+   - 服务已监听所有接口（next start 默认 0.0.0.0），防火墙已关。
+   - 分享/提醒链接经 NEXT_PUBLIC_BASE_URL 指向该 IP（改了 IP 后需 rebuild）。
 
 ---
 
@@ -299,4 +308,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-21 | 功能：Workshop→Rider News 发布联动——MarketingAsset 加 published 字段（迁移 marketing_asset_published，e2e.db 手动 ALTER 加列）；workshop posters 页每卡加 On News/Off News 开关（togglePosterPublished action）；rider News 页只查 published=true 海报 | 实测：workshop 关 Launch Week #4 → rider 轮播立即不再显示（HI 补位）；tsc0/unit20/e2e75+6skip 全绿 |
 | 2026-08-21 | 功能：产品图片——Part_Catalogue 10 张图（1254×1254）按 SKU 复制到 public/products/（BRAKE 碟刹/充电器/轮胎/化油器清洗/T10 灯泡/DOT4 油/Brembo 刹车片/手柄/刹车清洁/CVT 套装 ↔ 10 个 Product）；Product 加 imageUrl 字段（迁移 product_image_url，e2e.db 手动 ALTER）；seed 加 PRODUCT_IMAGES 映射；rider News 产品卡 + workshop 产品表缩略图显示（无图 fallback 图标/灰块） | 实测：News 产品卡显图、workshop 表 10 缩略图全载；e2e 73+2 偶发 webkit race（重跑 4/4 过） |
 | 2026-08-21 | 功能：News 产品区改 Hot Picks——只显示有图片的产品（where imageUrl not null，最新 6 个）；标题改 Hot Picks（三语词条）+ Flame 图标 + 副标题"本周热门配件与用品" | 实测：Hot Picks 标题/副标题/6 卡全带图；e2e 75+6skip 全绿 |
+| 2026-08-21 | 配置：真机预览——NEXT_PUBLIC_BASE_URL=http://192.168.100.240:3002（.env，分享/提醒链接指向局域网 IP；服务本已监听 0.0.0.0、防火墙已关）；poster Share 链接由硬编码 localhost 改经 baseUrl prop（server 页从 env 注入）；SETUP 加 §3.6 真机预览说明 | 实测：手机同 Wi-Fi 可访问 http://192.168.100.240:3002（200）；wa.me 分享链接含 LAN IP；e2e 75+6skip 全绿 |
 | — | （后续改动在此追加） | — |

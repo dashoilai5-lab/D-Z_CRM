@@ -22,6 +22,7 @@ export default async function PostersPage() {
       />
       <PosterGrid
         posters={assets.map((a) => ({ id: a.id, title: a.title, type: a.type, month: a.month, description: a.description, url: a.url, published: a.published }))}
+        baseUrl={process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3002"}
       />
       {assets.length === 0 && <p className="text-sm text-muted-foreground text-center py-10">{t("ws.mkt.posters.empty", lang)}</p>}
     </div>
