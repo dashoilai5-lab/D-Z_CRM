@@ -2,22 +2,72 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Download } from "lucide-react";
+
+type ImportKind = "customers" | "motorcycles" | "products";
+
+const KIND_META: Record<ImportKind, { label: string; api: string; desc: string; template: string }> = {
+  customers: {
+    label: "Customers",
+    api: "/api/import/customers",
+    desc: "Columns: name, phone, email, address, tags, notes — phone duplicates are skipped, never overwritten.",
+    template: "/csv-templates/customers.csv",
+  },
+  motorcycles: {
+    label: "Motorcycles",
+    api: "/api/import/motorcycles",
+    desc: "Columns: customerPhone, brand, model, year, plate, vin, engineNo, color, type, currentMileage — plate duplicates are skipped; customerPhone must match an existing customer.",
+    template: "/csv-templates/motorcycles.csv",
+  },
+  products: {
+    label: "Products",
+    api: "/api/import/products",
+    desc: "Columns: sku, name, category, brand, unit, sellPrice (RM), costPrice (RM), minStock, safetyStock, leadTimeDays, barcode, manufacturerPartNo, compatibleModels, supplierName — sku duplicates are skipped.",
+    template: "/csv-templates/products.csv",
+  },
+};
 
 export default function ImportPage() {
   const router = useRouter();
+  const [kind, setKind] = useState<ImportKind>("customers");
   const [rows, setRows] = useState<Record<string, string>[]>([]);
   const [fileName, setFileName] = useState("");
   const [result, setResult] = useState<{ imported: number; failed: number; duplicates: number; errors: string[] } | null>(null);
   const [busy, setBusy] = useState(false);
+  const meta = KIND_META[kind];
 
+  /** Standard CSV parser — handles quoted fields with commas and "" escapes
+   *  (behaviour identical to the old simple split for unquoted rows). */
   function parseCSV(text: string) {
-    const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
-    if (lines.length < 2) return [];
-    const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
-    return lines.slice(1).map((line) => {
-      const cells = line.split(",").map((c) => c.trim().replace(/^"|"$/g, ""));
+    const rows: string[][] = [];
+    let field = "", row: string[] = [], inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (inQuotes) {
+        if (ch === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else inQuotes = false;
+        } else field += ch;
+      } else if (ch === '"' && field === "") {
+        inQuotes = true;
+      } else if (ch === ",") {
+        row.push(field); field = "";
+      } else if (ch === "\n" || ch === "\r") {
+        if (ch === "\r" && text[i + 1] === "\n") i++;
+        row.push(field); field = "";
+        if (row.some((c) => c.trim().length > 0)) rows.push(row);
+        row = [];
+      } else {
+        field += ch;
+      }
+    }
+    row.push(field);
+    if (row.some((c) => c.trim().length > 0)) rows.push(row);
+    if (rows.length < 2) return [];
+    const headers = rows[0].map((h) => h.trim().toLowerCase());
+    return rows.slice(1).map((line) => {
       const obj: Record<string, string> = {};
-      headers.forEach((h, i) => { obj[h] = cells[i] ?? ""; });
+      headers.forEach((h, i) => { obj[h] = (line[i] ?? "").trim(); });
       return obj;
     });
   }
@@ -33,7 +83,7 @@ export default function ImportPage() {
 
   async function doImport() {
     setBusy(true);
-    const res = await fetch("/api/import/customers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rows }) });
+    const res = await fetch(meta.api, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ rows }) });
     const data = await res.json();
     setResult(data);
     setBusy(false);
@@ -44,8 +94,25 @@ export default function ImportPage() {
     <div className="max-w-3xl space-y-5">
       <div>
         <h1 className="text-2xl font-bold">CSV Import</h1>
-        <p className="text-sm text-muted-foreground">Import customers from CSV. Columns: <code className="rounded bg-muted px-1">name, phone, email, address, tags, notes</code> — phone duplicates are skipped, never overwritten (IMPORT-012).</p>
+        <p className="text-sm text-muted-foreground">Import customers, motorcycles or products from CSV. Download a template, fill it, then upload (IMPORT-001..013).</p>
       </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        {(Object.keys(KIND_META) as ImportKind[]).map((k) => (
+          <button
+            key={k}
+            onClick={() => { setKind(k); setRows([]); setFileName(""); setResult(null); }}
+            className={"rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors " + (k === kind ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground hover:border-primary/40")}
+          >
+            {KIND_META[k].label}
+          </button>
+        ))}
+        <a href={meta.template} download className="ml-auto inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium text-primary hover:bg-accent">
+          <Download className="h-3.5 w-3.5" /> Template
+        </a>
+      </div>
+
+      <p className="text-sm text-muted-foreground">{meta.desc}</p>
 
       <div className="rounded-xl border bg-card p-5">
         <label className="block cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm text-muted-foreground hover:bg-accent/40">
