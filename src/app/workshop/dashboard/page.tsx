@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Sparkles, Wallet, TrendingUp, Wrench, Receipt, Filter, Users, CalendarClock, ListTodo } from "lucide-react";
+import { ArrowRight, Sparkles, Wallet, TrendingUp, Wrench, Receipt, Filter, Users, CalendarClock, ListTodo, AlertTriangle, Clock } from "lucide-react";
 import { dashboardService } from "@/services/dashboard";
 import { aiService } from "@/modules/ai/service";
 import { StatCard } from "@/components/shared/stat-card";
@@ -155,13 +155,33 @@ export default async function DashboardPage() {
             <h2 className="font-semibold">{t("dash.ai-centre", lang)}</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
-            {recs.map((r, i) => (
-              <Link key={i} href={r.href} className="group rounded-2xl border bg-card p-4 hover:border-primary/40 transition-colors">
-                <p className="font-medium text-sm">{r.title}</p>
-                <p className="text-xs text-muted-foreground mt-1">{r.detail}</p>
-                <span className="mt-3 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary transition-colors group-hover:bg-primary/15">{r.action} →</span>
-              </Link>
-            ))}
+            {(() => {
+              const TAG = {
+                danger: { icon: <AlertTriangle className="h-3 w-3" />, cls: "bg-red-500/10 text-red-600 dark:text-red-300", label: t("dash.rec-alert", lang) },
+                warn: { icon: <Clock className="h-3 w-3" />, cls: "bg-amber-500/10 text-amber-700 dark:text-amber-300", label: t("dash.rec-action", lang) },
+                info: { icon: <Sparkles className="h-3 w-3" />, cls: "bg-primary/10 text-primary", label: t("dash.rec-insight", lang) },
+                success: { icon: <Sparkles className="h-3 w-3" />, cls: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300", label: t("dash.rec-insight", lang) },
+              } as const;
+              const CTA = {
+                danger: "bg-red-500/10 text-red-600 dark:text-red-300 group-hover:bg-red-500/15",
+                warn: "bg-amber-500/10 text-amber-700 dark:text-amber-300 group-hover:bg-amber-500/15",
+                info: "bg-primary/10 text-primary group-hover:bg-primary/15",
+                success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 group-hover:bg-emerald-500/15",
+              } as const;
+              return recs.map((r, i) => {
+                const tag = TAG[r.tone] ?? TAG.info;
+                return (
+                  <Link key={i} href={r.href} className="group rounded-2xl border bg-card p-4 hover:border-primary/40 transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium text-sm">{r.title}</p>
+                      <span className={"inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide " + tag.cls}>{tag.icon}{tag.label}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{r.detail}</p>
+                    <span className={"mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors " + (CTA[r.tone] ?? CTA.info)}>{r.action} →</span>
+                  </Link>
+                );
+              });
+            })()}
             {recs.length === 0 && <p className="text-sm text-muted-foreground col-span-2">{t("dash.no-recs", lang)}</p>}
           </div>
         </section>

@@ -577,6 +577,11 @@ export const DICT: Dict = {
   "ws.job.optional": { en: "optional", zh: "可选", ms: "pilihan" },
   "ws.job.reason-placeholder": { en: "e.g. odometer misread at check-in", zh: "例如：进店时里程表读数有误", ms: "cth: salah baca odometer semasa daftar masuk" },
 
+  // dashboard AI recommendation insight tags
+  "dash.rec-alert": { en: "Alert", zh: "预警", ms: "Amaran" },
+  "dash.rec-action": { en: "Action", zh: "行动", ms: "Tindakan" },
+  "dash.rec-insight": { en: "Insight", zh: "洞察", ms: "Wawasan" },
+
 };
 
 export function t(key: string, lang: Lang): string {
