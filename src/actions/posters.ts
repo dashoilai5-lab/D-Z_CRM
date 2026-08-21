@@ -38,6 +38,13 @@ export async function sendPosterToCustomers(posterId: string, customerIds: strin
   return { ok: true, sent, skipped };
 }
 
+/** Publish / unpublish a poster to the Rider News feed (workshop-side control). */
+export async function togglePosterPublished(id: string, published: boolean): Promise<{ ok: boolean }> {
+  await db.marketingAsset.update({ where: { id }, data: { published } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
 /** Customers available for targeting (tag / branch filters). */
 export async function listPosterTargets(filter?: { tag?: string; branchId?: string }) {
   const org = await db.organisation.findFirst();

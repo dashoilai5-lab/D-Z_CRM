@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Image as ImageIcon, ZoomIn, Trash2, Pencil, X, Check, MessageCircle, Users } from "lucide-react";
-import { sendPosterToCustomers } from "@/actions/posters";
+import { sendPosterToCustomers, togglePosterPublished } from "@/actions/posters";
 import { Lightbox, useLightbox, type LightboxImage } from "@/components/shared/lightbox";
 
 export interface PosterItem {
@@ -13,6 +13,7 @@ export interface PosterItem {
   month: string | null;
   description: string | null;
   url: string | null;
+  published: boolean;
 }
 
 export function PosterGrid({ posters }: { posters: PosterItem[] }) {
@@ -102,7 +103,18 @@ export function PosterGrid({ posters }: { posters: PosterItem[] }) {
               </div>
             ) : (
               <div className="p-4 flex-1">
-                <div className="font-medium text-sm">{p.title}</div>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="font-medium text-sm">{p.title}</div>
+                  <button
+                    type="button"
+                    onClick={async () => { await togglePosterPublished(p.id, !p.published); router.refresh(); }}
+                    className={"inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide transition-colors " + (p.published ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/25" : "bg-muted text-muted-foreground hover:bg-muted/70")}
+                    title={p.published ? "Shown on Rider News — click to hide" : "Hidden from Rider News — click to show"}
+                  >
+                    <span className={"h-1.5 w-1.5 rounded-full " + (p.published ? "bg-emerald-500" : "bg-muted-foreground/50")} />
+                    {p.published ? "On News" : "Off News"}
+                  </button>
+                </div>
                 <div className="text-xs text-muted-foreground mt-0.5">{p.type}{p.month ? " · " + p.month : ""}</div>
                 {p.description && <p className="mt-2 text-xs text-muted-foreground">&quot;{p.description}&quot;</p>}
                 <div className="mt-3 flex items-center gap-2 border-t pt-2.5">

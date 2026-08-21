@@ -41,7 +41,7 @@ export class MarketingService {
     ]);
     return {
       campaigns: campaigns.map((c) => ({ id: c.id, name: c.name, type: c.type, status: c.status, audience: c.audience, discountPercent: c.discountPercent, startDate: c.startDate, endDate: c.endDate, branch: c.branch.city })),
-      assets: assets.map((a) => ({ id: a.id, title: a.title, type: a.type, month: a.month, description: a.description, url: a.url })),
+      assets: assets.map((a) => ({ id: a.id, title: a.title, type: a.type, month: a.month, description: a.description, url: a.url, published: a.published })),
       scripts: scripts.map((s) => ({ id: s.id, title: s.title, platform: s.platform, hook: s.hook, body: s.body, tone: s.tone })),
     };
   }

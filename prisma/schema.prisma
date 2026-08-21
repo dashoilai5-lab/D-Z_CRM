@@ -791,6 +791,7 @@ model MarketingAsset {
   month       String?
   description String?
   url         String?
+  published   Boolean  @default(true) // show on Rider News (workshop controls per-poster)
   createdAt   DateTime @default(now())
 }
 

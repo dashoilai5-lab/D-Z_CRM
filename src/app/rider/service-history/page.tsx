@@ -14,7 +14,7 @@ export default async function NewsPage() {
   await getDemoCustomer();
   const [offers, posters, products] = await Promise.all([
     db.campaign.findMany({ where: { type: "PROMO", status: "ACTIVE", endDate: { gte: new Date() } }, orderBy: { startDate: "desc" }, take: 5 }),
-    db.marketingAsset.findMany({ orderBy: { createdAt: "desc" }, take: 4 }),
+    db.marketingAsset.findMany({ where: { published: true }, orderBy: { createdAt: "desc" }, take: 4 }),
     db.product.findMany({ orderBy: { createdAt: "desc" }, take: 6 }),
   ]);
   return (

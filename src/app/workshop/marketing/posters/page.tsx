@@ -21,7 +21,7 @@ export default async function PostersPage() {
         action={<PosterForm />}
       />
       <PosterGrid
-        posters={assets.map((a) => ({ id: a.id, title: a.title, type: a.type, month: a.month, description: a.description, url: a.url }))}
+        posters={assets.map((a) => ({ id: a.id, title: a.title, type: a.type, month: a.month, description: a.description, url: a.url, published: a.published }))}
       />
       {assets.length === 0 && <p className="text-sm text-muted-foreground text-center py-10">{t("ws.mkt.posters.empty", lang)}</p>}
     </div>
