@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Tag, Megaphone, Package, ChevronRight, Wrench } from "lucide-react";
+import { Tag, Megaphone, Package, ChevronRight, Wrench, Flame } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
@@ -15,7 +15,7 @@ export default async function NewsPage() {
   const [offers, posters, products] = await Promise.all([
     db.campaign.findMany({ where: { type: "PROMO", status: "ACTIVE", endDate: { gte: new Date() } }, orderBy: { startDate: "desc" }, take: 5 }),
     db.marketingAsset.findMany({ where: { published: true }, orderBy: { createdAt: "desc" }, take: 4 }),
-    db.product.findMany({ orderBy: { createdAt: "desc" }, take: 6, select: { id: true, name: true, brand: true, category: true, sellPriceSen: true, imageUrl: true } }),
+    db.product.findMany({ where: { imageUrl: { not: null } }, orderBy: { createdAt: "desc" }, take: 6, select: { id: true, name: true, brand: true, category: true, sellPriceSen: true, imageUrl: true } }),
   ]);
   return (
     <div className="space-y-5">
@@ -61,12 +61,13 @@ export default async function NewsPage() {
         )}
       </section>
 
-      {/* new products */}
+      {/* hot picks — featured products that have photos */}
       <section>
         <div className="flex items-center justify-between mb-2">
           <h2 className="font-semibold">{t("news.products", lang)}</h2>
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Package className="h-3.5 w-3.5" /></span>
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground"><Flame className="h-3.5 w-3.5" /></span>
         </div>
+        <p className="text-xs text-muted-foreground mb-2">{t("news.hot-picks-desc", lang)}</p>
         {products.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("news.no-products", lang)}</p>
         ) : (
