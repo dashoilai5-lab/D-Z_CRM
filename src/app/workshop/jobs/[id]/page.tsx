@@ -10,6 +10,7 @@ import { JobActions } from "@/components/workshop/job-actions";
 import { RecommendationActions } from "@/components/workshop/recommendation-actions";
 import { AiRecommendationActions } from "@/components/workshop/ai-recommendation-actions";
 import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-form";
+import { MileageCorrector } from "@/components/workshop/mileage-corrector";
 import { fmtDate, fmtDateTime, fmtKM } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { db } from "@/lib/db";
@@ -113,7 +114,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
               </div>
               <div className="text-right">
                 <div className="font-semibold">{detail.motorcycle.brand} {detail.motorcycle.model}</div>
-                <div className="text-xs text-muted-foreground">{detail.motorcycle.plate} · {detail.motorcycle.year} · <strong>{fmtKM(detail.mileage)}</strong></div>
+                <div className="text-xs text-muted-foreground">
+                  {detail.motorcycle.plate} · {detail.motorcycle.year} · <strong>{fmtKM(detail.mileage)}</strong>
+                  <MileageCorrector jobId={detail.id} currentMileage={detail.mileage} bikeMileage={detail.motorcycle.currentMileage} />
+                </div>
               </div>
             </div>
             <div className="mt-4 grid sm:grid-cols-2 gap-3 text-sm">

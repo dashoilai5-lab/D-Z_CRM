@@ -8,6 +8,7 @@ import { inspectionService } from "@/modules/inspections/service";
 import { crmService } from "@/modules/crm/service";
 import { inventoryService } from "@/modules/inventory/service";
 import { db } from "@/lib/db";
+import { audit } from "@/lib/auth/audit";
 
 export async function createJob(input: {
   customerId: string; motorcycleId: string; mileage: number; customerRequest?: string;
@@ -59,11 +60,20 @@ export async function bookingAction(id: string, action: "CONFIRMED" | "RESCHEDUL
   if (action === "CHECKED_IN") {
     const org = await db.organisation.findFirst();
     const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
+    const mileage = extra?.mileage ?? 0;
     const result = await bookingService.checkIn(id, {
-      mileage: extra?.mileage ?? 0,
+      mileage,
       branchId: branch!.id,
       packageId: extra?.packageId,
       mechanicId: extra?.mechanicId,
+    });
+    await audit({
+      organisationId: org!.id,
+      branchId: branch!.id,
+      action: "CHECKED_IN",
+      entity: "BOOKING",
+      entityId: id,
+      after: { mileage, job: result?.jobNumber ?? null },
     });
     revalidatePath("/", "layout");
     return { ok: true, result };
@@ -115,6 +125,8 @@ export async function updateJobDetails(input: {
   customerRequest?: string;
   mechanicId?: string | null;
 }) {
+  const job = await db.serviceJob.findUnique({ where: { id: input.jobId }, include: { branch: { select: { id: true, organisationId: true } } } });
+  if (!job) return { ok: false, error: "Job not found" };
   const data: Record<string, unknown> = {};
   if (input.mileage !== undefined) data.mileage = input.mileage;
   if (input.customerRequest !== undefined) data.customerRequest = input.customerRequest || null;
@@ -123,8 +135,51 @@ export async function updateJobDetails(input: {
     else data.mechanic = { disconnect: true };
   }
   await db.serviceJob.update({ where: { id: input.jobId }, data });
+  // audit: record mileage edits made while editing the job (hardening flow)
+  if (input.mileage !== undefined && input.mileage !== job.mileage) {
+    await audit({
+      organisationId: job.branch.organisationId,
+      branchId: job.branch.id,
+      action: "JOB_MILEAGE_UPDATE",
+      entity: "SERVICE_JOB",
+      entityId: input.jobId,
+      before: { mileage: job.mileage },
+      after: { mileage: input.mileage },
+    });
+  }
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+/** Mileage correction flow (hardening): mechanic/front desk fixes a wrong odometer
+ *  reading — updates both the job and the motorcycle record, and writes an
+ *  MILEAGE_CORRECTION audit entry with the reason. */
+export async function correctMileage(input: { jobId: string; newMileage: number; reason?: string }) {
+  const job = await db.serviceJob.findUnique({
+    where: { id: input.jobId },
+    include: {
+      branch: { select: { id: true, organisationId: true } },
+      motorcycle: { select: { id: true, currentMileage: true } },
+    },
+  });
+  if (!job) return { ok: false, error: "Job not found" };
+  const newMileage = Math.max(0, Math.round(input.newMileage));
+  if (newMileage === job.mileage && newMileage === job.motorcycle.currentMileage) return { ok: true, changed: false };
+  await db.$transaction([
+    db.serviceJob.update({ where: { id: input.jobId }, data: { mileage: newMileage } }),
+    db.motorcycle.update({ where: { id: job.motorcycleId }, data: { currentMileage: newMileage } }),
+  ]);
+  await audit({
+    organisationId: job.branch.organisationId,
+    branchId: job.branch.id,
+    action: "MILEAGE_CORRECTION",
+    entity: "SERVICE_JOB",
+    entityId: input.jobId,
+    before: { jobMileage: job.mileage, bikeMileage: job.motorcycle.currentMileage },
+    after: { mileage: newMileage, reason: input.reason?.trim() || null },
+  });
+  revalidatePath("/", "layout");
+  return { ok: true, changed: true };
 }
 
 /** Add priced service lines to a job (additional services from the market catalogue). */

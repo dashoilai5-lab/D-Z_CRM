@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { bookingService } from "@/modules/bookings/service";
 import { inspectionService } from "@/modules/inspections/service";
 import { db } from "@/lib/db";
+import { audit } from "@/lib/auth/audit";
 import { fmtKM } from "@/lib/format";
 
 export async function bookService(input: {
@@ -130,6 +131,8 @@ export async function updateMotorcycle(input: {
   color?: string;
   currentMileage: number;
 }) {
+  const bike = await db.motorcycle.findUnique({ where: { id: input.motorcycleId }, include: { customer: { select: { organisationId: true } } } });
+  const oldMileage = bike?.currentMileage;
   await db.motorcycle.update({
     where: { id: input.motorcycleId },
     data: {
@@ -141,6 +144,17 @@ export async function updateMotorcycle(input: {
       currentMileage: input.currentMileage,
     },
   });
+  // audit: rider/owner odometer edit — keeps mileage corrections traceable
+  if (bike && oldMileage != null && oldMileage !== input.currentMileage) {
+    await audit({
+      organisationId: bike.customer.organisationId,
+      action: "BIKE_MILEAGE_UPDATE",
+      entity: "MOTORCYCLE",
+      entityId: input.motorcycleId,
+      before: { mileage: oldMileage },
+      after: { mileage: input.currentMileage },
+    });
+  }
   revalidatePath("/", "layout");
   return { ok: true };
 }

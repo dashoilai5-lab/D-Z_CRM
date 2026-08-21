@@ -564,6 +564,18 @@ export const DICT: Dict = {
   "toast.saved": { en: "Saved ✓", zh: "已保存 ✓", ms: "Disimpan ✓" },
   "toast.no-loyalty-account": { en: "No loyalty account yet — Earn or Adjust will create one.", zh: "暂无忠诚度账户 — 赚取或调整积分将自动创建。", ms: "Tiada akaun kesetiaan lagi — Earn atau Adjust akan cipta satu." },
   "toast.balance-updated": { en: "{msg} ✓ — balance updated", zh: "{msg} ✓ — 余额已更新", ms: "{msg} ✓ — baki dikemas kini" },
+  "toast.valid-mileage": { en: "Enter a valid mileage", zh: "请输入有效里程", ms: "Masukkan mileage yang sah" },
+  "toast.mileage-corrected": { en: "Mileage corrected — job & record updated", zh: "里程已修正 — 工单与档案已更新", ms: "Mileage diperbetulkan — job & rekod dikemas kini" },
+  "toast.mileage-unchanged": { en: "Mileage is already up to date", zh: "里程已是最新", ms: "Mileage sudah terkini" },
+
+  // mileage correction (workshop job detail)
+  "ws.job.correct-mileage": { en: "Correct", zh: "修正", ms: "Betulkan" },
+  "ws.job.correct-mileage-title": { en: "Correct mileage", zh: "修正里程", ms: "Betulkan Mileage" },
+  "ws.job.correct-mileage-desc": { en: "Job shows {job} km · bike record {bike} km. Changes are written to both and logged in audit.", zh: "工单显示 {job} km · 车辆档案 {bike} km。修改将同步两者并记入审计日志。", ms: "Job menunjukkan {job} km · rekod motosikal {bike} km. Perubahan ditulis pada kedua-dua dan dicatat dalam audit." },
+  "ws.job.new-mileage": { en: "New mileage (km)", zh: "新里程（km）", ms: "Mileage baharu (km)" },
+  "ws.job.reason": { en: "Reason", zh: "原因", ms: "Sebab" },
+  "ws.job.optional": { en: "optional", zh: "可选", ms: "pilihan" },
+  "ws.job.reason-placeholder": { en: "e.g. odometer misread at check-in", zh: "例如：进店时里程表读数有误", ms: "cth: salah baca odometer semasa daftar masuk" },
 
 };
 
