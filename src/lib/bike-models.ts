@@ -35,3 +35,18 @@ export const BRAND_MODEL_MAP: Record<string, string[]> = {
 export function modelsForBrand(brand: string): string[] {
   return BRAND_MODEL_MAP[brand] ?? [OTHERS];
 }
+
+/* ---- catalogue product photos (example imagery uploaded to public/motorcycles) ----
+   Each model resolves to a stable image via a small hash — the same model always
+   shows the same photo, and neighbouring models spread across the 10 examples. */
+export const MOTORCYCLE_IMAGES = [
+  "01_red_sportbike.png", "02_classic_motorcycle.png", "03_blue_sportbike.png", "04_blue_sportbike_variant.png",
+  "05_black_sportbike.png", "06_blue_sportbike_variant_2.png", "07_blue_sportbike_variant_3.png",
+  "08_black_sport_touring.png", "09_naked_street_bike.png", "10_black_cruiser.png",
+] as const;
+
+export function bikeImageFor(model: string): string {
+  let h = 0;
+  for (let i = 0; i < model.length; i++) h = (h * 31 + model.charCodeAt(i)) >>> 0;
+  return "/motorcycles/" + MOTORCYCLE_IMAGES[h % MOTORCYCLE_IMAGES.length];
+}

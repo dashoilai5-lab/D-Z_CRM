@@ -1,7 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Search, Bike, Phone, MessageCircle } from "lucide-react";
 import { db } from "@/lib/db";
-import { BIKE_BRANDS, BRAND_MODEL_MAP } from "@/lib/bike-models";
+import { BIKE_BRANDS, BRAND_MODEL_MAP, bikeImageFor } from "@/lib/bike-models";
 import { formatRM } from "@/lib/money";
 import { PendingForm } from "@/components/shared/search-form";
 
@@ -52,8 +53,16 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
             if (m === "Others") return null;
             const price = priceFor(m);
             return (
-              <div key={m} className="rounded-xl border bg-card p-4 flex flex-col">
-                <div className="aspect-[4/3] rounded-lg bg-muted/60 flex items-center justify-center text-muted-foreground/60"><Bike className="h-10 w-10" /></div>
+              <div key={m} className="group rounded-xl border bg-card p-4 flex flex-col">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-lg bg-muted/60">
+                  <Image
+                    src={bikeImageFor(m)}
+                    alt={brand + " " + m}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+                  />
+                </div>
                 <div className="mt-3 font-semibold">{brand} {m}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">From {formatRM(price * 100)}</div>
                 <div className="mt-1"><span className="inline-flex rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 text-[11px] px-2 py-0.5">In stock</span></div>
