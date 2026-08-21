@@ -19,7 +19,7 @@
 **剩余主线不变**：① 经销商验证（dtodo 59e04e5e）② 生产迁移 §65（dtodo 92b29072）——生产属性项（真实 provider/HTTPS/备份/索引/限流/PDPA）在 SETUP §5 清单与追踪文档各段 🟡 备注。
 
 ## 一句话状态
-原型功能已齐备且全绿：全模块（workshop/rider/营销闭环）+ 三语言 i18n + 手机预览框架 + 真实海报素材，75/75 Playwright 通过。2026-08-20 追加完成：Loading 全链路（A 类 17 页路由骨架 + B 类交互反馈：PendingForm/ExportCsvButton/搜索防抖）+ UI 高级感去 AI 味（emoji 清零/图标统一/语义色/品牌橙）；剩余主线是经销商验证和生产迁移。
+原型功能齐备且全绿（tsc0/unit20/e2e75+6skip），迭代增强完成：Loading 全链路、UI 去 AI 味与高级感、i18n toast、分页、里程审计流、Mechanic Board 技师下拉、preview 框架修复、海报自动轮播（按尺寸适配）、Workshop→Rider News 发布联动、产品图片（10 SKU）、Hot Picks、真机预览（LAN IP 192.168.100.240）。**已进入部署准备**：DEPLOYMENT_CHECKLIST.md（阶段 A Supabase+RLS+Auth+demo 清理 / B Provider 换真 / C Vercel+Sentry+k6）。最新提交 a6fb025。
 
 ## 会话信息
 - 原会话 ID：session-ec4b081f-efca-4e4f-a187-4302bb0ce385
@@ -39,9 +39,9 @@
 - 基建：docs/SETUP_AND_PREPARATION.md（配置台账，§9 变更日志）
 
 ## 下一步（按优先级）
-1. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策
-2. 生产迁移 §65：Supabase PG+Auth+RLS、provider 换真（WhatsApp/OpenAI/Storage/Payment）、Vercel、Sentry、k6（清单在 SETUP §5）
-3. 可选打磨：剩余 i18n（部分 toast/AI 动态文案）、分页、里程修正审计流、视觉模型剩余建议（数据卡单位/语言切换高亮/AI 卡洞察标签）
+1. **部署准备（主线）**：docs/DEPLOYMENT_CHECKLIST.md——阶段 A（Supabase 项目+migrate deploy+RLS+Auth 替换 persona+demo 清理）/ B（Provider 换真）/ C（Vercel+Sentry+k6+生产功能）
+2. 无账号即可做：数据迁移脚本骨架（scripts/migrate-sqlite-to-pg.ts）、middleware 双模式预研、DemoBar 生产条件渲染
+3. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策
 
 ## 基线测试（命令 + 期望通过数）
 - \`pnpm test\`：20 个通过（money/state-machine/prediction/promo）
@@ -54,7 +54,7 @@
 - ⚠️ 改 src 后必须 build + kickstart 两个服务（testids 在 build 里）；改 schema 后 e2e.db 需 migrate
 
 ## git 状态
-- 分支：main ｜ 工作树干净（提交 b342d3e 为最新）
+- 分支：main ｜ 工作树干净（最新提交 a6fb025，docs(DEPLOYMENT_CHECKLIST)）
 
 ## 关键决策与约定
 - 端口：D&Z 固定 3002/3102；3000 被 DashOil 抢占勿用
@@ -70,11 +70,11 @@
 - sticky bottom nav 安全区：padding 放内层 div + env(safe-area-inset-bottom)
 
 ## 待办（dtodo）
-- 59e04e5e 经销商验证（今日到期）：填 DEALER_FEEDBACK.md + DEMO_SCRIPT 演示 + 6 决策
-- 92b29072 生产迁移 §65（q2）：Supabase/Auth/provider/Vercel/Sentry/k6
+- 92b29072 生产迁移 §65（q2，主线）：Supabase/Auth/RLS/provider 换真/Vercel/Sentry/k6 —— 行动清单见 DEPLOYMENT_CHECKLIST.md
+- 59e04e5e 经销商验证（需真人）：填 DEALER_FEEDBACK.md + DEMO_SCRIPT 演示 + 6 决策
 
 ## 新会话头 10 分钟
-1. curl localhost:3002 + :3102 探活（挂了 kickstart）
-2. 读 docs/HANDOFF.md + docs/SETUP_AND_PREPARATION.md
-3. 跑基线：pnpm test（20）+ pnpm exec playwright test（75）
-4. dtodo 挑下一步（经销商验证 → 生产迁移）
+1. curl localhost:3002 + :3102 探活（挂了 kickstart）；真机预览 IP=192.168.100.240
+2. 读 docs/HANDOFF.md + docs/DEPLOYMENT_CHECKLIST.md + docs/SETUP_AND_PREPARATION.md §5
+3. 跑基线：pnpm test（20）+ pnpm exec playwright test（75）+ tsc 0
+4. dtodo 挑下一步（主线=部署准备阶段 A；或先做无账号三项：迁移脚本/middleware 双模式/DemoBar 条件渲染）
