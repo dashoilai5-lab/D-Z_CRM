@@ -54,33 +54,33 @@ export default async function DashboardPage() {
       {/* today metrics — role-scoped */}
       {isMechanic ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <StatCard label={t("dash.my-active-jobs", lang)} value={myJobs.filter((j) => ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "READY"].includes(j.status)).length} href="/workshop/mechanic" />
-          <StatCard label={t("dash.my-jobs-today", lang)} value={todayJobs.length} href="/workshop/jobs" />
-          <StatCard label={t("dash.awaiting-approval", lang)} value={dash.statuses.AWAITING_APPROVAL} href="/workshop/jobs?status=AWAITING_APPROVAL" tone="warn" />
-          <StatCard label={t("dash.ready", lang)} value={dash.statuses.READY} href="/workshop/jobs?status=READY" tone="success" />
+          <StatCard label={t("dash.my-active-jobs", lang)} value={myJobs.filter((j) => ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "READY"].includes(j.status)).length} unit={t("dash.unit-jobs", lang)} href="/workshop/mechanic" />
+          <StatCard label={t("dash.my-jobs-today", lang)} value={todayJobs.length} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs" />
+          <StatCard label={t("dash.awaiting-approval", lang)} value={dash.statuses.AWAITING_APPROVAL} unit={t("dash.unit-approvals", lang)} href="/workshop/jobs?status=AWAITING_APPROVAL" tone="warn" />
+          <StatCard label={t("dash.ready", lang)} value={dash.statuses.READY} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs?status=READY" tone="success" />
         </div>
       ) : isOwner ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <StatCard icon={<Wallet className="h-4 w-4" />} label={t("dash.today-sales", lang)} value={<Money sen={dash.todaySales} />} href="/workshop/finance/profit" />
           <StatCard icon={<TrendingUp className="h-4 w-4" />} label={t("dash.gross-profit", lang)} value={<Money sen={dash.todayGrossProfit} />} href="/workshop/finance/profit" tone="success" />
-          <StatCard icon={<Wrench className="h-4 w-4" />} label={t("dash.jobs-today", lang)} value={dash.jobsToday} href="/workshop/jobs" />
+          <StatCard icon={<Wrench className="h-4 w-4" />} label={t("dash.jobs-today", lang)} value={dash.jobsToday} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs" />
           <StatCard icon={<Receipt className="h-4 w-4" />} label={t("dash.avg-ticket", lang)} value={<Money sen={dash.avgTicket} />} href="/workshop/finance/profit" />
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          <StatCard label={t("dash.jobs-today", lang)} value={dash.jobsToday} href="/workshop/jobs" />
-          <StatCard label={t("dash.customers-due", lang)} value={dash.customersDue} href="/workshop/crm/reminders" tone="danger" />
-          <StatCard label={t("dash.new-bookings", lang)} value={dash.statuses.WAITING + dash.statuses.IN_PROGRESS} href="/workshop/bookings" />
+          <StatCard label={t("dash.jobs-today", lang)} value={dash.jobsToday} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs" />
+          <StatCard label={t("dash.customers-due", lang)} value={dash.customersDue} unit={t("dash.unit-customers", lang)} href="/workshop/crm/reminders" tone="danger" />
+          <StatCard label={t("dash.new-bookings", lang)} value={dash.statuses.WAITING + dash.statuses.IN_PROGRESS} unit={t("dash.unit-bookings", lang)} href="/workshop/bookings" />
           <StatCard label={t("dash.avg-rating", lang)} value={dash.avgRating + " ★"} href="/workshop/marketing/reviews" />
         </div>
       )}
 
       {/* DASH-002..023: leads / repeat / upcoming / tasks */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <StatCard icon={<Filter className="h-4 w-4" />} label="Total Leads" value={dash.totalLeads ?? 0} sub={"+" + (dash.newLeads ?? 0) + " this month"} href="/workshop/leads" />
+        <StatCard icon={<Filter className="h-4 w-4" />} label="Total Leads" value={dash.totalLeads ?? 0} unit={t("dash.unit-leads", lang)} sub={"+" + (dash.newLeads ?? 0) + " this month"} href="/workshop/leads" />
         <StatCard icon={<Users className="h-4 w-4" />} label="Repeat customers" value={(dash.repeatPct ?? 0) + "%"} href="/workshop/customers" tone="success" />
-        <StatCard icon={<CalendarClock className="h-4 w-4" />} label="Upcoming bookings" value={dash.upcomingBookings ?? 0} href="/workshop/bookings" />
-        <StatCard icon={<ListTodo className="h-4 w-4" />} label="Open follow-up tasks" value={dash.openTasks ?? 0} href="/workshop/tasks" />
+        <StatCard icon={<CalendarClock className="h-4 w-4" />} label="Upcoming bookings" value={dash.upcomingBookings ?? 0} unit={t("dash.unit-bookings", lang)} href="/workshop/bookings" />
+        <StatCard icon={<ListTodo className="h-4 w-4" />} label="Open follow-up tasks" value={dash.openTasks ?? 0} unit={t("dash.unit-tasks", lang)} href="/workshop/tasks" />
       </div>
 
       {/* customer-facing service lifecycle distribution */}
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
       {/* additional cards — owner-only financials/stock/marketing */}
       {isOwner && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
-          <StatCard label={t("dash.customers-due", lang)} value={dash.customersDue} href="/workshop/crm/reminders" tone="danger" />
+          <StatCard label={t("dash.customers-due", lang)} value={dash.customersDue} unit={t("dash.unit-customers", lang)} href="/workshop/crm/reminders" tone="danger" />
           <StatCard label={t("dash.critical-stock", lang)} value={dash.criticalStock} href="/workshop/inventory/alerts" tone="danger" />
           <StatCard label={t("dash.dead-stock-value", lang)} value={<Money sen={dash.deadStockValue} />} href="/workshop/inventory/dead-stock" tone="warn" />
           <StatCard label={t("dash.avg-rating", lang)} value={dash.avgRating + " ★"} href="/workshop/marketing/reviews" />

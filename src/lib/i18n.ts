@@ -582,6 +582,14 @@ export const DICT: Dict = {
   "dash.rec-action": { en: "Action", zh: "行动", ms: "Tindakan" },
   "dash.rec-insight": { en: "Insight", zh: "洞察", ms: "Wawasan" },
 
+  // dashboard stat card units (shown beside the number)
+  "dash.unit-jobs": { en: "jobs", zh: "个工单", ms: "kerja" },
+  "dash.unit-customers": { en: "customers", zh: "位客户", ms: "pelanggan" },
+  "dash.unit-bookings": { en: "bookings", zh: "个预约", ms: "tempahan" },
+  "dash.unit-leads": { en: "leads", zh: "条线索", ms: "prospek" },
+  "dash.unit-tasks": { en: "tasks", zh: "项任务", ms: "tugas" },
+  "dash.unit-approvals": { en: "pending", zh: "待批", ms: "tertunda" },
+
 };
 
 export function t(key: string, lang: Lang): string {

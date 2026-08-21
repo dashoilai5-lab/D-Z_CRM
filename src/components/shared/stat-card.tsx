@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 
-export function StatCard({ label, value, sub, href, tone = "default", icon }: {
-  label: string; value: React.ReactNode; sub?: string; href?: string; tone?: "default" | "danger" | "success" | "warn"; icon?: React.ReactNode;
+export function StatCard({ label, value, sub, unit, href, tone = "default", icon }: {
+  label: string; value: React.ReactNode; sub?: string; unit?: string; href?: string; tone?: "default" | "danger" | "success" | "warn"; icon?: React.ReactNode;
 }) {
   const cls =
     tone === "danger" ? "text-red-600 dark:text-red-300" :
@@ -23,7 +23,10 @@ export function StatCard({ label, value, sub, href, tone = "default", icon }: {
           <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground" />
         ) : null}
       </div>
-      <div className={"mt-2 text-2xl font-bold tracking-tight tabular-nums " + cls}>{value}</div>
+      <div className={"mt-2 text-2xl font-bold tracking-tight tabular-nums " + cls}>
+        {value}
+        {unit && <span className="ml-1.5 text-sm font-semibold text-muted-foreground">{unit}</span>}
+      </div>
       {sub && <p className="mt-1 text-xs text-muted-foreground">{sub}</p>}
     </>
   );
