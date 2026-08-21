@@ -176,9 +176,16 @@ export async function runSeed(): Promise<Record<string, number>> {
   // products + KL inventory
   const productIds: Record<string, string> = {};
   const bySku: Record<string, string> = {};
+  // product photos (public/products/<sku>.png) for the 10 catalogue SKUs
+  const PRODUCT_IMAGES: Record<string, string> = {
+    "BRK-DISC": "/products/BRK-DISC.png", "BATT-CHG": "/products/BATT-CHG.png", "BRG-BT39-R": "/products/BRG-BT39-R.png",
+    "CARB-CLN": "/products/CARB-CLN.png", "BULB-T10": "/products/BULB-T10.png", "BRK-FLUID": "/products/BRK-FLUID.png",
+    "BRE-PAD-F": "/products/BRE-PAD-F.png", "BRK-LEVER": "/products/BRK-LEVER.png", "BRK-CLN": "/products/BRK-CLN.png",
+    "CVT-KIT": "/products/CVT-KIT.png",
+  };
   for (const [name, sku, cat, brand, sell, cost, min, lead, sup] of PRODUCTS) {
     const p = await prisma.product.create({
-      data: { organisationId: org.id, name, sku, category: cat, brand, sellPriceSen: RM(sell), costPriceSen: RM(cost), minStock: min, safetyStock: Math.ceil(min / 3), leadTimeDays: lead, supplierId: supplierIds[sup] },
+      data: { organisationId: org.id, name, sku, category: cat, brand, sellPriceSen: RM(sell), costPriceSen: RM(cost), minStock: min, safetyStock: Math.ceil(min / 3), leadTimeDays: lead, supplierId: supplierIds[sup], imageUrl: PRODUCT_IMAGES[sku] ?? null },
     });
     productIds[name] = p.id;
     bySku[sku] = p.id;

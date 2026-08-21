@@ -184,7 +184,7 @@ export class InventoryService {
 
   async productOptions() {
     const rows = await this.repo.listProducts();
-    return rows.map((p) => ({ id: p.id, name: p.name, sku: p.sku, category: p.category, brand: p.brand, sellPriceSen: p.sellPriceSen, costPriceSen: p.costPriceSen, manufacturerPartNo: p.manufacturerPartNo, barcode: p.barcode }));
+    return rows.map((p) => ({ id: p.id, name: p.name, sku: p.sku, category: p.category, brand: p.brand, sellPriceSen: p.sellPriceSen, costPriceSen: p.costPriceSen, manufacturerPartNo: p.manufacturerPartNo, barcode: p.barcode, imageUrl: p.imageUrl }));
   }
 }
 

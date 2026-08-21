@@ -484,6 +484,7 @@ model Product {
   sku            String   @unique
   manufacturerPartNo String?
   barcode        String?
+  imageUrl       String? // product photo (public/products/<sku>.png)
   category       String?
   brand          String?
   unit           String   @default("unit")

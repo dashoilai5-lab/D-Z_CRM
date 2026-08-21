@@ -26,7 +26,17 @@ export default async function ProductsPage() {
                 const margin = p.sellPriceSen > 0 ? Math.round(((p.sellPriceSen - p.costPriceSen) / p.sellPriceSen) * 100) : 0;
                 return (
                   <tr key={p.id} className="border-b last:border-0 hover:bg-muted/30">
-                    <td className="px-4 py-2.5 font-medium">{p.name}</td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex items-center gap-2.5">
+                        {p.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imageUrl} alt={p.name} className="h-9 w-9 shrink-0 rounded-md object-cover" loading="lazy" />
+                        ) : (
+                          <span className="h-9 w-9 shrink-0 rounded-md bg-muted" />
+                        )}
+                        <span className="font-medium">{p.name}</span>
+                      </div>
+                    </td>
                     <td className="px-4 py-2.5 font-mono text-xs">{p.sku}</td>
                     <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground">{p.manufacturerPartNo ?? "—"}</td>
                     <td className="px-4 py-2.5 text-xs">{p.category?.replace("_", " ")}</td>
