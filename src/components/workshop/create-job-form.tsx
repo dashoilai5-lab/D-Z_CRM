@@ -34,11 +34,12 @@ export function CreateJobForm({
   const lang = useLang();
   const [pending, start] = useTransition();
   const [customerId, setCustomerId] = useState(preselectCustomer ?? "");
-  const [motorcycleId, setMotorcycleId] = useState("");
+  const [motorcycleId, setMotorcycleId] = useState("none"); // "none" = no bike picked yet (must match a SelectItem value)
   const [mileage, setMileage] = useState("");
   const [request, setRequest] = useState("");
   const [packageId, setPackageId] = useState("");
-  const [mechanicId, setMechanicId] = useState("");
+  // "none" = assign later sentinel (must match a SelectItem value, see edit-job-form)
+  const [mechanicId, setMechanicId] = useState("none");
   const [recs, setRecs] = useState<Rec[]>([]);
   const [recState, setRecState] = useState<Record<string, "added" | "skipped">>({});
   const [showScript, setShowScript] = useState<string | null>(null);
@@ -79,7 +80,7 @@ export function CreateJobForm({
       try {
         const r = await createJob({
           customerId, motorcycleId, mileage: Number(mileage), customerRequest: request || undefined,
-          packageId: packageId || undefined, mechanicId: mechanicId || undefined,
+          packageId: packageId || undefined, mechanicId: mechanicId === "none" ? undefined : mechanicId,
           addons: [
             ...selectedRecs.map((rec) => ({ description: rec.description, kind: rec.kind, quantity: 1, unitPriceSen: rec.priceSen, productId: rec.productId, unitCostSen: rec.unitCostSen })),
             ...selectedExtras.map((x) => ({ description: x.label, kind: "SERVICE", quantity: 1, unitPriceSen: x.priceSen })),
@@ -120,9 +121,10 @@ export function CreateJobForm({
           {motorcycles.length > 0 && (
             <div className="mt-4">
               <Label>Motorcycle</Label>
-              <Select value={motorcycleId} onValueChange={(v) => setMotorcycleId(v ?? "")}>
-                <SelectTrigger className="mt-1.5"><SelectValue placeholder="Select motorcycle" /></SelectTrigger>
+              <Select value={motorcycleId} onValueChange={(v) => setMotorcycleId(v ?? "none")}>
+                <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "Select motorcycle…" : motorcycles.find((m) => m.id === v) ? motorcycles.find((m) => m.id === v)!.brand + " " + motorcycles.find((m) => m.id === v)!.model + " · " + motorcycles.find((m) => m.id === v)!.plate : "Select motorcycle…")}</SelectValue></SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="none">Select motorcycle…</SelectItem>
                   {motorcycles.map((m) => (
                     <SelectItem key={m.id} value={m.id}>{m.brand} {m.model} · {m.plate} · {m.year}</SelectItem>
                   ))}
@@ -214,9 +216,10 @@ export function CreateJobForm({
 
         <section className="rounded-2xl border bg-card p-5">
           <h3 className="font-semibold mb-3">5 · Assign Mechanic</h3>
-          <Select value={mechanicId} onValueChange={(v) => setMechanicId(v ?? "")}>
-            <SelectTrigger className="mt-1.5 max-w-sm"><SelectValue placeholder="Assign later" /></SelectTrigger>
+          <Select value={mechanicId} onValueChange={(v) => setMechanicId(v ?? "none")}>
+            <SelectTrigger className="mt-1.5 max-w-sm"><SelectValue>{(v) => (v === "none" ? "Assign later" : mechanics.find((m) => m.id === v)?.name ?? "Assign later")}</SelectValue></SelectTrigger>
             <SelectContent>
+              <SelectItem value="none">Assign later</SelectItem>
               {mechanics.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
             </SelectContent>
           </Select>

@@ -28,8 +28,8 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
   const router = useRouter();
   const lang = useLang();
   const [pending, start] = useTransition();
-  const [motorcycleId, setMotorcycleId] = useState(bikes[0]?.id ?? "");
-  const [packageId, setPackageId] = useState("");
+  const [motorcycleId, setMotorcycleId] = useState(bikes[0]?.id ?? "none"); // "none" sentinel — controlled Select value must match an item
+  const [packageId, setPackageId] = useState("none");
   const [extras, setExtras] = useState<Record<string, { label: string; priceSen: number }>>({});
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("10:00");
@@ -59,7 +59,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
         pkg?.name,
         ...extrasList.map((x) => x.label),
       ].filter(Boolean).join(" + ") || "General Checkup";
-      await bookService({ customerId, motorcycleId, serviceType, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
+      await bookService({ customerId, motorcycleId: motorcycleId === "none" ? "" : motorcycleId, serviceType, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
       router.push("/rider/bookings");
       toast.success(t("toast.booking-requested", lang));
     });
@@ -69,9 +69,10 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
       {/* motorcycle */}
       <div>
         <Label>Motorcycle</Label>
-        <Select value={motorcycleId} onValueChange={(v) => { setMotorcycleId(v ?? ""); setPackageId(""); setExtras({}); }}>
-          <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+        <Select value={motorcycleId} onValueChange={(v) => { setMotorcycleId(v ?? "none"); setPackageId("none"); setExtras({}); }}>
+          <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "No motorcycle on file…" : bikes.find((b) => b.id === v) ? bikes.find((b) => b.id === v)!.brand + " " + bikes.find((b) => b.id === v)!.model + " · " + bikes.find((b) => b.id === v)!.plate : "No motorcycle on file…")}</SelectValue></SelectTrigger>
           <SelectContent>
+            {bikes.length === 0 && <SelectItem value="none">No motorcycle on file…</SelectItem>}
             {bikes.map((b) => (
               <SelectItem key={b.id} value={b.id}>
                 {b.brand} {b.model} · {b.plate}{b.type ? " · " + (MOTORCYCLE_TYPE_LABELS[b.type] ?? b.type) : ""}

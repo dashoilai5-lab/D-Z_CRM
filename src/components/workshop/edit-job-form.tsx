@@ -29,7 +29,9 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
   const [open, setOpen] = useState(false);
   const [mileage, setMileage] = useState(String(data.mileage));
   const [request, setRequest] = useState(data.customerRequest ?? "");
-  const [mechanicId, setMechanicId] = useState(data.mechanicId ?? "");
+  // "none" = unassigned sentinel — avoids a controlled Select value ("") that
+  // matches no item (base-ui render-phase correction would loop → React 441).
+  const [mechanicId, setMechanicId] = useState(data.mechanicId ?? "none");
   const [extra, setExtra] = useState<Record<string, { label: string; priceSen: number }>>({});
 
   const applicable = servicesForType(data.motorcycleType).flatMap((g) => g.items);
@@ -42,7 +44,7 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
           jobId: data.jobId,
           mileage: Number(mileage) || 0,
           customerRequest: request || undefined,
-          mechanicId: mechanicId || null,
+          mechanicId: mechanicId === "none" ? null : mechanicId,
         });
         const added = Object.values(extra);
         if (added.length > 0) {
@@ -82,7 +84,7 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
           <div>
             <Label>Mechanic</Label>
             <Select value={mechanicId} onValueChange={(v) => setMechanicId(v ?? "")}>
-              <SelectTrigger className="mt-1.5"><SelectValue placeholder="Unassigned" /></SelectTrigger>
+              <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "Unassigned" : mechanics.find((m) => m.id === v)?.name ?? "Unassigned")}</SelectValue></SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Unassigned</SelectItem>
                 {mechanics.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}

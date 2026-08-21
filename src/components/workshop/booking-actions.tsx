@@ -20,7 +20,7 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   const [mileage, setMileage] = useState("");
-  const [packageId, setPackageId] = useState("");
+  const [packageId, setPackageId] = useState("none"); // "none" = no package (must match a SelectItem value)
 
   const run = (action: "CONFIRMED" | "RESCHEDULED" | "CANCELLED" | "NO_SHOW") =>
     start(async () => {
@@ -53,7 +53,7 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
               <div>
                 <Label>Service Package</Label>
                 <Select value={packageId} onValueChange={(v) => setPackageId(v ?? "")}>
-                  <SelectTrigger data-testid="checkin-package" className="mt-1.5"><SelectValue placeholder="Recommended at counter" /></SelectTrigger>
+                  <SelectTrigger data-testid="checkin-package" className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "No package" : packages.find((p) => p.id === v)?.name ?? "Recommended at counter")}</SelectValue></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No package</SelectItem>
                     {packages.map((p) => (
