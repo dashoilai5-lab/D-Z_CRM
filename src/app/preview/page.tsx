@@ -99,7 +99,10 @@ export default function PreviewPage() {
       {/* phone frame */}
       <div className="relative" style={{ width: device.w + 24 }}>
         {/* outer bezel */}
-        <div className="rounded-[3rem] border-[10px] border-slate-700 bg-slate-800 shadow-2xl overflow-hidden" style={{ height: device.h + 4 }}>
+        {/* outer bezel — height accounts for the 10px frame on both sides so the
+            embedded iframe is NOT clipped at the bottom (was device.h+4 → 16px of the
+            bottom nav was cut off) */}
+        <div className="rounded-[3rem] border-[10px] border-slate-700 bg-slate-800 shadow-2xl overflow-hidden" style={{ height: device.h + 24 }}>
           {/* dynamic island / punch hole */}
           {device.notch === "dynamic-island" && (
             <div className="absolute left-1/2 -translate-x-1/2 top-2.5 z-20 h-6 w-24 rounded-full bg-black" />
