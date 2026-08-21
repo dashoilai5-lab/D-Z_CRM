@@ -4,6 +4,7 @@ import { jobService } from "@/modules/service-jobs/service";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Money } from "@/components/shared/money";
 import { JobActions } from "@/components/workshop/job-actions";
+import { Pagination } from "@/components/shared/pagination";
 import { Button } from "@/components/ui/button";
 import { fmtDate } from "@/lib/format";
 import { getPersona } from "@/lib/demo";
@@ -13,8 +14,10 @@ import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export default async function JobsPage({ searchParams }: { searchParams: Promise<{ status?: string; view?: string }> }) {
-  const { status, view } = await searchParams;
+export default async function JobsPage({ searchParams }: { searchParams: Promise<{ status?: string; view?: string; page?: string }> }) {
+  const sp = await searchParams;
+  const { status, view } = sp;
+  const page = Math.max(1, Number(sp.page) || 1);
   const lang = await getLang();
   const persona = await getPersona();
   const user = await getDemoUser(persona);
@@ -23,6 +26,10 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const scoped = persona === "MECHANIC" && user ? board.jobs.filter((j) => j.mechanic?.id === user.id) : board.jobs;
   const filtered = status ? scoped.filter((j) => j.status === status) : scoped;
   const isKanban = view === "kanban";
+  // pagination applies to the table view only (kanban keeps its per-column cap)
+  const PAGE_SIZE = 25;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const columns = [
     { id: "WAITING", title: t("status.WAITING", lang), dot: "bg-slate-500" },
@@ -98,7 +105,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((j) => (
+                {pageItems.map((j) => (
                   <tr key={j.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                     <td className="px-4 py-3 font-mono text-xs font-semibold"><Link href={"/workshop/jobs/" + j.id} className="hover:text-primary">{j.jobNumber}</Link></td>
                     <td className="px-4 py-3">
@@ -119,6 +126,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
           </div>
         </div>
       )}
+      {!isKanban && <Pagination basePath="/workshop/jobs" page={page} totalPages={totalPages} query={{ status, view }} />}
     </div>
   );
 }

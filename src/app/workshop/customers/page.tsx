@@ -6,14 +6,20 @@ import { fmtDate, fmtKM } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PendingForm, ExportCsvButton } from "@/components/shared/search-form";
+import { Pagination } from "@/components/shared/pagination";
 
 export const dynamic = "force-dynamic";
 
-export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q } = await searchParams;
+export default async function CustomersPage({ searchParams }: { searchParams: Promise<{ q?: string; page?: string }> }) {
+  const sp = await searchParams;
+  const { q } = sp;
+  const page = Math.max(1, Number(sp.page) || 1);
   const lang = await getLang();
   const summaries = await customerService.listSummaries();
   const filtered = q?.trim() ? summaries.filter((c) => (c.name + " " + (c.phone ?? "") + " " + c.motorcycles.map((m) => m.plate + m.model).join(" ")).toLowerCase().includes(q.toLowerCase())) : summaries;
+  const PAGE_SIZE = 25;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div>
@@ -44,7 +50,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
               </tr>
             </thead>
             <tbody>
-              {filtered.map((c) => (
+              {pageItems.map((c) => (
                 <tr key={c.id}>
                   <td className="px-4 py-3">
                     <Link href={"/workshop/customers/" + c.id} className="font-medium hover:text-primary">{c.name}</Link>
@@ -74,6 +80,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
           </table>
         </div>
       </div>
+      <Pagination basePath="/workshop/customers" page={page} totalPages={totalPages} query={{ q }} />
     </div>
   );
 }
