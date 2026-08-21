@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { formatRM } from "@/lib/money";
-import { NewsPosterGrid } from "@/components/rider/news-poster-grid";
+import { PosterCarousel } from "@/components/rider/poster-carousel";
 
 export const dynamic = "force-dynamic";
 
@@ -57,7 +57,7 @@ export default async function NewsPage() {
         {posters.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("news.no-posters", lang)}</p>
         ) : (
-          <NewsPosterGrid posters={posters} />
+          <PosterCarousel posters={posters} />
         )}
       </section>
 
