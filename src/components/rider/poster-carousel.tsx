@@ -7,14 +7,21 @@ import { Lightbox, useLightbox, type LightboxImage } from "@/components/shared/l
 
 /** Auto-sliding poster carousel (rider News): fades/slides between posters every
  *  4s, pauses on hover, swipeable on touch, dots + arrows for manual control,
- *  tap opens the lightbox. */
-export function PosterCarousel({ posters }: { posters: { id: string; title: string; url: string | null }[] }) {
+ *  tap opens the lightbox. Each slide keeps the poster's own aspect ratio —
+ *  parsed from the AI-gen size meta (SQUARE 1:1 / STORY 9:16 / BANNER 16:9) or,
+ *  for photos without meta, measured from the loaded image. */
+export function PosterCarousel({ posters }: { posters: { id: string; title: string; url: string | null; description?: string | null }[] }) {
   const { openIndex, open, close } = useLightbox();
   const n = posters.length;
   const [idx, setIdx] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [ratios, setRatios] = useState<Record<string, string>>({});
   const touchX = useRef<number | null>(null);
   const images: LightboxImage[] = posters.filter((p) => p.url).map((p) => ({ src: p.url!, alt: p.title, caption: p.title }));
+
+  /** Aspect from size meta; falls back to a 3:4 poster default. */
+  const metaRatio = (p: { description?: string | null }): string =>
+    p.description?.includes("STORY") ? "9 / 16" : p.description?.includes("BANNER") ? "16 / 9" : p.description?.includes("SQUARE") ? "1 / 1" : "3 / 4";
 
   const next = useCallback(() => setIdx((i) => (i + 1) % n), [n]);
   const prev = () => setIdx((i) => (i - 1 + n) % n);
@@ -50,12 +57,24 @@ export function PosterCarousel({ posters }: { posters: { id: string; title: stri
             key={p.id}
             type="button"
             onClick={() => open(posters.findIndex((x) => x.id === p.id))}
-            className="relative aspect-[16/9] w-full shrink-0 cursor-pointer overflow-hidden"
+            className="relative w-full shrink-0 cursor-pointer overflow-hidden"
+            style={{ aspectRatio: ratios[p.id] ?? metaRatio(p) }}
             aria-label={"View poster: " + p.title}
           >
             {p.url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={p.url} alt={p.title} className="h-full w-full object-cover" draggable={false} />
+              <img
+                src={p.url}
+                alt={p.title}
+                className="h-full w-full object-cover"
+                draggable={false}
+                onLoad={(e) => {
+                  const el = e.currentTarget;
+                  if (el.naturalWidth > 0) {
+                    setRatios((prev) => (prev[p.id] ? prev : { ...prev, [p.id]: el.naturalWidth / el.naturalHeight + "" }));
+                  }
+                }}
+              />
             ) : (
               <div className="flex h-full items-center justify-center text-muted-foreground/50"><Megaphone className="h-8 w-8" /></div>
             )}
