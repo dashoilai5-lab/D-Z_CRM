@@ -23,6 +23,7 @@ export default async function MechanicPage() {
     arr.push({
       id: j.id, jobNumber: j.jobNumber, status: j.status, mileage: j.mileage,
       packageName: j.packageName, pendingApprovals: j.pendingApprovals,
+      mechanicId: j.mechanic?.id ?? null,
       motorcycle: j.motorcycle, customer: j.customer, isToday: j.isToday,
     });
     byMechanic.set(id, arr);
@@ -57,7 +58,12 @@ export default async function MechanicPage() {
       <p className="text-sm text-muted-foreground mb-5">
         {persona === "OWNER" ? t("ws.mech.owner-hint", lang) : t("ws.mech.mech-hint", lang)}
       </p>
-      <MechanicBoard mechanics={mechanics} initialMechanicId={initialMechanicId} ownerView={persona === "OWNER"} />
+      <MechanicBoard
+        mechanics={mechanics}
+        initialMechanicId={initialMechanicId}
+        ownerView={persona === "OWNER"}
+        allMechanics={allMechanics}
+      />
     </div>
   );
 }

@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Users, Wrench } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Users, Wrench, UserCog } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { fmtKM } from "@/lib/format";
+import { assignMechanic } from "@/actions/workshop";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface BoardJob {
   id: string;
@@ -14,6 +18,7 @@ export interface BoardJob {
   mileage: number;
   packageName: string | null;
   pendingApprovals: number;
+  mechanicId: string | null;
   motorcycle: { brand: string; model: string; plate: string };
   customer: { name: string };
   isToday: boolean;
@@ -28,13 +33,24 @@ export interface MechanicSummary {
   ready: number;
 }
 
-export function MechanicBoard({ mechanics, initialMechanicId, ownerView }: {
+export function MechanicBoard({ mechanics, initialMechanicId, ownerView, allMechanics = [] }: {
   mechanics: MechanicSummary[];
   initialMechanicId: string;
   ownerView: boolean;
+  allMechanics?: { id: string; name: string }[];
 }) {
+  const router = useRouter();
+  const lang = useLang();
+  const [pending, start] = useTransition();
   const [selected, setSelected] = useState(initialMechanicId || mechanics[0]?.id || "unassigned");
   const current = mechanics.find((m) => m.id === selected) ?? mechanics[0];
+
+  /** Assign / re-assign a job's mechanic from the per-job dropdown (owner view). */
+  const reassign = (jobId: string, mechanicId: string) =>
+    start(async () => {
+      await assignMechanic(jobId, mechanicId || null);
+      router.refresh();
+    });
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
@@ -88,16 +104,35 @@ export function MechanicBoard({ mechanics, initialMechanicId, ownerView }: {
 
       <div className="space-y-3">
         {(current?.jobs ?? []).map((j) => (
-          <Link key={j.id} href={"/workshop/mechanic/jobs/" + j.id} className="block dz-panel p-4 hover:border-primary/40 transition-colors">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-xs font-semibold">#{j.jobNumber}</span>
-              <StatusBadge kind="job" value={j.status} />
-            </div>
-            <div className="mt-2 font-semibold">{j.motorcycle.brand} {j.motorcycle.model}</div>
-            <div className="text-xs text-muted-foreground mt-0.5">{j.motorcycle.plate} · {j.customer.name}</div>
-            <div className="mt-1.5 text-xs font-medium">{fmtKM(j.mileage)}{j.packageName ? " · " + j.packageName : ""}</div>
-            {j.pendingApprovals > 0 && <div className="mt-2 text-xs font-semibold text-amber-600 dark:text-amber-300">⏳ {j.pendingApprovals} customer approval pending</div>}
-          </Link>
+          <div key={j.id} className="dz-panel p-4 hover:border-primary/40 transition-colors">
+            <Link href={"/workshop/mechanic/jobs/" + j.id} className="block">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-xs font-semibold">#{j.jobNumber}</span>
+                <StatusBadge kind="job" value={j.status} />
+              </div>
+              <div className="mt-2 font-semibold">{j.motorcycle.brand} {j.motorcycle.model}</div>
+              <div className="text-xs text-muted-foreground mt-0.5">{j.motorcycle.plate} · {j.customer.name}</div>
+              <div className="mt-1.5 text-xs font-medium">{fmtKM(j.mileage)}{j.packageName ? " · " + j.packageName : ""}</div>
+              {j.pendingApprovals > 0 && <div className="mt-2 text-xs font-semibold text-amber-600 dark:text-amber-300">⏳ {j.pendingApprovals} customer approval pending</div>}
+            </Link>
+            {ownerView && (
+              <div className="mt-3 flex items-center gap-2 border-t border-border/60 pt-2.5">
+                <UserCog className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <select
+                  value={j.mechanicId ?? ""}
+                  disabled={pending}
+                  onChange={(e) => reassign(j.id, e.target.value)}
+                  className="h-7 flex-1 rounded-md border bg-background px-2 text-xs outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+                  aria-label={"Assign mechanic for " + j.jobNumber}
+                >
+                  <option value="">{t("ws.mech.unassigned", lang)}</option>
+                  {allMechanics.map((m) => (
+                    <option key={m.id} value={m.id}>{m.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
         ))}
         {(current?.jobs.length ?? 0) === 0 && <p className="text-sm text-muted-foreground text-center py-10">No active jobs for {current?.name}.</p>}
       </div>
