@@ -49,23 +49,24 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  /* warm-tinted light surfaces — cards lift off a clearly warmer canvas */
+  --background: oklch(0.972 0.006 70);
+  --foreground: oklch(0.145 0.004 45);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.145 0.004 45);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.145 0.004 45);
   --primary: oklch(0.62 0.19 45);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.955 0.006 70);
+  --secondary-foreground: oklch(0.205 0.004 45);
+  --muted: oklch(0.955 0.006 70);
+  --muted-foreground: oklch(0.5 0.01 45);
+  --accent: oklch(0.945 0.008 70);
+  --accent-foreground: oklch(0.205 0.004 45);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --border: oklch(0.9 0.006 70);
+  --input: oklch(0.89 0.006 70);
   --ring: oklch(0.62 0.19 45 / 0.5);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
@@ -147,6 +148,49 @@
     @apply font-sans;
     font-size: var(--app-font-size, 16px); /* rem base — scales every Tailwind text-* size */
   }
+  /* display headings keep clean wraps and a hint of optical tightening */
+  h1, h2, h3 { text-wrap: balance; }
+  h1 { letter-spacing: -0.02em; }
+}
+
+/* premium card surfaces — a hairline top-light gradient makes cards read as
+   thin physical plates instead of flat white rectangles (applies to the common
+   bg-card rounded-2xl/3xl pattern used across the app; purely visual) */
+.bg-card.rounded-2xl,
+.bg-card.rounded-3xl {
+  background-image: linear-gradient(to bottom, oklch(1 0 0), oklch(0.972 0.006 70));
+}
+.dark .bg-card.rounded-2xl,
+.dark .bg-card.rounded-3xl {
+  background-image: linear-gradient(to bottom, oklch(1 0 0 / 0.09), oklch(0 0 0 / 0.14));
+}
+
+/* stat cards & other shadow-sm cards get a soft two-layer lift */
+.bg-card.shadow-sm {
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.7),
+    0 1px 2px 0 rgb(0 0 0 / 0.04),
+    0 10px 26px -14px rgb(0 0 0 / 0.1);
+}
+.dark .bg-card.shadow-sm {
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.05),
+    0 1px 2px 0 rgb(0 0 0 / 0.3),
+    0 12px 30px -16px rgb(0 0 0 / 0.5);
+}
+
+/* ambient warmth — a barely-there radial wash so light mode isn't a flat canvas */
+body {
+  background-image:
+    radial-gradient(1200px 500px at 85% -5%, oklch(0.62 0.19 45 / 0.05), transparent 60%),
+    radial-gradient(900px 420px at -5% 10%, oklch(0.75 0.05 90 / 0.05), transparent 55%);
+  background-attachment: fixed;
+}
+.dark body {
+  background-image:
+    radial-gradient(1100px 480px at 80% -8%, oklch(0.76 0.17 45 / 0.11), transparent 62%),
+    radial-gradient(900px 460px at -8% 12%, oklch(0.32 0.05 264 / 0.55), transparent 58%);
+  background-attachment: fixed;
 }
 
 /* Font-size stepping (A− / A+): body rem base scales, everything rem-based follows. */
@@ -177,9 +221,20 @@ body { font-feature-settings: "cv11"; }
     @apply text-base font-semibold tracking-tight;
   }
 
-  /* subtle card for grouped content */
+  /* subtle card for grouped content — soft layered shadow + inner top highlight
+     (light: warm airy lift · dark: black depth with a faint glass rim) */
   .dz-panel {
-    @apply rounded-2xl border bg-card shadow-sm;
+    @apply rounded-2xl border bg-card;
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.55),
+      0 1px 2px 0 rgb(0 0 0 / 0.04),
+      0 8px 24px -12px rgb(0 0 0 / 0.08);
+  }
+  .dark .dz-panel {
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.05),
+      0 1px 2px 0 rgb(0 0 0 / 0.3),
+      0 10px 28px -14px rgb(0 0 0 / 0.5);
   }
 
   /* accessible focus ring everywhere (no removed focus outlines) */
@@ -187,9 +242,26 @@ body { font-feature-settings: "cv11"; }
     @apply outline-2 outline-offset-2 outline-ring;
   }
 
-  /* consistent interactive hover lift for tappable cards */
+  /* consistent interactive hover lift for tappable cards — springy cubic-bezier,
+     physical press on active, tinted hover shadow */
   .dz-card-link {
-    @apply transition-all duration-150 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md;
+    @apply transition-all duration-200 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 hover:border-primary/40 active:scale-[0.98];
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.55), 0 1px 2px 0 rgb(0 0 0 / 0.04);
+  }
+  .dark .dz-card-link {
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.05), 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  }
+  .dz-card-link:hover {
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.6),
+      0 2px 4px 0 rgb(0 0 0 / 0.05),
+      0 14px 32px -12px oklch(0.62 0.19 45 / 0.18);
+  }
+  .dark .dz-card-link:hover {
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.06),
+      0 2px 4px 0 rgb(0 0 0 / 0.3),
+      0 16px 36px -14px rgb(0 0 0 / 0.55);
   }
 }
 .text-balance { text-wrap: balance; }
