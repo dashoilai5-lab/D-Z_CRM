@@ -7,8 +7,15 @@ export function SignOutButton({ expanded }: { expanded: boolean }) {
   return (
     <button
       onClick={async () => {
-        const { logout } = await import("@/actions/auth");
-        await logout();
+        // 生产：清 Supabase session；非生产：清 legacy/demo session
+        const isProd = process.env.NODE_ENV === "production";
+        if (isProd) {
+          const { signOutSupabase } = await import("@/actions/auth-supabase");
+          await signOutSupabase();
+        } else {
+          const { logout } = await import("@/actions/auth");
+          await logout();
+        }
         router.push("/login");
         router.refresh();
       }}
