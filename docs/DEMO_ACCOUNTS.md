@@ -40,3 +40,4 @@
 3. **RLS 生效**：所有账号 JWT 含 orgId/branchId/role/userId（员工）或 customerId（顾客）claims
 4. **账号来源**：Supabase Auth（service-role admin 创建，email_confirm=true）→ User/Customer.authId 绑定（本地 + 生产 PG 同步）
 5. **安全提示**：这些是公开的 demo 账号，生产环境上线前应禁用或更换密码
+6. **同窗口多角色**：同一浏览器同时只能登录一个角色（Supabase session 存单 cookie，后登录覆盖前一个——标准行为，非 bug）。演示多角色请用多个隐身窗口 / 不同浏览器 profile，各登一个部门账号
