@@ -52,12 +52,13 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           {session.authenticated ? (
-            <>
-              {session.name} · <span className="font-medium text-foreground">{session.role.replace(/_/g, " ")}</span>
-            </>
+            <>{session.name} · <span className="font-medium text-foreground">{session.role.replace(/_/g, " ")}</span></>
           ) : (
             isMechanic ? t("dash.mechanic-sub", lang) : isOwner ? t("dash.owner-sub", lang) : t("dash.counter-sub", lang)
           )}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          {isMechanic ? t("dash.mechanic-sub", lang) : isOwner ? t("dash.owner-sub", lang) : t("dash.counter-sub", lang)}
         </p>
       </div>
 
