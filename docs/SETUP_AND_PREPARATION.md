@@ -333,4 +333,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-21 | View Transition API（方案 C）：① globals.css 全套过渡规则——nav-forward/back 方向滑动（60px 偏移+模糊淡入）、vt-exit/enter 骨架 reveal、dz-header 锚定（sidebar 不动）、pointer-events 穿透、prefers-reduced-motion 降级 ② PageTransition 组件（React ViewTransition，无 API 时降级 fade-in）包裹 13 核心页 ③ sidebar/mobile-nav/bottom-nav Link 加 transitionTypes={nav-forward} + sidebar 锚定 | 实测：Chromium 支持 startViewTransition + dz-header 锚定 + CSS 规则全部进产物；不支持浏览器自动降级淡入；tsc0/unit20/build 绿 |
 | 2026-08-21 | 路由遮罩层（方案 B）：① RouteOverlay 组件——切页瞬间全屏半透明遮罩（backdrop-blur 2px）+ 中央品牌 logo 呼吸动画（pulse 0.8s），进入 180ms 淡入 / 250ms 淡出 ② 骨架屏升级 dz-shimmer（流动光带，替换 animate-pulse）③ 挂载根布局（与 RouteProgress 并存） | 实测：切页 overlay+logo+shimmer 同时可见，就绪后遮罩淡出；tsc0/unit20/build 绿 |
 | 2026-08-21 | 炫酷加载器升级（RouteOverlay）：能量环（conic-gradient 旋转 1.6s + 发光）+ 3 轨道光点（反向运行 2.4s stagger）+ 中心发光 logo（呼吸+光晕+轻摆）+ 背景光晕脉动；遮罩停留延长至 1.6s（完整展示动画） | 实测：ring/dots×3/core 全渲染，三个动画 dz-ring-spin/dz-dot-orbit/dz-core-breathe 运行中；tsc0/unit20/build 绿 |
+| 2026-08-21 | 加载器调速：遮罩停留 1.6s→0.8s，能量环 1.2s / 光点 1.8s / logo 1.2s（用户反馈太长） | 实测：切页 200ms 出现→700ms 消失，动画完整可见且不拖沓 |
 | — | （后续改动在此追加） | — |
