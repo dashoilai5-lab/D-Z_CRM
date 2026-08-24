@@ -61,10 +61,11 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 - [ ] 生产切 authenticated 角色连 PG（连接池 + RLS 强制）——上线前最后一步（当前 postgres 绕过保本地兼容）
 
 ### A4. Demo 清理（上线前必须移除）
-- [ ] 移除 demo-only：resetDemo、persona switcher（DemoBar 生产隐藏或条件渲染）
-- [ ] 移除 dashboard「Demo customer」硬编码（Ahmad）、getDemoCustomer/getDemoUser
-- [ ] mock providers 关闭（见阶段 B）
-- [ ] 确定性 seed 仅用于 staging（生产用真实数据迁移）
+- [x] middleware demo persona 加 NODE_ENV 守卫（生产只认 Supabase session；demo persona 仅 dev/e2e）——已随 Vercel 部署完成
+- [ ] 移除 demo-only：resetDemo、persona switcher（DemoBar 生产隐藏或条件渲染）——剩余
+- [ ] 移除 dashboard「Demo customer」硬编码（Ahmad）、getDemoCustomer/getDemoUser——剩余（rider 生产走 Supabase 后适用）
+- [x] Storage mock 关闭：生产自动切 Supabase Storage（bucket dz-assets public，上传/公开读实测通过）——已随部署完成
+- [ ] 确定性 seed 仅用于 staging（生产用真实数据迁移）——剩余
 
 ---
 
@@ -88,7 +89,7 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 
 ## 4 · 阶段 C — 上线后（可并行）
 
-- [ ] Vercel 部署：创建项目 → 连接 GitHub repo → 配置 env（§2 表）→ 域名 + SSL（自定义域或 vercel.app）
+- [x] Vercel 部署：d-z-crm 项目（https://d-z-crm.vercel.app）——7 个生产 env 已配（DATABASE_URL 用 Supabase 连接池串 + ?pgbouncer=true&connection_limit=1，AUTH_SECRET，NEXT_PUBLIC_*，SERVICE_ROLE，STORAGE_BUCKET）；vercel.json 指定构建用 schema.pg.prisma（postgresql provider，双 schema 方案）；实测首页/login/rider/catalogue 200、真实 Supabase 登录 OK、workshop 未登录 307→login
 - [ ] Sentry：SENTRY_DSN + @sentry/nextjs（错误监控）
 - [ ] k6 压测（staging）：10/100/500/1000 并发，目标 p95 < 2s；重点：dashboard/列表页/CSV 导出
 - [ ] 生产功能启用（原型已实现，等部署后开）：
