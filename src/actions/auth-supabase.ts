@@ -129,8 +129,9 @@ export async function signUpRider(input: { name: string; email: string; password
       userId: "",
       customerId: customer.id,
     };
-    // 开发/测试环境自动确认邮箱（免点确认邮件）；生产保持 email confirm 流程
-    const autoConfirm = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+    // 自动确认邮箱（免点确认邮件）：开发环境、NEXT_PUBLIC_DEMO_MODE=true、或测试域（@dz.my / @test 前缀）
+    const isTestEmail = /@dz\.my$/.test(email) || email.startsWith("test.") || email.startsWith("dztest");
+    const autoConfirm = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_DEMO_MODE === "true" || isTestEmail;
     const { error: metaErr } = await admin.auth.admin.updateUserById(authUserId, {
       email_confirm: autoConfirm ? true : undefined,
       user_metadata: claims,
