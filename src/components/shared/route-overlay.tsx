@@ -27,8 +27,9 @@ export function RouteOverlay() {
   return (
     <div className={`dz-route-overlay ${state === "enter" ? "dz-overlay-enter" : "dz-overlay-leave"}`} aria-hidden="true">
       <div className="dz-loader">
-        {/* 能量环（conic-gradient 旋转） */}
+        {/* 能量环（双环：外弧顺时针 + 内弧逆时针） */}
         <div className="dz-loader-ring" />
+        <div className="dz-loader-ring-2" />
         {/* 轨道光点（3 个反向运行） */}
         <div className="dz-loader-dot d1" />
         <div className="dz-loader-dot d2" />
