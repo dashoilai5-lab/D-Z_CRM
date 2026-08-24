@@ -7,8 +7,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Money } from "@/components/shared/money";
 import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
-import { getPersona } from "@/lib/demo";
-import { getDemoUser } from "@/lib/demo-user";
+import { getSessionUser, personaForRole } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 
@@ -16,13 +15,18 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const branch = await db.branch.findFirst({ where: { isMain: true } });
-  const [dash, recs, persona, user, lang] = await Promise.all([
+  const [dash, recs, session, lang] = await Promise.all([
     dashboardService.get(branch?.id),
     aiService.recommendations(branch?.id),
-    getPersona(),
-    getDemoUser(await getPersona()),
+    getSessionUser(),
     getLang(),
   ]);
+
+  // 当前用户：生产=真实登录（Supabase→User）；dev/demo=persona 映射
+  const persona = session.authenticated ? personaForRole(session.role) : (session.kind === "demo-staff" ? "OWNER" : "OWNER");
+  const user = session.authenticated
+    ? { id: session.user?.id ?? "", name: session.name, role: session.role }
+    : (session.demoUser ? { id: session.demoUser.id, name: session.demoUser.name, role: session.demoUser.roleLabel } : null);
 
   const statusRows = [
     { status: "WAITING", label: t("status.WAITING", lang), count: dash.statuses.WAITING, cls: "bg-slate-500" },
@@ -47,7 +51,13 @@ export default async function DashboardPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {isMechanic ? t("dash.mechanic-sub", lang) : isOwner ? t("dash.owner-sub", lang) : t("dash.counter-sub", lang)}
+          {session.authenticated ? (
+            <>
+              {session.name} · <span className="font-medium text-foreground">{session.role.replace(/_/g, " ")}</span>
+            </>
+          ) : (
+            isMechanic ? t("dash.mechanic-sub", lang) : isOwner ? t("dash.owner-sub", lang) : t("dash.counter-sub", lang)
+          )}
         </p>
       </div>
 
