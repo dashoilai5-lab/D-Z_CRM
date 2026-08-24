@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { DemoBar } from "@/components/shared/demo-bar";
 import { BottomNav } from "@/components/rider/bottom-nav";
 import RiderSignInPrompt from "@/components/rider/sign-in-prompt";
@@ -14,8 +14,13 @@ export default async function RiderLayout({ children }: { children: React.ReactN
   const hideDemo = store.get(HIDE_DEMO_COOKIE)?.value === "1";
   const showDemoBar = demoBarVisible() && !hideDemo;
 
-  // 生产且未登录：rider 端是顾客私有区——显示登录引导，替代页面内容
-  const prodUnauthed = process.env.NODE_ENV === "production" && session.kind === "none" && !session.authenticated;
+  // 当前路径（server component 通过 x-pathname header 获取）
+  const h = await headers();
+  const pathname = h.get("x-pathname") ?? "";
+  const isLoginPage = pathname === "/rider/login";
+
+  // 生产且未登录：rider 端是顾客私有区——显示登录引导（登录页除外）
+  const prodUnauthed = process.env.NODE_ENV === "production" && !isLoginPage && session.kind === "none" && !session.authenticated;
 
   return (
     <div className="flex min-h-screen flex-col bg-muted/40">
