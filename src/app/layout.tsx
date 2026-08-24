@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { LanguageProvider } from "@/components/shared/language-context";
+import { RouteProgress } from "@/components/shared/route-progress";
 import { getLang } from "@/lib/get-lang";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -25,6 +26,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: fontScript }} />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <RouteProgress />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <LanguageProvider lang={lang}>{children}</LanguageProvider>
         </ThemeProvider>

@@ -1,6 +1,8 @@
+import { LoadingShell } from "@/components/shared/loading-shell";
 import { CardSkeleton, TableSkeleton, GridSkeleton } from "@/components/shared/skeleton";
 export default function Loading() {
   return (
+      <LoadingShell>
     <div className="space-y-5">
       <div className="flex items-center gap-3">
         <div className="h-9 w-9 rounded-lg bg-muted/60 animate-pulse" />
@@ -10,5 +12,6 @@ export default function Loading() {
       <GridSkeleton cols={2} rows={1} card="h-32" />
       <TableSkeleton rows={4} />
     </div>
+      </LoadingShell>
   );
 }
