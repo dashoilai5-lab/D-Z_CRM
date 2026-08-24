@@ -54,7 +54,7 @@ export default function RiderLoginPage() {
   const tabCls = (active: boolean) => `flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"}`;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted/30 px-4 relative overflow-hidden">
+    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" aria-hidden />
       <div className="w-full max-w-sm relative">
         <div className="mb-6 flex flex-col items-center text-center">
@@ -114,6 +114,9 @@ export default function RiderLoginPage() {
           )}
         </div>
         <p className="mt-4 text-center text-xs text-muted-foreground">
+          New here? <a href="/rider/signup" className="text-primary hover:underline">Create an account</a>
+        </p>
+        <p className="mt-1 text-center text-xs text-muted-foreground">
           For workshop staff, use the <a href="/login" className="text-primary hover:underline">workshop sign-in</a>
         </p>
       </div>

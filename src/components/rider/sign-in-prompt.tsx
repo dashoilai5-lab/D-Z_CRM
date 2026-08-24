@@ -13,6 +13,9 @@ export default function RiderSignInPrompt() {
       <Link href="/rider/login" className="inline-block rounded-md bg-primary text-primary-foreground px-5 py-2 text-sm font-medium hover:bg-primary/90">
         Sign in
       </Link>
+      <p className="text-xs text-muted-foreground">
+        New to D&Z? <Link href="/rider/signup" className="text-primary hover:underline">Create an account</Link>
+      </p>
     </div>
   );
 }

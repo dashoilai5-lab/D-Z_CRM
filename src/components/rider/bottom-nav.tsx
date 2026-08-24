@@ -15,10 +15,11 @@ export function BottomNav({ lang = "en" }: { lang?: Lang }) {
     { href: "/rider/service-history", label: t("navr.news", lang), icon: Newspaper },
     { href: "/rider/profile", label: t("navr.profile", lang), icon: User },
   ];
+  // fixed 底部居中锁定：位置（bottom-0 + 水平居中）与尺寸（max-w-md 与内容同宽）恒定，
+  // 不随内容高度变化；safe-area 由内层 padding 处理。
   return (
-    <nav className="sticky bottom-0 z-40 border-t bg-background/95 backdrop-blur">
-      {/* safe-area padding: leaves room for the iPhone home indicator / gesture bar */}
-      <div className="mx-auto max-w-md flex pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 z-40 w-full max-w-md border-t bg-background/95 backdrop-blur">
+      <div className="flex pb-[env(safe-area-inset-bottom)]">
         {items.map((it) => {
           const active = path === it.href || path.startsWith(it.href + "/");
           return (

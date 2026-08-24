@@ -74,6 +74,65 @@ export async function verifyOtp(input: { email: string; token: string }) {
   return { ok: true as const };
 }
 
+/**
+ * Rider 顾客自助注册：建 Supabase auth 用户 + 自动创建 Customer 记录并绑定 authId + 注入 claims。
+ * 新顾客挂到默认组织（首个 Organisation），branchId 留空（workshop 员工后续分配）。
+ */
+export async function signUpRider(input: { name: string; email: string; password: string }) {
+  const name = input.name.trim();
+  const email = input.email.trim().toLowerCase();
+  if (name.length < 2) return { ok: false as const, error: "Please enter your name." };
+  if (input.password.length < 8) return { ok: false as const, error: "Password must be at least 8 characters." };
+
+  const supabase = await createClient();
+  // 1. 建 auth 用户（email confirm 开启——真实发确认邮件；dev 环境直接可用）
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password: input.password,
+    options: { data: { name } },
+  });
+  if (error) return { ok: false as const, error: error.message };
+  const authUserId = data.user?.id;
+  if (!authUserId) {
+    return { ok: false as const, error: "Sign-up failed — try again." };
+  }
+
+  // 2. 自动创建 Customer 并绑定 authId（幂等：同 email 已有则跳过创建只绑 authId）
+  try {
+    let customer = await db.customer.findFirst({ where: { email } });
+    if (!customer) {
+      const org = await db.organisation.findFirst({ orderBy: { name: "asc" } });
+      if (!org) return { ok: false as const, error: "No workshop organisation configured." };
+      customer = await db.customer.create({
+        data: {
+          organisationId: org.id,
+          name,
+          email,
+          authId: authUserId,
+        },
+      });
+    } else if (!customer.authId) {
+      customer = await db.customer.update({ where: { id: customer.id }, data: { authId: authUserId } });
+    }
+
+    // 3. 注入 CUSTOMER claims（RLS 用）
+    const claims: BizClaims = {
+      orgId: customer.organisationId,
+      branchId: customer.branchId ?? "",
+      role: "CUSTOMER",
+      userId: "",
+      customerId: customer.id,
+    };
+    const { error: metaErr } = await supabase.auth.updateUser({ data: claims });
+    if (metaErr) return { ok: false as const, error: "Account created but linking failed: " + metaErr.message };
+  } catch (e) {
+    return { ok: false as const, error: "Account created but profile setup failed: " + String((e as Error).message).slice(0, 120) };
+  }
+
+  // email_confirm 开启时 Supabase 不自动建 session——返回状态让前端提示查邮件
+  return { ok: true as const, emailConfirm: !data.session };
+}
+
 export async function signOutSupabase() {
   const supabase = await createClient();
   await supabase.auth.signOut();
