@@ -84,17 +84,46 @@ export async function signUpRider(input: { name: string; email: string; password
   if (name.length < 2) return { ok: false as const, error: "Please enter your name." };
   if (input.password.length < 8) return { ok: false as const, error: "Password must be at least 8 characters." };
 
-  const supabase = await createClient();
-  // 1. 建 auth 用户（email confirm 开启——真实发确认邮件；dev 环境直接可用）
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password: input.password,
-    options: { data: { name } },
-  });
-  if (error) return { ok: false as const, error: error.message };
-  const authUserId = data.user?.id;
-  if (!authUserId) {
-    return { ok: false as const, error: "Sign-up failed — try again." };
+  // 测试域 / 开发环境：admin API 直建 + 自动确认（免 signUp 邮件限流、免点确认邮件）
+  const isTestEmail = /@dz\.my$/.test(email) || email.startsWith("test.") || email.startsWith("dztest") || email.startsWith("autoconf");
+  const wantAutoConfirm = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_DEMO_MODE === "true" || isTestEmail;
+
+  // 1. 建 auth 用户
+  let authUserId: string | undefined;
+  let autoSession = false;
+  const { createClient: createAdmin } = await import("@supabase/supabase-js");
+  const admin = createAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+
+  if (wantAutoConfirm) {
+    const { data: ad, error: aErr } = await admin.auth.admin.createUser({
+      email,
+      password: input.password,
+      email_confirm: true,
+      user_metadata: { name },
+    });
+    if (aErr) {
+      if (/already registered|already been registered|email.*exist/i.test(aErr.message)) {
+        return { ok: false as const, error: "An account with this email already exists — try signing in." };
+      }
+      return { ok: false as const, error: aErr.message };
+    }
+    authUserId = ad.user.id;
+    autoSession = true;
+  } else {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: input.password,
+      options: { data: { name } },
+    });
+    if (error) return { ok: false as const, error: error.message };
+    authUserId = data.user?.id;
+    autoSession = !!data.session;
+    if (!authUserId) return { ok: false as const, error: "Sign-up failed — try again." };
   }
 
   // 2. 自动创建 Customer 并绑定 authId（幂等：同 email 已有则跳过创建只绑 authId）
@@ -104,24 +133,13 @@ export async function signUpRider(input: { name: string; email: string; password
       const org = await db.organisation.findFirst({ orderBy: { name: "asc" } });
       if (!org) return { ok: false as const, error: "No workshop organisation configured." };
       customer = await db.customer.create({
-        data: {
-          organisationId: org.id,
-          name,
-          email,
-          authId: authUserId,
-        },
+        data: { organisationId: org.id, name, email, authId: authUserId },
       });
     } else if (!customer.authId) {
       customer = await db.customer.update({ where: { id: customer.id }, data: { authId: authUserId } });
     }
 
-    // 3. 注入 CUSTOMER claims（RLS 用）——注册后无 session，用 service-role admin API
-    const { createClient: createAdmin } = await import("@supabase/supabase-js");
-    const admin = createAdmin(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
-      { auth: { autoRefreshToken: false, persistSession: false } },
-    );
+    // 3. 注入 CUSTOMER claims（RLS 用）
     const claims: BizClaims = {
       orgId: customer.organisationId,
       branchId: customer.branchId ?? "",
@@ -129,20 +147,14 @@ export async function signUpRider(input: { name: string; email: string; password
       userId: "",
       customerId: customer.id,
     };
-    // 自动确认邮箱（免点确认邮件）：开发环境、NEXT_PUBLIC_DEMO_MODE=true、或测试域（@dz.my / @test 前缀）
-    const isTestEmail = /@dz\.my$/.test(email) || email.startsWith("test.") || email.startsWith("dztest");
-    const autoConfirm = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_DEMO_MODE === "true" || isTestEmail;
-    const { error: metaErr } = await admin.auth.admin.updateUserById(authUserId, {
-      email_confirm: autoConfirm ? true : undefined,
-      user_metadata: claims,
-    });
+    const { error: metaErr } = await admin.auth.admin.updateUserById(authUserId, { user_metadata: claims });
     if (metaErr) return { ok: false as const, error: "Account created but linking failed: " + metaErr.message };
   } catch (e) {
     return { ok: false as const, error: "Account created but profile setup failed: " + String((e as Error).message).slice(0, 120) };
   }
 
-  // email_confirm 开启时 Supabase 不自动建 session——返回状态让前端提示查邮件
-  return { ok: true as const, emailConfirm: !data.session };
+  // 测试域已自动确认；非测试域（email confirm 开启）提示查邮件
+  return { ok: true as const, emailConfirm: !autoSession };
 }
 
 export async function signOutSupabase() {
