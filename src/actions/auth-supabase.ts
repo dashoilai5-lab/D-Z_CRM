@@ -153,7 +153,14 @@ export async function signUpRider(input: { name: string; email: string; password
     return { ok: false as const, error: "Account created but profile setup failed: " + String((e as Error).message).slice(0, 120) };
   }
 
-  // 测试域已自动确认；非测试域（email confirm 开启）提示查邮件
+  // 测试域：admin 建号无客户端 session——自动登录（密码登录建立 cookie session）
+  if (autoSession) {
+    const supabase = await createClient();
+    const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password: input.password });
+    if (signInErr) return { ok: true as const, emailConfirm: false, signInFailed: signInErr.message };
+  }
+
+  // 测试域已自动确认（前端直接跳转）；非测试域（email confirm 开启）提示查邮件
   return { ok: true as const, emailConfirm: !autoSession };
 }
 
