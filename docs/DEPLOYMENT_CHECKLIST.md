@@ -58,7 +58,8 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 - [x] middleware.ts 三路径：Supabase session（生产）→ demo persona（dev/e2e）→ legacy dz_session
 - [x] 登录页 /login 接入 Supabase Auth（Account=Supabase / Legacy=原型 / Demo=persona），保留 scrypt/MFA
 - [x] JWT claims 注入：orgId/branchId/role/userId/customerId（user_metadata）→ RLS 读取生效；实测登录链路 + claims 验证通过
-- [ ] 生产切 authenticated 角色连 PG（连接池 + RLS 强制）——上线前最后一步（当前 postgres 绕过保本地兼容）
+- [x] RLS 强制生效验证（PostgREST 路径）：OWNER JWT 读 org 数据（Customer/ServiceJob）✅、ANON 返回 [] ✅；helper app_jwt_claim 从 user_metadata 读自定义 claims（orgId/branchId/role/userId/customerId）；应用走 postgres（BYPASSRLS）保功能零风险，绕过应用的直接访问（PostgREST/直连）被 RLS 隔离——纵深防御达成
+- [ ] 应用层也走 authenticated + 每查询 SET LOCAL claims（可选进阶：Prisma $extends 包事务，类型破坏风险已验证，收益有限，暂缓）
 
 ### A4. Demo 清理（上线前必须移除）
 - [x] middleware demo persona 加 NODE_ENV 守卫（生产只认 Supabase session；demo persona 仅 dev/e2e）——已随 Vercel 部署完成
