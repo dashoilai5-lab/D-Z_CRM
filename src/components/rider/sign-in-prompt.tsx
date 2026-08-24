@@ -10,7 +10,7 @@ export default function RiderSignInPrompt() {
       </div>
       <h2 className="text-lg font-bold">Sign in to view your bikes</h2>
       <p className="text-sm text-muted-foreground">Log in to access your bookings, service history and more.</p>
-      <Link href="/login" className="inline-block rounded-md bg-primary text-primary-foreground px-5 py-2 text-sm font-medium hover:bg-primary/90">
+      <Link href="/rider/login" className="inline-block rounded-md bg-primary text-primary-foreground px-5 py-2 text-sm font-medium hover:bg-primary/90">
         Sign in
       </Link>
     </div>
