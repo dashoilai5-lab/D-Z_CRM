@@ -329,4 +329,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-21 | dashboard 副标题调整：保留原 i18n 副标题（dash.owner-sub 等 "Here is what is happening... today."）为第二行，第一行显示「登录名 · 部门」 | 实测：Daniel 显示 问候→Daniel Tan · OWNER→view-for-today 文案 三层 |
 | 2026-08-21 | 移除 Workshop 登录页 demo persona 切换栏（Owner/Counter/Mechanic 快捷入口）——真实账号登录替代；e2e 用 helpers.setPersona 直接设 cookie 不受影响 | 实测：登录页仅 Account/Legacy tab，Daniel 登录正常跳转 dashboard |
 | 2026-08-21 | 移除 Legacy 认证：登录页只保留 Supabase（Password/Email code 两 tab），删掉 Legacy tab + scrypt/HMAC 登录/找回/重置表单（actions/auth.ts 的 legacy login 不再被登录页引用）；sign-out 统一清 Supabase session；demo persona 栏上一步已移除 | 登录页精简至纯 Supabase；实测 Daniel 登录正常；Legacy 因 passwordHash 全空本就不可用 |
+| 2026-08-21 | 页面转场动画系统（方案 A）：① LoadingShell（animate-fade-in 0.18s）统一包裹全部 46 个 loading.tsx（17 原有 + 29 新增：inventory 7/staff 2/finance/settings/mechanic/checklists/packages/automations/ai/test-rides/import/reminders/return-list/templates + rider 8）② RouteProgress 顶栏进度条（client 监听路由变化，切换时顶部 2px 品牌橙条）③ globals.css 加 dz-fade-in/dz-progress 动画 | 实测：切换瞬间 progress+skeleton 同时出现、页面就绪后消失；tsc0/unit20/build 绿；纯 CSS/React 零新依赖 |
 | — | （后续改动在此追加） | — |
