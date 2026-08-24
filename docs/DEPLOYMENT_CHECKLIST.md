@@ -44,10 +44,12 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 - [x] 数据迁移执行成功：`scripts/migrate-sqlite-to-pg.ts` 全量 61 模型 5060 行 / 0 失败 / 2.6s；验证行数与 FK 关联完整（Ahmad→2 摩托）。注意：Supabase 自签证书 → 脚本自动放宽校验（仅迁移场景）；.env 连接串去掉 sslmode=require（pg 8.23 会按 verify-full 失败）
 
 ### A2. RLS（Row Level Security）
-- [ ] 启用 RLS：按 organisationId（tenant）隔离所有业务表
-- [ ] 分支级策略（branchId）：门店数据隔离
-- [ ] 角色级策略（Owner 全量 / Counter / Mechanic 自己 / Rider 自己客户）
-- [ ] 迁移后移除 SQLite 路径，DATABASE_URL 仅指向 Postgres
+- [x] 启用 RLS：61 张表全部 ENABLE ROW LEVEL SECURITY + 61 个 tenant_isolation_* 策略（docs/rls-policies.sql，生成器 scripts/gen-rls-policies.ts，可重复执行）
+- [x] 组织级隔离：orgId 硬过滤（含 admin，跨 org 返回 0）；无 organisationId 的表经 FK JOIN 链 EXISTS 推导（BFS 到 Organisation，避免自引用递归）
+- [x] 分支级策略：非 admin 限 branchId（空 branchId 行视为全分支可见）；实测 COUNTER 104→53（分支过滤生效）
+- [x] 角色级策略：admin（SUPER_ADMIN/OWNER/HEAD_OFFICE_ADMIN）组织内全量；MECHANIC 限本人 mechanicId 工单；CUSTOMER（rider）只见过自己 id（Customer 自身表按 id，子表按 customerId）
+- [x] 身份来源：request.jwt.claims（orgId/branchId/role/userId/customerId），helper 函数 app_current_*；⚠️ 生效条件 = 连接角色非 BYPASSRLS（authenticated 已测通；postgres/service_role 绕过——本地应用继续全量，A3 认证切换后按 JWT 注入 claims 即自动生效）
+- [ ] 迁移后移除 SQLite 路径，DATABASE_URL 仅指向 Postgres（待 A3 认证切换后统一处理；本地 dev/e2e 保留 SQLite）
 
 ### A3. 认证（替换 demo persona cookie）
 - [ ] Supabase Auth：email/phone + OTP，替换 dz_demo_persona
