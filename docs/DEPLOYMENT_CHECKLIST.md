@@ -42,7 +42,7 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 - [ ] pnpm exec prisma migrate deploy 到 Supabase
   - ⚠️ SQLite→Postgres 差异检查：enum（Prisma 自动建 type）、Json 字段（SQLite 宽松 vs PG 严格）、cuid、布尔默认值
   - ⚠️ 中文/马来文文案字段：确认 PG text 无编码问题（默认 UTF-8 OK）
-- [ ] 数据迁移脚本：dev.db → Postgres（用户/客户/工单/发票/产品/库存全量）——写一次性脚本 scripts/migrate-sqlite-to-pg.ts
+- [x] 数据迁移脚本：dev.db → Postgres（用户/客户/工单/发票/产品/库存全量）——`scripts/migrate-sqlite-to-pg.ts`（骨架就位：dmmf 自动枚举 61 模型 + FK 拓扑序 + 批 INSERT 幂等 + dry-run；真实迁移待 `--dst <Supabase 连接串>`，dry-run 实测 5060 行读取正常）
 
 ### A2. RLS（Row Level Security）
 - [ ] 启用 RLS：按 organisationId（tenant）隔离所有业务表
@@ -122,7 +122,7 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 ## 7 · 立即可以做的（不需要任何账号）
 
 - [ ] 更新 SETUP §5 勾选状态（随进度打勾）
-- [ ] 写数据迁移脚本骨架（scripts/migrate-sqlite-to-pg.ts，Prisma read dev.db + write PG）
+- [x] 写数据迁移脚本骨架（scripts/migrate-sqlite-to-pg.ts，Prisma read dev.db + write PG）——已完成，见 A1
 - [ ] DemoBar 生产条件渲染方案设计（env 控制）
 - [ ] middleware.ts 双模式改造预研（cookie 模式保留 dev/e2e）
 

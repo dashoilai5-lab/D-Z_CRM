@@ -55,3 +55,9 @@ browser-screenshots/
 # catalogue product photo source (runtime copy lives in public/motorcycles)
 DZ_Motorcycle_Product_Images/
 Part_Catalogue/
+
+# pnpm local store
+.pnpm-store/
+
+# prisma engine cache redirect (sandbox: XDG_CACHE_HOME=$PWD/.cache for prisma generate)
+.cache/
