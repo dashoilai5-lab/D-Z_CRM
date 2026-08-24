@@ -33,7 +33,7 @@ export default function RiderSignupPage() {
   const labelCls = "text-xs font-medium text-muted-foreground mb-1 block";
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="flex justify-center px-4 py-4 relative overflow-hidden">
       <div className="w-full max-w-sm relative">
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/25">

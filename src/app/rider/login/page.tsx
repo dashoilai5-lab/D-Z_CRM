@@ -54,7 +54,7 @@ export default function RiderLoginPage() {
   const tabCls = (active: boolean) => `flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent"}`;
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="flex justify-center px-4 py-4 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" aria-hidden />
       <div className="w-full max-w-sm relative">
         <div className="mb-6 flex flex-col items-center text-center">
