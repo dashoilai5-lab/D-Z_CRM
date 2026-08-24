@@ -14,16 +14,20 @@ export function RouteOverlay() {
   const [state, setState] = useState<"hidden" | "enter" | "leave">("hidden");
   const firstRef = useRef(true);
 
+  // Rider App 不需要加载遮罩（轻快浏览），仅 Workshop OS 显示
+  const isRider = pathname.startsWith("/rider");
+
   useEffect(() => {
     if (firstRef.current) { firstRef.current = false; return; } // 首屏不显示
+    if (isRider) return; // rider 无遮罩
     setState("enter");
-    // 遮罩停留约 0.8s（能量环半圈 + 光点一圈），够看清又不拖沓
-    const t = setTimeout(() => setState("leave"), 800);
-    const t2 = setTimeout(() => setState("hidden"), 1100);
+    // Workshop：遮罩快速过渡（约 0.5s），不拖沓
+    const t = setTimeout(() => setState("leave"), 500);
+    const t2 = setTimeout(() => setState("hidden"), 800);
     return () => { clearTimeout(t); clearTimeout(t2); };
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, isRider]);
 
-  if (state === "hidden") return null;
+  if (state === "hidden" || isRider) return null;
   return (
     <div className={`dz-route-overlay ${state === "enter" ? "dz-overlay-enter" : "dz-overlay-leave"}`} aria-hidden="true">
       <div className="dz-loader">
