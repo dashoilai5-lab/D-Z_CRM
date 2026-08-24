@@ -115,7 +115,13 @@ export async function signUpRider(input: { name: string; email: string; password
       customer = await db.customer.update({ where: { id: customer.id }, data: { authId: authUserId } });
     }
 
-    // 3. 注入 CUSTOMER claims（RLS 用）
+    // 3. 注入 CUSTOMER claims（RLS 用）——注册后无 session，用 service-role admin API
+    const { createClient: createAdmin } = await import("@supabase/supabase-js");
+    const admin = createAdmin(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } },
+    );
     const claims: BizClaims = {
       orgId: customer.organisationId,
       branchId: customer.branchId ?? "",
@@ -123,7 +129,7 @@ export async function signUpRider(input: { name: string; email: string; password
       userId: "",
       customerId: customer.id,
     };
-    const { error: metaErr } = await supabase.auth.updateUser({ data: claims });
+    const { error: metaErr } = await admin.auth.admin.updateUserById(authUserId, { user_metadata: claims });
     if (metaErr) return { ok: false as const, error: "Account created but linking failed: " + metaErr.message };
   } catch (e) {
     return { ok: false as const, error: "Account created but profile setup failed: " + String((e as Error).message).slice(0, 120) };
