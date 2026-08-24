@@ -295,21 +295,73 @@ body { font-feature-settings: "cv11"; }
   from { opacity: 1; }
   to   { opacity: 0; }
 }
-.dz-overlay-logo {
+/* ===== 炫酷加载器（能量环 + 轨道光点 + 发光 logo） ===== */
+.dz-loader {
+  position: relative;
+  width: 96px; height: 96px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px; height: 64px;
-  border-radius: 1.25rem;
-  color: hsl(var(--primary));
-  background: hsl(var(--primary) / 0.12);
-  border: 1px solid hsl(var(--primary) / 0.25);
-  box-shadow: 0 8px 32px -8px hsl(var(--primary) / 0.4);
-  animation: dz-logo-pulse 0.8s ease-in-out infinite;
 }
-@keyframes dz-logo-pulse {
-  0%, 100% { transform: scale(0.95); opacity: 0.75; }
-  50%      { transform: scale(1.05); opacity: 1; }
+/* 能量环：conic-gradient 旋转 + 发光 */
+.dz-loader-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 0deg, transparent 0 70deg, hsl(var(--primary) / 0.95) 90deg, transparent 110deg 160deg, hsl(var(--primary) / 0.55) 180deg, transparent 200deg 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  animation: dz-ring-spin 1.6s linear infinite;
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.7));
+}
+@keyframes dz-ring-spin {
+  to { transform: rotate(360deg); }
+}
+/* 轨道光点：3 个反向运行 */
+.dz-loader-dot {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 9999px;
+  background: hsl(var(--primary));
+  box-shadow: 0 0 10px 2px hsl(var(--primary) / 0.8);
+  animation: dz-dot-orbit 2.4s linear infinite;
+}
+.dz-loader-dot.d1 { animation-delay: 0s; }
+.dz-loader-dot.d2 { animation-delay: -0.8s; }
+.dz-loader-dot.d3 { animation-delay: -1.6s; }
+@keyframes dz-dot-orbit {
+  0%   { transform: rotate(0deg)    translateX(40px); opacity: 1; }
+  50%  { opacity: 0.4; }
+  100% { transform: rotate(-360deg) translateX(40px); opacity: 1; }
+}
+/* 中心发光 logo：呼吸 + 光晕 + 轻摆 */
+.dz-loader-core {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px; height: 52px;
+  border-radius: 1rem;
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.1);
+  border: 1px solid hsl(var(--primary) / 0.3);
+  animation: dz-core-breathe 1.6s ease-in-out infinite;
+}
+@keyframes dz-core-breathe {
+  0%, 100% { transform: scale(0.9) rotate(-3deg); box-shadow: 0 0 18px -4px hsl(var(--primary) / 0.4); }
+  50%      { transform: scale(1.08) rotate(3deg);  box-shadow: 0 0 34px -2px hsl(var(--primary) / 0.85); }
+}
+/* 遮罩背景微光晕 */
+.dz-route-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 320px 260px at 50% 50%, hsl(var(--primary) / 0.10), transparent 70%);
+  animation: dz-halo-pulse 1.6s ease-in-out infinite;
+}
+@keyframes dz-halo-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
 }
 
 /* ---- skeleton shimmer (骨架屏升级：流动光带) ---- */
