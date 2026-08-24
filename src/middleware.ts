@@ -47,6 +47,13 @@ export async function middleware(req: NextRequest) {
     return r;
   }
 
+  // 非 workshop 路径（rider 等）：无 Supabase session 时放行——页面自身处理登录引导/重定向。
+  // 只有 workshop 路径才走 demo persona 与 legacy session 逻辑。
+  if (!isWorkshop) {
+    response.headers.set("x-pathname", pathname);
+    return response;
+  }
+
   // 2. Demo persona (dev/e2e ONLY): nav-registry URL gating on persona cookie.
   //    Production never accepts the demo persona — real auth only.
   const isProd = process.env.NODE_ENV === "production";
