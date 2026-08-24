@@ -324,4 +324,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-21 | Rider 认证页去导航：layout 对 /rider/login + /rider/signup 隐藏 BottomNav（pb 同步收窄 pb-10）；其他页保留 | 实测：login/signup nav=0；home nav=1 fixed=1 |
 | 2026-08-21 | Workshop 部门邮箱登录 + 权限导航：① nav-registry 34 项标注 module（permissions.ts MODULES）+ navForRole(role) 按视图矩阵过滤（COUNTER/MECHANIC/INVENTORY/MARKETING 只见各自模块）；Sidebar+MobileNav 按 role 过滤（MobileNav 图标 client 内映射，避免 server→client 传函数坑）② 全部 7 部门员工 Supabase 账号创建+authId 绑定+claims（本地+PG 同步）：manager/COUNTER/MECHANIC×3/MARKETING/INVENTORY | 实测 4 角色：COUNTER（9 项前台）、MECHANIC（6 项技师）、MARKETING（14 项营销）、INVENTORY（11 项库存）——各见各权限模块，Marketing/Finance/Staff 互不可见；修复 icon server→client 边界错误 |
 | 2026-08-21 | 文档：新增 docs/DEMO_ACCOUNTS.md——全部测试账号清单（8 员工 + 2 顾客，密码统一 Dashoil@!789；Workshop 按部门权限可见模块、Rider 顾客数据量、自助注册免确认说明） | 账号集中管理：SETUP §9 引用，演示/测试查表即可 |
+| 2026-08-21 | 修复 Owner 登录：DEMO_ACCOUNTS.md 的 daniel.tan@dz.my 在 Supabase 无对应 auth 用户（早期 A3 用 owner@dz.my 绑定）→ 为 daniel.tan@dz.my 建 auth 账号 + 改绑 User.authId + claims（本地+PG 同步）；旧 owner@dz.my 保留 | 实测：daniel.tan@dz.my（Owner 全量）与 syafiq.bin.rahman@dz.my（Manager 全量）登录均正常；8 员工账号全部可用 |
 | — | （后续改动在此追加） | — |
