@@ -326,4 +326,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-21 | 文档：新增 docs/DEMO_ACCOUNTS.md——全部测试账号清单（8 员工 + 2 顾客，密码统一 Dashoil@!789；Workshop 按部门权限可见模块、Rider 顾客数据量、自助注册免确认说明） | 账号集中管理：SETUP §9 引用，演示/测试查表即可 |
 | 2026-08-21 | 修复 Owner 登录：DEMO_ACCOUNTS.md 的 daniel.tan@dz.my 在 Supabase 无对应 auth 用户（早期 A3 用 owner@dz.my 绑定）→ 为 daniel.tan@dz.my 建 auth 账号 + 改绑 User.authId + claims（本地+PG 同步）；旧 owner@dz.my 保留 | 实测：daniel.tan@dz.my（Owner 全量）与 syafiq.bin.rahman@dz.my（Manager 全量）登录均正常；8 员工账号全部可用 |
 | 2026-08-21 | 修复 dashboard 问候语 bug：原用 getPersona+getDemoUser（demo 逻辑，生产下 getDemoUser 按 role 取第一个匹配用户 → 全员显示 Mei）→ 改用 getSessionUser（生产=真实登录用户）+ 副标题显示「登录名 · 部门」（如 Daniel Tan · OWNER） | 实测：Mei（COUNTER）/ Daniel（OWNER）/ Aizat（MECHANIC）各自显示正确名字+部门，无 Mei 串号 |
+| 2026-08-21 | dashboard 副标题调整：保留原 i18n 副标题（dash.owner-sub 等 "Here is what is happening... today."）为第二行，第一行显示「登录名 · 部门」 | 实测：Daniel 显示 问候→Daniel Tan · OWNER→view-for-today 文案 三层 |
 | — | （后续改动在此追加） | — |
