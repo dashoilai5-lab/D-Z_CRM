@@ -19,7 +19,7 @@
 **剩余主线不变**：① 经销商验证（dtodo 59e04e5e）② 生产迁移 §65（dtodo 92b29072）——生产属性项（真实 provider/HTTPS/备份/索引/限流/PDPA）在 SETUP §5 清单与追踪文档各段 🟡 备注。
 
 ## 一句话状态
-原型功能齐备且全绿（tsc0/unit20/e2e75+6skip），迭代增强完成：Loading 全链路、UI 去 AI 味与高级感、i18n toast、分页、里程审计流、Mechanic Board 技师下拉、preview 框架修复、海报自动轮播（按尺寸适配）、Workshop→Rider News 发布联动、产品图片（10 SKU）、Hot Picks、真机预览（LAN IP 192.168.100.240）。**已进入部署准备**：DEPLOYMENT_CHECKLIST.md（阶段 A Supabase+RLS+Auth+demo 清理 / B Provider 换真 / C Vercel+Sentry+k6）。最新提交 a6fb025。
+原型功能齐备且全绿（tsc0/unit20/e2e75+6skip），迭代增强完成：Loading 全链路、UI 去 AI 味与高级感、i18n toast、分页、里程审计流、Mechanic Board 技师下拉、preview 框架修复、海报自动轮播（按尺寸适配）、Workshop→Rider News 发布联动、产品图片（10 SKU）、Hot Picks、真机预览（LAN IP 192.168.100.240）。**已进入部署准备**：DEPLOYMENT_CHECKLIST.md（阶段 A Supabase+RLS+Auth+demo 清理 / B Provider 换真 / C Vercel+Sentry+k6）。A1 迁移脚本骨架完成（26906c8，dry-run 61 模型/5060 行全读，待 Supabase --dst 真迁移）；顺带修复 sandbox 下 pnpm 依赖安装（CI=true + XDG_CACHE_HOME=$PWD/.cache 重建 + prisma generate）。
 
 ## 会话信息
 - 原会话 ID：session-ec4b081f-efca-4e4f-a187-4302bb0ce385
@@ -40,7 +40,7 @@
 
 ## 下一步（按优先级）
 1. **部署准备（主线）**：docs/DEPLOYMENT_CHECKLIST.md——阶段 A（Supabase 项目+migrate deploy+RLS+Auth 替换 persona+demo 清理）/ B（Provider 换真）/ C（Vercel+Sentry+k6+生产功能）
-2. 无账号即可做：数据迁移脚本骨架（scripts/migrate-sqlite-to-pg.ts）、middleware 双模式预研、DemoBar 生产条件渲染
+2. 无账号即可做：~~数据迁移脚本骨架~~（✅ 已完成 26906c8：scripts/migrate-sqlite-to-pg.ts，dry-run 实测 61 模型/5060 行，真实迁移待 --dst）、middleware 双模式预研（✅ 已确认实现：middleware.ts 双路径）、DemoBar 生产条件渲染（未做）
 3. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策
 
 ## 基线测试（命令 + 期望通过数）
@@ -54,7 +54,7 @@
 - ⚠️ 改 src 后必须 build + kickstart 两个服务（testids 在 build 里）；改 schema 后 e2e.db 需 migrate
 
 ## git 状态
-- 分支：main ｜ 工作树干净（最新提交 a6fb025，docs(DEPLOYMENT_CHECKLIST)）
+- 分支：main ｜ 工作树干净（最新提交 26906c8，feat(migration) 迁移脚本骨架）
 
 ## 关键决策与约定
 - 端口：D&Z 固定 3002/3102；3000 被 DashOil 抢占勿用
