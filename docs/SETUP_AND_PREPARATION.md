@@ -328,4 +328,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-21 | 修复 dashboard 问候语 bug：原用 getPersona+getDemoUser（demo 逻辑，生产下 getDemoUser 按 role 取第一个匹配用户 → 全员显示 Mei）→ 改用 getSessionUser（生产=真实登录用户）+ 副标题显示「登录名 · 部门」（如 Daniel Tan · OWNER） | 实测：Mei（COUNTER）/ Daniel（OWNER）/ Aizat（MECHANIC）各自显示正确名字+部门，无 Mei 串号 |
 | 2026-08-21 | dashboard 副标题调整：保留原 i18n 副标题（dash.owner-sub 等 "Here is what is happening... today."）为第二行，第一行显示「登录名 · 部门」 | 实测：Daniel 显示 问候→Daniel Tan · OWNER→view-for-today 文案 三层 |
 | 2026-08-21 | 移除 Workshop 登录页 demo persona 切换栏（Owner/Counter/Mechanic 快捷入口）——真实账号登录替代；e2e 用 helpers.setPersona 直接设 cookie 不受影响 | 实测：登录页仅 Account/Legacy tab，Daniel 登录正常跳转 dashboard |
+| 2026-08-21 | 移除 Legacy 认证：登录页只保留 Supabase（Password/Email code 两 tab），删掉 Legacy tab + scrypt/HMAC 登录/找回/重置表单（actions/auth.ts 的 legacy login 不再被登录页引用）；sign-out 统一清 Supabase session；demo persona 栏上一步已移除 | 登录页精简至纯 Supabase；实测 Daniel 登录正常；Legacy 因 passwordHash 全空本就不可用 |
 | — | （后续改动在此追加） | — |
