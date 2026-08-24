@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bike } from "lucide-react";
 import { login, forgotPassword, resetPassword } from "@/actions/auth";
-import { setPersona } from "@/actions/demo";
 import { signInWithPassword, signInWithOtp, verifyOtp } from "@/actions/auth-supabase";
 
 type Mode = "login" | "forgot" | "reset";
@@ -233,21 +232,6 @@ export default function LoginPage() {
               </button>
             </form>
           )}
-        </div>
-
-        <div className="mt-4 rounded-xl border bg-card p-4">
-          <p className="text-xs text-muted-foreground mb-2">Demo mode — switch persona without an account:</p>
-          <div className="flex gap-2">
-            {(["OWNER", "COUNTER_STAFF", "MECHANIC"] as const).map((p) => (
-              <button
-                key={p}
-                className="flex-1 rounded-md border px-2 py-1.5 text-xs font-medium hover:bg-accent"
-                onClick={async () => { await setPersona(p); router.push("/workshop/dashboard"); router.refresh(); }}
-              >
-                {p === "OWNER" ? "Owner" : p === "COUNTER_STAFF" ? "Counter" : "Mechanic"}
-              </button>
-            ))}
-          </div>
         </div>
       </div>
     </div>
