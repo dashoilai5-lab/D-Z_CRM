@@ -129,7 +129,12 @@ export async function signUpRider(input: { name: string; email: string; password
       userId: "",
       customerId: customer.id,
     };
-    const { error: metaErr } = await admin.auth.admin.updateUserById(authUserId, { user_metadata: claims });
+    // 开发/测试环境自动确认邮箱（免点确认邮件）；生产保持 email confirm 流程
+    const autoConfirm = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+    const { error: metaErr } = await admin.auth.admin.updateUserById(authUserId, {
+      email_confirm: autoConfirm ? true : undefined,
+      user_metadata: claims,
+    });
     if (metaErr) return { ok: false as const, error: "Account created but linking failed: " + metaErr.message };
   } catch (e) {
     return { ok: false as const, error: "Account created but profile setup failed: " + String((e as Error).message).slice(0, 120) };
