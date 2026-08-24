@@ -17,9 +17,9 @@ export function RouteOverlay() {
   useEffect(() => {
     if (firstRef.current) { firstRef.current = false; return; } // 首屏不显示
     setState("enter");
-    // 遮罩停留久一点（约 1.6s：能量环转一圈 + 光点两圈），让炫酷动画完整可见
-    const t = setTimeout(() => setState("leave"), 1600);
-    const t2 = setTimeout(() => setState("hidden"), 1900);
+    // 遮罩停留约 0.8s（能量环半圈 + 光点一圈），够看清又不拖沓
+    const t = setTimeout(() => setState("leave"), 800);
+    const t2 = setTimeout(() => setState("hidden"), 1100);
     return () => { clearTimeout(t); clearTimeout(t2); };
   }, [pathname, searchParams]);
 

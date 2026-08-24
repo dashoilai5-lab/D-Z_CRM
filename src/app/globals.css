@@ -311,7 +311,7 @@ body { font-feature-settings: "cv11"; }
   background: conic-gradient(from 0deg, transparent 0 70deg, hsl(var(--primary) / 0.95) 90deg, transparent 110deg 160deg, hsl(var(--primary) / 0.55) 180deg, transparent 200deg 360deg);
   -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
   mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
-  animation: dz-ring-spin 1.6s linear infinite;
+  animation: dz-ring-spin 1.2s linear infinite;
   filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.7));
 }
 @keyframes dz-ring-spin {
@@ -324,7 +324,7 @@ body { font-feature-settings: "cv11"; }
   border-radius: 9999px;
   background: hsl(var(--primary));
   box-shadow: 0 0 10px 2px hsl(var(--primary) / 0.8);
-  animation: dz-dot-orbit 2.4s linear infinite;
+  animation: dz-dot-orbit 1.8s linear infinite;
 }
 .dz-loader-dot.d1 { animation-delay: 0s; }
 .dz-loader-dot.d2 { animation-delay: -0.8s; }
@@ -345,7 +345,7 @@ body { font-feature-settings: "cv11"; }
   color: hsl(var(--primary));
   background: hsl(var(--primary) / 0.1);
   border: 1px solid hsl(var(--primary) / 0.3);
-  animation: dz-core-breathe 1.6s ease-in-out infinite;
+  animation: dz-core-breathe 1.2s ease-in-out infinite;
 }
 @keyframes dz-core-breathe {
   0%, 100% { transform: scale(0.9) rotate(-3deg); box-shadow: 0 0 18px -4px hsl(var(--primary) / 0.4); }
