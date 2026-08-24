@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CalendarClock, CalendarDays, List } from "lucide-react";
 import { db } from "@/lib/db";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { PageTransition } from "@/components/shared/page-transition";
 import { BookingActions } from "@/components/workshop/booking-actions";
 import { fmtDate } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
@@ -52,6 +53,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
   const view = sp.view ?? "list";
 
   return (
+    <PageTransition>
     <div>
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-2xl font-bold tracking-tight">{t("ws.bookings.title", lang)}</h1>
@@ -126,5 +128,6 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
         </div>
       )}
     </div>
+    </PageTransition>
   );
 }

@@ -5,6 +5,7 @@ import { leadsModule } from "@/modules/leads/service";
 import { formatRM } from "@/lib/money";
 import { fmtDate } from "@/lib/format";
 import { PendingForm } from "@/components/shared/search-form";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
   const stale = (d: Date | null) => d != null && d < new Date();
 
   return (
+    <PageTransition>
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
@@ -106,5 +108,6 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
         </table>
       </div>
     </div>
+    </PageTransition>
   );
 }

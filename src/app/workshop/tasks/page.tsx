@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { tasksModule } from "@/modules/tasks/service";
 import { TaskList } from "@/components/workshop/task-list";
 import { NewTaskForm } from "@/components/workshop/new-task-form";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   const leads = await db.lead.findMany({ where: { organisationId: org!.id, status: "OPEN" }, orderBy: { createdAt: "desc" }, take: 30, select: { id: true, customerName: true } });
 
   return (
+    <PageTransition>
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
@@ -45,5 +47,6 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
 
       <TaskList items={items} />
     </div>
+    </PageTransition>
   );
 }

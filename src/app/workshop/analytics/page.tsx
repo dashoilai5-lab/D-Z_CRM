@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { salesAnalytics, serviceAnalytics, customerAnalytics, revenueAnalytics, inventoryAnalytics, branchComparison } from "@/modules/analytics/service";
 import { AnalyticsTabs } from "@/components/workshop/analytics-tabs";
 import { formatRM } from "@/lib/money";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ export default async function AnalyticsPage() {
     salesAnalytics(orgId), serviceAnalytics(orgId), customerAnalytics(orgId), revenueAnalytics(orgId), inventoryAnalytics(orgId), branchComparison(orgId),
   ]);
   return (
+    <PageTransition>
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold">Analytics</h1>
@@ -26,5 +28,6 @@ export default async function AnalyticsPage() {
         branches={branches.map((b) => ({ ...b, revenueLabel: formatRM(b.revenue) }))}
       />
     </div>
+    </PageTransition>
   );
 }

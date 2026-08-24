@@ -5,6 +5,7 @@ import { inventoryService } from "@/modules/inventory/service";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,7 @@ export default async function StockPage() {
   const lang = await getLang();
   const branches = await db.branch.findMany({ select: { id: true, name: true, city: true } });
   return (
+    <PageTransition>
     <div>
       <PageHeader title={t("ws.stock.title", lang)} subtitle={t("ws.stock.subtitle", lang).replace("{branch}", "Kuala Lumpur")} />
       <div className="rounded-2xl border bg-card overflow-hidden">
@@ -49,5 +51,6 @@ export default async function StockPage() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }

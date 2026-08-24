@@ -20,7 +20,7 @@ export function MobileNav({ items }: { items: MobileNavItem[] }) {
           const Icon = ICONS[it.key];
           const active = path === it.href || path.startsWith(it.href + "/");
           return (
-            <Link key={it.href} href={it.href} className={cn("flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
+            <Link key={it.href} href={it.href} transitionTypes={["nav-forward"]} className={cn("flex-1 flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium", active ? "text-primary" : "text-muted-foreground")}>
               {Icon && <Icon className="h-5 w-5" />}
               {it.label}
             </Link>

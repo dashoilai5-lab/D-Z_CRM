@@ -6,6 +6,7 @@ import { fmtKM } from "@/lib/format";
 import { isPromoActive } from "@/modules/marketing/promo";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,7 @@ export default async function RiderHomePage() {
   const isSoon = kmLeft != null && !isDue && kmLeft <= SERVICE_INTERVAL_KM * 0.3;
 
   return (
+    <PageTransition>
     <div className="space-y-5">
       <header className="flex items-start justify-between">
         <div>
@@ -171,5 +173,6 @@ export default async function RiderHomePage() {
         </Link>
       )}
     </div>
+    </PageTransition>
   );
 }

@@ -8,6 +8,7 @@ import { Money } from "@/components/shared/money";
 import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
 import { getSessionUser, personaForRole } from "@/lib/session-user";
+import { PageTransition } from "@/components/shared/page-transition";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 
@@ -47,6 +48,7 @@ export default async function DashboardPage() {
   const todayJobs = myJobs.filter((j) => j.isToday).slice(0, 9);
 
   return (
+    <PageTransition>
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName}</h1>
@@ -220,5 +222,6 @@ export default async function DashboardPage() {
         </div>
       </section>
     </div>
+    </PageTransition>
   );
 }

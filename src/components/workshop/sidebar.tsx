@@ -34,6 +34,7 @@ export function Sidebar({ persona, role, user, lang = "en" }: { persona: DemoPer
 
   return (
     <aside
+      style={{ viewTransitionName: "dz-header" }}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
       className={cn(
@@ -73,6 +74,7 @@ export function Sidebar({ persona, role, user, lang = "en" }: { persona: DemoPer
                   <Link
                     key={item.key}
                     href={item.href}
+                    transitionTypes={["nav-forward"]}
                     aria-current={active ? "page" : undefined}
                     title={expanded ? undefined : item.label}
                     className={cn(

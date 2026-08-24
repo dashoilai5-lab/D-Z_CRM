@@ -7,6 +7,7 @@ import { initials } from "@/lib/format";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function RiderProfilePage() {
     db.loyaltyAccount.findUnique({ where: { customerId: customer.id }, include: { tier: true } }),
   ]);
   return (
+    <PageTransition>
     <div className="space-y-5">
       <div className="relative">
         <div className="absolute right-0 top-0 z-10"><SignOutIconButton /></div>
@@ -126,5 +128,6 @@ export default async function RiderProfilePage() {
 
       <p className="text-center text-[11px] text-muted-foreground pt-2">D&Z Rider · {t("rider.demo-persona", lang)} (Ahmad Danial)</p>
     </div>
+    </PageTransition>
   );
 }

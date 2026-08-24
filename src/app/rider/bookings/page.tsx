@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CalendarClock } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
+import { PageTransition } from "@/components/shared/page-transition";
 import { db } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
@@ -28,6 +29,7 @@ export default async function RiderBookingsPage() {
     orderBy: { createdAt: "desc" },
   });
   return (
+    <PageTransition>
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">{t("rider.my-bookings", lang)}</h1>
       {bookings.length === 0 && <p className="text-sm text-muted-foreground text-center py-10">{t("rider.no-bookings", lang)}</p>}
@@ -51,5 +53,6 @@ export default async function RiderBookingsPage() {
         })}
       </div>
     </div>
+    </PageTransition>
   );
 }

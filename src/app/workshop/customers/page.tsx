@@ -7,6 +7,7 @@ import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PendingForm, ExportCsvButton } from "@/components/shared/search-form";
 import { Pagination } from "@/components/shared/pagination";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
   const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
+    <PageTransition>
     <div>
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="flex-1 min-w-0">
@@ -82,5 +84,6 @@ export default async function CustomersPage({ searchParams }: { searchParams: Pr
       </div>
       <Pagination basePath="/workshop/customers" page={page} totalPages={totalPages} query={{ q }} />
     </div>
+    </PageTransition>
   );
 }

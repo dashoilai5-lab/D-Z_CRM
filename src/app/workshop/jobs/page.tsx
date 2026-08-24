@@ -11,6 +11,7 @@ import { getPersona } from "@/lib/demo";
 import { getDemoUser } from "@/lib/demo-user";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   ] as const;
 
   return (
+    <PageTransition>
     <div>
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <div className="flex-1 min-w-0">
@@ -128,5 +130,6 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
       )}
       {!isKanban && <Pagination basePath="/workshop/jobs" page={page} totalPages={totalPages} query={{ status, view }} />}
     </div>
+    </PageTransition>
   );
 }

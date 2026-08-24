@@ -5,6 +5,7 @@ import { getDemoUser } from "@/lib/demo-user";
 import { MechanicBoard, type BoardJob, type MechanicSummary } from "@/components/workshop/mechanic-board";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,7 @@ export default async function MechanicPage() {
   const initialMechanicId = persona === "MECHANIC" && user ? user.id : mechanics[0]?.id ?? "unassigned";
 
   return (
+    <PageTransition>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold tracking-tight mb-1">{t("nav.mechanic", lang)}</h1>
       <p className="text-sm text-muted-foreground mb-5">
@@ -65,5 +67,6 @@ export default async function MechanicPage() {
         allMechanics={allMechanics}
       />
     </div>
+    </PageTransition>
   );
 }

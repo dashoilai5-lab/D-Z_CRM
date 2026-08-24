@@ -287,3 +287,78 @@ body { font-feature-settings: "cv11"; }
   animation: dz-progress-indeterminate 1.2s ease-in-out infinite;
   z-index: 100;
 }
+
+/* ============ View Transition API（Next 16 + React ViewTransition） ============ */
+/* 交互恢复：过渡期间点击穿透到实时页面 */
+::view-transition {
+  pointer-events: none;
+}
+
+/* ---- directional nav (Step 3): nav-forward / nav-back ---- */
+::view-transition-old(.nav-forward) {
+  --slide-offset: -60px;
+  animation:
+    150ms ease-in both dz-vt-fade reverse,
+    400ms ease-in-out both dz-vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 60px;
+  animation:
+    210ms ease-out 150ms both dz-vt-fade,
+    400ms ease-in-out both dz-vt-slide;
+}
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+  animation:
+    150ms ease-in both dz-vt-fade reverse,
+    400ms ease-in-out both dz-vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+  animation:
+    210ms ease-out 150ms both dz-vt-fade,
+    400ms ease-in-out both dz-vt-slide;
+}
+@keyframes dz-vt-slide {
+  from { translate: var(--slide-offset); }
+  to   { translate: 0; }
+}
+@keyframes dz-vt-fade {
+  from { filter: blur(3px); opacity: 0; }
+  to   { filter: blur(0); opacity: 1; }
+}
+
+/* ---- Suspense reveal (Step 2): skeleton → content ---- */
+::view-transition-old(.vt-exit) {
+  animation:
+    150ms ease-out both dz-vt-fade reverse,
+    150ms ease-out both dz-vt-slide-down reverse;
+}
+::view-transition-new(.vt-enter) {
+  animation:
+    210ms ease-in 150ms both dz-vt-fade,
+    400ms ease-in-out both dz-vt-slide-up;
+}
+@keyframes dz-vt-slide-up {
+  from { transform: translateY(10px); }
+  to   { transform: translateY(0); }
+}
+@keyframes dz-vt-slide-down {
+  from { transform: translateY(0); }
+  to   { transform: translateY(10px); }
+}
+
+/* ---- anchor: app header / sidebar stay fixed during slides ---- */
+::view-transition-group(dz-header) { animation: none; z-index: 100; }
+::view-transition-old(dz-header) { display: none; }
+::view-transition-new(dz-header) { animation: none; }
+
+/* ---- respect reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
