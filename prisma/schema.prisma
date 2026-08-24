@@ -115,7 +115,9 @@ model User {
   email          String?
   role           Role     @default(MECHANIC)
   active         Boolean  @default(true)
-  // AUTH: login credentials
+  // SUPABASE AUTH: auth.users.id (production login); null = demo-only user
+  authId         String?  @unique
+  // AUTH: login credentials (legacy prototype auth, superseded by Supabase Auth)
   passwordHash   String?
   lastLoginAt    DateTime?
   emailVerified  Boolean   @default(false)
@@ -145,6 +147,8 @@ model Customer {
   name           String
   phone          String?
   email          String?
+  // SUPABASE AUTH: auth.users.id (rider production login); null = demo customer
+  authId         String?  @unique
   gender         String?
   joinedAt       DateTime @default(now())
   address        String?

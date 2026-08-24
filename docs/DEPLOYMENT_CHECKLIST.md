@@ -52,11 +52,13 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 - [ ] 迁移后移除 SQLite 路径，DATABASE_URL 仅指向 Postgres（待 A3 认证切换后统一处理；本地 dev/e2e 保留 SQLite）
 
 ### A3. 认证（替换 demo persona cookie）
-- [ ] Supabase Auth：email/phone + OTP，替换 dz_demo_persona
-- [ ] User / Customer 与 Auth 用户关联（id 对齐：User.authId 或映射表）
-- [ ] 部门角色映射到 Auth role（现有 16 角色枚举复用）
-- [ ] middleware.ts 从 cookie-persona 改真实 session（现有 nav-registry/权限引擎复用）
-- [ ] 登录页已存在（/login + scrypt/HMAC/MFA 原型）——与 Supabase Auth 合并或替换
+- [x] Supabase Auth：email/password + OTP，替换 dz_demo_persona（新增 Account tab，demo 保留 dev/e2e）
+- [x] User / Customer 与 Auth 用户关联：User.authId / Customer.authId（迁移 supabase_auth_link，三库同步）
+- [x] 部门角色映射到 Auth role（16 角色枚举复用，经 JWT claims 注入）
+- [x] middleware.ts 三路径：Supabase session（生产）→ demo persona（dev/e2e）→ legacy dz_session
+- [x] 登录页 /login 接入 Supabase Auth（Account=Supabase / Legacy=原型 / Demo=persona），保留 scrypt/MFA
+- [x] JWT claims 注入：orgId/branchId/role/userId/customerId（user_metadata）→ RLS 读取生效；实测登录链路 + claims 验证通过
+- [ ] 生产切 authenticated 角色连 PG（连接池 + RLS 强制）——上线前最后一步（当前 postgres 绕过保本地兼容）
 
 ### A4. Demo 清理（上线前必须移除）
 - [ ] 移除 demo-only：resetDemo、persona switcher（DemoBar 生产隐藏或条件渲染）
