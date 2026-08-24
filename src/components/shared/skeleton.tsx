@@ -2,9 +2,9 @@
 export function CardSkeleton({ h = "h-28" }: { h?: string }) {
   return (
     <div className={"rounded-2xl border bg-card p-4 " + h}>
-      <div className="h-3 w-1/3 rounded bg-muted animate-pulse" />
-      <div className="mt-3 h-6 w-1/2 rounded bg-muted/70 animate-pulse" />
-      <div className="mt-2 h-3 w-2/3 rounded bg-muted/50 animate-pulse" />
+      <div className="h-3 w-1/3 rounded bg-muted dz-shimmer" />
+      <div className="mt-3 h-6 w-1/2 rounded bg-muted/70 dz-shimmer" />
+      <div className="mt-2 h-3 w-2/3 rounded bg-muted/50 dz-shimmer" />
     </div>
   );
 }
@@ -15,12 +15,12 @@ export function TableSkeleton({ rows = 6 }: { rows?: number }) {
       <div className="h-10 bg-muted/50" />
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="flex items-center gap-3 border-t border-border/50 px-4 py-3">
-          <div className="h-8 w-8 rounded-full bg-muted/70 animate-pulse" />
+          <div className="h-8 w-8 rounded-full bg-muted/70 dz-shimmer" />
           <div className="flex-1 space-y-1.5">
-            <div className="h-3 w-1/3 rounded bg-muted/70 animate-pulse" />
-            <div className="h-3 w-1/2 rounded bg-muted/50 animate-pulse" />
+            <div className="h-3 w-1/3 rounded bg-muted/70 dz-shimmer" />
+            <div className="h-3 w-1/2 rounded bg-muted/50 dz-shimmer" />
           </div>
-          <div className="h-5 w-16 rounded-full bg-muted/60 animate-pulse" />
+          <div className="h-5 w-16 rounded-full bg-muted/60 dz-shimmer" />
         </div>
       ))}
     </div>
@@ -38,9 +38,9 @@ export function GridSkeleton({ cols = 3, rows = 2, card = "h-40" }: { cols?: num
     <div className={"grid grid-cols-1 " + (GRID_COLS[cols] ?? "lg:grid-cols-3") + " gap-3"}>
       {Array.from({ length: cols * rows }).map((_, i) => (
         <div key={i} className={"rounded-2xl border bg-card p-4 " + card}>
-          <div className="h-3 w-2/3 rounded bg-muted animate-pulse" />
-          <div className="mt-3 h-5 w-1/2 rounded bg-muted/70 animate-pulse" />
-          <div className="mt-2 h-3 w-1/3 rounded bg-muted/50 animate-pulse" />
+          <div className="h-3 w-2/3 rounded bg-muted dz-shimmer" />
+          <div className="mt-3 h-5 w-1/2 rounded bg-muted/70 dz-shimmer" />
+          <div className="mt-2 h-3 w-1/3 rounded bg-muted/50 dz-shimmer" />
         </div>
       ))}
     </div>

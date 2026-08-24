@@ -273,6 +273,58 @@ body { font-feature-settings: "cv11"; }
 }
 .animate-fade-in { animation: dz-fade-in 0.18s ease-out both; }
 
+/* ---- route overlay (方案 B：加载遮罩层) ---- */
+.dz-route-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: hsl(var(--background) / 0.72);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+.dz-overlay-enter { animation: dz-overlay-in 0.18s ease-out both; }
+.dz-overlay-leave { animation: dz-overlay-out 0.25s ease-in both; }
+@keyframes dz-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes dz-overlay-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+.dz-overlay-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px; height: 64px;
+  border-radius: 1.25rem;
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.12);
+  border: 1px solid hsl(var(--primary) / 0.25);
+  box-shadow: 0 8px 32px -8px hsl(var(--primary) / 0.4);
+  animation: dz-logo-pulse 0.8s ease-in-out infinite;
+}
+@keyframes dz-logo-pulse {
+  0%, 100% { transform: scale(0.95); opacity: 0.75; }
+  50%      { transform: scale(1.05); opacity: 1; }
+}
+
+/* ---- skeleton shimmer (骨架屏升级：流动光带) ---- */
+.dz-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, hsl(var(--muted) / 0.6) 25%, hsl(var(--muted) / 0.25) 37%, hsl(var(--muted) / 0.6) 63%);
+  background-size: 400% 100%;
+  animation: dz-shimmer 1.4s ease infinite;
+}
+@keyframes dz-shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
 /* top route progress bar */
 @keyframes dz-progress-indeterminate {
   0%   { width: 0%; }
