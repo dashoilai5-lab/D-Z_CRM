@@ -281,7 +281,7 @@ body { font-feature-settings: "cv11"; }
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in oklab, oklch(0.76 0.17 45) 8%, hsl(var(--background) / 0.75));
+  background: color-mix(in oklab, oklch(0.72 0.19 32) 10%, hsl(var(--background) / 0.75));
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
 }
