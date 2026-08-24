@@ -25,9 +25,11 @@ export async function middleware(req: NextRequest) {
   const { response, user } = await updateSession(req);
   if (user) return response;
 
-  // 2. Demo persona (dev/e2e): nav-registry URL gating on persona cookie.
+  // 2. Demo persona (dev/e2e ONLY): nav-registry URL gating on persona cookie.
+  //    Production never accepts the demo persona — real auth only.
+  const isProd = process.env.NODE_ENV === "production";
   const raw = req.cookies.get(PERSONA_COOKIE)?.value as DemoPersona | undefined;
-  const hasPersona = raw && (["OWNER", "COUNTER_STAFF", "MECHANIC", "CUSTOMER"] as string[]).includes(raw);
+  const hasPersona = !isProd && raw && (["OWNER", "COUNTER_STAFF", "MECHANIC", "CUSTOMER"] as string[]).includes(raw);
   if (hasPersona) {
     if (raw === "CUSTOMER") {
       return NextResponse.redirect(new URL("/rider/home", req.url));
