@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronRight, MessageCircle, CheckCheck } from "lucide-react";
 import { getDemoCustomer } from "@/lib/demo-customer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { SignOutIconButton } from "@/components/rider/sign-out-button";
 import { initials } from "@/lib/format";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
@@ -22,11 +23,14 @@ export default async function RiderProfilePage() {
   ]);
   return (
     <div className="space-y-5">
-      <div className="text-center">
-        <Avatar className="h-20 w-20 mx-auto text-xl"><AvatarFallback className="bg-primary/10 text-primary">{initials(customer.name)}</AvatarFallback></Avatar>
-        <h1 className="mt-3 text-xl font-bold">{customer.name}</h1>
-        <p className="text-sm text-muted-foreground">{customer.phone}{customer.email ? " · " + customer.email : ""}</p>
-        <p className="text-xs text-muted-foreground mt-1">{t("rider.member-since", lang)} {customer.joinedAt.getFullYear()}</p>
+      <div className="relative">
+        <div className="absolute right-0 top-0 z-10"><SignOutIconButton /></div>
+        <div className="text-center">
+          <Avatar className="h-20 w-20 mx-auto text-xl"><AvatarFallback className="bg-primary/10 text-primary">{initials(customer.name)}</AvatarFallback></Avatar>
+          <h1 className="mt-3 text-xl font-bold">{customer.name}</h1>
+          <p className="text-sm text-muted-foreground">{customer.phone}{customer.email ? " · " + customer.email : ""}</p>
+          <p className="text-xs text-muted-foreground mt-1">{t("rider.member-since", lang)} {customer.joinedAt.getFullYear()}</p>
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl border bg-card p-4 text-center">
