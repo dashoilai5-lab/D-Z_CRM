@@ -334,4 +334,5 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-21 | 路由遮罩层（方案 B）：① RouteOverlay 组件——切页瞬间全屏半透明遮罩（backdrop-blur 2px）+ 中央品牌 logo 呼吸动画（pulse 0.8s），进入 180ms 淡入 / 250ms 淡出 ② 骨架屏升级 dz-shimmer（流动光带，替换 animate-pulse）③ 挂载根布局（与 RouteProgress 并存） | 实测：切页 overlay+logo+shimmer 同时可见，就绪后遮罩淡出；tsc0/unit20/build 绿 |
 | 2026-08-21 | 炫酷加载器升级（RouteOverlay）：能量环（conic-gradient 旋转 1.6s + 发光）+ 3 轨道光点（反向运行 2.4s stagger）+ 中心发光 logo（呼吸+光晕+轻摆）+ 背景光晕脉动；遮罩停留延长至 1.6s（完整展示动画） | 实测：ring/dots×3/core 全渲染，三个动画 dz-ring-spin/dz-dot-orbit/dz-core-breathe 运行中；tsc0/unit20/build 绿 |
 | 2026-08-21 | 加载器调速：遮罩停留 1.6s→0.8s，能量环 1.2s / 光点 1.8s / logo 1.2s（用户反馈太长） | 实测：切页 200ms 出现→700ms 消失，动画完整可见且不拖沓 |
+| 2026-08-21 | 修复加载器可见性（用户反馈只见 logo）：原能量环用 mask radial-gradient 只留 1px 环（不可见）→ 改为双 border spinner（外弧顺时针 1s + 内弧逆时针 1.6s，均发光）；光点 8px→10px + 更亮光晕 + 轨道 40→48px；光晕 0.10→0.16 更明显；core z-index 置顶 | 实测 DOM：ring 145px 橙边+dz-ring-spin、ring2、dots×3（轨道位）、core 全渲染；截图 prod-loader-v2.png |
 | — | （后续改动在此追加） | — |
