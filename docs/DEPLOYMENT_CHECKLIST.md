@@ -37,12 +37,11 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 > 完成这些才可算能上线。预计工作量：3-5 天（含测试）。
 
 ### A1. Supabase 项目与数据库
-- [ ] 创建 Supabase 项目（记 Project URL / anon key / service role key）
-- [ ] DATABASE_URL 指向 Supabase Postgres（连接串含 password）
-- [ ] pnpm exec prisma migrate deploy 到 Supabase
-  - ⚠️ SQLite→Postgres 差异检查：enum（Prisma 自动建 type）、Json 字段（SQLite 宽松 vs PG 严格）、cuid、布尔默认值
-  - ⚠️ 中文/马来文文案字段：确认 PG text 无编码问题（默认 UTF-8 OK）
-- [x] 数据迁移脚本：dev.db → Postgres（用户/客户/工单/发票/产品/库存全量）——`scripts/migrate-sqlite-to-pg.ts`（骨架就位：dmmf 自动枚举 61 模型 + FK 拓扑序 + 批 INSERT 幂等 + dry-run；真实迁移待 `--dst <Supabase 连接串>`，dry-run 实测 5060 行读取正常）
+- [x] 创建 Supabase 项目（ref `dukbfgqbrprivnzcsrlh`；Project URL / anon / service_role 已入 .env）
+- [x] DATABASE_URL 指向 Supabase Postgres——连接串已入 .env 的 `DST_DATABASE_URL`（直连 db.dukbfgqbrprivnzcsrlh.supabase.co:5432）
+- [x] 建表到 Supabase——⚠️ 不能 migrate deploy（schema provider 锁 sqlite + 迁移文件 SQLite 方言），改用 `prisma migrate diff --from-empty` 生成 PG 基线 `docs/pg-baseline.sql`（61 表 / 21 enum / 211 语句）在目标库执行，0 错误
+  - ⚠️ SQLite→Postgres 差异检查：enum 自动建 type ✅；Json 字段实际是 String 类型（清单 §6 担忧不成立）✅；cuid 字符串直迁 ✅
+- [x] 数据迁移执行成功：`scripts/migrate-sqlite-to-pg.ts` 全量 61 模型 5060 行 / 0 失败 / 2.6s；验证行数与 FK 关联完整（Ahmad→2 摩托）。注意：Supabase 自签证书 → 脚本自动放宽校验（仅迁移场景）；.env 连接串去掉 sslmode=require（pg 8.23 会按 verify-full 失败）
 
 ### A2. RLS（Row Level Security）
 - [ ] 启用 RLS：按 organisationId（tenant）隔离所有业务表

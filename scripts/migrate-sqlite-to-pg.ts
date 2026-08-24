@@ -164,7 +164,14 @@ async function main() {
   // 目标：PG（真实迁移才连）
   let dst: Pool | null = null;
   if (!args.dryRun) {
-    dst = new Pool({ connectionString: args.dstUrl, max: 5 });
+    // Supabase 用自签证书链，pg 8.23 的 sslmode=require 会按 verify-full 校验而失败；
+    // 一次性迁移场景放宽证书校验（应用运行时连接另配正式证书策略）。
+    const isSupabase = /supabase\.co/.test(args.dstUrl);
+    dst = new Pool({
+      connectionString: args.dstUrl,
+      max: 5,
+      ssl: isSupabase ? { rejectUnauthorized: false } : undefined,
+    });
     await dst.query("SELECT 1");
     console.log(`[migrate] 目标 Postgres 已连接：${args.dstUrl.replace(/:[^:@]+@/, ":***@")}`);
     if (args.truncate) {

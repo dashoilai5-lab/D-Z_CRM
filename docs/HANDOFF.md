@@ -19,7 +19,7 @@
 **剩余主线不变**：① 经销商验证（dtodo 59e04e5e）② 生产迁移 §65（dtodo 92b29072）——生产属性项（真实 provider/HTTPS/备份/索引/限流/PDPA）在 SETUP §5 清单与追踪文档各段 🟡 备注。
 
 ## 一句话状态
-原型功能齐备且全绿（tsc0/unit20/e2e75+6skip），迭代增强完成：Loading 全链路、UI 去 AI 味与高级感、i18n toast、分页、里程审计流、Mechanic Board 技师下拉、preview 框架修复、海报自动轮播（按尺寸适配）、Workshop→Rider News 发布联动、产品图片（10 SKU）、Hot Picks、真机预览（LAN IP 192.168.100.240）。**已进入部署准备**：DEPLOYMENT_CHECKLIST.md（阶段 A Supabase+RLS+Auth+demo 清理 / B Provider 换真 / C Vercel+Sentry+k6）。A1 迁移脚本骨架完成（26906c8，dry-run 61 模型/5060 行全读，待 Supabase --dst 真迁移）；顺带修复 sandbox 下 pnpm 依赖安装（CI=true + XDG_CACHE_HOME=$PWD/.cache 重建 + prisma generate）。
+原型功能齐备且全绿（tsc0/unit20/e2e75+6skip），迭代增强完成：Loading 全链路、UI 去 AI 味与高级感、i18n toast、分页、里程审计流、Mechanic Board 技师下拉、preview 框架修复、海报自动轮播（按尺寸适配）、Workshop→Rider News 发布联动、产品图片（10 SKU）、Hot Picks、真机预览（LAN IP 192.168.100.240）。**已进入部署准备**：DEPLOYMENT_CHECKLIST.md。**A1 数据库迁移完成**：Supabase 项目 dukbfgqbrprivnzcsrlh 建表（PG 基线 docs/pg-baseline.sql，61 表/21 enum/211 语句 0 错）+ 数据全量迁移（5060 行/0 失败/2.6s，验证通过）。关键决策：migrate deploy 不可行（sqlite provider）→ migrate diff 基线方案。.env 已配 DST_DATABASE_URL 等 4 变量。下一步：A2 RLS / A3 Auth。
 
 ## 会话信息
 - 原会话 ID：session-ec4b081f-efca-4e4f-a187-4302bb0ce385
