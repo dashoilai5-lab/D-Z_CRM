@@ -2,21 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, CalendarClock, Wrench, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function MobileNav() {
+export interface MobileNavItem { href: string; label: string; icon: React.ComponentType<{ className?: string }>; }
+
+export function MobileNav({ items }: { items: MobileNavItem[] }) {
   const path = usePathname();
-  const items = [
-    { href: "/workshop/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/workshop/customers", label: "Customers", icon: Users },
-    { href: "/workshop/bookings", label: "Bookings", icon: CalendarClock },
-    { href: "/workshop/jobs", label: "Jobs", icon: Wrench },
-    { href: "/workshop/mechanic", label: "Mechanic", icon: ClipboardList },
-  ];
   return (
     <nav className="lg:hidden sticky bottom-0 z-40 border-t bg-background/95 backdrop-blur">
-      {/* safe-area padding for phones with a home indicator / gesture bar */}
       <div className="flex pb-[env(safe-area-inset-bottom)]">
         {items.map((it) => {
           const active = path === it.href || path.startsWith(it.href + "/");

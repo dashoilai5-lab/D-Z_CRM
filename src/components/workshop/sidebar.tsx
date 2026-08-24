@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Bike } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/workshop/sign-out-button";
-import { navForPersona } from "@/lib/nav-registry";
+import { navForPersona, navForRole } from "@/lib/nav-registry";
 import { t, type Lang } from "@/lib/i18n";
 import type { DemoUserInfo } from "@/lib/demo-user";
 import type { DemoPersona } from "@/lib/persona";
@@ -24,10 +24,11 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href + "/");
 }
 
-export function Sidebar({ persona, user, lang = "en" }: { persona: DemoPersona; user?: DemoUserInfo | null; lang?: Lang }) {
+export function Sidebar({ persona, role, user, lang = "en" }: { persona: DemoPersona; role?: string; user?: DemoUserInfo | null; lang?: Lang }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
-  const sections = navForPersona(persona);
+  // 有真实 role → 按权限矩阵过滤；否则退回 persona 过滤（demo 模式）
+  const sections = role ? navForRole(role, persona) : navForPersona(persona);
 
   if (sections.length === 0) return null;
 
