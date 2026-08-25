@@ -93,7 +93,7 @@ export function MotorcycleForm({
         <div>
           <Label>Brand</Label>
           <Select value={brandIsCustom && brand !== OTHERS ? OTHERS : brand} onValueChange={(v) => { setBrand(v ?? "Yamaha"); setModel(""); setCustomModel(""); }}>
-            <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               {BIKE_BRANDS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
             </SelectContent>
@@ -105,7 +105,7 @@ export function MotorcycleForm({
         <div>
           <Label>Model</Label>
           <Select value={modelIsCustom && model !== OTHERS ? OTHERS : model} onValueChange={(v) => { setModel(v ?? ""); setCustomModel(""); }}>
-            <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               {models.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
             </SelectContent>
@@ -119,7 +119,7 @@ export function MotorcycleForm({
         <div>
           <Label>Year</Label>
           <Select value={year} onValueChange={(v) => setYear(v ?? String(THIS_YEAR - 1))}>
-            <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               {Array.from({ length: 36 }, (_, i) => THIS_YEAR - 1 - i).map((y) => (
                 <SelectItem key={y} value={String(y)}>{y}</SelectItem>
@@ -130,7 +130,7 @@ export function MotorcycleForm({
         <div>
           <Label>Color</Label>
           <Select value={color} onValueChange={(v) => setColor(v ?? "Black")}>
-            <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
             <SelectContent>
               {COLORS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
             </SelectContent>
