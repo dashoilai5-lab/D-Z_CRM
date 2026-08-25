@@ -3,6 +3,7 @@ import { ChevronRight, MessageCircle, CheckCheck } from "lucide-react";
 import { getRiderCustomer } from "@/lib/rider-customer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SignOutIconButton } from "@/components/rider/sign-out-button";
+import { Settings as SettingsIcon } from "lucide-react";
 import { initials } from "@/lib/format";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
@@ -31,7 +32,12 @@ export default async function RiderProfilePage() {
     <PageTransition>
     <div className="space-y-5">
       <div className="relative">
-        <div className="absolute right-0 top-0 z-10"><SignOutIconButton /></div>
+        <div className="absolute right-0 top-0 z-10 flex items-center gap-2">
+          <Link href="/rider/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label="Settings">
+            <SettingsIcon className="h-4 w-4" />
+          </Link>
+          <SignOutIconButton />
+        </div>
         <div className="text-center">
           <Avatar className="h-20 w-20 mx-auto text-xl"><AvatarFallback className="bg-primary/10 text-primary">{initials(customer.name)}</AvatarFallback></Avatar>
           <h1 className="mt-3 text-xl font-bold">{customer.name}</h1>
