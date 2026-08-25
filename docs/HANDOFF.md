@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-当前在 fix/rider-language（HEAD e4d2f6d 已 push，待用户确认 merge）。生产 = main @ 5e34b13。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已 merge 部署生产）→ **Rider App 语言 bug 修复**（补齐全站未接 i18n 硬编码英文，cbebcbd + 补充 Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
+本地与生产 = main @ 33aad24（语言修复已 merge，部署中）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已上线）→ **Rider App 语言 bug 修复**（merge 33aad24：全站 i18n cbebcbd + Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
 ## 会话信息
 - 原会话 ID：session-0dbaff06-4fb9-49b9-a857-ddffcd6950f1
@@ -44,8 +44,8 @@
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：fix/rider-language ｜ HEAD：cbebcbd（语言 bug 修复）｜ 未提交：仅 screenshots/ 截图
-- 远程：origin/fix/rider-language 已 push；main @ 5e34b13（分叉 0/0）
+- 分支：main ｜ HEAD：33aad24（merge 语言修复）｜ 未提交：仅 screenshots/ 截图
+- 远程：与本地一致（分叉 0/0）；fix/rider-language 已删除（本地+远程）
 
 ## 关键决策与约定
 - 部署环境 = Vercel（唯一生产）；流程 = feature 分支 → push → Preview → 用户确认 → merge main → 自动部署
