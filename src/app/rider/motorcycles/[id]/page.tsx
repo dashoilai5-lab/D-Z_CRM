@@ -10,16 +10,6 @@ import { EditMotorcycle } from "@/components/rider/edit-motorcycle";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 
-/** Consumable wear: 0-100 progress from last replacement to the recommended interval. */
-function wearProgress(currentKm: number, lastKm: number | null, intervalKm: number): number {
-  if (lastKm == null) return 0;
-  const used = currentKm - lastKm;
-  return Math.min(100, Math.max(0, Math.round((used / intervalKm) * 100)));
-}
-function kmUsed(currentKm: number, lastKm: number | null): number | null {
-  return lastKm == null ? null : Math.max(0, currentKm - lastKm);
-}
-
 export const dynamic = "force-dynamic";
 
 export default async function MotorcyclePassportPage({ params }: { params: Promise<{ id: string }> }) {
@@ -69,7 +59,6 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
           <p className="mt-1 text-[11px] font-medium text-primary">{ti.label} · {ti.labelBM}</p>
         ) : null; })()}
         <p className="text-sm text-muted-foreground">{passport.plate} · {passport.year}{passport.color ? " · " + passport.color : ""}</p>
-        <p className="mt-2 text-lg font-bold tabular-nums">{fmtKM(passport.currentMileage)}</p>
         <div className="mt-5 grid grid-cols-3 gap-2">
           <div className="rounded-xl bg-muted/50 p-3">
             <div className="text-lg font-bold tabular-nums">{verified}</div>
@@ -101,29 +90,30 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
         <div className="mt-4 space-y-4">
           {(
             [
-              { labelKey: "rider.engine-oil", icon: Droplets, lastKm: passport.lastOilChangeMileage, intervalKm: 3000, tone: "bg-amber-500" },
-              { labelKey: "rider.oil-filter", icon: Filter, lastKm: passport.lastOilFilterMileage, intervalKm: 5000, tone: "bg-blue-500" },
-              { labelKey: "rider.chain-sprocket", icon: Link2, lastKm: passport.lastServiceMileage, intervalKm: 3000, tone: "bg-emerald-500" },
+              { labelKey: "rider.engine-oil", icon: Droplets, lastKm: passport.lastOilChangeMileage, intervalKm: 3000 },
+              { labelKey: "rider.oil-filter", icon: Filter, lastKm: passport.lastOilFilterMileage, intervalKm: 5000 },
+              { labelKey: "rider.chain-sprocket", icon: Link2, lastKm: passport.lastServiceMileage, intervalKm: 3000 },
             ] as const
           ).map((c) => {
-            const used = kmUsed(passport.currentMileage, c.lastKm);
-            const pct = wearProgress(passport.currentMileage, c.lastKm, c.intervalKm);
-            const over = pct >= 100;
+            const nextKm = c.lastKm == null ? null : c.lastKm + c.intervalKm;
+            const over = nextKm != null && passport.currentMileage >= nextKm;
             return (
               <div key={c.labelKey}>
                 <div className="flex items-center justify-between text-xs">
                   <span className="inline-flex items-center gap-1.5 font-medium">
                     <c.icon className="h-3.5 w-3.5 text-muted-foreground" /> {t(c.labelKey, lang)}
                   </span>
-                  <span className={"font-semibold tabular-nums " + (over ? "text-red-600" : "text-muted-foreground")}>
-                    {used == null ? "—" : fmtKM(used) + " / " + fmtKM(c.intervalKm)}
-                  </span>
+                  {over && <span className="font-semibold text-red-600">{t("rider.replace-now", lang)}</span>}
                 </div>
-                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
-                  <div className={"h-full rounded-full " + (over ? "bg-red-500" : c.tone)} style={{ width: pct + "%" }} />
-                </div>
-                <div className="mt-0.5 text-[10px] text-muted-foreground">
-                  {used == null ? t("rider.no-record", lang) : over ? t("rider.replace-now", lang) : t("rider.replace-at", lang) + " " + fmtKM((c.lastKm ?? 0) + c.intervalKm)}
+                <div className="mt-1.5 grid grid-cols-2 gap-2">
+                  <div className="rounded-lg bg-muted/50 px-2.5 py-1.5">
+                    <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Last</div>
+                    <div className="text-sm font-bold tabular-nums">{c.lastKm == null ? "—" : fmtKM(c.lastKm)}</div>
+                  </div>
+                  <div className="rounded-lg bg-muted/50 px-2.5 py-1.5">
+                    <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Next</div>
+                    <div className="text-sm font-bold tabular-nums">{nextKm == null ? "—" : fmtKM(nextKm)}</div>
+                  </div>
                 </div>
               </div>
             );

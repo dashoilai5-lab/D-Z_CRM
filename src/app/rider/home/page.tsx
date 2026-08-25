@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Bike, CalendarPlus, ChevronRight, Wrench, AlertTriangle, Clock, Bell, Tag } from "lucide-react";
 import { getRiderCustomer } from "@/lib/rider-customer";
 import { db } from "@/lib/db";
-import { fmtKM } from "@/lib/format";
+import { fmtKM, fmtDate } from "@/lib/format";
 import { isPromoActive } from "@/modules/marketing/promo";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
@@ -12,14 +12,6 @@ import RiderSignInPrompt from "@/components/rider/sign-in-prompt";
 export const dynamic = "force-dynamic";
 
 const SERVICE_INTERVAL_KM = 3000;
-
-/** 0-100 progress between last service and the next due mileage. */
-function serviceProgress(currentKm: number, lastKm: number | null, nextKm: number | null): number {
-  if (nextKm == null || lastKm == null || nextKm <= lastKm) return 0;
-  const used = currentKm - lastKm;
-  const span = nextKm - lastKm;
-  return Math.min(100, Math.max(0, Math.round((used / span) * 100)));
-}
 
 export default async function RiderHomePage() {
   const customer = await getRiderCustomer();
@@ -51,12 +43,10 @@ export default async function RiderHomePage() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
-  const lastKm = bike?.lastServiceMileage ?? null;
   const nextKm = bike?.nextServiceMileage ?? null;
-  const progress = bike ? serviceProgress(bike.currentMileage, lastKm, nextKm) : 0;
-  const kmLeft = bike && nextKm != null ? nextKm - bike.currentMileage : null;
-  const isDue = kmLeft != null && kmLeft <= SERVICE_INTERVAL_KM * 0.1;
-  const isSoon = kmLeft != null && !isDue && kmLeft <= SERVICE_INTERVAL_KM * 0.3;
+  // 不显示当前里程进度——只显示 Last / Next 服务节点
+  const isDue = bike != null && nextKm != null && bike.currentMileage >= nextKm;
+  const isSoon = bike != null && nextKm != null && !isDue && bike.currentMileage >= nextKm - SERVICE_INTERVAL_KM * 0.3;
 
   return (
     <PageTransition>
@@ -67,11 +57,11 @@ export default async function RiderHomePage() {
           <h1 className="text-2xl font-bold tracking-tight">{customer.name.split(" ")[0]}</h1>
         </div>
         <div className="flex items-center gap-2">
-          {kmLeft != null && (
-            <span className={"rounded-full px-3 py-1 text-[11px] font-bold " + (isDue ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300" : isSoon ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300")}>
-              {isDue ? "SERVICE DUE" : isSoon ? "SOON" : "ON TRACK"}
+          {isDue || isSoon ? (
+            <span className={"rounded-full px-3 py-1 text-[11px] font-bold " + (isDue ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300")}>
+              {isDue ? "SERVICE DUE" : "SOON"}
             </span>
-          )}
+          ) : null}
           <Link href="/rider/notifications" className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-card text-muted-foreground hover:text-foreground" aria-label="Notifications">
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
@@ -108,30 +98,33 @@ export default async function RiderHomePage() {
             </div>
           </div>
 
-          {/* service reminder banner */}
-          {reminder && kmLeft != null && (
+          {/* service reminder — shows last & next service milestones only (no live mileage tracking) */}
+          {reminder && (
             <div className={"mt-4 rounded-2xl p-4 " + (isDue ? "bg-red-50 ring-1 ring-red-200 dark:bg-red-950/40 dark:ring-red-900" : isSoon ? "bg-amber-50 ring-1 ring-amber-200 dark:bg-amber-950/40 dark:ring-amber-900" : "bg-muted/40")}>
               <div className="flex items-center justify-between text-xs">
                 <span className={"inline-flex items-center gap-1.5 font-semibold " + (isDue ? "text-red-700 dark:text-red-300" : isSoon ? "text-amber-700 dark:text-amber-300" : "text-muted-foreground")}>
                   {isDue ? <AlertTriangle className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
-                  {isDue ? "Service is due" : isSoon ? "Service coming up" : "Next service"}
+                  {isDue ? "Service is due" : isSoon ? "Service coming up" : "Service schedule"}
                 </span>
-                <span className="font-bold tabular-nums">{kmLeft >= 0 ? fmtKM(kmLeft) + " left" : fmtKM(-kmLeft) + " overdue"}</span>
               </div>
-              <div className="mt-2.5 h-2 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
-                <div className={"h-full rounded-full transition-all " + (isDue ? "bg-red-500" : isSoon ? "bg-amber-500" : "bg-emerald-500")} style={{ width: progress + "%" }} />
-              </div>
-              <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground">
-                <span>Last service {fmtKM(reminder.lastServiceMileage)}</span>
-                <span>Due {fmtKM(reminder.nextServiceMileage)}</span>
+              <div className="mt-2 flex items-center justify-between text-sm">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Last service</div>
+                  <div className="font-bold tabular-nums">{fmtKM(reminder.lastServiceMileage)}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Next service</div>
+                  <div className="font-bold tabular-nums">{fmtKM(reminder.nextServiceMileage)}</div>
+                </div>
               </div>
             </div>
           )}
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-2xl bg-muted/50 p-4">
-              <div className="text-xs text-muted-foreground">{t("rider.current-mileage", lang)}</div>
-              <div className="mt-1 text-xl font-bold tabular-nums">{fmtKM(bike.currentMileage)}</div>
+              <div className="text-xs text-muted-foreground">Last service</div>
+              <div className="mt-1 text-xl font-bold tabular-nums">{fmtKM(bike.lastServiceMileage ?? 0)}</div>
+              {bike.lastServiceDate && <div className="text-[11px] text-muted-foreground mt-0.5">{fmtDate(bike.lastServiceDate)}</div>}
             </div>
             <div className="rounded-2xl bg-muted/50 p-4">
               <div className="text-xs text-muted-foreground">{t("rider.next-service", lang)}</div>
