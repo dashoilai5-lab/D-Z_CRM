@@ -179,8 +179,8 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
         </div>
       </div>
 
-      {/* schedule */}
-      <div className="grid grid-cols-2 gap-3">
+      {/* schedule — Date & Time stacked with generous spacing */}
+      <div className="space-y-4">
         <div>
           <Label>Date</Label>
           <input type="date" min={TOMORROW} value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
@@ -188,7 +188,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
         <div>
           <Label>Time</Label>
           <Select value={timeSlot} onValueChange={(v) => setTimeSlot(v ?? "")}>
-            <SelectTrigger className="mt-1.5"><SelectValue placeholder={daySlots.length > 0 ? "Pick a slot" : "Pick a time"} /></SelectTrigger>
+            <SelectTrigger className="mt-1.5 w-full"><SelectValue placeholder={daySlots.length > 0 ? "Pick a slot" : "Pick a time"} /></SelectTrigger>
             <SelectContent>
               {slotOptions.map((t) => (
                 <SelectItem key={t} value={t}>{t}</SelectItem>
