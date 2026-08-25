@@ -69,7 +69,10 @@ export default async function QrRiderPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
 
-        <p className="mt-5 text-center text-[10px] text-muted-foreground">Scanned via D&Z rider QR · {fmtDate(new Date())}</p>
+        <Link href={"/workshop/customers/" + customer.id} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-primary-foreground">
+          Open in Workshop OS
+        </Link>
+        <p className="mt-4 text-center text-[10px] text-muted-foreground">Scanned via D&Z rider QR · {fmtDate(new Date())}</p>
       </div>
     </main>
   );

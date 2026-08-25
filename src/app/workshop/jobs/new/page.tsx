@@ -4,8 +4,8 @@ import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
-export default async function NewJobPage({ searchParams }: { searchParams: Promise<{ customer?: string }> }) {
-  const { customer } = await searchParams;
+export default async function NewJobPage({ searchParams }: { searchParams: Promise<{ customer?: string; motorcycle?: string }> }) {
+  const { customer, motorcycle } = await searchParams;
   const [customers, motorcycles, packages, mechanics] = await Promise.all([
     db.customer.findMany({ select: { id: true, name: true, phone: true }, orderBy: { name: "asc" } }),
     db.motorcycle.findMany({ select: { id: true, customerId: true, brand: true, model: true, plate: true, year: true, type: true, currentMileage: true } }),
@@ -20,7 +20,7 @@ export default async function NewJobPage({ searchParams }: { searchParams: Promi
   return (
     <div>
       <PageHeader title="Create Service Job" subtitle="Customer → motorcycle → package → recommendations → mechanic" backHref="/workshop/jobs" />
-      <CreateJobForm customers={customers} motorcyclesByCustomer={motorcyclesByCustomer} packages={packages} mechanics={mechanics} preselectCustomer={customer ?? null} />
+      <CreateJobForm customers={customers} motorcyclesByCustomer={motorcyclesByCustomer} packages={packages} mechanics={mechanics} preselectCustomer={customer ?? null} preselectMotorcycle={motorcycle ?? null} />
     </div>
   );
 }

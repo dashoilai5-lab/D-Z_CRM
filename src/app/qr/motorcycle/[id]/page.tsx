@@ -79,11 +79,11 @@ export default async function QrMotorcyclePage({ params }: { params: Promise<{ i
         </div>
 
         <div className="mt-6 flex gap-2">
-          <Link href={"/workshop/bookings?motorcycle=" + bike.id} className="flex-1 rounded-xl bg-primary py-3 text-center text-sm font-semibold text-primary-foreground">
-            New booking
-          </Link>
-          <Link href={"/workshop/jobs/new?motorcycle=" + bike.id} className="flex-1 rounded-xl border py-3 text-center text-sm font-semibold">
+          <Link href={"/workshop/jobs/new?motorcycle=" + bike.id} className="flex-1 rounded-xl bg-primary py-3 text-center text-sm font-semibold text-primary-foreground">
             New job
+          </Link>
+          <Link href={"/workshop/customers/" + owner.id} className="flex-1 rounded-xl border py-3 text-center text-sm font-semibold">
+            Open customer
           </Link>
         </div>
         <p className="mt-4 text-center text-[10px] text-muted-foreground">Scanned via D&Z motorcycle QR · {fmtDate(new Date())}</p>

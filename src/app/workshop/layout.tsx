@@ -1,5 +1,6 @@
 import { CommandPalette } from "@/components/shared/command-palette";
 import { ThemeControls } from "@/components/shared/theme-controls";
+import { ScanQrButton } from "@/components/workshop/scan-qr-button";
 import { Sidebar } from "@/components/workshop/sidebar";
 import { MobileNav, type MobileNavItem } from "@/components/workshop/mobile-nav";
 import { navForRole } from "@/lib/nav-registry";
@@ -32,6 +33,7 @@ export default async function WorkshopLayout({ children }: { children: React.Rea
         <div className="hidden lg:flex items-center gap-4 border-b bg-background px-6 h-16">
           <CommandPalette />
           <div className="flex-1" />
+          <ScanQrButton />
           <ThemeControls />
         </div>
         <main className="flex-1 px-4 md:px-6 py-6 pb-24 lg:pb-8 max-w-7xl w-full mx-auto">{children}</main>

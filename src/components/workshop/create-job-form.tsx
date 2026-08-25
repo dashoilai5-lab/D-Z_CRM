@@ -16,25 +16,30 @@ import { useLang } from "@/components/shared/language-context";
 import { t, tpl } from "@/lib/i18n";
 
 export interface CustomerOption { id: string; name: string; phone: string | null }
-export interface MotorcycleOption { id: string; brand: string; model: string; plate: string; year: number; type: string; currentMileage: number }
+export interface MotorcycleOption { id: string; customerId: string; brand: string; model: string; plate: string; year: number; type: string; currentMileage: number }
 export interface PackageOption { id: string; name: string; tier: string; priceSen: number; isBestValue?: boolean; description?: string | null }
 export interface MechanicOption { id: string; name: string }
 export interface Rec { kind: string; description: string; reason: string; script: string; priceSen: number; productId?: string; unitCostSen?: number }
 
 export function CreateJobForm({
-  customers, motorcyclesByCustomer, packages, mechanics, preselectCustomer,
+  customers, motorcyclesByCustomer, packages, mechanics, preselectCustomer, preselectMotorcycle,
 }: {
   customers: CustomerOption[];
   motorcyclesByCustomer: Record<string, MotorcycleOption[]>;
   packages: PackageOption[];
   mechanics: MechanicOption[];
   preselectCustomer: string | null;
+  preselectMotorcycle?: string | null;
 }) {
   const router = useRouter();
   const lang = useLang();
   const [pending, start] = useTransition();
-  const [customerId, setCustomerId] = useState(preselectCustomer ?? "");
-  const [motorcycleId, setMotorcycleId] = useState("none"); // "none" = no bike picked yet (must match a SelectItem value)
+  // preselectMotorcycle 优先：带出车主 + 摩托（QR 扫码直达开单）
+  const initialBike = preselectMotorcycle
+    ? Object.values(motorcyclesByCustomer).flat().find((m) => m.id === preselectMotorcycle)
+    : undefined;
+  const [customerId, setCustomerId] = useState(initialBike?.customerId ?? preselectCustomer ?? "");
+  const [motorcycleId, setMotorcycleId] = useState(initialBike?.id ?? "none"); // "none" = no bike picked yet (must match a SelectItem value)
   const [mileage, setMileage] = useState("");
   const [request, setRequest] = useState("");
   const [packageId, setPackageId] = useState("");
