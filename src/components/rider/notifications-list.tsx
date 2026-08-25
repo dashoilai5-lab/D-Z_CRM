@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { BellRing, CalendarClock, Megaphone, MessageSquare, Info, CheckCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { markNotificationsRead } from "@/actions/rider";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 const TYPE_ICON: Record<string, { icon: typeof Info; cls: string }> = {
   REMINDER: { icon: CalendarClock, cls: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" },
@@ -24,6 +26,7 @@ export interface RiderNotification {
 
 export function NotificationsList({ customerId, notifications }: { customerId: string; notifications: RiderNotification[] }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const unread = notifications.filter((n) => !n.readAt).length;
 
@@ -36,7 +39,7 @@ export function NotificationsList({ customerId, notifications }: { customerId: s
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Notifications</h1>
+        <h1 className="text-2xl font-bold">{t("rider.notifications-title", lang)}</h1>
         {unread > 0 && (
           <button onClick={markAll} disabled={pending} className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-50">
             <CheckCheck className="h-3.5 w-3.5" /> Mark all read

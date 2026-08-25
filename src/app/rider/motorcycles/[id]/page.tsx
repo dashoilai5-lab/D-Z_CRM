@@ -49,7 +49,7 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
 
       {(activeBooking || activeJob) && (
         <Link href="/rider/service-status" className="block rounded-2xl border border-primary/30 bg-primary/5 p-4">
-          <div className="text-xs text-muted-foreground">Live service status</div>
+          <div className="text-xs text-muted-foreground">{t("bike.live-status", lang)}</div>
           <div className="mt-0.5 text-sm font-semibold text-primary">
             {activeJob?.status === "READY" ? "✓ Ready for collection" : activeJob ? "Being serviced — Job " + activeJob.jobNumber : "Booking " + activeBooking?.status.replace(/_/g, " ").toLowerCase()}
           </div>
@@ -118,11 +118,11 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
                 </div>
                 <div className="mt-1.5 grid grid-cols-2 gap-2">
                   <div className="rounded-lg bg-muted/50 px-2.5 py-1.5">
-                    <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Last</div>
+                    <div className="text-[9px] uppercase tracking-wide text-muted-foreground">{t("bike.last", lang)}</div>
                     <div className="text-sm font-bold tabular-nums">{c.lastKm == null ? "—" : fmtKM(c.lastKm)}</div>
                   </div>
                   <div className="rounded-lg bg-muted/50 px-2.5 py-1.5">
-                    <div className="text-[9px] uppercase tracking-wide text-muted-foreground">Next</div>
+                    <div className="text-[9px] uppercase tracking-wide text-muted-foreground">{t("bike.next", lang)}</div>
                     <div className="text-sm font-bold tabular-nums">{nextKm == null ? "—" : fmtKM(nextKm)}</div>
                   </div>
                 </div>

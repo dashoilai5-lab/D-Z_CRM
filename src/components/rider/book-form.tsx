@@ -14,7 +14,7 @@ import { motorcycleTypeInfo, MOTORCYCLE_TYPE_LABELS } from "@/lib/motorcycle-typ
 import { cn } from "@/lib/utils";
 import { formatRM } from "@/lib/money";
 import { useLang } from "@/components/shared/language-context";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 /** Module-level constant — Date.now() at module load, not per render. */
 const TOMORROW = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
@@ -68,11 +68,11 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
     <div className="space-y-5">
       {/* motorcycle */}
       <div>
-        <Label>Motorcycle</Label>
+        <Label>{t("rider.motorcycle", lang)}</Label>
         <Select value={motorcycleId} onValueChange={(v) => { setMotorcycleId(v ?? "none"); setPackageId("none"); setExtras({}); }}>
-          <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "No motorcycle on file…" : bikes.find((b) => b.id === v) ? bikes.find((b) => b.id === v)!.brand + " " + bikes.find((b) => b.id === v)!.model + " · " + bikes.find((b) => b.id === v)!.plate : "No motorcycle on file…")}</SelectValue></SelectTrigger>
+          <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? t("book.no-bike", lang) : bikes.find((b) => b.id === v) ? bikes.find((b) => b.id === v)!.brand + " " + bikes.find((b) => b.id === v)!.model + " · " + bikes.find((b) => b.id === v)!.plate : t("book.no-bike", lang))}</SelectValue></SelectTrigger>
           <SelectContent>
-            {bikes.length === 0 && <SelectItem value="none">No motorcycle on file…</SelectItem>}
+            {bikes.length === 0 && <SelectItem value="none">{t("book.no-bike", lang)}</SelectItem>}
             {bikes.map((b) => (
               <SelectItem key={b.id} value={b.id}>
                 {b.brand} {b.model} · {b.plate}{b.type ? " · " + (MOTORCYCLE_TYPE_LABELS[b.type] ?? b.type) : ""}
@@ -82,7 +82,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
         </Select>
         {bikeType && (
           <p className="mt-1.5 text-[11px] text-muted-foreground">
-            {bikeType.label} · {bikeType.labelBM} — recommended: {bikeType.serviceFocus.slice(0, 3).join(" · ")}
+            {tpl("book.recommended", lang, { label: bikeType.label, focus: bikeType.serviceFocus.slice(0, 3).join(" · ") })}
           </p>
         )}
       </div>
@@ -90,8 +90,8 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
       {/* package — single select (workshop-style) */}
       <div>
         <div className="flex items-baseline justify-between">
-          <Label>Service Package</Label>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Pick one</span>
+          <Label>{t("book.package", lang)}</Label>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("book.pick-one", lang)}</span>
         </div>
         <div className="mt-1.5 grid grid-cols-3 gap-2">
           {packages.map((p) => {
@@ -115,7 +115,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
                 <div className="mt-0.5 text-sm font-semibold leading-tight">{p.name}</div>
                 <div className="mt-1 text-base font-bold tabular-nums">{formatRM(p.priceSen)}</div>
                 {p.isBestValue && (
-                  <span className="mt-1 inline-block rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700 dark:text-emerald-300">BEST VALUE</span>
+                  <span className="mt-1 inline-block rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700 dark:text-emerald-300">{t("ws.packages.best-value", lang)}</span>
                 )}
               </button>
             );
@@ -127,8 +127,8 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
       {/* additional services — multi-select */}
       <div>
         <div className="flex items-baseline justify-between">
-          <Label>Additional Services</Label>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Select any</span>
+          <Label>{t("book.additional", lang)}</Label>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("book.select-any", lang)}</span>
         </div>
         <div className="mt-1.5 space-y-2.5">
           {groupedServices.map((g) => (
@@ -166,7 +166,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
 
       {/* summary */}
       <div className="rounded-2xl border bg-muted/30 p-4">
-        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Summary</div>
+        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("book.summary", lang)}</div>
         <div className="mt-2 space-y-1 text-sm">
           {pkg && (
             <div className="flex justify-between"><span>{pkg.name}</span><span className="tabular-nums">{formatRM(pkg.priceSen)}</span></div>
@@ -174,38 +174,38 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
           {extrasList.map((x) => (
             <div key={x.label} className="flex justify-between text-xs"><span>{x.label}</span><span className="tabular-nums">{formatRM(x.priceSen)}</span></div>
           ))}
-          {!pkg && extrasList.length === 0 && <p className="text-xs text-muted-foreground">No services selected yet.</p>}
-          <div className="flex justify-between border-t pt-1.5 mt-1.5 font-bold"><span>Estimated Total</span><span className="tabular-nums">{formatRM(totalSen)}</span></div>
+          {!pkg && extrasList.length === 0 && <p className="text-xs text-muted-foreground">{t("book.no-services", lang)}</p>}
+          <div className="flex justify-between border-t pt-1.5 mt-1.5 font-bold"><span>{t("book.estimated-total", lang)}</span><span className="tabular-nums">{formatRM(totalSen)}</span></div>
         </div>
       </div>
 
       {/* schedule — Date & Time stacked with generous spacing */}
       <div className="space-y-4">
         <div>
-          <Label>Date</Label>
+          <Label>{t("rider.date", lang)}</Label>
           <input type="date" min={TOMORROW} value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
         </div>
         <div>
-          <Label>Time</Label>
+          <Label>{t("rider.time", lang)}</Label>
           <Select value={timeSlot} onValueChange={(v) => setTimeSlot(v ?? "")}>
-            <SelectTrigger className="mt-1.5 w-full"><SelectValue placeholder={daySlots.length > 0 ? "Pick a slot" : "Pick a time"} /></SelectTrigger>
+            <SelectTrigger className="mt-1.5 w-full"><SelectValue placeholder={daySlots.length > 0 ? t("book.pick-slot", lang) : t("toast.pick-time", lang)} /></SelectTrigger>
             <SelectContent>
               {slotOptions.map((t) => (
                 <SelectItem key={t} value={t}>{t}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          {daySlots.length === 0 && date && <p className="mt-1 text-[11px] text-muted-foreground">No configured slots that day — a default time will be used.</p>}
+          {daySlots.length === 0 && date && <p className="mt-1 text-[11px] text-muted-foreground">{t("book.no-slots-day", lang)}</p>}
         </div>
       </div>
       <div>
-        <Label>Notes (optional)</Label>
-        <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Anything we should know?" className="mt-1.5" rows={3} />
+        <Label>{t("book.notes-optional", lang)}</Label>
+        <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={t("book.notes-placeholder", lang)} className="mt-1.5" rows={3} />
       </div>
       <Button className="w-full" size="lg" data-testid="book-submit" disabled={pending || !motorcycleId || !date || !timeSlot} onClick={submit}>
-        <Bike className="h-4 w-4 mr-2" /> {pending ? "Sending…" : "REQUEST BOOKING"}
+        <Bike className="h-4 w-4 mr-2" /> {pending ? t("book.sending", lang) : t("rider.request-booking", lang)}
       </Button>
-      <p className="text-center text-[11px] text-muted-foreground">The workshop receives your request instantly and confirms the slot.</p>
+      <p className="text-center text-[11px] text-muted-foreground">{t("book.footer", lang)}</p>
     </div>
   );
 }

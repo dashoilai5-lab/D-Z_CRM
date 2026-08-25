@@ -18,7 +18,7 @@ export default async function RiderHomePage() {
   const lang = await getLang();
   if (!customer) {
     // 无关联顾客档案 → 登录引导（layout 已拦截未登录，这里兜底已登录但未关联的边界）
-    return <RiderSignInPrompt />;
+    return <RiderSignInPrompt lang={lang} />;
   }
   const bike = [...customer.motorcycles].sort((a, b) => b.currentMileage - a.currentMileage)[0];
 
@@ -109,11 +109,11 @@ export default async function RiderHomePage() {
               </div>
               <div className="mt-2 flex items-center justify-between text-sm">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Last service</div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("svc.last-service", lang)}</div>
                   <div className="font-bold tabular-nums">{fmtKM(reminder.lastServiceMileage)}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Next service</div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("svc.next-service", lang)}</div>
                   <div className="font-bold tabular-nums">{fmtKM(reminder.nextServiceMileage)}</div>
                 </div>
               </div>
@@ -122,7 +122,7 @@ export default async function RiderHomePage() {
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-2xl bg-muted/50 p-4">
-              <div className="text-xs text-muted-foreground">Last service</div>
+              <div className="text-xs text-muted-foreground">{t("svc.last-service", lang)}</div>
               <div className="mt-1 text-xl font-bold tabular-nums">{fmtKM(bike.lastServiceMileage ?? 0)}</div>
               {bike.lastServiceDate && <div className="text-[11px] text-muted-foreground mt-0.5">{fmtDate(bike.lastServiceDate)}</div>}
             </div>

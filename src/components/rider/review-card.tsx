@@ -26,7 +26,7 @@ export function ReviewCard({ customerId, branchId, jobId, existingRating }: { cu
             <Star key={s} className={cn("h-3.5 w-3.5", s <= existingRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30")} />
           ))}
         </div>
-        <span className="text-[11px] text-muted-foreground">Thanks for your review</span>
+        <span className="text-[11px] text-muted-foreground">{t("svc.review-thanks", lang)}</span>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export function ReviewCard({ customerId, branchId, jobId, existingRating }: { cu
             className="h-9 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
           <div className="flex gap-2">
-            <button onClick={() => setOpen(false)} className="flex-1 rounded-lg border py-2 text-xs font-medium hover:bg-muted">Cancel</button>
+            <button onClick={() => setOpen(false)} className="flex-1 rounded-lg border py-2 text-xs font-medium hover:bg-muted">{t("common.cancel-short", lang)}</button>
             <button onClick={submit} disabled={pending || rating === 0} className="flex-1 rounded-lg bg-primary py-2 text-xs font-semibold text-primary-foreground disabled:opacity-50">
               {pending ? "Sending…" : "Submit review"}
             </button>
