@@ -37,6 +37,11 @@ export default async function RiderProfilePage() {
           <h1 className="mt-3 text-xl font-bold">{customer.name}</h1>
           <p className="text-sm text-muted-foreground">{customer.phone}{customer.email ? " · " + customer.email : ""}</p>
           <p className="text-xs text-muted-foreground mt-1">{t("rider.member-since", lang)} {customer.joinedAt.getFullYear()}</p>
+          {showRiderQr && (
+            <div className="mt-3 flex justify-center">
+              <QrToggle value={riderQrUrl(customer.id)} label="Rider QR" defaultShow={false} size={96} />
+            </div>
+          )}
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -131,11 +136,6 @@ export default async function RiderProfilePage() {
         </div>
       )}
 
-      {showRiderQr && (
-        <div className="flex justify-center pt-1">
-          <QrToggle value={riderQrUrl(customer.id)} label="Rider QR" defaultShow={false} size={96} />
-        </div>
-      )}
       <p className="text-center text-[11px] text-muted-foreground pt-2">D&Z Rider</p>
     </div>
     </PageTransition>
