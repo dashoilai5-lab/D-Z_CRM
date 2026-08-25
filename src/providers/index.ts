@@ -18,10 +18,11 @@ export type {
   MessageSendResult,
 } from "./types";
 
-// Storage: production → Supabase Storage (serverless has no persistent disk);
-// dev/e2e → local filesystem. Both satisfy the StorageProvider interface.
+// Storage: Vercel 平台（VERCEL=1 自动注入）→ Supabase Storage（云函数无本地盘）；
+// 本地 next start（无 VERCEL env）→ local filesystem（读 ./storage）。
+// 注意不能按 NODE_ENV 判断——next start 恒 production，本地服务也会命中。
 export const storageProvider =
-  process.env.NODE_ENV === "production" ? supabaseStorage : localStorage;
+  process.env.VERCEL === "1" ? supabaseStorage : localStorage;
 
 // Messaging: real WhatsApp Business API when WHATSAPP_API_TOKEN configured,
 // else mock (record-only). 拿到 Meta 密钥后只需在 Vercel env 配置，代码零改动。
