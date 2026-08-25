@@ -90,55 +90,61 @@ export function MotorcycleForm({
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label>Brand</Label>
-          <Select value={brandIsCustom && brand !== OTHERS ? OTHERS : brand} onValueChange={(v) => { setBrand(v ?? "Yamaha"); setModel(""); setCustomModel(""); }}>
-            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {BIKE_BRANDS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          {brandIsCustom && (
-            <Input value={customBrand || (brand !== OTHERS ? brand : "")} onChange={(e) => setCustomBrand(e.target.value)} placeholder="Brand name" className="mt-1.5" />
-          )}
+        {/* 左列：Brand + (Year | Color) */}
+        <div className="space-y-3">
+          <div>
+            <Label>Brand</Label>
+            <Select value={brandIsCustom && brand !== OTHERS ? OTHERS : brand} onValueChange={(v) => { setBrand(v ?? "Yamaha"); setModel(""); setCustomModel(""); }}>
+              <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {BIKE_BRANDS.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {brandIsCustom && (
+              <Input value={customBrand || (brand !== OTHERS ? brand : "")} onChange={(e) => setCustomBrand(e.target.value)} placeholder="Brand name" className="mt-1.5" />
+            )}
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Year</Label>
+              <Select value={year} onValueChange={(v) => setYear(v ?? String(THIS_YEAR - 1))}>
+                <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {Array.from({ length: 36 }, (_, i) => THIS_YEAR - 1 - i).map((y) => (
+                    <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Color</Label>
+              <Select value={color} onValueChange={(v) => setColor(v ?? "Black")}>
+                <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {COLORS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
-        <div>
-          <Label>Model</Label>
-          <Select value={modelIsCustom && model !== OTHERS ? OTHERS : model} onValueChange={(v) => { setModel(v ?? ""); setCustomModel(""); }}>
-            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {models.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          {modelIsCustom && (
-            <Input value={customModel || (model !== OTHERS ? model : "")} onChange={(e) => setCustomModel(e.target.value)} placeholder="Model name" className="mt-1.5" />
-          )}
-        </div>
-      </div>
-      <div className="grid grid-cols-3 gap-3">
-        <div>
-          <Label>Year</Label>
-          <Select value={year} onValueChange={(v) => setYear(v ?? String(THIS_YEAR - 1))}>
-            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: 36 }, (_, i) => THIS_YEAR - 1 - i).map((y) => (
-                <SelectItem key={y} value={String(y)}>{y}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label>Color</Label>
-          <Select value={color} onValueChange={(v) => setColor(v ?? "Black")}>
-            <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {COLORS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-            </SelectContent>
-          </Select>
-        </div>
-        <div>
-          <Label>Current Mileage (km)</Label>
-          <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} className="mt-1.5" />
+        {/* 右列：Model + Current Mileage */}
+        <div className="space-y-3">
+          <div>
+            <Label>Model</Label>
+            <Select value={modelIsCustom && model !== OTHERS ? OTHERS : model} onValueChange={(v) => { setModel(v ?? ""); setCustomModel(""); }}>
+              <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {models.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            {modelIsCustom && (
+              <Input value={customModel || (model !== OTHERS ? model : "")} onChange={(e) => setCustomModel(e.target.value)} placeholder="Model name" className="mt-1.5" />
+            )}
+          </div>
+          <div>
+            <Label>Current Mileage (km)</Label>
+            <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} className="mt-1.5" />
+          </div>
         </div>
       </div>
 
