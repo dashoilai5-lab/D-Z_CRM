@@ -10,7 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { broadcastCampaign } from "@/actions/marketing";
 
-export function BroadcastButton({ campaignId, sentCount }: { campaignId: string; sentCount: number }) {
+export interface BroadcastStats { sent: number; delivered: number; failed: number; }
+
+export function BroadcastButton({ campaignId, stats }: { campaignId: string; stats: BroadcastStats }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
@@ -27,7 +29,7 @@ export function BroadcastButton({ campaignId, sentCount }: { campaignId: string;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium hover:bg-muted">
-        <Send className="h-3 w-3" /> Broadcast{sentCount > 0 ? " (" + sentCount + ")" : ""}
+        <Send className="h-3 w-3" /> Broadcast{stats.sent > 0 ? " (" + stats.sent + ")" : ""}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -39,7 +41,11 @@ export function BroadcastButton({ campaignId, sentCount }: { campaignId: string;
             <Label>Message (optional)</Label>
             <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Default: campaign promo text" className="mt-1.5" />
           </div>
-          {sentCount > 0 && <p className="text-xs text-muted-foreground">Previously sent to {sentCount} customers — sending again will re-broadcast.</p>}
+          {stats.sent > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Previously sent to {stats.sent} customers{stats.delivered > 0 ? " (" + stats.delivered + " delivered" + (stats.failed > 0 ? ", " + stats.failed + " failed" : "") + ")" : ""} — sending again will re-broadcast.
+            </p>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
