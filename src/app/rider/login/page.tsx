@@ -4,12 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bike } from "lucide-react";
 import { signInWithPassword, signInWithOtp, verifyOtp } from "@/actions/auth-supabase";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 type Tab = "password" | "otp";
 
 /** Rider 专属登录页：顾客入口（与 workshop /login 分离）。 */
 export default function RiderLoginPage() {
   const router = useRouter();
+  const lang = useLang();
   const [tab, setTab] = useState<Tab>("password");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -66,8 +69,8 @@ export default function RiderLoginPage() {
         </div>
         <div className="rounded-2xl border bg-card/95 backdrop-blur p-6 shadow-xl shadow-black/5">
           <div className="mb-4 flex gap-1 rounded-lg bg-muted p-1">
-            <button type="button" className={tabCls(tab === "password")} onClick={() => { setTab("password"); setError(""); setInfo(""); }}>Password</button>
-            <button type="button" className={tabCls(tab === "otp")} onClick={() => { setTab("otp"); setError(""); setInfo(""); }}>Email code</button>
+            <button type="button" className={tabCls(tab === "password")} onClick={() => { setTab("password"); setError(""); setInfo(""); }}>{t("login.password-tab", lang)}</button>
+            <button type="button" className={tabCls(tab === "otp")} onClick={() => { setTab("otp"); setError(""); setInfo(""); }}>{t("login.email-code", lang)}</button>
           </div>
 
           {error && <p className="mb-3 rounded-md bg-destructive/10 text-destructive text-sm px-3 py-2">{error}</p>}
@@ -76,11 +79,11 @@ export default function RiderLoginPage() {
           {tab === "password" && (
             <form onSubmit={doPassword} className="space-y-3">
               <div>
-                <label className={labelCls}>Email</label>
+                <label className={labelCls}>{t("common.email", lang)}</label>
                 <input className={inputCls} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@dz.my" />
               </div>
               <div>
-                <label className={labelCls}>Password</label>
+                <label className={labelCls}>{t("login.password-tab", lang)}</label>
                 <input className={inputCls} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
@@ -92,7 +95,7 @@ export default function RiderLoginPage() {
           {tab === "otp" && !otpSent && (
             <form onSubmit={doSendOtp} className="space-y-3">
               <div>
-                <label className={labelCls}>Email</label>
+                <label className={labelCls}>{t("common.email", lang)}</label>
                 <input className={inputCls} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@dz.my" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md border py-2 text-sm font-medium hover:bg-accent disabled:opacity-50">
@@ -104,7 +107,7 @@ export default function RiderLoginPage() {
           {tab === "otp" && otpSent && (
             <form onSubmit={doVerifyOtp} className="space-y-3">
               <div>
-                <label className={labelCls}>OTP code</label>
+                <label className={labelCls}>{t("login.otp-code", lang)}</label>
                 <input className={inputCls} inputMode="numeric" required value={otpToken} onChange={(e) => setOtpToken(e.target.value)} placeholder="123456" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
@@ -114,7 +117,7 @@ export default function RiderLoginPage() {
           )}
         </div>
         <p className="mt-4 text-center text-xs text-muted-foreground">
-          New here? <a href="/rider/signup" className="text-primary hover:underline">Create an account</a>
+          <a href="/rider/signup" className="text-primary hover:underline">{t("login.new-here", lang)}</a>
         </p>
         <p className="mt-1 text-center text-xs text-muted-foreground">
           For workshop staff, use the <a href="/login" className="text-primary hover:underline">workshop sign-in</a>

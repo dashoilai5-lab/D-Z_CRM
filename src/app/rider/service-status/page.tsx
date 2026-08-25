@@ -43,7 +43,7 @@ export default async function ServiceStatusPage() {
     return (
       <div className="mt-5">
         <div className="mb-4 flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Overall progress</span>
+          <span className="text-muted-foreground">{t("svc.overall-progress", lang)}</span>
           <span className="font-bold tabular-nums text-primary">{pct}%</span>
         </div>
         <div className="mb-4 h-2 rounded-full bg-muted overflow-hidden">
@@ -51,7 +51,7 @@ export default async function ServiceStatusPage() {
         </div>
         {eta && idx < 5 && (
           <div className="mb-4 flex items-center gap-1.5 rounded-lg bg-primary/5 border border-primary/15 px-3 py-2 text-xs">
-            <Clock className="h-3.5 w-3.5 shrink-0" /> Estimated ready: <strong>{eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong> · {eta.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}
+            <Clock className="h-3.5 w-3.5 shrink-0" /> {t("svc.estimated-ready", lang)}<strong>{eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong> · {eta.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}
           </div>
         )}
         {LIFECYCLE_STEPS.map((s, i) => {
@@ -77,7 +77,7 @@ export default async function ServiceStatusPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Service Status</h1>
+        <h1 className="text-2xl font-bold">{t("svc.status-title", lang)}</h1>
         <p className="text-sm text-muted-foreground mt-1">{t("svc.track_live", lang)}</p>
       </div>
 
@@ -117,7 +117,7 @@ export default async function ServiceStatusPage() {
 
       {rest.length > 0 && (
         <div className="rounded-3xl border bg-muted/30 p-4">
-          <h2 className="font-semibold text-sm mb-2">Other motorcycles</h2>
+          <h2 className="font-semibold text-sm mb-2">{t("svc.other-bikes", lang)}</h2>
           <div className="space-y-2">
             {rest.map((r) => (
               <div key={r.bike.id} className="flex items-center justify-between rounded-xl bg-card px-3 py-2 text-sm">

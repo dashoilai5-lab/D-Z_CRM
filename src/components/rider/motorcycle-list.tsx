@@ -6,21 +6,24 @@ import { Bike, ChevronRight, Plus, X } from "lucide-react";
 import { fmtKM } from "@/lib/format";
 import { motorcycleTypeInfo } from "@/lib/motorcycle-types";
 import { AddMotorcycle } from "@/components/rider/add-motorcycle";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface BikeRow {
   id: string; brand: string; model: string; year: number; plate: string; type: string; currentMileage: number;
 }
 
 export function MotorcycleList({ customerId, bikes }: { customerId: string; bikes: BikeRow[] }) {
+  const lang = useLang();
   const [adding, setAdding] = useState(false);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Motorcycles</h1>
+        <h1 className="text-2xl font-bold">{t("bike.list-title", lang)}</h1>
         {!adding && (
           <button onClick={() => setAdding(true)} className="inline-flex items-center gap-1 rounded-xl bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground">
-            <Plus className="h-4 w-4" /> Add
+            <Plus className="h-4 w-4" /> {t("bike.add-short", lang)}
           </button>
         )}
       </div>
@@ -29,10 +32,10 @@ export function MotorcycleList({ customerId, bikes }: { customerId: string; bike
         <div className="rounded-2xl border bg-card p-4">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <div className="font-semibold">Add a motorcycle</div>
-              <div className="text-xs text-muted-foreground">Register your bike to get type-specific service recommendations</div>
+              <div className="font-semibold">{t("rider.add-bike-title", lang)}</div>
+              <div className="text-xs text-muted-foreground">{t("bike.add-desc", lang)}</div>
             </div>
-            <button onClick={() => setAdding(false)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border text-muted-foreground hover:bg-muted" aria-label="Close">
+            <button onClick={() => setAdding(false)} className="inline-flex h-8 w-8 items-center justify-center rounded-lg border text-muted-foreground hover:bg-muted" aria-label={t("common.close", lang)}>
               <X className="h-4 w-4" />
             </button>
           </div>

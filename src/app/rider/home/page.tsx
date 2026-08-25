@@ -18,7 +18,7 @@ export default async function RiderHomePage() {
   const lang = await getLang();
   if (!customer) {
     // 无关联顾客档案 → 登录引导（layout 已拦截未登录，这里兜底已登录但未关联的边界）
-    return <RiderSignInPrompt />;
+    return <RiderSignInPrompt lang={lang} />;
   }
   const bike = [...customer.motorcycles].sort((a, b) => b.currentMileage - a.currentMileage)[0];
 
@@ -109,11 +109,11 @@ export default async function RiderHomePage() {
               </div>
               <div className="mt-2 flex items-center justify-between text-sm">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Last service</div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("svc.last-service", lang)}</div>
                   <div className="font-bold tabular-nums">{fmtKM(reminder.lastServiceMileage)}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Next service</div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("svc.next-service", lang)}</div>
                   <div className="font-bold tabular-nums">{fmtKM(reminder.nextServiceMileage)}</div>
                 </div>
               </div>
@@ -122,14 +122,14 @@ export default async function RiderHomePage() {
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             <div className="rounded-2xl bg-muted/50 p-4">
-              <div className="text-xs text-muted-foreground">Last service</div>
+              <div className="text-xs text-muted-foreground">{t("svc.last-service", lang)}</div>
               <div className="mt-1 text-xl font-bold tabular-nums">{fmtKM(bike.lastServiceMileage ?? 0)}</div>
               {bike.lastServiceDate && <div className="text-[11px] text-muted-foreground mt-0.5">{fmtDate(bike.lastServiceDate)}</div>}
             </div>
             <div className="rounded-2xl bg-muted/50 p-4">
               <div className="text-xs text-muted-foreground">{t("rider.next-service", lang)}</div>
               <div className="mt-1 text-xl font-bold tabular-nums">{fmtKM(bike.nextServiceMileage ?? 0)}</div>
-              <div className="text-[11px] text-muted-foreground mt-0.5">{bike.nextServiceEstDate ? "Estimated " + bike.nextServiceEstDate.toLocaleDateString("en-MY", { month: "long", year: "numeric" }) : "—"}</div>
+              <div className="text-[11px] text-muted-foreground mt-0.5">{bike.nextServiceEstDate ? t("ws.cust.estimated", lang) + " " + bike.nextServiceEstDate.toLocaleDateString("en-MY", { month: "long", year: "numeric" }) : "—"}</div>
             </div>
           </div>
           <Link href="/rider/book" className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-semibold text-primary-foreground">
@@ -142,9 +142,9 @@ export default async function RiderHomePage() {
         <Link href="/rider/promotions" className="block rounded-2xl bg-gradient-to-br from-primary to-orange-500 p-5 text-primary-foreground">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm font-bold">
-              <Tag className="h-4 w-4" /> SPECIAL OFFER
+              <Tag className="h-4 w-4" /> {t("news.offers", lang)}
             </div>
-            <span className="text-xs font-medium opacity-90">View all →</span>
+            <span className="text-xs font-medium opacity-90">{t("common.view-all", lang)} →</span>
           </div>
           <div className="mt-2 space-y-1.5">
             {livePromos.slice(0, 2).map((p) => (

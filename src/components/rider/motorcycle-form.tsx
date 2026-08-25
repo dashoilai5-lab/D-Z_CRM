@@ -93,7 +93,7 @@ export function MotorcycleForm({
         {/* 左列：Brand + (Year | Color) */}
         <div className="space-y-3">
           <div>
-            <Label>Brand</Label>
+            <Label>{t("form.brand", lang)}</Label>
             <Select value={brandIsCustom && brand !== OTHERS ? OTHERS : brand} onValueChange={(v) => { setBrand(v ?? "Yamaha"); setModel(""); setCustomModel(""); }}>
               <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -106,7 +106,7 @@ export function MotorcycleForm({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <Label>Year</Label>
+              <Label>{t("form.year", lang)}</Label>
               <Select value={year} onValueChange={(v) => setYear(v ?? String(THIS_YEAR - 1))}>
                 <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -117,7 +117,7 @@ export function MotorcycleForm({
               </Select>
             </div>
             <div>
-              <Label>Color</Label>
+              <Label>{t("form.color", lang)}</Label>
               <Select value={color} onValueChange={(v) => setColor(v ?? "Black")}>
                 <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -130,7 +130,7 @@ export function MotorcycleForm({
         {/* 右列：Model + Current Mileage */}
         <div className="space-y-3">
           <div>
-            <Label>Model</Label>
+            <Label>{t("form.model", lang)}</Label>
             <Select value={modelIsCustom && model !== OTHERS ? OTHERS : model} onValueChange={(v) => { setModel(v ?? ""); setCustomModel(""); }}>
               <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -149,7 +149,7 @@ export function MotorcycleForm({
       </div>
 
       <div>
-        <Label>Motorcycle Type</Label>
+        <Label>{t("form.motorcycle-type", lang)}</Label>
         <p className="text-[11px] text-muted-foreground mt-0.5">Pick the style that best matches — this drives your service recommendations</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {MOTORCYCLE_TYPES.map((t) => {
@@ -187,7 +187,7 @@ export function MotorcycleForm({
       )}
 
       <Button className="w-full" size="lg" disabled={pending || !effectiveModel || !effectiveBrand} onClick={submit}>
-        {pending ? "Saving…" : submitLabel}
+        {pending ? t("form.saving", lang) : submitLabel}
       </Button>
     </div>
   );

@@ -612,6 +612,123 @@ export const DICT: Dict = {
   "password.mismatch": { en: "Passwords do not match", zh: "两次输入的密码不一致", ms: "Kata laluan tidak sepadan" },
   "password.changed": { en: "Password changed — other devices signed out", zh: "密码已更改 — 其他设备已退出登录", ms: "Kata laluan ditukar — peranti lain dilog keluar" },
 
+  // --- rider approvals ---
+  "approvals.title": { en: "Approvals", zh: "审批", ms: "Kelulusan" },
+  "approvals.sub": { en: "The workshop found additional work that needs your go-ahead.", zh: "门店发现需要您确认的额外项目。", ms: "Bengkel menemui kerja tambahan yang memerlukan kelulusan anda." },
+  "approvals.empty": { en: "No pending approvals — all clear.", zh: "暂无待审批——一切正常。", ms: "Tiada kelulusan tertunda — semuanya jelas." },
+  "approvals.history": { en: "History", zh: "历史", ms: "Sejarah" },
+  "approvals.required": { en: "Additional Work Required", zh: "需要额外作业", ms: "Kerja Tambahan Diperlukan" },
+  "approvals.mechanic-note": { en: "Mechanic Note", zh: "技师备注", ms: "Nota Mekanik" },
+  "approvals.decline": { en: "DECLINE", zh: "拒绝", ms: "TOLAK" },
+  "approvals.approve": { en: "APPROVE {n}", zh: "批准 {n}", ms: "LULUSKAN {n}" },
+  "approvals.approved": { en: "Approved ✓", zh: "已批准 ✓", ms: "Diluluskan ✓" },
+  "approvals.declined": { en: "Declined ✗", zh: "已拒绝 ✗", ms: "Ditolak ✗" },
+
+  // --- rider promotions ---
+  "promo.home": { en: "Home", zh: "首页", ms: "Utama" },
+  "promo.title": { en: "Offers & Materials", zh: "优惠与素材", ms: "Tawaran & Bahan" },
+  "promo.sub": { en: "Current promos and marketing content from D&Z Smart Workshop", zh: "来自 D&Z 智能车行的当前促销与营销内容", ms: "Promosi dan kandungan pemasaran semasa dari D&Z Bengkel Pintar" },
+  "promo.active": { en: "Active Promotions", zh: "进行中促销", ms: "Promosi Aktif" },
+  "promo.save": { en: "Save {n}% on selected services", zh: "精选服务立省 {n}%", ms: "Jimat {n}% untuk servis terpilih" },
+  "promo.book": { en: "Book with a promotion", zh: "用促销预约", ms: "Tempah dengan promosi" },
+  "promo.empty": { en: "No promotions or materials yet.", zh: "暂无促销或素材。", ms: "Tiada promosi atau bahan lagi." },
+  "promo.footer": { en: "New content posted by the workshop appears here", zh: "门店发布的新内容会显示在这里", ms: "Kandungan baharu yang disiarkan bengkel akan muncul di sini" },
+  "promo.posters": { en: "Posters", zh: "海报", ms: "Poster" },
+  "promo.reels": { en: "Reels", zh: "短片", ms: "Reel" },
+  "promo.stories": { en: "Stories", zh: "动态", ms: "Story" },
+
+  // --- rider motorcycle ---
+  "bike.add": { en: "ADD MOTORCYCLE", zh: "添加摩托车", ms: "TAMBAH MOTOSIKAL" },
+  "bike.edit-title": { en: "Edit Motorcycle", zh: "编辑摩托车", ms: "Sunting Motosikal" },
+  "bike.edit-details": { en: "Edit Details", zh: "编辑详情", ms: "Sunting Butiran" },
+  "bike.save-changes": { en: "SAVE CHANGES", zh: "保存更改", ms: "SIMPAN PERUBAHAN" },
+  "bike.list-title": { en: "My Motorcycles", zh: "我的摩托", ms: "Motosikal Saya" },
+  "bike.add-short": { en: "Add", zh: "添加", ms: "Tambah" },
+  "bike.add-desc": { en: "Register your bike to get type-specific service recommendations", zh: "注册您的爱车以获取针对车型的服务建议", ms: "Daftarkan motosikal anda untuk cadangan servis khusus jenis" },
+
+  // --- rider book form ---
+  "book.package": { en: "Service Package", zh: "服务套餐", ms: "Pakej Servis" },
+  "book.additional": { en: "Additional Services", zh: "附加服务", ms: "Servis Tambahan" },
+  "book.pick-one": { en: "Pick one", zh: "单选", ms: "Pilih satu" },
+  "book.select-any": { en: "Select any", zh: "多选", ms: "Pilih mana-mana" },
+  "book.summary": { en: "Summary", zh: "摘要", ms: "Ringkasan" },
+  "book.no-services": { en: "No services selected yet.", zh: "尚未选择服务。", ms: "Tiada servis dipilih lagi." },
+  "book.estimated-total": { en: "Estimated Total", zh: "预计总计", ms: "Jumlah Anggaran" },
+  "book.pick-slot": { en: "Pick a slot", zh: "选择时段", ms: "Pilih slot" },
+  "book.no-slots-day": { en: "No configured slots that day — a default time will be used.", zh: "当天无配置时段——将使用默认时间。", ms: "Tiada slot dikonfigurasi pada hari itu — masa lalai akan digunakan." },
+  "book.notes-optional": { en: "Notes (optional)", zh: "备注（选填）", ms: "Nota (pilihan)" },
+  "book.notes-placeholder": { en: "Anything we should know?", zh: "有什么需要我们注意的吗？", ms: "Ada apa-apa yang kami perlu tahu?" },
+  "book.sending": { en: "Sending…", zh: "发送中…", ms: "Menghantar…" },
+  "book.footer": { en: "The workshop receives your request instantly and confirms the slot.", zh: "门店会立即收到您的预约请求并确认时段。", ms: "Bengkel menerima permintaan anda serta-merta dan mengesahkan slot." },
+  "book.no-bike": { en: "No motorcycle on file…", zh: "暂无档案摩托车…", ms: "Tiada motosikal dalam fail…" },
+  "book.recommended": { en: "{label} — recommended: {focus}", zh: "{label} — 推荐：{focus}", ms: "{label} — disyorkan: {focus}" },
+
+  // --- rider form fields ---
+  "form.brand": { en: "Brand", zh: "品牌", ms: "Jenama" },
+  "form.year": { en: "Year", zh: "年份", ms: "Tahun" },
+  "form.color": { en: "Color", zh: "颜色", ms: "Warna" },
+  "form.model": { en: "Model", zh: "型号", ms: "Model" },
+  "form.motorcycle-type": { en: "Motorcycle Type", zh: "摩托车类型", ms: "Jenis Motosikal" },
+  "form.gender": { en: "Gender", zh: "性别", ms: "Jantina" },
+  "form.prefer-not": { en: "Prefer not to say", zh: "不便透露", ms: "Lebih suka tidak menyatakan" },
+  "form.address": { en: "Address", zh: "地址", ms: "Alamat" },
+  "form.saving": { en: "Saving…", zh: "保存中…", ms: "Menyimpan…" },
+  "profile.name-placeholder": { en: "Your full name", zh: "您的全名", ms: "Nama penuh anda" },
+  "profile.address-placeholder": { en: "Home address", zh: "家庭地址", ms: "Alamat rumah" },
+  "profile.save-changes": { en: "Save Changes", zh: "保存更改", ms: "Simpan Perubahan" },
+
+  // --- rider service status / history / home ---
+  "svc.overall-progress": { en: "Overall progress", zh: "整体进度", ms: "Kemajuan keseluruhan" },
+  "svc.status-title": { en: "Service Status", zh: "服务状态", ms: "Status Servis" },
+  "svc.other-bikes": { en: "Other motorcycles", zh: "其他摩托车", ms: "Motosikal lain" },
+  "svc.history-title": { en: "Service history", zh: "服务历史", ms: "Sejarah servis" },
+  "svc.last-service": { en: "Last service", zh: "上次保养", ms: "Servis terakhir" },
+  "svc.next-service": { en: "Next service", zh: "下次保养", ms: "Servis seterusnya" },
+  "svc.review-thanks": { en: "Thanks for your review", zh: "感谢您的评价", ms: "Terima kasih atas ulasan" },
+  "common.cancel-short": { en: "Cancel", zh: "取消", ms: "Batal" },
+
+  // --- rider login ---
+  "login.password-tab": { en: "Password", zh: "密码", ms: "Kata Laluan" },
+  "login.email-code": { en: "Email code", zh: "邮箱验证码", ms: "Kod e-mel" },
+  "login.otp-code": { en: "OTP code", zh: "验证码", ms: "Kod OTP" },
+  "login.new-here": { en: "New here? Create an account", zh: "新用户？创建账号", ms: "Baharu di sini? Cipta akaun" },
+
+  // --- rider notifications list ---
+  "rider.notifications-title": { en: "Notifications", zh: "通知", ms: "Pemberitahuan" },
+
+  // --- rider signup ---
+  "signup.title": { en: "Join D&Z Rider", zh: "加入 D&Z 车手", ms: "Sertai D&Z Rider" },
+  "signup.sub": { en: "Create your account — your bikes & service in one place", zh: "创建账号——您的爱车与服务尽在一处", ms: "Cipta akaun — motosikal & servis anda di satu tempat" },
+  "signup.full-name": { en: "Full name", zh: "全名", ms: "Nama penuh" },
+  "signup.password-min": { en: "Password (min 8 chars)", zh: "密码（至少 8 个字符）", ms: "Kata laluan (min 8 aksara)" },
+  "signup.creating": { en: "Creating account…", zh: "正在创建账号…", ms: "Mencipta akaun…" },
+  "signup.create": { en: "Create account", zh: "创建账号", ms: "Cipta akaun" },
+  "signup.has-account": { en: "Already have an account? Sign in", zh: "已有账号？登录", ms: "Sudah ada akaun? Log masuk" },
+
+  // --- rider motorcycle detail ---
+  "bike.live-status": { en: "Live service status", zh: "实时服务状态", ms: "Status servis langsung" },
+  "bike.last": { en: "Last", zh: "上次", ms: "Terakhir" },
+  "bike.next": { en: "Next", zh: "下次", ms: "Seterusnya" },
+
+  // --- rider sign-in prompt (anonymous) ---
+  "signin.title": { en: "Sign in to view your bikes", zh: "登录查看您的爱车", ms: "Log masuk untuk lihat motosikal anda" },
+  "signin.sub": { en: "Log in to access your bookings, service history and more.", zh: "登录以访问您的预约、服务历史等。", ms: "Log masuk untuk akses tempahan, sejarah servis dan banyak lagi." },
+  "signin.cta": { en: "Sign in", zh: "登录", ms: "Log masuk" },
+  "signin.new": { en: "New to D&Z? Create an account", zh: "新用户？创建账号", ms: "Baharu di D&Z? Cipta akaun" },
+
+  // --- rider book: branch locator ---
+  "book.slots-free": { en: "{n} slots free", zh: "{n} 个可用时段", ms: "{n} slot kosong" },
+  "book.opening-hours": { en: "Opening hours", zh: "营业时间", ms: "Waktu operasi" },
+  "book.choose-branch": { en: "Choose a branch to continue — slots are shown for that branch only.", zh: "请选择门店继续——时段仅显示该门店的。", ms: "Pilih cawangan untuk teruskan — slot hanya ditunjukkan untuk cawangan itu." },
+  "book.current-promos": { en: "Current promotions", zh: "当前促销", ms: "Promosi semasa" },
+  "book.change": { en: "Change", zh: "更换", ms: "Tukar" },
+
+  // --- rider service status / bike detail ---
+  "svc.estimated-ready": { en: "Estimated ready: ", zh: "预计完成：", ms: "Anggaran siap: " },
+  "bike.ready-collect": { en: "✓ Ready for collection", zh: "✓ 待取车", ms: "✓ Sedia untuk diambil" },
+  "bike.being-serviced": { en: "Being serviced — Job {n}", zh: "服务中 — 工单 {n}", ms: "Sedang diservis — Job {n}" },
+  "bike.tap-timeline": { en: "Tap to see the full timeline →", zh: "点击查看完整时间线 →", ms: "Ketik untuk lihat garis masa penuh →" },
+
 };
 
 export function t(key: string, lang: Lang): string {

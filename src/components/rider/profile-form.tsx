@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateRiderProfile } from "@/actions/rider-profile";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface RiderProfileInitial {
   name: string;
@@ -21,6 +23,7 @@ const GENDERS = ["", "M", "F"];
 /** Rider 个人资料编辑表单（Settings → Profile）。 */
 export function ProfileForm({ initial }: { customerId?: string; initial: RiderProfileInitial }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [name, setName] = useState(initial.name);
   const [phone, setPhone] = useState(initial.phone);
@@ -32,7 +35,7 @@ export function ProfileForm({ initial }: { customerId?: string; initial: RiderPr
     start(async () => {
       const r = await updateRiderProfile({ name, phone, email, gender, address });
       if (r.ok) {
-        toast.success("Profile updated");
+        toast.success(t("toast.saved", lang));
         router.refresh();
       } else {
         toast.error(r.error);
@@ -42,31 +45,31 @@ export function ProfileForm({ initial }: { customerId?: string; initial: RiderPr
   return (
     <div className="space-y-3">
       <div>
-        <Label>Name</Label>
-        <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" placeholder="Your full name" />
+        <Label>{t("common.name", lang)}</Label>
+        <Input value={name} onChange={(e) => setName(e.target.value)} className="mt-1.5" placeholder={t("profile.name-placeholder", lang)} />
       </div>
       <div>
-        <Label>Phone</Label>
+        <Label>{t("common.phone", lang)}</Label>
         <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1.5" placeholder="e.g. 012-345 6789" inputMode="tel" />
       </div>
       <div>
-        <Label>Email</Label>
+        <Label>{t("common.email", lang)}</Label>
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1.5" placeholder="you@email.com" />
       </div>
       <div>
-        <Label>Gender</Label>
+        <Label>{t("form.gender", lang)}</Label>
         <select value={gender} onChange={(e) => setGender(e.target.value)} className="mt-1.5 h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring">
           {GENDERS.map((g) => (
-            <option key={g || "unset"} value={g}>{g ? g : "Prefer not to say"}</option>
+            <option key={g || "unset"} value={g}>{g ? g : t("form.prefer-not", lang)}</option>
           ))}
         </select>
       </div>
       <div>
-        <Label>Address</Label>
-        <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" placeholder="Home address" />
+        <Label>{t("form.address", lang)}</Label>
+        <Input value={address} onChange={(e) => setAddress(e.target.value)} className="mt-1.5" placeholder={t("profile.address-placeholder", lang)} />
       </div>
       <Button className="w-full" disabled={pending || !name.trim()} onClick={submit}>
-        {pending ? "Saving…" : "Save Changes"}
+        {pending ? t("form.saving", lang) : t("profile.save-changes", lang)}
       </Button>
     </div>
   );
