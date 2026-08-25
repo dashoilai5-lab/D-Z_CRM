@@ -23,8 +23,8 @@ export default async function QrWorkshopPage({ params }: { params: Promise<{ id:
   try { hours = org.operatingHours ? JSON.parse(org.operatingHours) : {}; } catch {}
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-8">
-      <div className="rounded-3xl border bg-card p-6 text-center">
+    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col justify-center px-4 py-8">
+      <div className="w-full rounded-3xl border bg-card p-6 text-center">
         <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><Store className="h-7 w-7" /></div>
         <h1 className="mt-3 text-xl font-bold">{org.name}</h1>
         <p className="text-sm text-muted-foreground">Welcome to D&Z Smart Workshop</p>

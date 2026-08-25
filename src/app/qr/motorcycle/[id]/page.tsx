@@ -36,8 +36,8 @@ export default async function QrMotorcyclePage({ params }: { params: Promise<{ i
   const lifetime = lifetimeAgg._sum?.totalSen ?? 0;
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-8">
-      <div className="rounded-3xl border bg-card p-6">
+    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col justify-center px-4 py-8">
+      <div className="w-full rounded-3xl border bg-card p-6">
         <div className="flex items-center gap-3">
           <div className="h-11 w-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><Bike className="h-6 w-6" /></div>
           <div>

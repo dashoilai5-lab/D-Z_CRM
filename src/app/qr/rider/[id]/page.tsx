@@ -23,8 +23,8 @@ export default async function QrRiderPage({ params }: { params: Promise<{ id: st
   const lastJob = await db.serviceJob.findFirst({ where: { customerId: customer.id, status: "COMPLETED" }, orderBy: { completedAt: "desc" } });
 
   return (
-    <main className="mx-auto max-w-lg px-4 py-8">
-      <div className="rounded-3xl border bg-card p-6">
+    <main className="mx-auto flex min-h-dvh w-full max-w-lg flex-col justify-center px-4 py-8">
+      <div className="w-full rounded-3xl border bg-card p-6">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><UserIcon className="h-6 w-6" /></div>
           <div>
