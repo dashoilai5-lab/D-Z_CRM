@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Bike, CalendarPlus, ChevronRight, Wrench, AlertTriangle, Clock, Bell, Tag } from "lucide-react";
 import { getRiderCustomer } from "@/lib/rider-customer";
 import { db } from "@/lib/db";
@@ -7,7 +8,6 @@ import { isPromoActive } from "@/modules/marketing/promo";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PageTransition } from "@/components/shared/page-transition";
-import RiderSignInPrompt from "@/components/rider/sign-in-prompt";
 import { RiderScanQrButton } from "@/components/rider/scan-qr-button";
 
 export const dynamic = "force-dynamic";
@@ -18,8 +18,8 @@ export default async function RiderHomePage() {
   const customer = await getRiderCustomer();
   const lang = await getLang();
   if (!customer) {
-    // 无关联顾客档案 → 登录引导（layout 已拦截未登录，这里兜底已登录但未关联的边界）
-    return <RiderSignInPrompt lang={lang} />;
+    // 无关联顾客档案 → 登录页（layout 已拦截未登录，这里兜底已登录但未关联的边界）
+    redirect("/rider/login");
   }
   const bike = [...customer.motorcycles].sort((a, b) => b.currentMileage - a.currentMileage)[0];
 

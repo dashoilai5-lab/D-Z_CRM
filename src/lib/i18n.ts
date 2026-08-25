@@ -710,12 +710,6 @@ export const DICT: Dict = {
   "bike.last": { en: "Last", zh: "上次", ms: "Terakhir" },
   "bike.next": { en: "Next", zh: "下次", ms: "Seterusnya" },
 
-  // --- rider sign-in prompt (anonymous) ---
-  "signin.title": { en: "Sign in to view your bikes", zh: "登录查看您的爱车", ms: "Log masuk untuk lihat motosikal anda" },
-  "signin.sub": { en: "Log in to access your bookings, service history and more.", zh: "登录以访问您的预约、服务历史等。", ms: "Log masuk untuk akses tempahan, sejarah servis dan banyak lagi." },
-  "signin.cta": { en: "Sign in", zh: "登录", ms: "Log masuk" },
-  "signin.new": { en: "New to D&Z? Create an account", zh: "新用户？创建账号", ms: "Baharu di D&Z? Cipta akaun" },
-
   // --- rider book: branch locator ---
   "book.slots-free": { en: "{n} slots free", zh: "{n} 个可用时段", ms: "{n} slot kosong" },
   "book.opening-hours": { en: "Opening hours", zh: "营业时间", ms: "Waktu operasi" },
