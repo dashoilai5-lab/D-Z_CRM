@@ -5,7 +5,7 @@
 ## ⚠️ 2026-08-25 会话打包（session-c31025da-bd87-4fa4-a8c4-37d1db1d2021）
 
 ## 一句话状态
-**本地与生产 = commit b7649ce（demo 模式彻底移除）**：无 persona、无 DemoBar、无 demo 数据路径——Supabase 真实登录唯一认证。生产部署 d-z-dhqv4laev（PROMOTED，alias 确认，浏览器实测 workshop/rider 均无 demo bar）。git HEAD = b7649ce（基于 aeba0c5 + A4 清理 + demo 移除），工作树干净（仅 screenshots/ 历史截图未跟踪）。
+**本地与生产 = commit 408d98c（分叉已清零）**：demo 模式彻底移除（b7649ce）+ 修复云端构建（ec8ee3d 补 SupabaseStorageProvider、408d98c 补本地 storage API 路由——两者曾被 .gitignore 的 storage/ 规则误忽略）。生产 = d-z-izf1dqez8（GitHub 集成自动部署，git source，浏览器实测无 demo bar）。main 已 force push 覆盖远程废弃历史，本地=远程=生产，双向分叉 0。工作树仅 screenshots/ 未跟踪。
 
 ## 会话信息
 - 原会话 ID：session-c31025da-bd87-4fa4-a8c4-37d1db1d2021
