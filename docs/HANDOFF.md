@@ -1,9 +1,9 @@
-# HANDOFF — D&Z Platform（2026-08-25 15:40）
+# HANDOFF — D&Z Platform（2026-08-25 16:30，会话 session-48b43fbb 续接更新）
 
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = commit cc1fe58（main，分叉 0/0）。今日已完成：demo 彻底移除 → 部署流程改革 → Vercel Cron 提醒 → 生产功能②（群发统计/CDN/provider 骨架）→ Rider 4 bugfix → 里程展示重构 → QR 系统（三场景+qrToken+扫码器+业务闭环）→ 图片/海报生产 404 修复 → Rider Settings（个人资料编辑）。全程新流程：feature 分支 → push → Preview → 用户确认 → merge main → GitHub 集成自动部署。
+当前在 feat/rider-settings-ext（HEAD 3558075，已 push 待 Preview 确认）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（语言切换/通知偏好/更换密码，3558075）。全程新流程：feature 分支 → push → Preview → 用户确认 → merge main → GitHub 集成自动部署。
 
 ## 会话信息
 - 原会话 ID：session-0dbaff06-4fb9-49b9-a857-ddffcd6950f1
@@ -20,11 +20,13 @@
 - QR 系统（8f951a6）：摩托/车主/门店三场景 QR + qrToken 不可枚举 + Workshop zxing 扫码器 + 落地页直达开单（jobs/new?motorcycle 预填）
 - 图片/海报生产修复（44d0bbe）：本地 storage 14 文件同步生产 bucket + 新增 scripts/sync-storage-to-supabase.ts
 - Rider Settings（70d2125）：/rider/settings 个人资料编辑（name/phone/email/gender/address）+ updateRiderProfile + profile 齿轮入口
+- Rider Settings 扩展（3558075，feat/rider-settings-ext 待 merge）：语言切换（EN/中文/BM + dz_lang cookie）、通知偏好（4 开关 + Customer.notificationPrefs Json，迁移 rider_settings_ext）、更换密码（signInWithPassword 校验 + auth.updateUser）；settings 文案 i18n 化；middleware 补 /rider/settings 私有页保护
 
 ## 下一步（按优先级）
 1. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策（dtodo 59e04e5e，逾期）
 2. 生产迁移剩余项（dtodo 92b29072）：provider 换真——骨架已就绪（whatsapp-business.ts/openai.ts + env 驱动），只差 Meta WhatsApp Business 企业验证 + OpenAI billing + 密钥配置
-3. 可选：Rider Settings 扩展（通知偏好/语言切换/更换密码）、Sentry 验证、k6 压测
+3. 【当前进行中】Rider Settings 扩展（feat/rider-settings-ext，3558075 已 push）——等 Preview + 用户确认后 merge main；**merge 前必做：生产 Supabase PG 手动 ALTER 加列 `ALTER TABLE "Customer" ADD COLUMN "notificationPrefs" JSONB;`（Vercel 不跑 migrate deploy）**
+4. 可选：Sentry 验证、k6 压测
 
 ## 基线测试（命令 + 期望通过数）
 - pnpm exec tsc --noEmit：0 错误
@@ -41,8 +43,8 @@
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：cc1fe58 ｜ 未提交：仅 screenshots/ 历史截图（可删可留）
-- 远程：github.com/dashoilai5-lab/D-Z_CRM.git ｜ 与本地一致（分叉 0/0）
+- 分支：feat/rider-settings-ext ｜ HEAD：3558075（Rider Settings 扩展）｜ 未提交：仅 screenshots/ 截图（可删可留）
+- 远程：已 push origin/feat/rider-settings-ext；main 停在 b16245c（会话打包 commit），分叉 0/0
 
 ## 关键决策与约定
 - 部署环境 = Vercel（唯一生产）；流程 = feature 分支 → push → Preview → 用户确认 → merge main → 自动部署
@@ -61,6 +63,7 @@
 - CRM-D&Z 路径含 & → bash 命令需用 workdir 参数（cd 会断）
 - pnpm store 版本冲突 → 用 --store-dir .pnpm-store
 - e2e 用独立 e2e.db，global-setup 清库播种 + link-auth 回填 authId + 重启服务
+- 本地 dev.db 被 prisma migrate reset 后，测试账号 Customer.authId 绑定会丢（seed 只建 authId=null 演示客户）——需重新绑定 Supabase auth id 才能本地登录测试（本次已手动重绑 ahmad.danial@dz.my）
 
 ## 待办（dtodo）
 - 59e04e5e 经销商验证（逾期 2026-08-19，需真人）
@@ -68,6 +71,6 @@
 
 ## 新会话头 10 分钟
 1. curl localhost:3002 / :3003 / :3102 探活，挂了 kickstart
-2. 读本文件 + git log 确认 HEAD=cc1fe58
+2. 读本文件 + git log 确认分支/HEAD（当前 feat/rider-settings-ext @ 3558075）
 3. 跑基线：tsc + build（unit 20 / e2e 75 可选）
-4. 从 dtodo 挑下一步（经销商验证需真人 / 生产迁移剩 provider 换真）
+4. 看下一步：Rider Settings 扩展待 merge（先生产 PG ALTER 加列）/ 经销商验证需真人 / provider 换真
