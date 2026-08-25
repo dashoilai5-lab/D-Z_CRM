@@ -39,7 +39,7 @@ export default async function RiderProfilePage() {
           <p className="text-xs text-muted-foreground mt-1">{t("rider.member-since", lang)} {customer.joinedAt.getFullYear()}</p>
           {showRiderQr && (
             <div className="mt-3 flex justify-center">
-              <QrToggle value={riderQrUrl(customer.id)} label="Rider QR" defaultShow={false} size={96} />
+              <QrToggle value={riderQrUrl(customer.qrToken ?? customer.id)} label="Rider QR" defaultShow={false} size={96} />
             </div>
           )}
         </div>

@@ -35,7 +35,7 @@ export default async function SettingsPage() {
         <LostReasonsEditor current={org!.lostReasons ?? "[]"} />
       </div>
 
-      <QrSettings orgId={org!.id} flags={{ enableMotorcycleQr: org!.enableMotorcycleQr, enableRiderProfileQr: org!.enableRiderProfileQr, enableWorkshopQr: org!.enableWorkshopQr }} />
+      <QrSettings orgId={org!.qrToken ?? org!.id} flags={{ enableMotorcycleQr: org!.enableMotorcycleQr, enableRiderProfileQr: org!.enableRiderProfileQr, enableWorkshopQr: org!.enableWorkshopQr }} />
 
       <BranchManager branches={branches.map((b) => ({ id: b.id, name: b.name, city: b.city, phone: b.phone, address: b.address, isMain: b.isMain, operatingHours: b.operatingHours }))} />
 

@@ -34,6 +34,7 @@ enum Role {
 
 model Organisation {
   id            String   @id @default(cuid())
+  qrToken       String?  @unique // QR-003: unguessable scan token
   name          String
   currency      String   @default("MYR")
   // PLT-005 company profile
@@ -152,6 +153,7 @@ model Customer {
   email          String?
   // SUPABASE AUTH: auth.users.id (rider production login); null = demo customer
   authId         String?  @unique
+  qrToken        String?  @unique // QR-002: unguessable scan token (created on signup)
   gender         String?
   joinedAt       DateTime @default(now())
   address        String?
@@ -192,6 +194,7 @@ model CustomerAuthProfile {
 
 model Motorcycle {
   id                   String    @id @default(cuid())
+  qrToken              String?   @unique // QR-001: unguessable scan token
   customerId           String
   customer             Customer  @relation(fields: [customerId], references: [id])
   brand                String

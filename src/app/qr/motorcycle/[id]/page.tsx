@@ -17,8 +17,9 @@ export const dynamic = "force-dynamic";
 export default async function QrMotorcyclePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const lang = await getLang();
-  const bike = await db.motorcycle.findUnique({
-    where: { id },
+  // QR 编码 qrToken（不可枚举）；兼容旧 id 直查
+  const bike = await db.motorcycle.findFirst({
+    where: { OR: [{ qrToken: id }, { id }] },
     include: {
       customer: {
         include: {

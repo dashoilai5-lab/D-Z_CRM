@@ -18,6 +18,7 @@ function mulberry32(seed: number) {
 }
 const rand = mulberry32(20260818);
 const pick = <T,>(arr: T[]): T => arr[Math.floor(rand() * arr.length)];
+const genQr = () => Array.from({ length: 16 }, () => "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(rand() * 36)]).join("");
 const int = (min: number, max: number) => Math.floor(rand() * (max - min + 1)) + min;
 const RM = (n: number) => Math.round(n * 100);
 const daysAgo = (d: number) => new Date(Date.now() - d * 86400000);
@@ -138,7 +139,7 @@ const SUPPLIERS = [
 
 export async function runSeed(): Promise<Record<string, number>> {
   const counts: Record<string, number> = {};
-  const org = await prisma.organisation.create({ data: { name: "D&Z Smart Workshop", currency: "MYR" } });
+  const org = await prisma.organisation.create({ data: { name: "D&Z Smart Workshop", currency: "MYR", qrToken: genQr() } });
   const branches = [];
   for (const [i, b] of ([
     { name: "D&Z Smart Workshop", city: "Kuala Lumpur", isMain: true },
@@ -290,6 +291,7 @@ export async function runSeed(): Promise<Record<string, number>> {
     const joined = new Date(2018 + int(0, 7), int(0, 11), int(1, 28));
     const c = await prisma.customer.create({
       data: {
+        qrToken: genQr(),
         organisationId: org.id, branchId: pick([kl.id, kl.id, kl.id, branches[1].id, branches[2].id]),
         name, phone: makePhone(),
         gender: pick(["M", "M", "M", "F", "F"]),
@@ -304,6 +306,7 @@ export async function runSeed(): Promise<Record<string, number>> {
   // Ahmad Danial — the demo customer (§49-50)
   const ahmad = await prisma.customer.create({
     data: {
+      qrToken: genQr(),
       organisationId: org.id, branchId: kl.id, name: "Ahmad Danial", phone: "012-345 6789",
       gender: "M", joinedAt: new Date(2019, 2, 14), source: "RIDER_APP",
       address: "No. 12, Jalan Cempaka 3, Cheras", notes: "Rider app user. Prefers Standard Service.",
@@ -311,6 +314,7 @@ export async function runSeed(): Promise<Record<string, number>> {
   });
   const ahmadBike = await prisma.motorcycle.create({
     data: {
+      qrToken: genQr(),
       customerId: ahmad.id, brand: "Yamaha", model: "Y15ZR", year: 2019, type: "UNDERBONE", plate: "WXY 8812",
       color: "Black", vin: "MH3RG15V0KJ0" + int(10000, 99999),
       currentMileage: 31800,
@@ -332,6 +336,7 @@ export async function runSeed(): Promise<Record<string, number>> {
     const mileage = int(500, 52000);
     const m = await prisma.motorcycle.create({
       data: {
+        qrToken: genQr(),
         customerId: cust.id, brand, model, year, type: typeKey, plate: makePlate(),
         color: pick(["Black", "Red", "Blue", "White", "Grey", "Silver"]),
         currentMileage: mileage,

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { generateQrToken } from "@/lib/qr-token";
 import { bookingService } from "@/modules/bookings/service";
 import { inspectionService } from "@/modules/inspections/service";
 import { db } from "@/lib/db";
@@ -105,6 +106,7 @@ export async function addMotorcycle(input: {
 }) {
   await db.motorcycle.create({
     data: {
+      qrToken: generateQrToken(),
       customerId: input.customerId,
       brand: input.brand.trim(),
       model: input.model.trim(),

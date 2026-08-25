@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
+import { generateQrToken } from "@/lib/qr-token";
 
 /** 业务身份（JWT claims）——A2 RLS 读取 request.jwt.claims 依赖这些字段。 */
 export interface BizClaims {
@@ -133,7 +134,7 @@ export async function signUpRider(input: { name: string; email: string; password
       const org = await db.organisation.findFirst({ orderBy: { name: "asc" } });
       if (!org) return { ok: false as const, error: "No workshop organisation configured." };
       customer = await db.customer.create({
-        data: { organisationId: org.id, name, email, authId: authUserId },
+        data: { organisationId: org.id, name, email, authId: authUserId, qrToken: generateQrToken() },
       });
     } else if (!customer.authId) {
       customer = await db.customer.update({ where: { id: customer.id }, data: { authId: authUserId } });

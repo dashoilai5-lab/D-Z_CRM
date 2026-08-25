@@ -13,7 +13,8 @@ export const dynamic = "force-dynamic";
  */
 export default async function QrWorkshopPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const org = await db.organisation.findUnique({ where: { id }, include: { branches: true } });
+  // QR 编码 qrToken（不可枚举）；兼容旧 id 直查
+  const org = await db.organisation.findFirst({ where: { OR: [{ qrToken: id }, { id }] }, include: { branches: true } });
   if (!org) notFound();
   const customer = await getRiderCustomer();
   const mainBranch = org.branches.find((b) => b.isMain) ?? org.branches[0];

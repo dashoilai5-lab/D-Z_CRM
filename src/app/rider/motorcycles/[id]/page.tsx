@@ -90,7 +90,7 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
         </div>
         {showMotorcycleQr && (
           <div className="mt-3 flex justify-center">
-            <QrToggle value={motorcycleQrUrl(passport.id)} label="Motorcycle QR" defaultShow={false} size={96} />
+            <QrToggle value={motorcycleQrUrl(passport.qrToken ?? passport.id)} label="Motorcycle QR" defaultShow={false} size={96} />
           </div>
         )}
       </div>
