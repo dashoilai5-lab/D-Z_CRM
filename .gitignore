@@ -49,7 +49,7 @@ prisma/e2e.db
 prisma/e2e.db-journal
 playwright-report/
 test-results/
-storage/
+/storage/
 browser-screenshots/
 
 # catalogue product photo source (runtime copy lives in public/motorcycles)
