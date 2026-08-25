@@ -157,6 +157,8 @@ model Customer {
   gender         String?
   joinedAt       DateTime @default(now())
   address        String?
+  // Rider 通知偏好: {serviceReminders, bookingUpdates, marketingOffers, appNews}
+  notificationPrefs Json?
   source         String?
   notes          String?
   internalNotes  String?
