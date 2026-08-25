@@ -8,6 +8,7 @@ import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PageTransition } from "@/components/shared/page-transition";
 import RiderSignInPrompt from "@/components/rider/sign-in-prompt";
+import { RiderScanQrButton } from "@/components/rider/scan-qr-button";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +42,7 @@ export default async function RiderHomePage() {
   const livePromos = campaigns.filter((c) => isPromoActive(c as never));
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greeting = hour < 12 ? t("dash.morning", lang) : hour < 18 ? t("dash.afternoon", lang) : t("dash.evening", lang);
 
   const nextKm = bike?.nextServiceMileage ?? null;
   // 不显示当前里程进度——只显示 Last / Next 服务节点
@@ -57,6 +58,7 @@ export default async function RiderHomePage() {
           <h1 className="text-2xl font-bold tracking-tight">{customer.name.split(" ")[0]}</h1>
         </div>
         <div className="flex items-center gap-2">
+          <RiderScanQrButton />
           {isDue || isSoon ? (
             <span className={"rounded-full px-3 py-1 text-[11px] font-bold " + (isDue ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300")}>
               {isDue ? "SERVICE DUE" : "SOON"}

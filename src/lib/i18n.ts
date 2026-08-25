@@ -729,6 +729,12 @@ export const DICT: Dict = {
   "bike.being-serviced": { en: "Being serviced — Job {n}", zh: "服务中 — 工单 {n}", ms: "Sedang diservis — Job {n}" },
   "bike.tap-timeline": { en: "Tap to see the full timeline →", zh: "点击查看完整时间线 →", ms: "Ketik untuk lihat garis masa penuh →" },
 
+  // --- QR scanner (workshop + rider) ---
+  "qr.scan-title": { en: "Scan QR", zh: "扫码", ms: "Imbas QR" },
+  "qr.close": { en: "Close scanner", zh: "关闭扫码器", ms: "Tutup pengimbas" },
+  "qr.point-hint": { en: "Point at a D&Z QR code — it will open automatically", zh: "对准 D&Z 二维码——将自动打开", ms: "Halakan ke kod QR D&Z — ia akan dibuka secara automatik" },
+  "qr.camera-error": { en: "Camera unavailable or permission denied. Tip: scan with the phone camera and open the link.", zh: "相机不可用或权限被拒。提示：用手机相机扫码后打开链接。", ms: "Kamera tidak tersedia atau kebenaran ditolak. Petua: imbas dengan kamera telefon dan buka pautan." },
+
 };
 
 export function t(key: string, lang: Lang): string {
