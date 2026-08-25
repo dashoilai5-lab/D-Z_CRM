@@ -10,7 +10,7 @@ import { EditMotorcycle } from "@/components/rider/edit-motorcycle";
 import { QrToggle } from "@/components/shared/qr-toggle";
 import { motorcycleQrUrl } from "@/lib/qr";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -51,9 +51,9 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
         <Link href="/rider/service-status" className="block rounded-2xl border border-primary/30 bg-primary/5 p-4">
           <div className="text-xs text-muted-foreground">{t("bike.live-status", lang)}</div>
           <div className="mt-0.5 text-sm font-semibold text-primary">
-            {activeJob?.status === "READY" ? "✓ Ready for collection" : activeJob ? "Being serviced — Job " + activeJob.jobNumber : "Booking " + activeBooking?.status.replace(/_/g, " ").toLowerCase()}
+            {activeJob?.status === "READY" ? t("bike.ready-collect", lang) : activeJob ? tpl("bike.being-serviced", lang, { n: activeJob.jobNumber }) : activeBooking ? t("book." + activeBooking.status, lang) : ""}
           </div>
-          <div className="mt-0.5 text-[11px] text-muted-foreground">Tap to see the full timeline →</div>
+          <div className="mt-0.5 text-[11px] text-muted-foreground">{t("bike.tap-timeline", lang)}</div>
         </Link>
       )}
 

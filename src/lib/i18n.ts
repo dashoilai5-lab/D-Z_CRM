@@ -721,6 +721,13 @@ export const DICT: Dict = {
   "book.opening-hours": { en: "Opening hours", zh: "营业时间", ms: "Waktu operasi" },
   "book.choose-branch": { en: "Choose a branch to continue — slots are shown for that branch only.", zh: "请选择门店继续——时段仅显示该门店的。", ms: "Pilih cawangan untuk teruskan — slot hanya ditunjukkan untuk cawangan itu." },
   "book.current-promos": { en: "Current promotions", zh: "当前促销", ms: "Promosi semasa" },
+  "book.change": { en: "Change", zh: "更换", ms: "Tukar" },
+
+  // --- rider service status / bike detail ---
+  "svc.estimated-ready": { en: "Estimated ready: ", zh: "预计完成：", ms: "Anggaran siap: " },
+  "bike.ready-collect": { en: "✓ Ready for collection", zh: "✓ 待取车", ms: "✓ Sedia untuk diambil" },
+  "bike.being-serviced": { en: "Being serviced — Job {n}", zh: "服务中 — 工单 {n}", ms: "Sedang diservis — Job {n}" },
+  "bike.tap-timeline": { en: "Tap to see the full timeline →", zh: "点击查看完整时间线 →", ms: "Ketik untuk lihat garis masa penuh →" },
 
 };
 

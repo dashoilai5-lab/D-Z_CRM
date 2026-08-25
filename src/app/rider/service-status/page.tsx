@@ -51,7 +51,7 @@ export default async function ServiceStatusPage() {
         </div>
         {eta && idx < 5 && (
           <div className="mb-4 flex items-center gap-1.5 rounded-lg bg-primary/5 border border-primary/15 px-3 py-2 text-xs">
-            <Clock className="h-3.5 w-3.5 shrink-0" /> Estimated ready: <strong>{eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong> · {eta.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}
+            <Clock className="h-3.5 w-3.5 shrink-0" /> {t("svc.estimated-ready", lang)}<strong>{eta.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</strong> · {eta.toLocaleDateString("en-MY", { day: "2-digit", month: "short" })}
           </div>
         )}
         {LIFECYCLE_STEPS.map((s, i) => {

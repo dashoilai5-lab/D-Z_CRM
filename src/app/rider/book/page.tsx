@@ -68,7 +68,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
                 <div className="text-xs text-muted-foreground">{selected.address ?? ""}</div>
               </div>
             </div>
-            <span className="text-xs font-medium text-primary">Change →</span>
+            <span className="text-xs font-medium text-primary">{t("book.change", lang)} →</span>
           </Link>
 
           {/* branch widgets strip */}
