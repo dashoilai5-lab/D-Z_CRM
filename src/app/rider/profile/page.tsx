@@ -8,6 +8,8 @@ import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PageTransition } from "@/components/shared/page-transition";
+import { QrToggle } from "@/components/shared/qr-toggle";
+import { riderQrUrl } from "@/lib/qr";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,9 @@ export default async function RiderProfilePage() {
   const lang = await getLang();
   const customer = await getRiderCustomer();
   if (!customer) return null;
+  // QR-002: rider profile QR (workshop scans to load rider profile); gated by org toggle
+  const org = await db.organisation.findFirst();
+  const showRiderQr = org?.enableRiderProfileQr !== false;
   const [visits, reviews, notifications, messages, loyalty] = await Promise.all([
     db.serviceJob.count({ where: { customerId: customer.id, status: "COMPLETED" } }),
     db.review.count({ where: { customerId: customer.id } }),
@@ -126,6 +131,11 @@ export default async function RiderProfilePage() {
         </div>
       )}
 
+      {showRiderQr && (
+        <div className="flex justify-center pt-1">
+          <QrToggle value={riderQrUrl(customer.id)} label="Rider QR" defaultShow={false} size={96} />
+        </div>
+      )}
       <p className="text-center text-[11px] text-muted-foreground pt-2">D&Z Rider</p>
     </div>
     </PageTransition>

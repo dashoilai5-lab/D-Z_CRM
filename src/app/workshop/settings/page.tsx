@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Users, CalendarClock, Bot, Star, Plug, ShieldCheck, FileUp, MessageSquare } from "lucide-react";
 import { db } from "@/lib/db";
 import { OrgProfileForm, BranchManager, ServiceTypeManager, LostReasonsEditor } from "@/components/workshop/settings-forms";
+import { QrSettings } from "@/components/workshop/qr-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +34,8 @@ export default async function SettingsPage() {
         <OrgProfileForm org={{ name: org!.name, contactPhone: org!.contactPhone, contactEmail: org!.contactEmail, address: org!.address, taxId: org!.taxId, timezone: org!.timezone, currency: org!.currency }} />
         <LostReasonsEditor current={org!.lostReasons ?? "[]"} />
       </div>
+
+      <QrSettings orgId={org!.id} flags={{ enableMotorcycleQr: org!.enableMotorcycleQr, enableRiderProfileQr: org!.enableRiderProfileQr, enableWorkshopQr: org!.enableWorkshopQr }} />
 
       <BranchManager branches={branches.map((b) => ({ id: b.id, name: b.name, city: b.city, phone: b.phone, address: b.address, isMain: b.isMain, operatingHours: b.operatingHours }))} />
 

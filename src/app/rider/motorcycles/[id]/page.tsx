@@ -7,6 +7,8 @@ import { fmtKM, fmtDate } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { motorcycleTypeInfo } from "@/lib/motorcycle-types";
 import { EditMotorcycle } from "@/components/rider/edit-motorcycle";
+import { QrToggle } from "@/components/shared/qr-toggle";
+import { motorcycleQrUrl } from "@/lib/qr";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 
@@ -28,6 +30,10 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
   // active booking/job → show live status entry
   const activeBooking = await db.booking.findFirst({ where: { motorcycleId: id, status: { in: ["REQUESTED", "CONFIRMED", "RESCHEDULED", "CHECKED_IN"] } } });
   const activeJob = await db.serviceJob.findFirst({ where: { motorcycleId: id, status: { in: ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY"] } } });
+
+  // QR-001: motorcycle QR (workshop scans to load bike + owner); gated by org toggle
+  const org = await db.organisation.findFirst();
+  const showMotorcycleQr = org?.enableMotorcycleQr !== false;
 
   // inspection findings across this bike's jobs (WARNING/FAIL history)
   const findings = await db.inspectionFinding.findMany({
@@ -82,6 +88,11 @@ export default async function MotorcyclePassportPage({ params }: { params: Promi
             initial={{ brand: passport.brand, model: passport.model, year: passport.year, type: passport.type, color: passport.color, currentMileage: passport.currentMileage }}
           />
         </div>
+        {showMotorcycleQr && (
+          <div className="mt-3 flex justify-center">
+            <QrToggle value={motorcycleQrUrl(passport.id)} label="Motorcycle QR" defaultShow={false} size={96} />
+          </div>
+        )}
       </div>
 
       <div className="rounded-2xl border bg-card p-4">

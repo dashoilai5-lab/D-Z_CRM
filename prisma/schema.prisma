@@ -45,6 +45,10 @@ model Organisation {
   timezone      String   @default("Asia/Kuala_Lumpur")
   operatingHours String? // JSON {mon:"09:00-18:00",...}
   lostReasons    String? // JSON array of configurable closed-lost reasons (PIPE-013)
+  // QR feature toggles (QR-001..003): independent per-surface enable/disable
+  enableMotorcycleQr Boolean @default(true)
+  enableRiderProfileQr Boolean @default(true)
+  enableWorkshopQr   Boolean  @default(true)
   createdAt     DateTime @default(now())
   branches      Branch[]
   users         User[]
