@@ -5,7 +5,7 @@
 ## ⚠️ 2026-08-25 会话打包（session-c31025da-bd87-4fa4-a8c4-37d1db1d2021）
 
 ## 一句话状态
-**本地与生产 = commit 408d98c（分叉已清零）**：demo 模式彻底移除（b7649ce）+ 修复云端构建（ec8ee3d 补 SupabaseStorageProvider、408d98c 补本地 storage API 路由——两者曾被 .gitignore 的 storage/ 规则误忽略）。生产 = d-z-izf1dqez8（GitHub 集成自动部署，git source，浏览器实测无 demo bar）。main 已 force push 覆盖远程废弃历史，本地=远程=生产，双向分叉 0。工作树仅 screenshots/ 未跟踪。
+**本地与生产 = commit 4666b3f（main，分叉 0）**：demo 彻底移除 + 云端构建修复（storage 误忽略/lazy-init provider）+ **Vercel Cron 服务提醒上线**（vercel.json crons 每日 09:00 → /api/cron/reminders，CRON_SECRET 鉴权，生产实测 200 sent 14）。生产 = d-z-37fyncooj（GitHub 集成，git source）。Preview env 配齐 10 项（SSO 保护未浏览器验收）。工作树仅 screenshots/ 未跟踪。
 
 ## 会话信息
 - 原会话 ID：session-c31025da-bd87-4fa4-a8c4-37d1db1d2021
