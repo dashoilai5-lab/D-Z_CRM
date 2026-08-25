@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import { useRouter } from "next/navigation";
 import { X, ScanLine, Camera } from "lucide-react";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 /**
  * Workshop 扫码器（QR-001/002）：员工扫 rider/摩托 QR → 解析 deep link → 跳转。
@@ -12,6 +14,7 @@ import { X, ScanLine, Camera } from "lucide-react";
  */
 export function QrScanner({ onClose }: { onClose: () => void }) {
   const router = useRouter();
+  const lang = useLang();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [error, setError] = useState("");
   const [active, setActive] = useState(false);
@@ -40,7 +43,7 @@ export function QrScanner({ onClose }: { onClose: () => void }) {
           }
         });
       } catch {
-        setError("Camera unavailable or permission denied. Tip: scan with the phone camera and open the link.");
+        setError(t("qr.camera-error", lang));
         if (cancelled) return;
       }
     };
@@ -55,8 +58,8 @@ export function QrScanner({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] flex flex-col bg-black/90">
       <div className="flex items-center justify-between p-4 text-white">
-        <div className="flex items-center gap-2 text-sm font-semibold"><ScanLine className="h-4 w-4" /> Scan QR</div>
-        <button type="button" onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" aria-label="Close scanner">
+        <div className="flex items-center gap-2 text-sm font-semibold"><ScanLine className="h-4 w-4" /> {t("qr.scan-title", lang)}</div>
+        <button type="button" onClick={onClose} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20" aria-label={t("qr.close", lang)}>
           <X className="h-4 w-4" />
         </button>
       </div>
@@ -74,7 +77,7 @@ export function QrScanner({ onClose }: { onClose: () => void }) {
         {error ? (
           <p className="text-sm text-amber-300">{error}</p>
         ) : (
-          <p className="flex items-center justify-center gap-2 text-sm text-white/70"><Camera className="h-4 w-4" /> Point at a D&Z QR code — it will open automatically</p>
+          <p className="flex items-center justify-center gap-2 text-sm text-white/70"><Camera className="h-4 w-4" /> {t("qr.point-hint", lang)}</p>
         )}
       </div>
     </div>
