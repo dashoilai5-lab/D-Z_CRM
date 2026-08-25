@@ -1,15 +1,19 @@
 import Link from "next/link";
-import { ChevronLeft, User, Shield } from "lucide-react";
+import { ChevronLeft, User, Shield, Languages, Bell, ShieldCheck } from "lucide-react";
 import { getRiderCustomer } from "@/lib/rider-customer";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PageTransition } from "@/components/shared/page-transition";
 import { ProfileForm } from "@/components/rider/profile-form";
+import { LanguageSwitcher } from "@/components/rider/language-switcher";
+import { NotificationPrefsForm } from "@/components/rider/notification-prefs-form";
+import { ChangePasswordForm } from "@/components/rider/change-password-form";
+import { parsePrefs } from "@/lib/rider-prefs";
 
 export const dynamic = "force-dynamic";
 
 /**
- * Rider Settings：编辑个人资料（姓名/电话/邮箱/性别/地址）+ 账号信息。
+ * Rider Settings：个人资料 / 语言 / 通知偏好 / 安全（更换密码）+ 账号信息。
  */
 export default async function RiderSettingsPage() {
   const lang = await getLang();
@@ -20,19 +24,19 @@ export default async function RiderSettingsPage() {
     <PageTransition>
     <div className="space-y-5">
       <Link href="/rider/profile" className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ChevronLeft className="h-4 w-4" /> {t("rider.my-bikes", lang) === "My Motorcycles" ? "Back to profile" : "Back"}
+        <ChevronLeft className="h-4 w-4" /> {t("settings.title", lang) === "Settings" ? "Back to profile" : "Back"}
       </Link>
 
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage your personal details</p>
+        <h1 className="text-2xl font-bold tracking-tight">{t("settings.title", lang)}</h1>
+        <p className="text-sm text-muted-foreground mt-1">{t("settings.subtitle", lang)}</p>
       </div>
 
       {/* 个人资料编辑 */}
       <div className="rounded-2xl border bg-card p-4">
         <div className="flex items-center gap-2 mb-3">
           <User className="h-4 w-4 text-primary" />
-          <h2 className="font-semibold">Profile</h2>
+          <h2 className="font-semibold">{t("settings.profile", lang)}</h2>
         </div>
         <ProfileForm
           customerId={customer.id}
@@ -46,25 +50,55 @@ export default async function RiderSettingsPage() {
         />
       </div>
 
+      {/* 语言切换 */}
+      <div className="rounded-2xl border bg-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Languages className="h-4 w-4 text-primary" />
+          <h2 className="font-semibold">{t("settings.language", lang)}</h2>
+        </div>
+        <p className="text-xs text-muted-foreground mb-3">{t("settings.language-desc", lang)}</p>
+        <LanguageSwitcher current={lang} />
+      </div>
+
+      {/* 通知偏好 */}
+      <div className="rounded-2xl border bg-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Bell className="h-4 w-4 text-primary" />
+          <h2 className="font-semibold">{t("settings.notifications", lang)}</h2>
+        </div>
+        <p className="text-xs text-muted-foreground mb-3">{t("settings.notifications-desc", lang)}</p>
+        <NotificationPrefsForm initial={parsePrefs(customer.notificationPrefs)} lang={lang} />
+      </div>
+
+      {/* 安全：更换密码 */}
+      <div className="rounded-2xl border bg-card p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <ShieldCheck className="h-4 w-4 text-primary" />
+          <h2 className="font-semibold">{t("settings.security", lang)}</h2>
+        </div>
+        <p className="text-xs text-muted-foreground mb-3">{t("settings.security-desc", lang)}</p>
+        <ChangePasswordForm lang={lang} />
+      </div>
+
       {/* 账号信息 */}
       <div className="rounded-2xl border bg-card p-4">
         <div className="flex items-center gap-2 mb-3">
           <Shield className="h-4 w-4 text-primary" />
-          <h2 className="font-semibold">Account</h2>
+          <h2 className="font-semibold">{t("settings.account", lang)}</h2>
         </div>
         <div className="space-y-2 text-sm">
           <div className="flex items-center justify-between rounded-xl bg-muted/50 px-3 py-2.5">
-            <span className="text-muted-foreground">Member since</span>
+            <span className="text-muted-foreground">{t("settings.member-since", lang)}</span>
             <span className="font-medium">{customer.joinedAt.getFullYear()}</span>
           </div>
           <div className="flex items-center justify-between rounded-xl bg-muted/50 px-3 py-2.5">
-            <span className="text-muted-foreground">Rider ID</span>
+            <span className="text-muted-foreground">{t("settings.rider-id", lang)}</span>
             <span className="font-mono text-xs">{customer.qrToken ?? customer.id.slice(-6)}</span>
           </div>
         </div>
       </div>
 
-      <p className="text-center text-[11px] text-muted-foreground">D&Z Rider · Settings</p>
+      <p className="text-center text-[11px] text-muted-foreground">D&Z Rider · {t("settings.title", lang)}</p>
     </div>
     </PageTransition>
   );

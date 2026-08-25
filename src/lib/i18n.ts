@@ -581,6 +581,37 @@ export const DICT: Dict = {
   "dash.unit-tasks": { en: "tasks", zh: "项任务", ms: "tugas" },
   "dash.unit-approvals": { en: "pending", zh: "待批", ms: "tertunda" },
 
+  // --- rider settings ---
+  "settings.title": { en: "Settings", zh: "设置", ms: "Tetapan" },
+  "settings.subtitle": { en: "Manage your personal details", zh: "管理您的个人资料", ms: "Urus butiran peribadi anda" },
+  "settings.profile": { en: "Profile", zh: "个人资料", ms: "Profil" },
+  "settings.account": { en: "Account", zh: "账号", ms: "Akaun" },
+  "settings.member-since": { en: "Member since", zh: "加入时间", ms: "Ahli sejak" },
+  "settings.rider-id": { en: "Rider ID", zh: "车手 ID", ms: "ID Penunggang" },
+  "settings.language": { en: "Language", zh: "语言", ms: "Bahasa" },
+  "settings.language-desc": { en: "Interface language for the rider app", zh: "车手 App 界面语言", ms: "Bahasa antara muka aplikasi penunggang" },
+  "settings.notifications": { en: "Notifications", zh: "通知偏好", ms: "Pemberitahuan" },
+  "settings.notifications-desc": { en: "Choose what messages you receive", zh: "选择您想接收的消息类型", ms: "Pilih mesej yang anda ingin terima" },
+  "settings.security": { en: "Security", zh: "安全", ms: "Keselamatan" },
+  "settings.security-desc": { en: "Change your account password", zh: "更改您的账号密码", ms: "Tukar kata laluan akaun anda" },
+  "prefs.service-reminders": { en: "Service reminders", zh: "保养提醒", ms: "Peringatan servis" },
+  "prefs.service-reminders-desc": { en: "Next-service due alerts for your bikes", zh: "爱车即将到期的保养提醒", ms: "Amaran servis seterusnya untuk motosikal anda" },
+  "prefs.booking-updates": { en: "Booking updates", zh: "预约动态", ms: "Kemas kini tempahan" },
+  "prefs.booking-updates-desc": { en: "Confirmation, reschedule and status changes", zh: "确认、改期与状态变更", ms: "Pengesahan, jadual semula dan perubahan status" },
+  "prefs.marketing-offers": { en: "Marketing offers", zh: "营销优惠", ms: "Tawaran pemasaran" },
+  "prefs.marketing-offers-desc": { en: "Promotions, posters and workshop news", zh: "促销、海报与门店资讯", ms: "Promosi, poster dan berita bengkel" },
+  "prefs.app-news": { en: "App news", zh: "App 公告", ms: "Berita aplikasi" },
+  "prefs.app-news-desc": { en: "Product updates and announcements", zh: "产品更新与公告", ms: "Kemas kini dan pengumuman produk" },
+  "prefs.save": { en: "Save Preferences", zh: "保存偏好", ms: "Simpan Pilihan" },
+  "prefs.saved": { en: "Preferences saved", zh: "偏好已保存", ms: "Pilihan disimpan" },
+  "password.current": { en: "Current password", zh: "当前密码", ms: "Kata laluan semasa" },
+  "password.new": { en: "New password", zh: "新密码", ms: "Kata laluan baharu" },
+  "password.min-hint": { en: "At least 8 characters", zh: "至少 8 个字符", ms: "Sekurang-kurangnya 8 aksara" },
+  "password.confirm": { en: "Confirm new password", zh: "确认新密码", ms: "Sahkan kata laluan baharu" },
+  "password.change": { en: "Change Password", zh: "更改密码", ms: "Tukar Kata Laluan" },
+  "password.mismatch": { en: "Passwords do not match", zh: "两次输入的密码不一致", ms: "Kata laluan tidak sepadan" },
+  "password.changed": { en: "Password changed — other devices signed out", zh: "密码已更改 — 其他设备已退出登录", ms: "Kata laluan ditukar — peranti lain dilog keluar" },
+
 };
 
 export function t(key: string, lang: Lang): string {

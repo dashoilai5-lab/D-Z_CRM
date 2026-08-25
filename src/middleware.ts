@@ -16,7 +16,7 @@ function matchesPrefix(pathname: string, prefix: string): boolean {
 }
 
 // Rider 顾客私有页（未登录需登录；登录页/公开页放行）
-const RIDER_PRIVATE = ["/rider/bookings", "/rider/approvals", "/rider/invoices", "/rider/motorcycles", "/rider/profile", "/rider/service-status", "/rider/service-history", "/rider/notifications"];
+const RIDER_PRIVATE = ["/rider/bookings", "/rider/approvals", "/rider/invoices", "/rider/motorcycles", "/rider/profile", "/rider/settings", "/rider/service-status", "/rider/service-history", "/rider/notifications"];
 function isRiderPrivate(pathname: string): boolean {
   return RIDER_PRIVATE.some((p) => pathname === p || pathname.startsWith(p + "/"));
 }
