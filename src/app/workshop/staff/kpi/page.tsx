@@ -3,8 +3,7 @@ import { Money } from "@/components/shared/money";
 import { Progress } from "@/components/ui/progress";
 import { staffService } from "@/modules/staff/service";
 import { formatRM } from "@/lib/money";
-import { getPersona } from "@/lib/demo";
-import { getDemoUser } from "@/lib/demo-user";
+import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 
@@ -12,20 +11,20 @@ export const dynamic = "force-dynamic";
 
 export default async function KpiPage() {
   const lang = await getLang();
-  const persona = await getPersona();
-  const user = await getDemoUser(persona);
+  const session = await getSessionUser();
+  const isMechanic = session.kind === "staff" && session.role === "MECHANIC";
   const { staff, top } = await staffService.kpiBoard(30);
-  // data isolation: MECHANIC sees only their own KPI; OWNER sees the full board
-  const rows = persona === "MECHANIC" && user ? staff.filter((s) => s.id === user.id) : staff;
-  const myTop = persona === "MECHANIC" && user ? rows[0] ?? null : top;
+  // data isolation: MECHANIC sees only their own KPI; others see the full board
+  const rows = isMechanic && session.user ? staff.filter((s) => s.id === session.user!.id) : staff;
+  const myTop = isMechanic && session.user ? rows[0] ?? null : top;
   return (
     <div>
-      <PageHeader title={persona === "MECHANIC" ? t("ws.kpi.my", lang) : t("ws.kpi.board", lang)} subtitle={persona === "MECHANIC" ? t("ws.kpi.my-sub", lang) : t("ws.kpi.sub", lang)} />
+      <PageHeader title={isMechanic ? t("ws.kpi.my", lang) : t("ws.kpi.board", lang)} subtitle={isMechanic ? t("ws.kpi.my-sub", lang) : t("ws.kpi.sub", lang)} />
       {myTop && (
         <div className="mb-5 rounded-2xl bg-primary text-primary-foreground p-5 flex items-center gap-4">
           <div className="text-4xl font-bold tabular-nums">{myTop.score}</div>
           <div>
-            <div className="font-semibold">{persona === "MECHANIC" ? t("ws.kpi.your-score", lang).replace("{name}", myTop.name) : t("ws.kpi.top-performer", lang).replace("{name}", myTop.name)}</div>
+            <div className="font-semibold">{isMechanic ? t("ws.kpi.your-score", lang).replace("{name}", myTop.name) : t("ws.kpi.top-performer", lang).replace("{name}", myTop.name)}</div>
             <div className="text-xs opacity-90">{t("ws.kpi.top-line", lang).replace("{jobs}", String(myTop.jobs)).replace("{ticket}", formatRM(myTop.avgTicketSen)).replace("{rating}", String(myTop.rating))}</div>
           </div>
         </div>

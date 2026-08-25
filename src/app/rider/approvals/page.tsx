@@ -1,11 +1,11 @@
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { inspectionService } from "@/modules/inspections/service";
 import { ApprovalCard } from "@/components/rider/approval-card";
 
 export const dynamic = "force-dynamic";
 
 export default async function ApprovalsPage() {
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   if (!customer) return null;
   const approvals = await inspectionService.listForCustomer(customer.id);
   const pending = approvals.filter((a) => a.status === "PENDING");

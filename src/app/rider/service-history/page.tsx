@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Tag, Megaphone, Package, ChevronRight, Wrench, Flame } from "lucide-react";
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NewsPage() {
   const lang = await getLang();
-  await getDemoCustomer();
+  await getRiderCustomer();
   const [offers, posters, products] = await Promise.all([
     db.campaign.findMany({ where: { type: "PROMO", status: "ACTIVE", endDate: { gte: new Date() } }, orderBy: { startDate: "desc" }, take: 5 }),
     db.marketingAsset.findMany({ where: { published: true }, orderBy: { createdAt: "desc" }, take: 4 }),

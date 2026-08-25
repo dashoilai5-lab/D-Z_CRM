@@ -86,7 +86,7 @@ export async function signUpRider(input: { name: string; email: string; password
 
   // 测试域 / 开发环境：admin API 直建 + 自动确认（免 signUp 邮件限流、免点确认邮件）
   const isTestEmail = /@dz\.my$/.test(email) || email.startsWith("test.") || email.startsWith("dztest") || email.startsWith("autoconf");
-  const wantAutoConfirm = process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_DEMO_MODE === "true" || isTestEmail;
+  const wantAutoConfirm = process.env.NODE_ENV !== "production" || isTestEmail;
 
   // 1. 建 auth 用户
   let authUserId: string | undefined;

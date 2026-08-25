@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CalendarClock } from "lucide-react";
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { PageTransition } from "@/components/shared/page-transition";
 import { db } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
@@ -21,7 +21,7 @@ const STATUS_LABEL: Record<string, { key: string; cls: string; stripe: string }>
 
 export default async function RiderBookingsPage() {
   const lang = await getLang();
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   if (!customer) return null;
   const bookings = await db.booking.findMany({
     where: { customerId: customer.id },

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MapPin, Phone, Clock, Star, CalendarDays, BadgePercent, ChevronRight, Store } from "lucide-react";
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { BookForm } from "@/components/rider/book-form";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
@@ -18,7 +18,7 @@ const DEFAULT_HOURS = [
 export default async function BookPage({ searchParams }: { searchParams: Promise<{ campaign?: string; promo?: string; branch?: string }> }) {
   const lang = await getLang();
   const { campaign, promo, branch } = await searchParams;
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   if (!customer) return null;
 
   const branches = await db.branch.findMany({ where: { organisationId: customer.organisationId } });

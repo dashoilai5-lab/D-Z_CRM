@@ -1,4 +1,4 @@
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
 import { getLang } from "@/lib/get-lang";
@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function RiderInvoicesPage() {
   const lang = await getLang();
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   if (!customer) return null;
   const invoices = await db.invoice.findMany({
     where: { customerId: customer.id },

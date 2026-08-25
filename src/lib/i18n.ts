@@ -76,15 +76,6 @@ export const DICT: Dict = {
   "sec.finance": { en: "FINANCE", zh: "财务", ms: "KEWANGAN" },
   "sec.ai": { en: "AI CENTRE", zh: "AI 中心", ms: "PUSAT AI" },
 
-  // --- demo bar ---
-  "demo.mode": { en: "DEMO MODE", zh: "演示模式", ms: "MOD DEMO" },
-  "demo.as": { en: "DEMO AS", zh: "演示角色", ms: "DEMO SEBAGAI" },
-  "demo.reset": { en: "RESET DEMO DATA", zh: "重置演示数据", ms: "SET SEMULA DATA" },
-  "persona.OWNER": { en: "Workshop Owner", zh: "车行老板", ms: "Pemilik Bengkel" },
-  "persona.COUNTER_STAFF": { en: "Counter Staff", zh: "前台员工", ms: "Staf Kaunter" },
-  "persona.MECHANIC": { en: "Mechanic", zh: "机械师", ms: "Mekanik" },
-  "persona.CUSTOMER": { en: "Customer", zh: "客户", ms: "Pelanggan" },
-
   // --- rider bottom nav ---
   "navr.home": { en: "Home", zh: "首页", ms: "Utama" },
   "navr.my-bike": { en: "My Bike", zh: "我的摩托", ms: "Motosikal Saya" },
@@ -332,7 +323,6 @@ export const DICT: Dict = {
   "rider.no-notifications": { en: "No notifications.", zh: "暂无通知。", ms: "Tiada notifikasi." },
   "rider.messages": { en: "Messages", zh: "消息", ms: "Mesej" },
   "rider.you": { en: "You", zh: "你", ms: "Anda" },
-  "rider.demo-persona": { en: "demo persona: Customer", zh: "演示角色：客户", ms: "persona demo: Pelanggan" },
 
   // --- rider motorcycle passport page ---
   "rider.verified-services": { en: "Verified Services", zh: "已验证服务", ms: "Servis Disahkan" },

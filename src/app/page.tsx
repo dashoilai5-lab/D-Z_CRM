@@ -2,11 +2,9 @@ import Link from "next/link";
 import { Bike, Clock, MessageCircle, ArrowRight } from "lucide-react";
 import { db } from "@/lib/db";
 import { formatRM } from "@/lib/money";
-import { getPersona } from "@/lib/demo";
 import { WorkshopOSEntry } from "@/components/workshop-os-entry";
 
 export default async function LandingPage() {
-  const persona = await getPersona();
   const org = await db.organisation.findFirst();
   const [customers, jobs, revenue] = await Promise.all([
     db.customer.count(),
@@ -33,7 +31,7 @@ export default async function LandingPage() {
         </p>
 
         <div className="grid sm:grid-cols-2 gap-5 mt-10">
-          <WorkshopOSEntry persona={persona} />
+          <WorkshopOSEntry />
           <Link href="/rider/home" className="group rounded-3xl border bg-card p-7 hover:border-primary/50 transition-colors">
             <div className="flex items-center justify-between">
               <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center"><Bike className="h-6 w-6" /></div>
@@ -77,7 +75,7 @@ export default async function LandingPage() {
             <div className="text-xs text-muted-foreground mt-0.5">Lifetime revenue</div>
           </div>
         </div>
-        <p className="mt-8 text-xs text-muted-foreground">DEMO MODE — shared local database · reset any time from the top bar</p>
+        <p className="mt-8 text-xs text-muted-foreground">D&Z Platform — Workshop OS + Rider</p>
       </div>
     </main>
   );

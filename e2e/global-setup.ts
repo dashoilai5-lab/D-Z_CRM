@@ -12,6 +12,8 @@ export default async function globalSetup() {
   }
   execSync("pnpm exec prisma migrate deploy", { cwd: root, env: process.env, stdio: "inherit" });
   execSync("pnpm exec tsx prisma/seed.ts", { cwd: root, env: process.env, stdio: "inherit" });
+  // e2e 用真实 Supabase 登录：播种后把 User/Customer 绑定到 auth 用户（email → authId）
+  execSync("pnpm exec tsx e2e/link-auth.ts", { cwd: root, env: process.env, stdio: "inherit" });
 
   // The E2E server runs under launchd (com.dz-platform.e2e, port 3102). Its
   // PrismaClient may hold a stale SQLite handle from before the wipe — restart

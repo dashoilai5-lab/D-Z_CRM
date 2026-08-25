@@ -4,18 +4,34 @@ export const BASE_URL = "http://localhost:3102";
 
 export type DemoPersona = "OWNER" | "COUNTER_STAFF" | "MECHANIC" | "CUSTOMER";
 
-/** Let an action-triggered router.push/refresh settle before the next navigation (webkit races). */
-export async function settle(page: Page) {
+/** §13 — persona → 真实 Supabase 账号（DEMO_ACCOUNTS.md，密码统一 Dashoil@!789）。 */
+const ACCOUNT: Record<DemoPersona, { email: string; path: string }> = {
+  OWNER: { email: "daniel.tan@dz.my", path: "/login" },
+  COUNTER_STAFF: { email: "mei.ling.wong@dz.my", path: "/login" },
+  MECHANIC: { email: "aizat.bin.ismail@dz.my", path: "/login" },
+  CUSTOMER: { email: "ahmad.danial@dz.my", path: "/rider/login" },
+};
+
+/** 用真实 Supabase 账号登录（替代旧的 persona cookie）。 */
+export async function setPersona(context: BrowserContext, persona: DemoPersona) {
+  const account = ACCOUNT[persona];
+  const page = await context.newPage();
+  // 清掉可能的旧 session，再走登录表单
+  await context.clearCookies();
+  await page.goto(BASE_URL + account.path);
   await page.waitForTimeout(600);
+  // 登录页：email + password 输入 + Sign in 按钮
+  await page.fill('input[type="email"]', account.email);
+  await page.fill('input[type="password"]', "Dashoil@!789");
+  await page.getByRole("button", { name: /sign in/i }).click();
+  // 等待 session cookie 写入（跳转或 header 更新）
+  await page.waitForTimeout(1500);
+  await page.close();
 }
 
-/** §13 — set the demo persona via its cookie (equivalent to the DEMO bar select). */
-export async function setPersona(context: BrowserContext, persona: DemoPersona) {
-  // Tests assert English UI text — pin the language so i18n never breaks them.
-  await context.addCookies([
-    { name: "dz_demo_persona", value: persona, url: BASE_URL },
-    { name: "dz_lang", value: "en", url: BASE_URL },
-  ]);
+/** 让一个 action 触发的 router.push/refresh 稳定后再下一步（webkit 竞态）。 */
+export async function settle(page: Page) {
+  await page.waitForTimeout(600);
 }
 
 /** Booking dates must be unique per test — pass a distinct days offset. */

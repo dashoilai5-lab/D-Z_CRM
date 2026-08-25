@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronRight, MessageCircle, CheckCheck } from "lucide-react";
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { SignOutIconButton } from "@/components/rider/sign-out-button";
 import { initials } from "@/lib/format";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 
 export default async function RiderProfilePage() {
   const lang = await getLang();
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   if (!customer) return null;
   const [visits, reviews, notifications, messages, loyalty] = await Promise.all([
     db.serviceJob.count({ where: { customerId: customer.id, status: "COMPLETED" } }),
@@ -126,7 +126,7 @@ export default async function RiderProfilePage() {
         </div>
       )}
 
-      <p className="text-center text-[11px] text-muted-foreground pt-2">D&Z Rider · {t("rider.demo-persona", lang)} (Ahmad Danial)</p>
+      <p className="text-center text-[11px] text-muted-foreground pt-2">D&Z Rider</p>
     </div>
     </PageTransition>
   );

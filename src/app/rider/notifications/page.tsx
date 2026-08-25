@@ -1,11 +1,11 @@
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { db } from "@/lib/db";
 import { NotificationsList } from "@/components/rider/notifications-list";
 
 export const dynamic = "force-dynamic";
 
 export default async function RiderNotificationsPage() {
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   if (!customer) return null;
   const notifications = await db.notification.findMany({
     where: { customerId: customer.id },

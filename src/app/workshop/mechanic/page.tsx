@@ -1,7 +1,6 @@
 import { jobService } from "@/modules/service-jobs/service";
 import { db } from "@/lib/db";
-import { getPersona } from "@/lib/demo";
-import { getDemoUser } from "@/lib/demo-user";
+import { getSessionUser } from "@/lib/session-user";
 import { MechanicBoard, type BoardJob, type MechanicSummary } from "@/components/workshop/mechanic-board";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
@@ -11,8 +10,8 @@ export const dynamic = "force-dynamic";
 
 export default async function MechanicPage() {
   const lang = await getLang();
-  const persona = await getPersona();
-  const user = await getDemoUser(persona);
+  const session = await getSessionUser();
+  const isMechanic = session.kind === "staff" && session.role === "MECHANIC";
   const board = await jobService.listBoard();
   const active = board.jobs.filter((j) => ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "READY"].includes(j.status));
 
@@ -50,20 +49,20 @@ export default async function MechanicPage() {
     ready: m.jobs.filter((j) => j.status === "READY").length,
   })).sort((a, b) => (a.id === "unassigned" ? 1 : 0) - (b.id === "unassigned" ? 1 : 0) || b.jobs.length - a.jobs.length);
 
-  // MECHANIC persona defaults to their own card; OWNER defaults to the first (busiest)
-  const initialMechanicId = persona === "MECHANIC" && user ? user.id : mechanics[0]?.id ?? "unassigned";
+  // MECHANIC defaults to their own card; others default to the first (busiest)
+  const initialMechanicId = isMechanic && session.user ? session.user.id : mechanics[0]?.id ?? "unassigned";
 
   return (
     <PageTransition>
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold tracking-tight mb-1">{t("nav.mechanic", lang)}</h1>
       <p className="text-sm text-muted-foreground mb-5">
-        {persona === "OWNER" ? t("ws.mech.owner-hint", lang) : t("ws.mech.mech-hint", lang)}
+        {isMechanic ? t("ws.mech.mech-hint", lang) : t("ws.mech.owner-hint", lang)}
       </p>
       <MechanicBoard
         mechanics={mechanics}
         initialMechanicId={initialMechanicId}
-        ownerView={persona === "OWNER"}
+        ownerView={!isMechanic}
         allMechanics={allMechanics}
       />
     </div>

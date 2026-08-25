@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Bike, CalendarPlus, ChevronRight, Wrench, AlertTriangle, Clock, Bell, Tag } from "lucide-react";
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { db } from "@/lib/db";
 import { fmtKM } from "@/lib/format";
 import { isPromoActive } from "@/modules/marketing/promo";
@@ -22,14 +22,11 @@ function serviceProgress(currentKm: number, lastKm: number | null, nextKm: numbe
 }
 
 export default async function RiderHomePage() {
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   const lang = await getLang();
   if (!customer) {
-    // 生产：无关联顾客档案 → 登录引导（layout 已拦截未登录，这里兜底已登录但未关联的边界）
-    if (process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_DEMO_MODE !== "true") {
-      return <RiderSignInPrompt />;
-    }
-    return <p className="text-sm text-muted-foreground">Demo customer not found — reset demo data.</p>;
+    // 无关联顾客档案 → 登录引导（layout 已拦截未登录，这里兜底已登录但未关联的边界）
+    return <RiderSignInPrompt />;
   }
   const bike = [...customer.motorcycles].sort((a, b) => b.currentMileage - a.currentMileage)[0];
 

@@ -23,11 +23,11 @@ export default async function DashboardPage() {
     getLang(),
   ]);
 
-  // 当前用户：生产=真实登录（Supabase→User）；dev/demo=persona 映射
-  const persona = session.authenticated ? personaForRole(session.role) : (session.kind === "demo-staff" ? "OWNER" : "OWNER");
+  // 当前用户：真实登录（Supabase→User）
+  const persona = personaForRole(session.role);
   const user = session.authenticated
     ? { id: session.user?.id ?? "", name: session.name, role: session.role }
-    : (session.demoUser ? { id: session.demoUser.id, name: session.demoUser.name, role: session.demoUser.roleLabel } : null);
+    : null;
 
   const statusRows = [
     { status: "WAITING", label: t("status.WAITING", lang), count: dash.statuses.WAITING, cls: "bg-slate-500" },

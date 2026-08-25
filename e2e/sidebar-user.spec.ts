@@ -26,23 +26,20 @@ test.describe("sidebar user block + centering", () => {
 
     // user block visible (initials), name hidden while collapsed (opacity on the text wrapper)
     const nameWrap = aside.getByText("Daniel Tan").locator("..");
-    const roleWrap = aside.getByText("Workshop Owner").locator("..");
     await expect(nameWrap).toHaveCSS("opacity", "0");
-    await expect(roleWrap).toHaveCSS("opacity", "0");
 
     // hover reveals name + role
     await aside.hover();
     await expect(aside).toHaveCSS("width", "208px", { timeout: 5000 });
     await expect(nameWrap).toHaveCSS("opacity", "1", { timeout: 5000 });
-    await expect(roleWrap).toHaveCSS("opacity", "1");
 
-    // role-aware: switch to MECHANIC → different user shown
+    // role-aware: switch to MECHANIC → different user shown (real login via setPersona)
     await setPersona(ctx, "MECHANIC");
     await page.goto(BASE_URL + "/workshop/dashboard");
     await page.waitForTimeout(300);
     await aside.hover();
     await expect(aside.getByText("Aizat bin Ismail").locator("..")).toHaveCSS("opacity", "1", { timeout: 5000 });
-    await expect(aside.getByText("Mechanic", { exact: true }).locator("..")).toHaveCSS("opacity", "1");
+    await expect(aside.getByText("MECHANIC", { exact: true }).first()).toBeVisible();
 
     await ctx.close();
   });

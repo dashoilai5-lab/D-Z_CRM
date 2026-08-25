@@ -29,21 +29,17 @@ export default function PreviewPage() {
   const [device, setDevice] = useState<(typeof DEVICES)[number]>(DEVICES[0]);
   const [lang, setLang] = useState<"en" | "zh" | "ms">("en");
   const [frameKey, setFrameKey] = useState(0); // bump to reload iframe
-  const [persona, setPersona] = useState<"CUSTOMER" | "OWNER">("CUSTOMER");
 
   const src = useMemo(() => page, [page]);
 
-  // apply cookies for the iframe (same-origin) so the rider app renders the right persona + lang,
-  // and hide the amber demo bar inside the frame for a full-page view
+  // apply lang cookie for the iframe (same-origin) so the rider app renders the right language
   useEffect(() => {
-    document.cookie = "dz_demo_persona=" + persona + "; path=/";
     document.cookie = "dz_lang=" + lang + "; path=/";
-    document.cookie = "dz_hide_demo=1; path=/";
     // Intentionally sync: cookies must be written before the iframe remounts,
-    // so the frame reloads with the new persona/lang applied.
+    // so the frame reloads with the new lang applied.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setFrameKey((k) => k + 1); // reload frame with new cookies
-  }, [persona, lang]);
+  }, [lang]);
 
   const curIdx = PAGES.findIndex((p) => p.href === page);
   const go = (dir: 1 | -1) => {
@@ -63,11 +59,6 @@ export default function PreviewPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* persona */}
-          <select value={persona} onChange={(e) => setPersona(e.target.value as "CUSTOMER" | "OWNER")} className="h-8 rounded-lg bg-white/10 border border-white/15 px-2 text-xs text-white outline-none">
-            <option value="CUSTOMER">Customer (Ahmad)</option>
-            <option value="OWNER">Owner (workshop)</option>
-          </select>
           {/* lang */}
           <select value={lang} onChange={(e) => setLang(e.target.value as "en" | "zh" | "ms")} className="h-8 rounded-lg bg-white/10 border border-white/15 px-2 text-xs text-white outline-none">
             <option value="en">English</option>
@@ -127,8 +118,7 @@ export default function PreviewPage() {
 
       {/* hint */}
       <p className="mt-6 text-[11px] text-white/40 max-w-md text-center">
-        The frame embeds the live rider app (same origin, cookies shared). The amber demo bar is hidden here for a full-page view —
-        it appears in real browsing only. Switch page / device / persona / language to inspect each state.
+        The frame embeds the live rider app (same origin, cookies shared). Switch page / device / language to inspect each state.
       </p>
     </div>
   );

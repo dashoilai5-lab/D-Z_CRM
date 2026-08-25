@@ -6,10 +6,15 @@ import { useState } from "react";
 import { Bike } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/workshop/sign-out-button";
-import { navForPersona, navForRole } from "@/lib/nav-registry";
+import { navForPersona, navForRole, type WorkshopPersona } from "@/lib/nav-registry";
 import { t, type Lang } from "@/lib/i18n";
-import type { DemoUserInfo } from "@/lib/demo-user";
-import type { DemoPersona } from "@/lib/persona";
+
+export interface SidebarUser {
+  id: string;
+  name: string;
+  roleLabel: string;
+  initials: string;
+}
 
 /** Map a section label (e.g. "AI CENTRE") to its i18n key. */
 function sectionKey(section: string): string {
@@ -24,10 +29,10 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href + "/");
 }
 
-export function Sidebar({ persona, role, user, lang = "en" }: { persona: DemoPersona; role?: string; user?: DemoUserInfo | null; lang?: Lang }) {
+export function Sidebar({ persona, role, user, lang = "en" }: { persona: WorkshopPersona; role?: string; user?: SidebarUser | null; lang?: Lang }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
-  // 有真实 role → 按权限矩阵过滤；否则退回 persona 过滤（demo 模式）
+  // 有真实 role → 按权限矩阵过滤；否则退回 persona 过滤
   const sections = role ? navForRole(role, persona) : navForPersona(persona);
 
   if (sections.length === 0) return null;

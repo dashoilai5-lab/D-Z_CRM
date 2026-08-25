@@ -9,7 +9,8 @@ import {
   Store, Megaphone, MessageSquare, Star, Users2, Gauge, Boxes, AlertTriangle, Archive, RefreshCw,
   ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike, Bell, Upload, Plug, ShieldCheck,
 } from "lucide-react";
-import type { DemoPersona } from "@/lib/persona";
+// 工作台导航分组（从真实 Role 映射，生产权限模型——非 demo）。
+export type WorkshopPersona = "OWNER" | "COUNTER_STAFF" | "MECHANIC" | "CUSTOMER";
 
 export interface NavChild {
   key: string;
@@ -19,7 +20,7 @@ export interface NavChild {
   href: string;
   icon: LucideIcon;
   /** Personas that may see this child. Absent = all workshop personas. */
-  access?: DemoPersona[];
+  access?: WorkshopPersona[];
   /** Permission module (permissions.ts MODULES). Role-based filtering: view allowed → visible. */
   module?: string;
 }
@@ -29,13 +30,13 @@ export interface NavSection {
   items: NavChild[];
 }
 
-const WORKSHOP_PERSONAS: DemoPersona[] = ["OWNER", "COUNTER_STAFF", "MECHANIC"];
+const WORKSHOP_PERSONAS: WorkshopPersona[] = ["OWNER", "COUNTER_STAFF", "MECHANIC"];
 
-export function isWorkshopAccess(p: DemoPersona): boolean {
+export function isWorkshopAccess(p: WorkshopPersona): boolean {
   return (WORKSHOP_PERSONAS as readonly string[]).includes(p);
 }
 
-export function personaSees(p: DemoPersona, access?: DemoPersona[]): boolean {
+export function personaSees(p: WorkshopPersona, access?: WorkshopPersona[]): boolean {
   if (access === undefined) return isWorkshopAccess(p);
   return (access as readonly string[]).includes(p);
 }
@@ -132,7 +133,7 @@ export const NAV_SECTIONS: readonly NavSection[] = [
 ];
 
 /** Sections the current persona is entitled to see (empty groups dropped). */
-export function navForPersona(persona: DemoPersona): NavSection[] {
+export function navForPersona(persona: WorkshopPersona): NavSection[] {
   return NAV_SECTIONS.map((g) => ({
     section: g.section,
     items: g.items.filter((i) => personaSees(persona, i.access)),
@@ -140,7 +141,7 @@ export function navForPersona(persona: DemoPersona): NavSection[] {
 }
 
 /** 按真实角色（Role）过滤导航：module 有 view 权限才显示；无 module 标注的项退回 persona 过滤。 */
-export function navForRole(role: string, persona: DemoPersona): NavSection[] {
+export function navForRole(role: string, persona: WorkshopPersona): NavSection[] {
   return NAV_SECTIONS.map((g) => ({
     section: g.section,
     items: g.items.filter((i) => {
@@ -179,6 +180,6 @@ const DEFAULT_VIEW_MATRIX: Record<string, string[] | "*"> = {
 };
 
 /** Flat list of accessible hrefs for a persona — used for URL-level gating. */
-export function accessibleHrefs(persona: DemoPersona): string[] {
+export function accessibleHrefs(persona: WorkshopPersona): string[] {
   return navForPersona(persona).flatMap((g) => g.items.map((i) => i.href));
 }

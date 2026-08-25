@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { leadsModule } from "@/modules/leads/service";
 
-async function demoOrgBranch() {
+async function defaultOrgBranch() {
   const org = await db.organisation.findFirst();
   const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
   return { org: org!, branch: branch! };
@@ -24,7 +24,7 @@ export async function createLead(input: {
   nextFollowUpAt?: string;
   tags?: string;
 }) {
-  const { org, branch } = await demoOrgBranch();
+  const { org, branch } = await defaultOrgBranch();
   const dupes = await leadsModule.findDuplicates(org.id, input.phone, input.email);
   // sourceId may be a real LeadSource id or a display name (walk-in, phone, social…) — resolve by name
   let sourceId = input.sourceId;
@@ -93,7 +93,7 @@ export async function addLeadNote(id: string, note: string) {
 }
 
 export async function convertLead(id: string) {
-  const { org, branch } = await demoOrgBranch();
+  const { org, branch } = await defaultOrgBranch();
   const lead = await db.lead.findUnique({ where: { id } });
   if (!lead) return { ok: false, error: "Lead not found" };
   // re-check duplicates on the phone/email before converting

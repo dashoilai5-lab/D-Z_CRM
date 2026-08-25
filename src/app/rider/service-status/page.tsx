@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CheckCircle2, Circle, Loader2, XCircle, CalendarDays, Wrench, Clock } from "lucide-react";
-import { getDemoCustomer } from "@/lib/demo-customer";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { getRiderStatus, LIFECYCLE_STEPS } from "@/modules/rider/status";
@@ -8,7 +8,7 @@ import { getRiderStatus, LIFECYCLE_STEPS } from "@/modules/rider/status";
 export const dynamic = "force-dynamic";
 
 export default async function ServiceStatusPage() {
-  const customer = await getDemoCustomer();
+  const customer = await getRiderCustomer();
   const lang = await getLang();
   if (!customer) return null;
   const rows = await getRiderStatus(customer.id);

@@ -7,8 +7,7 @@ import { JobActions } from "@/components/workshop/job-actions";
 import { Pagination } from "@/components/shared/pagination";
 import { Button } from "@/components/ui/button";
 import { fmtDate } from "@/lib/format";
-import { getPersona } from "@/lib/demo";
-import { getDemoUser } from "@/lib/demo-user";
+import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PageTransition } from "@/components/shared/page-transition";
@@ -20,11 +19,12 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
   const { status, view } = sp;
   const page = Math.max(1, Number(sp.page) || 1);
   const lang = await getLang();
-  const persona = await getPersona();
-  const user = await getDemoUser(persona);
+  const session = await getSessionUser();
   const board = await jobService.listBoard();
   // data isolation: MECHANIC sees only their assigned jobs
-  const scoped = persona === "MECHANIC" && user ? board.jobs.filter((j) => j.mechanic?.id === user.id) : board.jobs;
+  const scoped = session.kind === "staff" && session.role === "MECHANIC" && session.user
+    ? board.jobs.filter((j) => j.mechanic?.id === session.user!.id)
+    : board.jobs;
   const filtered = status ? scoped.filter((j) => j.status === status) : scoped;
   const isKanban = view === "kanban";
   // pagination applies to the table view only (kanban keeps its per-column cap)

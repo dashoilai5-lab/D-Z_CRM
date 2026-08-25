@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { BASE_URL, setPersona } from "./helpers";
+import { BASE_URL, setPersona, settle } from "./helpers";
 
 test.describe("§34-37 inventory intelligence", () => {
   test("stock alerts show CRITICAL products and reorder creates a PO draft", async ({ browser }) => {
@@ -23,6 +23,7 @@ test.describe("§34-37 inventory intelligence", () => {
     await reorderBtn.click();
     // wait until the server action has committed (toast confirms), then check the PO
     await expect(page.getByText(/Reorder draft created/).first()).toBeVisible({ timeout: 15_000 });
+    await settle(page); // let the action's router.refresh settle before navigating (webkit race)
     await page.goto(BASE_URL + "/workshop/inventory/purchase-orders");
     await expect(page.getByText("DRAFT", { exact: true }).first()).toBeVisible();
     await ctx.close();
