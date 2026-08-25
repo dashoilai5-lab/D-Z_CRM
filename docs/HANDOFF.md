@@ -1,80 +1,64 @@
-# HANDOFF — D&Z Platform（2026-08-19 17:31，续 2026-08-20）
+# HANDOFF — D&Z Platform（2026-08-25 08:30）
 
-> 本文件由 session-pack 生成，session-resume 可续接。Day-1 历史版见 docs/HANDOFF-day1.md。
+> 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
-## ⚠️ 2026-08-20 追加：需求验证工程完成（session-3685dd91）
-
-按 docs/D&Z AI CRM — Detailed Product Requirements Checklist.md 的 **895 条编号需求**分 16 段完成验证与补齐（18 提交 / 144 文件 / +10.2k 行）。追踪：docs/REQUIREMENTS_VERIFICATION.md（全段 ✅）。
-
-**新增能力**（段 1-16）：
-- 数据模型：+27 实体（Lead/Task/TestRide/Loyalty×5/Referral/Automation/AuditLog/Attachment/Consent/RBAC 等）+ 9 迁移
-- 认证：/login + scrypt + HMAC 会话 + TOTP MFA + 锁定 + 16 角色 + RBAC 权限引擎 + middleware 双模式
-- 销售：公开网站（目录/咨询/试驾→Lead）、管道 Kanban、任务、试驾生命周期
-- 服务：槽位防超卖、9 状态工单机、服务历史、库存转移
-- 增长：自动化引擎（10 触发×5 动作）、消息模板、忠诚积分、推荐
-- 平台：通知中心、CSV 导入导出、附件、审计页、集成页、分析中枢、设置中枢
-
-**回归**：tsc 0 错 / unit 20 / Playwright 75 passed + 6 skipped（全程保持）。
-
-**剩余主线不变**：① 经销商验证（dtodo 59e04e5e）② 生产迁移 §65（dtodo 92b29072）——生产属性项（真实 provider/HTTPS/备份/索引/限流/PDPA）在 SETUP §5 清单与追踪文档各段 🟡 备注。
+## ⚠️ 2026-08-25 会话打包（session-c31025da-bd87-4fa4-a8c4-37d1db1d2021）
 
 ## 一句话状态
-原型功能齐备且全绿（tsc0/unit20/e2e75+6skip），迭代增强完成：Loading 全链路、UI 去 AI 味与高级感、i18n toast、分页、里程审计流、Mechanic Board 技师下拉、preview 框架修复、海报自动轮播（按尺寸适配）、Workshop→Rider News 发布联动、产品图片（10 SKU）、Hot Picks、真机预览（LAN IP 192.168.100.240）。**已进入部署准备**：DEPLOYMENT_CHECKLIST.md。**A1 数据库迁移完成**（Supabase dukbfgqbrprivnzcsrlh：PG 基线 61 表/21 enum + 数据 5060 行全量，migrate deploy 不可行→diff 基线方案）。**A2 RLS 完成**（61 表 ENABLE RLS + 61 策略）。**A3 认证完成**（Supabase Auth 全链路，claims 注入验证通过）。**Vercel 生产上线完成**（https://d-z-crm.vercel.app，region=Singapore）：双 schema 方案、生产 8 env、dashboard 连接池修复（connection_limit=10）、Storage 生产切 Supabase。**A4 完成**（getSessionUser 统一 / DemoBar 生产隐藏 / rider 生产 authId / personaForRole）。**Sentry 接入**（DSN 已配，本地测试事件发送成功）。**k6 达标**（region 修复后 smoke p95 470ms、50VU 真实负载 p95 407ms/0.08% 错误；1000VU 受 Hobby 限制）。**RLS 强制验证通过**（PostgREST：OWNER JWT 读 org 数据 / ANON 空数组；helper 改读 user_metadata claims）。**部署 A/B/C 主线全部收齐**。剩余可选：正式域名绑定、CI workflow 推送（需 GitHub workflow scope）、Sentry source map（SENTRY_AUTH_TOKEN）。
+本地代码与 Vercel 生产**全部回到 commit aeba0c5**（加载动画完成阶段：rider overlay 800ms / workshop 500ms；无 QR、无 demo 统一改动）。生产 = GitHub 集成部署 d-z-ntvjidid3（PROMOTED，API 确认）；本地 git HEAD = aeba0c5，工作树干净（仅 screenshots/ 未跟踪）。**2026-08-25 续接后完成 A4 Demo 清理收尾**（demo actions 生产守卫 / rider home 登录引导 / seed 生产守卫，见「完成进度」），基线 tsc/build/unit/e2e 全绿，改动待提交。
 
 ## 会话信息
-- 原会话 ID：session-ec4b081f-efca-4e4f-a187-4302bb0ce385
-- 打包时间：2026-08-19 17:31
+- 原会话 ID：session-c31025da-bd87-4fa4-a8c4-37d1db1d2021
+- 打包时间：2026-08-25 08:30
 - 续接口令：继续 D&Z
 
-## 完成进度
-- Phase 0-9 全模块：workshop OS（约 30 路由）+ rider app（13 路由）+ 主旅程 E2E
-- 营销闭环：活动生命周期/促销转化归因（Booking.campaignId）/WhatsApp 群发/评价运营（采纳+回复）/三视图日历（week/month/year）/campaign 编辑
-- 市场数据落地：车型类型（12 类）、服务目录（12 项）、品牌→型号映射（bike-models.ts）
-- 部门隔离：Owner 全量 / Counter 11 项 / Mechanic 5 项（nav-registry + middleware URL 拦截 + 数据按 mechanicId 过滤）
-- 员工管理：添加/启停员工 → 自动同步看板/分配/KPI
-- i18n：en/zh/ms 三语（字典 395+ 词条），覆盖全部页面 + 框架层；e2e 固定 en
-- 手机预览框架 /preview：设备外壳（iPhone/Pixel/Compact）+ 页面/语言/角色切换 + 隐藏 demo bar
-- 真实海报素材：public/posters/ 10 张接入 seed + 灯箱放大
-- rider 预约页重构：套餐单选 + 附加服务多选 + 实时总价
-- 基建：docs/SETUP_AND_PREPARATION.md（配置台账，§9 变更日志）
+## 完成进度（本会话）
+- **续接会话（session-0dbaff06，2026-08-25）A4 Demo 清理收尾**：① src/actions/demo.ts demo actions 加生产守卫（demoEnabled()：NODE_ENV=production 且无 NEXT_PUBLIC_DEMO_MODE 时 setPersona/resetDemo 直接拒绝——封死 resetDemo 清 34 张表的旁路）② src/app/rider/home/page.tsx 生产无顾客档案时显示 RiderSignInPrompt 登录引导（替代 "Demo customer not found" 文案）③ prisma/seed.ts 加 NODE_ENV=production 守卫（SEED_ALLOWED=1 覆盖），防生产误跑 seed 污染。验证：tsc 0 / lint 0 err / unit 20 / e2e smoke 57 / build 通过。DEPLOYMENT_CHECKLIST A4 全勾 + SETUP §9 台账已更新。提交待做。
+- QR 系统实现并回滚：bike passport QR / workshop 注册 QR / settings Workshop QR / QR 中心 / qrEnabled 开关 / QR 放大模态——全部实现验证后，用户决定不要，已整体移除（commit 6e84933）
+- Cloudflare Pages 迁移尝试并放弃：wrangler login / Hyperdrive / KV / OpenNext 1.20 build 全走通，但 Prisma engineType=client 的 WASM 与免费 3MiB worker 限制冲突（opennextjs-cloudflare#139），且 OpenNext deploy 目标是 workers.dev 非 Pages → 放弃，回 Vercel（云端资源已清理）
+- demo 体验统一为 demo accounts（commit 4d68224）：DemoBar 精简、NEXT_PUBLIC_DEMO_MODE→DEMO_MODE、本地走真实登录——用户最终选择回退，此改动随 reset 撤销
+- 最终回退：git reset --hard aeba0c5 + Vercel promote 到 d-z-ntvjidid3，本地与生产完全一致
 
 ## 下一步（按优先级）
-1. **部署准备（主线）**：docs/DEPLOYMENT_CHECKLIST.md——阶段 A（Supabase 项目+migrate deploy+RLS+Auth 替换 persona+demo 清理）/ B（Provider 换真）/ C（Vercel+Sentry+k6+生产功能）
-2. 无账号即可做：~~数据迁移脚本骨架~~（✅ 已完成 26906c8：scripts/migrate-sqlite-to-pg.ts，dry-run 实测 61 模型/5060 行，真实迁移待 --dst）、middleware 双模式预研（✅ 已确认实现：middleware.ts 双路径）、DemoBar 生产条件渲染（未做）
-3. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策
+1. 从 aeba0c5 继续开发（如需）：开新分支，避免再引入 QR / demo 统一 / Cloudflare 改动
+2. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策（dtodo 59e04e5e，逾期）
+3. 生产迁移剩余项（dtodo 92b29072）：provider 换真（WhatsApp/OpenAI）等
 
 ## 基线测试（命令 + 期望通过数）
-- \`pnpm test\`：20 个通过（money/state-machine/prediction/promo）
-- \`pnpm exec playwright test\`：75 passed + 6 skipped（3 浏览器矩阵）
-- \`pnpm exec tsc --noEmit\`：0 错误 ｜ \`pnpm build\`：通过
+- pnpm exec tsc --noEmit：0 错误
+- pnpm run build：通过（aeba0c5 已验证）
+- pnpm exec playwright test：本版本 e2e 中 booking 流程可能失败（aeba0c5 的 middleware 用 NODE_ENV 判定，demo persona 修复 041e890 在它之后）——这是回退版本的固有属性，非 bug；如需 e2e 全绿需在后续版本恢复 demo 判定
 
 ## 服务与恢复
-- demo：curl http://localhost:3002 ｜ 挂了：\`launchctl kickstart -k gui/$(id -u)/com.dz-platform.server\`
-- e2e：curl http://localhost:3102 ｜ 挂了：\`launchctl kickstart -k gui/$(id -u)/com.dz-platform.e2e\`
-- ⚠️ 改 src 后必须 build + kickstart 两个服务（testids 在 build 里）；改 schema 后 e2e.db 需 migrate
+- workshop demo：curl http://localhost:3002 ｜ 挂了：launchctl unload ~/Library/LaunchAgents/com.dz-platform.server.plist && launchctl load ~/Library/LaunchAgents/com.dz-platform.server.plist
+- rider demo：curl http://localhost:3003 ｜ 挂了：同上 rider plist
+- e2e：curl http://localhost:3102 ｜ 挂了：同上 e2e plist
+- 注意：改 plist env 后必须 unload+load（kickstart -k 不够）
+- 生产：https://d-z-crm.vercel.app ｜ 部署：CI=true npx vercel deploy --prod --yes（当前指向 d-z-ntvjidid3 = aeba0c5）
 
 ## git 状态
-- 分支：main ｜ 工作树干净（最新提交 26906c8，feat(migration) 迁移脚本骨架）
+- 分支：main ｜ HEAD：aeba0c5 ｜ 未提交：仅 screenshots/*.png（历史截图，可删可留）
+- 注意：git 历史中 aeba0c5 之后有 12 个 commit（QR/回滚/demo 统一/docs），已 reset 撤销；若 push 需 force（建议新分支）
 
 ## 关键决策与约定
-- 端口：D&Z 固定 3002/3102；3000 被 DashOil 抢占勿用
-- 每次配置类改动（env/模块/API/迁移/依赖/测试/i18n）→ 更新 docs/SETUP_AND_PREPARATION.md §9
-- e2e 测试断言英文文本 → helpers.ts setPersona 固定 dz_lang=en
-- 业务代码只依赖 provider 接口（src/providers/types.ts），生产换实现不动业务层
+- 部署环境 = Vercel（唯一生产），Cloudflare 不可行（记录在 SETUP §9）
+- QR 系统不要，用户明确移除
+- 本地 :3002/:3003 + e2e :3102，端口固定；:3000 被 DashOil 占用禁用
+- 配置类改动必须更新 docs/SETUP_AND_PREPARATION.md §9 台账
 
 ## 踩坑与事实
-- sandbox 会 SIGTERM 普通后台进程（exit 143）→ 必须用 launchd 守护
-- e2e/global-setup 清库重播种后需重启 e2e 服务（SQLite 句柄过期）
-- i18n en 值必须保持原 UI 大小写（CRITICAL/DRAFT），否则 e2e 断言失败
-- Lucide icon 组件函数不能从 server 传给 client 组件 → 内部映射
-- sticky bottom nav 安全区：padding 放内层 div + env(safe-area-inset-bottom)
+- NEXT_PUBLIC_* 在 Next.js server 端也构建期内联，运行时 env 覆盖无效
+- pnpm install 清 node_modules/.prisma，需重新 prisma generate；playwright bin 丢失需 pnpm install 重建
+- launchd plist 改 env 后需 unload+load 重新加载
+- Vercel 别名 promote 后边缘缓存传播有延迟，API（targets.production）是权威
+- .env 的 NEXT_PUBLIC_DEMO_MODE="true" 是 aeba0c5 的 DemoBar 显示开关（本地演示用）
 
 ## 待办（dtodo）
-- 92b29072 生产迁移 §65（q2，主线）：Supabase/Auth/RLS/provider 换真/Vercel/Sentry/k6 —— 行动清单见 DEPLOYMENT_CHECKLIST.md
-- 59e04e5e 经销商验证（需真人）：填 DEALER_FEEDBACK.md + DEMO_SCRIPT 演示 + 6 决策
+- 59e04e5e 经销商验证（逾期 2026-08-19）
+- 92b29072 生产迁移 §65（逾期 2026-08-19，q2 重要不紧急）
 
 ## 新会话头 10 分钟
-1. curl localhost:3002 + :3102 探活（挂了 kickstart）；真机预览 IP=192.168.100.240
-2. 读 docs/HANDOFF.md + docs/DEPLOYMENT_CHECKLIST.md + docs/SETUP_AND_PREPARATION.md §5
-3. 跑基线：pnpm test（20）+ pnpm exec playwright test（75）+ tsc 0
-4. dtodo 挑下一步（主线=部署准备阶段 A；或先做无账号三项：迁移脚本/middleware 双模式/DemoBar 条件渲染）
+1. curl http://localhost:3002 / :3003 / :3102 探活，挂了 unload+load plist
+2. 读本文件 + git log 确认 HEAD=aeba0c5
+3. 跑基线：tsc + build
+4. 从 dtodo 挑下一步（经销商验证 or 生产迁移）

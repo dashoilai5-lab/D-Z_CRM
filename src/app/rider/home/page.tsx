@@ -7,6 +7,7 @@ import { isPromoActive } from "@/modules/marketing/promo";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { PageTransition } from "@/components/shared/page-transition";
+import RiderSignInPrompt from "@/components/rider/sign-in-prompt";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,13 @@ function serviceProgress(currentKm: number, lastKm: number | null, nextKm: numbe
 export default async function RiderHomePage() {
   const customer = await getDemoCustomer();
   const lang = await getLang();
-  if (!customer) return <p className="text-sm text-muted-foreground">Demo customer not found — reset demo data.</p>;
+  if (!customer) {
+    // 生产：无关联顾客档案 → 登录引导（layout 已拦截未登录，这里兜底已登录但未关联的边界）
+    if (process.env.NODE_ENV === "production" && process.env.NEXT_PUBLIC_DEMO_MODE !== "true") {
+      return <RiderSignInPrompt />;
+    }
+    return <p className="text-sm text-muted-foreground">Demo customer not found — reset demo data.</p>;
+  }
   const bike = [...customer.motorcycles].sort((a, b) => b.currentMileage - a.currentMileage)[0];
 
   const [activeJob, reminder, unreadCount, campaigns] = await Promise.all([

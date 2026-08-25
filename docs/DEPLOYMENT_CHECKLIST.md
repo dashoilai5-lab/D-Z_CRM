@@ -63,10 +63,10 @@ Vercel（托管 Next.js）+ Supabase（Postgres + Auth + Storage + RLS）
 
 ### A4. Demo 清理（上线前必须移除）
 - [x] middleware demo persona 加 NODE_ENV 守卫（生产只认 Supabase session；demo persona 仅 dev/e2e）——已随 Vercel 部署完成
-- [ ] 移除 demo-only：resetDemo、persona switcher（DemoBar 生产隐藏或条件渲染）——剩余
-- [ ] 移除 dashboard「Demo customer」硬编码（Ahmad）、getDemoCustomer/getDemoUser——剩余（rider 生产走 Supabase 后适用）
+- [x] 移除 demo-only：DemoBar 生产隐藏（demoBarVisible()，NEXT_PUBLIC_DEMO_MODE 守卫）；setPersona/resetDemo server action 加生产守卫（demoEnabled()，生产直接拒绝，防清库）——2026-08-25 完成
+- [x] 移除 dashboard「Demo customer」硬编码（Ahmad）、getDemoCustomer/getDemoUser——getSessionUser/getDemoCustomer 已双模式（生产=Supabase authId、dev/e2e=persona）；rider/home 生产无档案时显示登录引导（RiderSignInPrompt）——2026-08-25 完成
 - [x] Storage mock 关闭：生产自动切 Supabase Storage（bucket dz-assets public，上传/公开读实测通过）——已随部署完成
-- [ ] 确定性 seed 仅用于 staging（生产用真实数据迁移）——剩余
+- [x] 确定性 seed 仅用于 staging（生产用真实数据迁移）——prisma/seed.ts 加 NODE_ENV=production 守卫（SEED_ALLOWED=1 覆盖），生产误跑直接拒绝——2026-08-25 完成
 
 ---
 
