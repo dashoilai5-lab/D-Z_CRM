@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-当前在 feat/rider-settings-ext（HEAD 3558075，已 push 待 Preview 确认）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（语言切换/通知偏好/更换密码，3558075）。全程新流程：feature 分支 → push → Preview → 用户确认 → merge main → GitHub 集成自动部署。
+本地与生产 = main @ 5e34b13（分叉 0/0）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（语言切换/通知偏好/更换密码，已 merge 077a378 并部署生产，生产 PG 已手动 ALTER 加 notificationPrefs 列）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
 ## 会话信息
 - 原会话 ID：session-0dbaff06-4fb9-49b9-a857-ddffcd6950f1
@@ -25,7 +25,7 @@
 ## 下一步（按优先级）
 1. 经销商验证（需真人）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策（dtodo 59e04e5e，逾期）
 2. 生产迁移剩余项（dtodo 92b29072）：provider 换真——骨架已就绪（whatsapp-business.ts/openai.ts + env 驱动），只差 Meta WhatsApp Business 企业验证 + OpenAI billing + 密钥配置
-3. 【当前进行中】Rider Settings 扩展（feat/rider-settings-ext，3558075 已 push）——等 Preview + 用户确认后 merge main；**merge 前必做：生产 Supabase PG 手动 ALTER 加列 `ALTER TABLE "Customer" ADD COLUMN "notificationPrefs" JSONB;`（Vercel 不跑 migrate deploy）**
+3. 【已完成】Rider Settings 扩展（merge 077a378 → 生产 5e34b13，生产 PG 已 ALTER，生产实测四区块+语言切换+偏好保存通过）
 4. 可选：Sentry 验证、k6 压测
 
 ## 基线测试（命令 + 期望通过数）
@@ -43,8 +43,8 @@
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：feat/rider-settings-ext ｜ HEAD：3558075（Rider Settings 扩展）｜ 未提交：仅 screenshots/ 截图（可删可留）
-- 远程：已 push origin/feat/rider-settings-ext；main 停在 b16245c（会话打包 commit），分叉 0/0
+- 分支：main ｜ HEAD：5e34b13（merge 077a378 + HANDOFF 更新）｜ 未提交：仅 screenshots/ 截图（可删可留）
+- 远程：与本地一致（分叉 0/0）；feat/rider-settings-ext 已删除（本地+远程）
 
 ## 关键决策与约定
 - 部署环境 = Vercel（唯一生产）；流程 = feature 分支 → push → Preview → 用户确认 → merge main → 自动部署
