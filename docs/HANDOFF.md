@@ -5,7 +5,7 @@
 ## ⚠️ 2026-08-25 会话打包（session-c31025da-bd87-4fa4-a8c4-37d1db1d2021）
 
 ## 一句话状态
-本地代码与 Vercel 生产**全部回到 commit aeba0c5**（加载动画完成阶段：rider overlay 800ms / workshop 500ms；无 QR、无 demo 统一改动）。生产 = GitHub 集成部署 d-z-ntvjidid3（PROMOTED，API 确认）；本地 git HEAD = aeba0c5，工作树干净（仅 screenshots/ 未跟踪）。**2026-08-25 续接后完成 A4 Demo 清理收尾**（demo actions 生产守卫 / rider home 登录引导 / seed 生产守卫，见「完成进度」），基线 tsc/build/unit/e2e 全绿，改动待提交。
+**本地与生产 = commit b7649ce（demo 模式彻底移除）**：无 persona、无 DemoBar、无 demo 数据路径——Supabase 真实登录唯一认证。生产部署 d-z-dhqv4laev（PROMOTED，alias 确认，浏览器实测 workshop/rider 均无 demo bar）。git HEAD = b7649ce（基于 aeba0c5 + A4 清理 + demo 移除），工作树干净（仅 screenshots/ 历史截图未跟踪）。
 
 ## 会话信息
 - 原会话 ID：session-c31025da-bd87-4fa4-a8c4-37d1db1d2021
@@ -13,6 +13,7 @@
 - 续接口令：继续 D&Z
 
 ## 完成进度（本会话）
+- **demo 模式彻底移除（用户明确要求，commit b7649ce）**：删除 persona.ts/demo.ts/demo-user.ts/demo-customer.ts/reset.ts/actions/demo.ts/demo-bar.tsx + 5 个 persona 审计脚本（dark-*/mobile-audit）；middleware 只留 Supabase+legacy；session-user 纯 Supabase（getRiderCustomer 替代 getDemoCustomer）；nav-registry WorkshopPersona（真实 Role→导航分组）；i18n 删 demo/persona 词条；.env 删 DEMO_MODE；e2e 全部改真实 Supabase 登录（helpers.setPersona → 登录 DEMO_ACCOUNTS 账号，global-setup 播种后 e2e/link-auth.ts 回填 authId，修复 sidebar-user/inventory 断言）；生产已部署验证无 demo bar。
 - **续接会话（session-0dbaff06，2026-08-25）A4 Demo 清理收尾**：① src/actions/demo.ts demo actions 加生产守卫（demoEnabled()：NODE_ENV=production 且无 NEXT_PUBLIC_DEMO_MODE 时 setPersona/resetDemo 直接拒绝——封死 resetDemo 清 34 张表的旁路）② src/app/rider/home/page.tsx 生产无顾客档案时显示 RiderSignInPrompt 登录引导（替代 "Demo customer not found" 文案）③ prisma/seed.ts 加 NODE_ENV=production 守卫（SEED_ALLOWED=1 覆盖），防生产误跑 seed 污染。验证：tsc 0 / lint 0 err / unit 20 / e2e smoke 57 / build 通过。DEPLOYMENT_CHECKLIST A4 全勾 + SETUP §9 台账已更新。提交待做。
 - QR 系统实现并回滚：bike passport QR / workshop 注册 QR / settings Workshop QR / QR 中心 / qrEnabled 开关 / QR 放大模态——全部实现验证后，用户决定不要，已整体移除（commit 6e84933）
 - Cloudflare Pages 迁移尝试并放弃：wrangler login / Hyperdrive / KV / OpenNext 1.20 build 全走通，但 Prisma engineType=client 的 WASM 与免费 3MiB worker 限制冲突（opennextjs-cloudflare#139），且 OpenNext deploy 目标是 workers.dev 非 Pages → 放弃，回 Vercel（云端资源已清理）
