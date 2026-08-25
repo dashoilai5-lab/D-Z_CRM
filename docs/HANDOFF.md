@@ -5,7 +5,7 @@
 ## ⚠️ 2026-08-25 会话打包（session-c31025da-bd87-4fa4-a8c4-37d1db1d2021）
 
 ## 一句话状态
-**本地与生产 = commit 36871db（main，分叉 0）**：demo 彻底移除 + 云端构建修复 + Vercel Cron 服务提醒上线 + **生产功能启用②（群发统计 / CDN asset URL / provider 换真骨架）**。生产 = d-z-byjwn9pq0（GitHub 集成，git source，浏览器实测 calendar 正常无 demo bar）。流程完整：feature 分支 → 用户本地确认 → push → Preview Ready → merge main → 自动部署。工作树仅 screenshots/ 未跟踪。
+**本地与生产 = commit 5a4ac1e（main，分叉 0）**：demo 移除 + Cron 提醒 + 生产功能② + **Rider 4 个 bug fix 已上线**（摩托表单对齐/布局、Book 页 Date-Time 堆叠、News 海报显示）。生产 = d-z-jc7259wxh（GitHub 集成）。流程：fix 分支 → push → Preview → 用户确认 merge → 自动部署。工作树仅 screenshots/ 未跟踪。
 
 ## 会话信息
 - 原会话 ID：session-c31025da-bd87-4fa4-a8c4-37d1db1d2021
