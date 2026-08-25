@@ -5,7 +5,7 @@
 ## ⚠️ 2026-08-25 会话打包（session-c31025da-bd87-4fa4-a8c4-37d1db1d2021）
 
 ## 一句话状态
-**本地与生产 = commit 2156dac（main，分叉 0）**：demo 移除 + Cron 提醒 + 生产功能② + Rider 4 个 bug fix + **里程展示重构**（home/passport 只显示 Last/Next 服务节点，无当前里程/进度条——用户无需持续更新里程）。生产 = d-z-5cprsqceb（GitHub 集成）。工作树仅 screenshots/ 未跟踪。
+**本地与生产 = commit 8f951a6（main，分叉 0）**：demo 移除 + Cron 提醒 + 生产功能② + Rider bug fix + 里程重构 + **QR 系统上线**（摩托/车主/门店三场景 QR + 不可枚举 qrToken + Workshop 扫码器 zxing + 落地页直达开单）。生产 = d-z-ia189py9v（GitHub 集成）。工作树仅 screenshots/ 未跟踪。
 
 ## 会话信息
 - 原会话 ID：session-c31025da-bd87-4fa4-a8c4-37d1db1d2021
