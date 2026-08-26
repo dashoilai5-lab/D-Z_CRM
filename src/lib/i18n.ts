@@ -754,6 +754,18 @@ export const DICT: Dict = {
   "settle.details": { en: "Details", zh: "明细", ms: "Butiran" },
   "settle.empty": { en: "No completed jobs in this period.", zh: "该周期暂无已完成工单。", ms: "Tiada kerja siap dalam tempoh ini." },
   "settle.period-label": { en: "Period", zh: "周期", ms: "Tempoh" },
+  "settle.salary": { en: "Salary (est.)", zh: "薪资（预估）", ms: "Gaji (anggaran)" },
+  "settle.salary-rules": { en: "Salary rules", zh: "薪资规则", ms: "Peraturan gaji" },
+  "settle.base": { en: "Base salary (RM)", zh: "底薪（RM）", ms: "Gaji asas (RM)" },
+  "settle.commission-type": { en: "Commission type", zh: "提成方式", ms: "Jenis komisen" },
+  "settle.comm-per-job": { en: "Per job (fixed RM)", zh: "每单固定（RM）", ms: "Setiap kerja (RM tetap)" },
+  "settle.comm-percent": { en: "% of service value", zh: "服务金额 %", ms: "% nilai servis" },
+  "settle.comm-flat": { en: "Flat (no commission)", zh: "固定（无提成）", ms: "Tetap (tiada komisen)" },
+  "settle.commission-value": { en: "Commission value", zh: "提成值", ms: "Nilai komisen" },
+  "settle.addon-bonus": { en: "Add-on job bonus (RM)", zh: "附加工单奖励（RM）", ms: "Bonus kerja tambahan (RM)" },
+  "settle.save-rules": { en: "Save rules", zh: "保存规则", ms: "Simpan peraturan" },
+  "settle.rules-saved": { en: "Salary rules saved", zh: "薪资规则已保存", ms: "Peraturan gaji disimpan" },
+  "settle.rules-hint": { en: "Est. salary = base + commission (per job / % of service value) + add-on bonus", zh: "预估薪资 = 底薪 + 提成（每单 / 服务金额 %）+ 附加工单奖励", ms: "Anggaran gaji = asas + komisen (setiap kerja / % nilai servis) + bonus tambahan" },
 
 };
 

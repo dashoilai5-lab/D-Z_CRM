@@ -4,6 +4,33 @@ import { PrismaStaffRepository } from "@/repositories/prisma/staff.repository";
 import { calculateKpiScore } from "@/lib/state-machines";
 import { db } from "@/lib/db";
 
+/** 薪资规则：底薪 + 提成（按单/按服务金额%）+ 附加工单奖励。 */
+export interface SalaryRules {
+  baseSen: number;
+  commissionType: "per_job" | "percent_sales" | "flat";
+  commissionValue: number; // per_job: RM/单（sen）；percent_sales: %；flat: 忽略
+  addonBonusSen?: number;  // 每张附加工单的奖励（sen）
+}
+
+export const DEFAULT_SALARY_RULES: SalaryRules = { baseSen: 0, commissionType: "percent_sales", commissionValue: 0 };
+
+export function parseSalaryRules(raw: unknown): SalaryRules {
+  const o = (raw ?? {}) as Partial<SalaryRules>;
+  return {
+    baseSen: o.baseSen ?? 0,
+    commissionType: o.commissionType ?? "percent_sales",
+    commissionValue: o.commissionValue ?? 0,
+    addonBonusSen: o.addonBonusSen ?? 0,
+  };
+}
+
+export function calcSalary(rules: SalaryRules, jobs: number, salesSen: number, addonJobs: number): number {
+  let commission = 0;
+  if (rules.commissionType === "per_job") commission = rules.commissionValue * jobs;
+  else if (rules.commissionType === "percent_sales") commission = Math.round(salesSen * (rules.commissionValue / 100));
+  return rules.baseSen + commission + (rules.addonBonusSen ?? 0) * addonJobs;
+}
+
 /**
  * Staff KPI (§33) — fully deterministic and explainable, never AI-invented.
  * Score = 0.30×jobs + 0.20×ticket + 0.15×package + 0.15×addon + 0.10×checklist + 0.10×rating
@@ -14,8 +41,9 @@ export class StaffService {
   /** Foreman 周期结算：按日/周/月聚合完成工单 + 服务金额 + 附加 + 工时（老板视角，纯查询）。 */
   async settlement(period: "day" | "week" | "month", ref?: Date): Promise<{
     period: string; start: Date; end: Date;
-    foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[];
-    totals: { jobs: number; salesSen: number; hours: number };
+    rules: SalaryRules;
+    foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[];
+    totals: { jobs: number; salesSen: number; hours: number; salarySen: number };
   }> {
     // +8 业务时区（Asia/Kuala_Lumpur）的周期窗口 → UTC 边界
     const base = ref ?? new Date();
@@ -37,8 +65,10 @@ export class StaffService {
       end = new Date(Date.UTC(y, m, 1) - 8 * 3600000);
     }
 
+    const org = await db.organisation.findFirst({ select: { salaryRules: true } });
+    const rules = parseSalaryRules(org?.salaryRules);
     const users = await this.repo.listUsers();
-    const foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[] = [];
+    const foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[] = [];
 
     for (const u of users) {
       const jobs = u.jobs.filter((j) => j.status === "COMPLETED" && j.completedAt && j.completedAt >= start && j.completedAt < end);
@@ -63,14 +93,21 @@ export class StaffService {
         id: u.id, name: u.name, jobs: jobs.length, salesSen: totalSales,
         avgTicketSen: jobs.length ? Math.round(totalSales / jobs.length) : 0,
         addonJobs: addonJobs.size, hours: Math.round(hours * 10) / 10,
+        salarySen: calcSalary(rules, jobs.length, totalSales, addonJobs.size),
         jobsList: jobs.map((j) => ({ id: j.id, jobNumber: j.jobNumber, serviceType: j.packageName ?? j.customerRequest ?? "", packageName: j.packageName, completedAt: j.completedAt!, salesSen: salesByJob.get(j.id) ?? 0 })).sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime()),
       });
     }
     foremen.sort((a, b) => b.salesSen - a.salesSen);
     return {
       period, start, end,
+      rules,
       foremen,
-      totals: { jobs: foremen.reduce((s, f) => s + f.jobs, 0), salesSen: foremen.reduce((s, f) => s + f.salesSen, 0), hours: Math.round(foremen.reduce((s, f) => s + f.hours, 0) * 10) / 10 },
+      totals: {
+        jobs: foremen.reduce((s, f) => s + f.jobs, 0),
+        salesSen: foremen.reduce((s, f) => s + f.salesSen, 0),
+        hours: Math.round(foremen.reduce((s, f) => s + f.hours, 0) * 10) / 10,
+        salarySen: foremen.reduce((s, f) => s + f.salarySen, 0),
+      },
     };
   }
 

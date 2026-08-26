@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CalendarDays, Clock, Wrench, Wallet } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
+import { SalaryRulesForm } from "@/components/workshop/salary-rules-form";
 import { staffService } from "@/modules/staff/service";
 import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
@@ -26,7 +27,7 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
   // 数据隔离：MECHANIC 只看自己
   const rows = isMechanic && session.user ? result.foremen.filter((f) => f.id === session.user!.id) : result.foremen;
   const totals = isMechanic && session.user
-    ? { jobs: rows.reduce((s, f) => s + f.jobs, 0), salesSen: rows.reduce((s, f) => s + f.salesSen, 0), hours: rows.reduce((s, f) => s + f.hours, 0) }
+    ? { jobs: rows.reduce((s, f) => s + f.jobs, 0), salesSen: rows.reduce((s, f) => s + f.salesSen, 0), hours: rows.reduce((s, f) => s + f.hours, 0), salarySen: rows.reduce((s, f) => s + f.salarySen, 0) }
     : result.totals;
 
   const periodLabel = t("settle." + period, lang);
@@ -42,6 +43,17 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
   return (
     <div>
       <PageHeader title={t("settle.title", lang)} subtitle={t("settle.subtitle", lang)} />
+
+      {/* 薪资规则（OWNER 可配置） */}
+      {!isMechanic && (
+        <details className="mb-4 rounded-2xl border bg-card open:ring-2 open:ring-primary/20">
+          <summary className="flex cursor-pointer list-none items-center justify-between p-4 text-sm font-semibold">
+            <span>{t("settle.salary-rules", lang)}</span>
+            <span className="text-xs font-normal text-muted-foreground">{t("settle.salary", lang)}</span>
+          </summary>
+          <div className="border-t p-4"><SalaryRulesForm rules={result.rules} /></div>
+        </details>
+      )}
 
       {/* 周期切换 + 日期 */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -59,7 +71,7 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
       </div>
 
       {/* 总计条 */}
-      <div className="grid grid-cols-3 gap-3 mb-5">
+      <div className="grid grid-cols-2 gap-3 mb-5 md:grid-cols-4">
         <div className="rounded-2xl border bg-card p-4">
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><Wrench className="h-3.5 w-3.5" /> {t("settle.col-jobs", lang)}</div>
           <div className="mt-1 text-2xl font-bold tabular-nums">{totals.jobs}</div>
@@ -71,6 +83,10 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
         <div className="rounded-2xl border bg-card p-4">
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground"><Clock className="h-3.5 w-3.5" /> {t("settle.col-hours", lang)}</div>
           <div className="mt-1 text-2xl font-bold tabular-nums">{Math.round(totals.hours * 10) / 10}h</div>
+        </div>
+        <div className="rounded-2xl border bg-primary/10 p-4">
+          <div className="flex items-center gap-1.5 text-[11px] text-primary">{t("settle.salary", lang)}</div>
+          <div className="mt-1 text-2xl font-bold tabular-nums text-primary">{formatRM(totals.salarySen)}</div>
         </div>
       </div>
 
@@ -89,6 +105,7 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
                 <div><div className="text-sm font-bold tabular-nums">{f.jobs}</div><div className="text-[10px] text-muted-foreground">{t("settle.col-jobs", lang)}</div></div>
                 <div><div className="text-sm font-bold tabular-nums">{formatRM(f.salesSen)}</div><div className="text-[10px] text-muted-foreground">{t("settle.col-sales", lang)}</div></div>
                 <div><div className="text-sm font-bold tabular-nums">{f.hours}h</div><div className="text-[10px] text-muted-foreground">{t("settle.col-hours", lang)}</div></div>
+                <div className="hidden sm:block"><div className="text-sm font-bold tabular-nums text-primary">{formatRM(f.salarySen)}</div><div className="text-[10px] text-muted-foreground">{t("settle.salary", lang)}</div></div>
               </div>
             </summary>
             <div className="border-t px-4 py-3">
