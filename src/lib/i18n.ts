@@ -723,6 +723,7 @@ export const DICT: Dict = {
   "book.submitted": { en: "Submitted", zh: "提交于", ms: "Dihantar" },
   "book.sort-date-asc": { en: "Date ↑", zh: "日期 ↑", ms: "Tarikh ↑" },
   "book.sort-date-desc": { en: "Date ↓", zh: "日期 ↓", ms: "Tarikh ↓" },
+  "book.reset-filters": { en: "Reset", zh: "重置", ms: "Set Semula" },
 
   // --- rider service status / bike detail ---
   "svc.estimated-ready": { en: "Estimated ready: ", zh: "预计完成：", ms: "Anggaran siap: " },

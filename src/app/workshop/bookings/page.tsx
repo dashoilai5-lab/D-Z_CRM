@@ -123,6 +123,9 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
         <div className="flex-1" />
         <Link href={qs({ sort: "" })} className={"inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium " + (sp.sort !== "desc" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{t("book.sort-date-asc", lang)}</Link>
         <Link href={qs({ sort: "desc" })} className={"inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium " + (sp.sort === "desc" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{t("book.sort-date-desc", lang)}</Link>
+        {(sp.status || sp.branch || sp.date || sp.sort) && (
+          <Link href="/workshop/bookings" className="inline-flex items-center rounded-md border border-dashed px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent">{t("book.reset-filters", lang)}</Link>
+        )}
       </div>
 
       {view === "calendar" ? (
