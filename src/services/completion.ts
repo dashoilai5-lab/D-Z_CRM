@@ -79,7 +79,7 @@ export class CompletionService {
           customerId: job.customerId,
           jobId: job.id,
           invoiceNumber,
-          status: "PAID",
+          status: "ISSUED", // 待 workshop 结清（invoices 页 tick 批量 / split 收款）
           issuedAt: new Date(),
           subtotalSen: subtotal,
           totalSen: subtotal,
@@ -97,9 +97,8 @@ export class CompletionService {
           data: { invoiceId: invoice.id, description: p.product.name, quantity: p.quantity, unitPriceSen: p.unitPriceSen, lineTotalSen: p.lineTotalSen, source: "PART" },
         });
       }
-      // demo: auto-pay via mock provider (§48 — no real payment processing)
-      await paymentProvider.charge(subtotal, invoiceNumber, "CASH");
-      await tx.payment.create({ data: { invoiceId: invoice.id, amountSen: subtotal, method: "CASH", status: "PAID", paidAt: new Date() } });
+      // 应收记录（PAY_LATER PENDING）：由 workshop 在 invoices 页确认结清
+      await tx.payment.create({ data: { invoiceId: invoice.id, amountSen: subtotal, method: "PAY_LATER", status: "PENDING", paidAt: new Date() } });
 
       // 3. Update motorcycle snapshot
       const nextMileage = job.mileage + DEFAULT_SERVICE_INTERVAL_KM;

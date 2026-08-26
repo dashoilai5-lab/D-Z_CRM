@@ -46,6 +46,8 @@ model Organisation {
   timezone      String   @default("Asia/Kuala_Lumpur")
   operatingHours String? // JSON {mon:"09:00-18:00",...}
   lostReasons    String? // JSON array of configurable closed-lost reasons (PIPE-013)
+  // Foreman salary rules: { baseSen, commissionType: "per_job"|"percent_sales"|"flat", commissionValue, addonBonusSen? }
+  salaryRules    Json?
   enableMotorcycleQr Boolean @default(true)
   enableRiderProfileQr Boolean @default(true)
   enableWorkshopQr   Boolean  @default(true)
@@ -138,6 +140,7 @@ model User {
   tasksOwned     Task[]           @relation("OwnedTasks")
   tasksCompleted Task[]           @relation("CompletedTasks")
   testRidesAssigned TestRide[]    @relation("SalespersonTestRides")
+  payouts        StaffPayout[]   @relation("StaffPayouts")
 }
 
 // ---------- Customers ----------
@@ -999,6 +1002,34 @@ model AppointmentSlot {
   bookedCount Int      @default(0)
   isHoliday   Boolean  @default(false)
   @@unique([branchId, date, startTime])
+}
+
+// ---------- Foreman salary payouts ----------
+
+model StaffPayout {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation("StaffPayouts", fields: [userId], references: [id])
+  period        String   // "day" | "week" | "month"
+  periodStart   DateTime // 周期起点（UTC，periodWindow 的 start）
+  baseSen       Int      @default(0)
+  commissionSen Int      @default(0)
+  addonBonusSen Int      @default(0)
+  totalSen      Int
+  status        String   @default("UNPAID") // UNPAID | PARTIAL | PAID
+  paidAt        DateTime?
+  createdAt     DateTime @default(now())
+  payments      StaffPayoutPayment[]
+  @@unique([userId, period, periodStart])
+}
+
+model StaffPayoutPayment {
+  id        String      @id @default(cuid())
+  payoutId  String
+  payout    StaffPayout @relation(fields: [payoutId], references: [id])
+  amountSen Int
+  method    String      @default("CASH")
+  paidAt    DateTime    @default(now())
 }
 
 model ServiceType {

@@ -7,7 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, Users, UserCheck, BellRing, CalendarClock, Wrench, ClipboardList, ListChecks, Package,
   Store, Megaphone, MessageSquare, Star, Users2, Gauge, Boxes, AlertTriangle, Archive, RefreshCw,
-  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike, Bell, Upload, Plug, ShieldCheck,
+  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike, Bell, Upload, Plug, ShieldCheck, ReceiptText,
 } from "lucide-react";
 // 工作台导航分组（从真实 Role 映射，生产权限模型——非 demo）。
 export type WorkshopPersona = "OWNER" | "COUNTER_STAFF" | "MECHANIC" | "CUSTOMER";
@@ -104,6 +104,7 @@ export const NAV_SECTIONS: readonly NavSection[] = [
     items: [
       { key: "staff", label: "Staff", labelKey: "nav.staff", href: "/workshop/staff", icon: Users2, module: "USERS", access: ["OWNER"] },
       { key: "kpi", label: "KPI Board", labelKey: "nav.kpi", href: "/workshop/staff/kpi", icon: Gauge, module: "TECHNICIANS", access: ["OWNER", "MECHANIC"] },
+      { key: "settlements", label: "Settlements", labelKey: "nav.settlements", href: "/workshop/settlements", icon: Wallet, module: "TECHNICIANS", access: ["OWNER", "MECHANIC"] },
     ],
   },
   {
@@ -120,7 +121,9 @@ export const NAV_SECTIONS: readonly NavSection[] = [
   },
   {
     section: "FINANCE",
-    items: [{ key: "profit", label: "Profit Dashboard", labelKey: "nav.profit", href: "/workshop/finance/profit", icon: Wallet, module: "FINANCE", access: ["OWNER"] }],
+    items: [
+      { key: "profit", label: "Profit Dashboard", labelKey: "nav.profit", href: "/workshop/finance/profit", icon: Wallet, module: "FINANCE", access: ["OWNER"] },
+    ],
   },
   {
     section: "AI CENTRE",
