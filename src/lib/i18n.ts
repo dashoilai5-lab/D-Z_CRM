@@ -826,6 +826,7 @@ export const DICT: Dict = {
   "att.no-mechanics": { en: "No mechanics found.", zh: "暂无技师。", ms: "Tiada mekanik." },
   "att.checked-in-at": { en: "In {time}", zh: "上班 {time}", ms: "Masuk {time}" },
   "att.checked-out-at": { en: "Out {time}", zh: "下班 {time}", ms: "Keluar {time}" },
+  "nav.mechanic-app": { en: "Mechanic App", zh: "技师端", ms: "Apl Mekanik" },
 
 };
 

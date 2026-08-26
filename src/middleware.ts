@@ -45,6 +45,15 @@ export async function middleware(req: NextRequest) {
     return r;
   }
 
+  // mechanic-app：未登录 → workshop 登录页（角色守卫在 layout 里做）
+  if (pathname.startsWith("/mechanic-app")) {
+    const url = new URL("/login", req.url);
+    url.searchParams.set("next", pathname);
+    const r = NextResponse.redirect(url);
+    r.headers.set("x-pathname", pathname);
+    return r;
+  }
+
   // 非 workshop 路径（rider 等）：无 Supabase session 时放行——页面自身处理登录引导/重定向。
   // 只有 workshop 路径才走 legacy session 逻辑。
   if (!isWorkshop) {
@@ -67,5 +76,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/workshop/:path*", "/rider/:path*"],
+  matcher: ["/workshop/:path*", "/rider/:path*", "/mechanic-app/:path*"],
 };
