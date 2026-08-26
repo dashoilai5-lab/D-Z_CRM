@@ -17,7 +17,7 @@ export const BIKE_BRANDS = [
 ] as const;
 
 export const BRAND_MODEL_MAP: Record<string, string[]> = {
-  Yamaha: ["135LC Fi", "EZ115", "Ego Avantiz", "Ego Gear", "MT-09", "MT-15", "MT-25", "NMAX", "NVX", "PG-1", "R15M", "TMAX", "Tenere 700", "Tracer 9 GT", "XMAX250", "Y15ZR", "Y16ZR", "YZF-R25", OTHERS],
+  Yamaha: ["LC135 V1", "LC135 V2 - V7", "LC135 V8", "EZ115", "Ego Avantiz", "Ego Gear", "MT-09", "MT-15", "MT-25", "NMAX", "NVX", "PG-1", "R15M", "TMAX", "Tenere 700", "Tracer 9 GT", "XMAX250", "Y15ZR", "Y16ZR", "YZF-R25", OTHERS],
   Honda: ["ADV160", "ADV350", "BeAT", "CB1000 SP", "CB250R", "CB350RS", "CB650R", "CB750 Hornet", "CBR150R", "CBR250RR", "CBR650R", "CRF250 Rally", "Dash125", "NSS250", "NX500", "RS-X Winner", "RS150R", "Rebel 500", "Vario125", "Vario160", "Wave Alpha", OTHERS],
   Modenas: ["Dominar D400", "ELIT 150S", "Elegan EX 250", "Karisma 125S", "Kriss 110", "MEV-1 Pro", "MEV-1 Pro SX", "MEV-2", "Z15GT", OTHERS],
   Kawasaki: ["Eliminator", "KLX", "KX", "Ninja ZX-10R", "Ninja ZX-4R SE", "Ninja ZX-6R", "Ninja 250", "Versys", "Vulcan", "Z900", "Z900 SE", "Z650 S", OTHERS],
