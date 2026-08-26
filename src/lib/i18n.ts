@@ -788,6 +788,13 @@ export const DICT: Dict = {
   "inv.date": { en: "Date", zh: "日期", ms: "Tarikh" },
   "inv.total": { en: "Total", zh: "总额", ms: "Jumlah" },
 
+  // --- finance period ---
+  "fin.cogs": { en: "Parts Cost (out)", zh: "配件成本（出）", ms: "Kos alat ganti (keluar)" },
+  "fin.salary": { en: "Salary (out)", zh: "薪资（出）", ms: "Gaji (keluar)" },
+  "fin.net": { en: "Net (after salary)", zh: "净利（扣薪后）", ms: "Bersih (selepas gaji)" },
+  "fin.out-total": { en: "Total outflow", zh: "总支出", ms: "Jumlah keluar" },
+  "fin.period-sub": { en: "Revenue vs costs — daily / weekly / monthly", zh: "收支对比——按日 / 周 / 月", ms: "Hasil vs kos — harian / mingguan / bulanan" },
+
 };
 
 export function t(key: string, lang: Lang): string {

@@ -2,6 +2,7 @@ import type { DbLike } from "@/modules/customers/repository";
 import type { IFinanceRepository } from "./repository";
 import { PrismaFinanceRepository } from "@/repositories/prisma/finance.repository";
 import { paymentProvider } from "@/providers";
+import { periodWindow } from "@/lib/period";
 
 /** FinanceService — revenue / COGS / gross profit / margin (§38). Money in sen. */
 export class FinanceService {
@@ -72,6 +73,34 @@ export class FinanceService {
     return {
       revenue, grossProfit, margin, avgTicket: inWindow.length ? Math.round(revenue / inWindow.length) : 0,
       count: inWindow.length, serviceRevenue, partsRevenue, trend,
+    };
+  }
+
+  /** 按业务周期（日/周/月）聚合收支：revenue / cogs / grossProfit / service-parts 拆分。薪资由页面另取 settlement。 */
+  async periodDashboard(period: "day" | "week" | "month", ref?: Date) {
+    const { start, end } = periodWindow(period, ref);
+    const invoices = await this.repo.listInvoices();
+    const inWindow = invoices.filter((i) => i.status !== "DRAFT" && new Date(i.issuedAt) >= start && new Date(i.issuedAt) < end);
+
+    let revenue = 0;
+    let cogs = 0;
+    let serviceRevenue = 0;
+    let partsRevenue = 0;
+    for (const inv of inWindow) {
+      revenue += inv.totalSen;
+      for (const item of inv.items) {
+        if (item.source === "PART") partsRevenue += item.lineTotalSen;
+        else serviceRevenue += item.lineTotalSen;
+      }
+      if (inv.jobId) cogs += await this.partCosts(inv.jobId);
+    }
+    const grossProfit = revenue - cogs;
+    return {
+      start, end,
+      revenue, cogs, grossProfit,
+      margin: revenue > 0 ? (grossProfit / revenue) * 100 : 0,
+      count: inWindow.length,
+      serviceRevenue, partsRevenue,
     };
   }
 
