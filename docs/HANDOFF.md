@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = main @ 8049024（workshop bookings 增强已 merge：状态筛选条/创建时间/日期升降序/Reset）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已上线）→ **Rider App 语言 bug 修复**（merge 33aad24：全站 i18n cbebcbd + Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
+本地与生产 = main @ 4714e46（booking→job service 内容结构化同步已 merge）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已上线）→ **Rider App 语言 bug 修复**（merge 33aad24：全站 i18n cbebcbd + Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
 ## 会话信息
 - 原会话 ID：session-0dbaff06-4fb9-49b9-a857-ddffcd6950f1
@@ -32,6 +32,8 @@
 3e. 【已完成】移除登录引导页（merge 34fa9d4）——sign-in-prompt 删除，未登录访问 rider 页直接 307 → /rider/login 表单
 3f. 【已完成】人工测试 bug 修复（merge 969d638）：① book 时段选择——日期后显示真实 open slots 按钮组 + estimated 标注 ② 时段剩余量（剩 N 位）③ 预约/时段日期时区归一（UTC 零点，两端时间一致；生产 PG 数据已归一）
 3g. 【已完成】Workshop bookings 增强（merge 8049024）：状态筛选条（All/等待确认/已确认/…，?status=）+ 每行创建时间（Submitted 相对时间）+ 日期升降序（Date ↑↓，?sort=）+ Reset 按钮（Filter 旁，清空全部筛选）+ 排序未来优先/时区边界统一
+3h. 【已完成】Booking→Job service 内容同步（merge 4714e46）：Booking 加 servicePackageId/serviceAddons（迁移 booking_service_fields，生产 PG 已 ALTER）；rider book 结构化存套餐+附加；Check In 建 job 自动同步（counter 可覆盖）；Check In 对话框 service 摘要；另修 job branch 归属/失败反馈
+3i. 【已完成】新增 Owner 账号 CRM_DO_Owner@gmail.com（Dashoil123，本地+生产可用）
 4. 【待确认】Rider App 语言 bug 修复（fix/rider-language，cbebcbd 已 push，本地预览全页面中文通过）——确认后 merge
 5. 可选：Sentry 验证、k6 压测
 
@@ -50,7 +52,7 @@
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：8049024（merge bookings 增强）｜ 未提交：仅 screenshots/ 截图
+- 分支：main ｜ HEAD：4714e46（merge service 内容同步）｜ 未提交：仅 screenshots/ 截图
 - 远程：与本地一致（分叉 0/0）；全部 feature/fix 分支已清理
 
 ## 关键决策与约定
