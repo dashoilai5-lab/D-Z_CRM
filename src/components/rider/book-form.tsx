@@ -23,7 +23,7 @@ export interface BikeOption { id: string; brand: string; model: string; plate: s
 export interface PackageOption { id: string; name: string; tier: string; priceSen: number; isBestValue?: boolean; description?: string | null }
 
 export function BookForm({ customerId, bikes, packages, campaignId, availableSlots = [], branchId }: {
-  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string }[]; branchId?: string;
+  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string; remaining?: number }[]; branchId?: string;
 }) {
   const router = useRouter();
   const lang = useLang();
@@ -34,9 +34,14 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("10:00");
   // BOOK-008: only slots configured & available for the picked date
-  const daySlots = date
-    ? [...new Set(availableSlots.filter((s) => s.date === date).map((s) => s.time))].sort()
-    : [];
+  // 当日可约时段（time → 剩余容量，同 time 多条取最小值——最保守）
+  const daySlotRemaining: Record<string, number> = {};
+  for (const s of availableSlots) {
+    if (s.date !== date) continue;
+    const rem = s.remaining ?? 1;
+    daySlotRemaining[s.time] = daySlotRemaining[s.time] === undefined ? rem : Math.min(daySlotRemaining[s.time], rem);
+  }
+  const daySlots = Object.keys(daySlotRemaining).sort();
   // 选了日期但当天无真实可用时段 → 提供预计时段（门店将确认）
   const EST_TIMES = ["10:00", "11:00", "14:00", "16:00"];
   const slotOptions = daySlots.length > 0 ? daySlots : EST_TIMES;
@@ -211,7 +216,13 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
                     )}
                   >
                     {tm}
-                    {isEstimated && <span className="ml-1 text-[9px] opacity-70">{t("book.est", lang)}</span>}
+                    {isEstimated ? (
+                      <span className="ml-1 text-[9px] opacity-70">{t("book.est", lang)}</span>
+                    ) : (
+                      daySlotRemaining[tm] != null && (
+                        <span className="ml-1 text-[9px] opacity-70">{tpl("book.slots-left", lang, { n: daySlotRemaining[tm] })}</span>
+                      )
+                    )}
                   </button>
                 ))}
               </div>

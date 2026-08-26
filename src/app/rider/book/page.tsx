@@ -46,7 +46,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   const rawSlots = selected
     ? await db.appointmentSlot.findMany({ where: { branchId: selected.id, date: { gte: new Date(), lte: future }, isHoliday: false }, select: { date: true, startTime: true, bookedCount: true, maxBookings: true } })
     : [];
-  const availableSlots = rawSlots.filter((s) => s.bookedCount < s.maxBookings).map((s) => ({ date: s.date.toISOString().slice(0, 10), time: s.startTime }));
+  const availableSlots = rawSlots.filter((s) => s.bookedCount < s.maxBookings).map((s) => ({ date: s.date.toISOString().slice(0, 10), time: s.startTime, remaining: Math.max(0, s.maxBookings - s.bookedCount) }));
   const campaignId = campaign || null;
   const promoName = promo || null;
 

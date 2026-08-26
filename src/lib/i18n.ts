@@ -719,6 +719,7 @@ export const DICT: Dict = {
   "book.pick-date-first": { en: "Pick a date first to see open slots", zh: "先选择日期以查看可用时段", ms: "Pilih tarikh dahulu untuk lihat slot kosong" },
   "book.est-slots-hint": { en: "No open slots on this date — estimated times shown (workshop will confirm)", zh: "该日暂无可用时段——以下为预计时段（门店将确认）", ms: "Tiada slot kosong pada tarikh ini — masa anggaran ditunjukkan (bengkel akan sahkan)" },
   "book.est": { en: "est", zh: "预计", ms: "anggaran" },
+  "book.slots-left": { en: "{n} left", zh: "剩 {n} 位", ms: "{n} lagi" },
 
   // --- rider service status / bike detail ---
   "svc.estimated-ready": { en: "Estimated ready: ", zh: "预计完成：", ms: "Anggaran siap: " },
