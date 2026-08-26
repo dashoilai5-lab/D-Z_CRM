@@ -104,6 +104,9 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
         </select>
         <input name="date" type="date" defaultValue={sp.date} className="rounded-md border bg-background px-3 py-2" />
         <button className="rounded-md border px-3 py-2 font-medium">Filter</button>
+        {(sp.status || sp.branch || sp.date || sp.sort) && (
+          <Link href="/workshop/bookings" className="rounded-md border border-dashed px-3 py-2 font-medium text-muted-foreground hover:text-foreground hover:bg-accent">{t("book.reset-filters", lang)}</Link>
+        )}
         <div className="flex-1" />
         <a href={"/workshop/bookings?view=list" + (sp.branch ? "&branch=" + sp.branch : "") + (sp.date ? "&date=" + sp.date : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "list" ? "bg-primary text-primary-foreground" : "")}><List className="h-3.5 w-3.5" />List</a>
         <a href={"/workshop/bookings?view=calendar" + (sp.branch ? "&branch=" + sp.branch : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "calendar" ? "bg-primary text-primary-foreground" : "")}><CalendarDays className="h-3.5 w-3.5" />Month</a>
@@ -123,9 +126,6 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
         <div className="flex-1" />
         <Link href={qs({ sort: "" })} className={"inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium " + (sp.sort !== "desc" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{t("book.sort-date-asc", lang)}</Link>
         <Link href={qs({ sort: "desc" })} className={"inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium " + (sp.sort === "desc" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{t("book.sort-date-desc", lang)}</Link>
-        {(sp.status || sp.branch || sp.date || sp.sort) && (
-          <Link href="/workshop/bookings" className="inline-flex items-center rounded-md border border-dashed px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-accent">{t("book.reset-filters", lang)}</Link>
-        )}
       </div>
 
       {view === "calendar" ? (
