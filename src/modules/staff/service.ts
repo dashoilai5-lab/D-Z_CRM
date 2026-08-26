@@ -179,6 +179,77 @@ export class StaffService {
     return { staff: sorted, top: sorted[0] ?? null };
   }
 
+  /** 按日薪资单：窗口（today/3d/7d/30d+）内每个 foreman 的每日账单（jobs/金额/薪资拆分/发薪状态）。 */
+  async settlementByDay(windowDays: number, ref?: Date): Promise<{
+    start: Date; end: Date; rules: SalaryRules;
+    foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number;
+      daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number;
+        payout: { status: string; paidSen: number; paidAt: Date | null } | null }[] }[];
+  }> {
+    const base = ref ?? new Date();
+    const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(base).split("-").map(Number);
+    const [y, m, d] = ymd as [number, number, number];
+    const todayStartUtc = Date.UTC(y, m - 1, d) - 8 * 3600000;
+    const start = new Date(todayStartUtc - (windowDays - 1) * 86400000);
+    const end = new Date(todayStartUtc + 86400000);
+
+    const org = await db.organisation.findFirst({ select: { salaryRules: true } });
+    const rules = parseSalaryRules(org?.salaryRules);
+    const users = await this.repo.listUsers();
+    const foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number; daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number; payout: { status: string; paidSen: number; paidAt: Date | null } | null }[] }[] = [];
+
+    for (const u of users) {
+      const jobs = u.jobs.filter((j) => j.status === "COMPLETED" && j.completedAt && j.completedAt >= start && j.completedAt < end);
+      if (jobs.length === 0) continue;
+      const jobIds = jobs.map((j) => j.id);
+      const [items, invoices] = await Promise.all([
+        db.serviceJobItem.findMany({ where: { jobId: { in: jobIds }, status: { not: "DECLINED" } } }),
+        db.invoice.findMany({ where: { jobId: { in: jobIds } } }),
+      ]);
+      const salesByJob = new Map<string, number>();
+      for (const inv of invoices) if (inv.jobId) salesByJob.set(inv.jobId, (salesByJob.get(inv.jobId) ?? 0) + inv.totalSen);
+      const addonJobs = new Set<string>();
+      for (const it of items) if (it.source === "COUNTER" || it.source === "APPROVAL") addonJobs.add(it.jobId);
+      const addonJobIds = new Set<string>(jobIds.filter((id) => addonJobs.has(id)));
+
+      // 按天分组
+      const byDay = new Map<string, { date: Date; jobs: string[]; salesSen: number; addonCount: number }>();
+      for (const j of jobs) {
+        const dayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(j.completedAt!);
+        const cur = byDay.get(dayKey) ?? { date: new Date(dayKey + "T00:00:00Z"), jobs: [], salesSen: 0, addonCount: 0 };
+        cur.jobs.push(j.id);
+        cur.salesSen += salesByJob.get(j.id) ?? 0;
+        if (addonJobIds.has(j.id)) cur.addonCount += 1;
+        byDay.set(dayKey, cur);
+      }
+
+      const daily = [];
+      for (const [, day] of [...byDay.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+        const bd = calcSalaryBreakdown(rules, day.jobs.length, day.salesSen, day.addonCount);
+        const payout = await db.staffPayout.findUnique({
+          where: { userId_period_periodStart: { userId: u.id, period: "day", periodStart: day.date } },
+          include: { payments: { select: { amountSen: true } } },
+        });
+        daily.push({
+          date: day.date,
+          jobs: day.jobs.length,
+          salesSen: day.salesSen,
+          baseSen: bd.baseSen, commissionSen: bd.commissionSen, addonBonusSen: bd.addonBonusSen, totalSen: bd.total,
+          payout: payout ? { status: payout.status, paidSen: payout.payments.reduce((s2, p) => s2 + p.amountSen, 0), paidAt: payout.paidAt } : null,
+        });
+      }
+      foremen.push({
+        id: u.id, name: u.name,
+        totalSen: daily.reduce((s2, dd) => s2 + dd.totalSen, 0),
+        totalJobs: daily.reduce((s2, dd) => s2 + dd.jobs, 0),
+        totalSalesSen: daily.reduce((s2, dd) => s2 + dd.salesSen, 0),
+        daily,
+      });
+    }
+    foremen.sort((a, b) => b.totalSen - a.totalSen);
+    return { start, end, rules, foremen };
+  }
+
   /** 发薪历史：全部 StaffPayout（含分期 payment），按发薪时间倒序。 */
   async payoutHistory() {
     const payouts = await db.staffPayout.findMany({
