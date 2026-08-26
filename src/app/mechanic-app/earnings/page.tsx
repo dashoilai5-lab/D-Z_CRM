@@ -3,12 +3,13 @@ import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
 import { EarningsConfirm } from "@/components/mechanic/earnings-confirm";
 import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 import { formatRM } from "@/lib/money";
 import { fmtDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-/** Mechanic 收入：我的完成 job + 发薪确认（PENDING → CASH/QR 确认收款）+ 历史。 */
+/** Mechanic 收入：完成 job + 发薪确认（双向）+ 历史。 */
 export default async function EarningsPage() {
   const lang = await getLang();
   const session = await getSessionUser();
@@ -35,34 +36,29 @@ export default async function EarningsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-bold">My earnings</h1>
+      <h1 className="text-xl font-bold">{t("mech.my-earnings", lang)}</h1>
 
-      {/* 汇总 */}
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-2xl border bg-card p-4">
-          <div className="text-[11px] text-muted-foreground">Jobs completed</div>
+          <div className="text-[11px] text-muted-foreground">{t("mech.jobs-completed", lang)}</div>
           <div className="mt-1 text-2xl font-bold">{jobs.length}</div>
         </div>
         <div className="rounded-2xl border bg-card p-4">
-          <div className="text-[11px] text-muted-foreground">Service value</div>
+          <div className="text-[11px] text-muted-foreground">{t("mech.service-value", lang)}</div>
           <div className="mt-1 text-2xl font-bold">{formatRM(totalEarned)}</div>
         </div>
       </div>
 
-      {/* 待确认发薪 */}
       {pending.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-amber-600 dark:text-amber-400">Payment to confirm ({pending.length})</h3>
-          <EarningsConfirm
-            payouts={pending.map((p) => ({ id: p.id, period: p.period, periodStart: p.periodStart.toISOString(), totalSen: p.totalSen }))}
-          />
+          <h3 className="text-sm font-semibold text-amber-600 dark:text-amber-400">{tpl("mech.payment-confirm", lang, { n: pending.length })}</h3>
+          <EarningsConfirm payouts={pending.map((p) => ({ id: p.id, period: p.period, periodStart: p.periodStart.toISOString(), totalSen: p.totalSen }))} />
         </div>
       )}
 
-      {/* 已完成 job */}
       <div className="rounded-2xl border bg-card p-4">
-        <h3 className="font-semibold mb-2">Completed jobs</h3>
-        {jobs.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No completed jobs yet.</p>}
+        <h3 className="font-semibold mb-2">{t("mech.completed-jobs", lang)}</h3>
+        {jobs.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">{t("mech.no-completed", lang)}</p>}
         <div className="space-y-1.5">
           {jobs.map((j) => (
             <div key={j.id} className="flex items-center justify-between text-sm">
@@ -76,10 +72,9 @@ export default async function EarningsPage() {
         </div>
       </div>
 
-      {/* 发薪历史 */}
       <div className="rounded-2xl border bg-card p-4">
-        <h3 className="font-semibold mb-2">Payment history</h3>
-        {done.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No payments yet.</p>}
+        <h3 className="font-semibold mb-2">{t("mech.payment-history", lang)}</h3>
+        {done.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">{t("mech.no-payments", lang)}</p>}
         <div className="space-y-1.5">
           {done.map((p) => (
             <div key={p.id} className="flex items-center justify-between text-sm">

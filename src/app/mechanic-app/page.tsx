@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 import { JobCard } from "@/components/mechanic/job-card";
 
 export const dynamic = "force-dynamic";
@@ -42,23 +42,21 @@ export default async function MechanicAppHome() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">Orders</h1>
-          <p className="text-xs text-muted-foreground">{orders.length} order{orders.length > 1 ? "s" : ""} · {session.user.name}</p>
+          <h1 className="text-xl font-bold">{t("mech.orders", lang)}</h1>
+          <p className="text-xs text-muted-foreground">{tpl("mech.order-count", lang, { n: orders.length, name: session.user.name })}</p>
         </div>
         {pending.length > 0 && (
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">{pending.length} new</span>
+          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">{tpl("mech.new", lang, { n: pending.length })}</span>
         )}
       </div>
 
       {orders.length === 0 && (
         <div className="rounded-2xl border bg-card p-10 text-center">
-          <p className="text-sm text-muted-foreground">No orders yet — new jobs appear here.</p>
+          <p className="text-sm text-muted-foreground">{t("mech.no-orders", lang)}</p>
         </div>
       )}
 
-      {/* 待接单（Grab 风格，先显示） */}
       {pending.map((o) => <JobCard key={o.id} order={o} />)}
-      {/* 进行中/其他 */}
       {active.map((o) => <JobCard key={o.id} order={o} />)}
     </div>
   );

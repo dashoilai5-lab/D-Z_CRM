@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Bike, CheckCheck, ChevronRight, MapPin } from "lucide-react";
 import { transitionJob } from "@/actions/workshop";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 import { formatRM } from "@/lib/money";
-import { fmtDate } from "@/lib/format";
 
 export interface OrderCard {
   id: string;
@@ -27,14 +28,15 @@ export interface OrderCard {
 /** Grab 风格订单卡：金额醒目 + 接单（WAITING → IN_PROGRESS）。 */
 export function JobCard({ order }: { order: OrderCard }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const canAccept = order.status === "WAITING";
 
   const accept = () =>
     start(async () => {
       const r = await transitionJob(order.id, "IN_PROGRESS");
-      if (r.ok) { toast.success("Order accepted"); router.refresh(); }
-      else toast.error("Failed to accept");
+      if (r.ok) { toast.success(t("mech.accepted", lang)); router.refresh(); }
+      else toast.error(t("toast.failed", lang));
     });
 
   return (
@@ -55,10 +57,9 @@ export function JobCard({ order }: { order: OrderCard }) {
             {order.bookingDate && <span>· {order.bookingDate} {order.bookingTime ?? ""}</span>}
           </div>
         </div>
-        {/* 订单金额（Grab 风格醒目） */}
         <div className="shrink-0 text-right">
           <div className="text-lg font-bold tabular-nums text-primary">{formatRM(order.amountSen)}</div>
-          <div className="text-[10px] text-muted-foreground">order</div>
+          <div className="text-[10px] text-muted-foreground">{t("mech.order-label", lang)}</div>
         </div>
       </div>
 
@@ -70,11 +71,11 @@ export function JobCard({ order }: { order: OrderCard }) {
             disabled={pending}
             className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
           >
-            <CheckCheck className="h-4 w-4" /> Accept order
+            <CheckCheck className="h-4 w-4" /> {t("mech.accept", lang)}
           </button>
         ) : (
           <Link href={"/mechanic-app/jobs/" + order.id} className="flex w-full items-center justify-center gap-2 rounded-xl border py-3 text-sm font-semibold text-primary transition-colors hover:bg-accent">
-            View / work on order <ChevronRight className="h-4 w-4" />
+            {t("mech.view-work", lang)} <ChevronRight className="h-4 w-4" />
           </Link>
         )}
       </div>

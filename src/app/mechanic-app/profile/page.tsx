@@ -5,12 +5,15 @@ import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
 import { AttendanceButton } from "@/components/mechanic/attendance-button";
 import { EarningsConfirm } from "@/components/mechanic/earnings-confirm";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 import { formatRM } from "@/lib/money";
 
 export const dynamic = "force-dynamic";
 
 /** Mechanic 个人页（参考 rider profile）：头像/名字 + 统计 + 打卡（与 workshop 考勤同步）。 */
 export default async function MechanicProfilePage() {
+  const lang = await getLang();
   const session = await getSessionUser();
   if (session.kind !== "staff" || !session.user) redirect("/workshop/dashboard");
   const me = session.user;
@@ -53,31 +56,31 @@ export default async function MechanicProfilePage() {
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-2xl border bg-card p-4 text-center">
           <div className="text-2xl font-bold tabular-nums">{completed}</div>
-          <div className="text-xs text-muted-foreground">Jobs</div>
+          <div className="text-xs text-muted-foreground">{t("mech.jobs", lang)}</div>
         </div>
         <div className="rounded-2xl border bg-card p-4 text-center">
           <div className="text-2xl font-bold tabular-nums">{formatRM(value)}</div>
-          <div className="text-xs text-muted-foreground">Value</div>
+          <div className="text-xs text-muted-foreground">{t("mech.value", lang)}</div>
         </div>
         <div className="rounded-2xl border bg-card p-4 text-center">
           <div className="text-2xl font-bold tabular-nums">{formatRM(paid)}</div>
-          <div className="text-xs text-muted-foreground">Paid</div>
+          <div className="text-xs text-muted-foreground">{t("mech.paid", lang)}</div>
         </div>
       </div>
 
       {/* 发薪通知（双向确认第 1 步） */}
       {pendingPayouts.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-amber-600 dark:text-amber-400">Payment to approve ({pendingPayouts.length})</h3>
+          <h3 className="text-sm font-semibold text-amber-600 dark:text-amber-400">{t("mech.payment-confirm", lang).replace("{n}", String(pendingPayouts.length))}</h3>
           <EarningsConfirm payouts={pendingPayouts.map((p) => ({ id: p.id, period: p.period, periodStart: p.periodStart.toISOString(), totalSen: p.totalSen }))} />
         </div>
       )}
 
       {/* 打卡（与 workshop OS 考勤同步） */}
       <div className="rounded-2xl border bg-card p-4">
-        <div className="mb-2 text-sm font-semibold">Attendance</div>
-        <AttendanceButton status={status} />
-        <p className="mt-2 text-[11px] text-muted-foreground">Synced with workshop OS attendance — owner sees your status.</p>
+        <div className="mb-2 text-sm font-semibold">{t("mech.attendance", lang)}</div>
+        <AttendanceButton status={status} lang={lang} />
+        <p className="mt-2 text-[11px] text-muted-foreground">{t("mech.synced", lang)}</p>
       </div>
     </div>
   );

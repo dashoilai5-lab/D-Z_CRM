@@ -14,7 +14,7 @@ import { fmtKM } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-/** Mechanic App Job 详情：服务明细 + 检查单 + 状态流转（复用 workshop 逻辑）。 */
+/** Mechanic App Job 详情：服务明细 + 检查单 + 状态流转。 */
 export default async function MechanicJobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const lang = await getLang();
@@ -23,7 +23,6 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
 
   const detail = await jobService.getDetail(id);
   if (!detail) notFound();
-  // 只能看分配给自己（或未分配）的 job
   if (detail.mechanicId && detail.mechanicId !== session.user.id) notFound();
 
   const pendingApprovals = detail.approvals.filter((a) => a.status === "PENDING");
@@ -33,10 +32,9 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
   return (
     <div className="space-y-4">
       <Link href="/mechanic-app" className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ChevronLeft className="h-4 w-4" /> Back
+        <ChevronLeft className="h-4 w-4" /> {t("mech.back", lang)}
       </Link>
 
-      {/* 头部 */}
       <div className="rounded-2xl border bg-card p-4">
         <div className="flex items-center justify-between">
           <span className="font-mono text-lg font-bold">{detail.jobNumber}</span>
@@ -50,15 +48,14 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
         <div className="mt-1 text-xs text-muted-foreground">{detail.customer.name} · {fmtKM(detail.mileage)}</div>
         {pendingApprovals.length > 0 && (
           <div className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
-            {pendingApprovals.length} approval(s) waiting for customer
+            {t("mech.approval-waiting", lang).replace("{n}", String(pendingApprovals.length))}
           </div>
         )}
         <div className="mt-3"><JobActions jobId={detail.id} status={detail.status} /></div>
       </div>
 
-      {/* 服务明细 */}
       <div className="rounded-2xl border bg-card p-4">
-        <h3 className="font-semibold mb-2">Service items</h3>
+        <h3 className="font-semibold mb-2">{t("mech.service-items", lang)}</h3>
         <div className="space-y-1">
           {detail.items.filter((i) => i.status !== "DECLINED").map((i) => (
             <div key={i.id} className="flex justify-between text-sm">
@@ -72,14 +69,13 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
               <span className="tabular-nums">{formatRM(p.lineTotalSen)}</span>
             </div>
           ))}
-          {(detail.items.length === 0 && detail.parts.length === 0) && <p className="text-xs text-muted-foreground">No items yet.</p>}
+          {(detail.items.length === 0 && detail.parts.length === 0) && <p className="text-xs text-muted-foreground">{t("mech.no-items", lang)}</p>}
         </div>
         <div className="mt-2 flex justify-between border-t pt-2 text-sm font-bold">
-          <span>Total</span><span className="tabular-nums">{formatRM(billed)}</span>
+          <span>{t("mech.total", lang)}</span><span className="tabular-nums">{formatRM(billed)}</span>
         </div>
       </div>
 
-      {/* 检查单 */}
       <div className="rounded-2xl border bg-card p-4">
         <ChecklistRunner
           jobId={detail.id}
