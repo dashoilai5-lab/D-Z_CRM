@@ -141,6 +141,7 @@ model User {
   tasksCompleted Task[]           @relation("CompletedTasks")
   testRidesAssigned TestRide[]    @relation("SalespersonTestRides")
   payouts        StaffPayout[]   @relation("StaffPayouts")
+  attendance     Attendance[]
 }
 
 // ---------- Customers ----------
@@ -1030,6 +1031,19 @@ model StaffPayoutPayment {
   amountSen Int
   method    String      @default("CASH")
   paidAt    DateTime    @default(now())
+}
+
+// ---------- Mechanic attendance (check in / out) ----------
+
+model Attendance {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id])
+  date       DateTime  // 业务日 UTC 零点
+  checkInAt  DateTime?
+  checkOutAt DateTime?
+  createdAt  DateTime  @default(now())
+  @@unique([userId, date])
 }
 
 model ServiceType {
