@@ -158,7 +158,8 @@ export class BookingService {
       const job = await (tx as PrismaClient).serviceJob.create({
         data: {
           jobNumber,
-          branchId: opts.branchId,
+          // job 归属 booking 所在 branch（多分支时不能用 main branch 硬绑）
+          branchId: opts.branchId ?? booking.branchId,
           customerId: booking.customerId,
           motorcycleId: booking.motorcycleId,
           booking: { connect: { id: booking.id } },

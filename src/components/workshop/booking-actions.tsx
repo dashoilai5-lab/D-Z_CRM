@@ -70,6 +70,7 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
                 setOpen(false);
                 router.refresh();
                 if (result.ok && result.result) { toast.success(tpl("toast.checked-in", lang, { job: result.result.jobNumber })); router.push("/workshop/jobs/" + result.result.jobId); }
+                else if (!result.ok) { toast.error(result.error ?? "Check in failed"); }
               })}>Check In</Button>
             </DialogFooter>
           </DialogContent>
