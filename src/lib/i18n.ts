@@ -720,6 +720,10 @@ export const DICT: Dict = {
   "book.est-slots-hint": { en: "No open slots on this date — estimated times shown (workshop will confirm)", zh: "该日暂无可用时段——以下为预计时段（门店将确认）", ms: "Tiada slot kosong pada tarikh ini — masa anggaran ditunjukkan (bengkel akan sahkan)" },
   "book.est": { en: "est", zh: "预计", ms: "anggaran" },
   "book.slots-left": { en: "{n} left", zh: "剩 {n} 位", ms: "{n} lagi" },
+  "book.submitted": { en: "Submitted", zh: "提交于", ms: "Dihantar" },
+  "book.sort-date-asc": { en: "Date ↑", zh: "日期 ↑", ms: "Tarikh ↑" },
+  "book.sort-date-desc": { en: "Date ↓", zh: "日期 ↓", ms: "Tarikh ↓" },
+  "book.reset-filters": { en: "Reset", zh: "重置", ms: "Set Semula" },
 
   // --- rider service status / bike detail ---
   "svc.estimated-ready": { en: "Estimated ready: ", zh: "预计完成：", ms: "Anggaran siap: " },
