@@ -59,7 +59,7 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
       <ForemanPayoutView
         foremen={foremen.map((f) => ({
           id: f.id, name: f.name, totalJobs: f.totalJobs, totalSalesSen: f.totalSalesSen, totalSen: f.totalSen,
-          daily: f.daily.map((b) => ({ date: b.date, jobs: b.jobs, salesSen: b.salesSen, baseSen: b.baseSen, commissionSen: b.commissionSen, addonBonusSen: b.addonBonusSen, totalSen: b.totalSen, payoutStatus: b.payout?.status ?? null, paidSen: b.payout?.paidSen ?? 0, jobsList: b.jobsList })),
+          daily: f.daily.map((b) => ({ date: b.date, jobs: b.jobs, salesSen: b.salesSen, baseSen: b.baseSen, commissionSen: b.commissionSen, addonBonusSen: b.addonBonusSen, totalSen: b.totalSen, payoutStatus: b.payout?.status ?? null, payoutId: b.payout?.id ?? null, paidSen: b.payout?.paidSen ?? 0, jobsList: b.jobsList })),
         }))}
         lang={lang}
       />

@@ -184,7 +184,7 @@ export class StaffService {
     start: Date; end: Date; rules: SalaryRules;
     foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number;
       daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number;
-        payout: { status: string; paidSen: number; paidAt: Date | null } | null;
+        payout: { id: string; status: string; paidSen: number; paidAt: Date | null } | null;
         jobsList: { jobId: string; jobNumber: string; serviceType: string; plate: string; customer: string; salesSen: number }[] }[] }[];
   }> {
     const base = ref ?? new Date();
@@ -197,7 +197,7 @@ export class StaffService {
     const org = await db.organisation.findFirst({ select: { salaryRules: true } });
     const rules = parseSalaryRules(org?.salaryRules);
     const users = await this.repo.listUsers();
-    const foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number; daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number; payout: { status: string; paidSen: number; paidAt: Date | null } | null; jobsList: { jobId: string; jobNumber: string; serviceType: string; plate: string; customer: string; salesSen: number }[] }[] }[] = [];
+    const foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number; daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number; payout: { id: string; status: string; paidSen: number; paidAt: Date | null } | null; jobsList: { jobId: string; jobNumber: string; serviceType: string; plate: string; customer: string; salesSen: number }[] }[] }[] = [];
 
     for (const u of users) {
       const jobs = u.jobs.filter((j) => j.status === "COMPLETED" && j.completedAt && j.completedAt >= start && j.completedAt < end);
@@ -220,8 +220,12 @@ export class StaffService {
       });
       const detailByJob = new Map(jobDetails.map((j) => [j.id, j]));
 
-      // 按天分组
+      // 按天分组（窗口内每天都有行——含 0 工单日，payout 状态可显示）
       const byDay = new Map<string, { date: Date; jobs: string[]; salesSen: number; addonCount: number }>();
+      for (let t = start.getTime(); t < end.getTime(); t += 86400000) {
+        const key = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(t));
+        byDay.set(key, { date: new Date(key + "T00:00:00Z"), jobs: [], salesSen: 0, addonCount: 0 });
+      }
       for (const j of jobs) {
         const dayKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(j.completedAt!);
         const cur = byDay.get(dayKey) ?? { date: new Date(dayKey + "T00:00:00Z"), jobs: [], salesSen: 0, addonCount: 0 };
@@ -238,12 +242,14 @@ export class StaffService {
           where: { userId_period_periodStart: { userId: u.id, period: "day", periodStart: day.date } },
           include: { payments: { select: { amountSen: true } } },
         });
+        // 无工单且无 payout 的日不展示
+        if (day.jobs.length === 0 && !payout) continue;
         daily.push({
           date: day.date,
           jobs: day.jobs.length,
           salesSen: day.salesSen,
           baseSen: bd.baseSen, commissionSen: bd.commissionSen, addonBonusSen: bd.addonBonusSen, totalSen: bd.total,
-          payout: payout ? { status: payout.status, paidSen: payout.payments.reduce((s2, p) => s2 + p.amountSen, 0), paidAt: payout.paidAt } : null,
+          payout: payout ? { id: payout.id, status: payout.status, paidSen: payout.payments.reduce((s2, p) => s2 + p.amountSen, 0), paidAt: payout.paidAt } : null,
           jobsList: day.jobs.map((jid) => {
             const det = detailByJob.get(jid);
             const job = jobs.find((j) => j.id === jid);

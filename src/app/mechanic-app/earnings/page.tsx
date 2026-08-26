@@ -54,8 +54,7 @@ export default async function EarningsPage() {
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-amber-600 dark:text-amber-400">Payment to confirm ({pending.length})</h3>
           <EarningsConfirm
-            payouts={pending.map((p) => ({ id: p.id, period: p.period, periodStart: p.periodStart.toISOString(), totalSen: p.totalSen, paidSen: p.payments.reduce((s, x) => s + x.amountSen, 0), status: p.status }))}
-            lang={lang}
+            payouts={pending.map((p) => ({ id: p.id, period: p.period, periodStart: p.periodStart.toISOString(), totalSen: p.totalSen }))}
           />
         </div>
       )}

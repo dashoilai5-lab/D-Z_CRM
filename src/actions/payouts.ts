@@ -39,22 +39,33 @@ export async function settlePayouts(items: PayoutDraft[]) {
   return { ok: true as const, settled: list.length };
 }
 
-/** Mechanic 确认收款（出粮）：选 CASH / QR 方式，确认（部分或全额）→ 累计满额自动 PAID。 */
-export async function confirmPayout(payoutId: string, amountSen: number, method: string) {
+/** Mechanic 同意收款（双向确认第 1 步）：PENDING → MECHANIC_APPROVED（不建 payment，等 workshop 最终 agree）。 */
+export async function mechanicApprovePayout(payoutId: string) {
   const session = await getSessionUser();
   if (session.kind !== "staff" || !session.user || session.role !== "MECHANIC") return { ok: false as const, error: "Mechanic access required" };
-  const payout = await db.staffPayout.findUnique({ where: { id: payoutId }, select: { id: true, userId: true, totalSen: true, status: true } });
+  const payout = await db.staffPayout.findUnique({ where: { id: payoutId }, select: { id: true, userId: true, status: true } });
   if (!payout || payout.userId !== session.user.id) return { ok: false as const, error: "Not your payout" };
-  if (payout.status === "PAID") return { ok: false as const, error: "Already paid" };
-  if (amountSen <= 0) return { ok: false as const, error: "Invalid amount" };
+  if (payout.status !== "PENDING") return { ok: false as const, error: "Not awaiting your approval" };
 
-  await db.staffPayoutPayment.create({ data: { payoutId: payout.id, amountSen, method, paidAt: new Date() } });
-  const paid = await db.staffPayoutPayment.aggregate({ where: { payoutId: payout.id }, _sum: { amountSen: true } });
-  const paidSen = paid._sum.amountSen ?? 0;
-  const status = paidSen >= payout.totalSen ? "PAID" : "PARTIAL";
-  await db.staffPayout.update({ where: { id: payout.id }, data: { status, paidAt: status === "PAID" ? new Date() : null } });
-  revalidatePath("/workshop/settlements");
+  await db.staffPayout.update({ where: { id: payout.id }, data: { status: "MECHANIC_APPROVED" } });
+  revalidatePath("/mechanic-app/profile");
   revalidatePath("/mechanic-app/earnings");
+  revalidatePath("/workshop/settlements");
+  return { ok: true as const };
+}
+
+/** Workshop 最终同意出粮（双向确认第 2 步）：MECHANIC_APPROVED → PAID + payment（CASH/QR）。 */
+export async function agreePayout(payoutId: string, method: string) {
+  const session = await getSessionUser();
+  if (session.kind !== "staff" || !session.user || session.role === "MECHANIC") return { ok: false as const, error: "Owner/manager access required" };
+  const payout = await db.staffPayout.findUnique({ where: { id: payoutId }, select: { id: true, totalSen: true, status: true } });
+  if (!payout) return { ok: false as const, error: "Payout not found" };
+  if (payout.status === "PAID") return { ok: false as const, error: "Already paid" };
+
+  await db.staffPayoutPayment.create({ data: { payoutId: payout.id, amountSen: payout.totalSen, method, paidAt: new Date() } });
+  await db.staffPayout.update({ where: { id: payout.id }, data: { status: "PAID", paidAt: new Date() } });
+  revalidatePath("/workshop/settlements");
+  revalidatePath("/mechanic-app/profile");
   return { ok: true as const };
 }
 
