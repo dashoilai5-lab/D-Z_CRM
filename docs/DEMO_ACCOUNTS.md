@@ -10,6 +10,7 @@
 | 部门 | 姓名 | 邮箱 | 可见模块（实测） |
 | --- | --- | --- | --- |
 | 👑 Owner | Daniel Tan | `daniel.tan@dz.my` | 全部 23 模块 |
+| 👑 Owner | CRM DO Owner | `CRM_DO_Owner@gmail.com`（密码 `Dashoil123`，Supabase 自动小写为 crm_do_owner@gmail.com） | 全部模块（实测通过） |
 | 🧭 Manager | Syafiq bin Rahman | `syafiq.bin.rahman@dz.my` | 全部（管理视图） |
 | 🏪 Counter | Mei Ling Wong | `mei.ling.wong@dz.my` | Dashboard/Customers/Bookings/Jobs/Packages/Stock/AI（9 项） |
 | 🔧 Mechanic | Aizat bin Ismail | `aizat.bin.ismail@dz.my` | Dashboard/Jobs/Mechanic Board/Checklists/KPI（6 项） |
