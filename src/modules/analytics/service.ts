@@ -164,3 +164,76 @@ export async function branchComparison(orgId: string) {
   }));
   return rows.sort((a, b) => b.revenue - a.revenue);
 }
+
+/** 月度服务量：近 N 个月每月完成工单数（服务车次）+ 去重车辆数（按 +8 业务月）。 */
+export async function monthlyServiceAnalytics(orgId: string, months = 12) {
+  const now = new Date();
+  const monthsList: { key: string; label: string; count: number; vehicles: number }[] = [];
+  const todayYmd = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(now).split("-").map(Number);
+  const [cy, cm] = todayYmd as [number, number];
+  for (let i = months - 1; i >= 0; i--) {
+    const m = cm - i;
+    const yy = cy + Math.floor((m - 1) / 12);
+    const mm = ((m - 1) % 12 + 12) % 12 + 1;
+    const key = yy + "-" + String(mm).padStart(2, "0");
+    monthsList.push({ key, label: yy + "/" + String(mm).padStart(2, "0"), count: 0, vehicles: 0 });
+  }
+  // 窗口边界：最早月 1 号（+8）→ 下月 1 号
+  const firstKey = monthsList[0].key;
+  const [fy, fm] = firstKey.split("-").map(Number);
+  const windowStart = new Date(Date.UTC(fy, fm - 1, 1) - 8 * 3600000);
+
+  const jobs = await db.serviceJob.findMany({
+    where: { status: "COMPLETED", completedAt: { gte: windowStart }, branch: { organisationId: orgId } },
+    select: { completedAt: true, motorcycleId: true },
+  });
+  const byMonth = new Map<string, { count: number; bikes: Set<string> }>();
+  for (const j of jobs) {
+    const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit" }).format(j.completedAt!);
+    const cur = byMonth.get(ymd) ?? { count: 0, bikes: new Set<string>() };
+    cur.count += 1;
+    cur.bikes.add(j.motorcycleId);
+    byMonth.set(ymd, cur);
+  }
+  for (const m of monthsList) {
+    const cur = byMonth.get(m.key);
+    m.count = cur?.count ?? 0;
+    m.vehicles = cur?.bikes.size ?? 0;
+  }
+  return monthsList;
+}
+
+/** 品牌分析：按摩托品牌聚合完成工单（服务量/车辆数/收入/占比）。 */
+export async function brandAnalytics(orgId: string, sinceDays = 365) {
+  const since = daysAgo(sinceDays);
+  const jobs = await db.serviceJob.findMany({
+    where: { status: "COMPLETED", completedAt: { gte: since }, branch: { organisationId: orgId } },
+    include: { motorcycle: { select: { brand: true, model: true, id: true } } },
+  });
+  const jobIds = jobs.map((j) => j.id);
+  const invs = jobIds.length ? await db.invoice.findMany({ where: { jobId: { in: jobIds } }, select: { jobId: true, totalSen: true } }) : [];
+  const salesByJob = new Map<string, number>();
+  for (const inv of invs) if (inv.jobId) salesByJob.set(inv.jobId, (salesByJob.get(inv.jobId) ?? 0) + inv.totalSen);
+
+  const byBrand = new Map<string, { count: number; bikes: Set<string>; salesSen: number; models: Map<string, number> }>();
+  for (const j of jobs) {
+    const brand = j.motorcycle.brand || "Unknown";
+    const cur = byBrand.get(brand) ?? { count: 0, bikes: new Set<string>(), salesSen: 0, models: new Map<string, number>() };
+    cur.count += 1;
+    cur.bikes.add(j.motorcycle.id);
+    cur.salesSen += salesByJob.get(j.id) ?? 0;
+    const model = j.motorcycle.model || "—";
+    cur.models.set(model, (cur.models.get(model) ?? 0) + 1);
+    byBrand.set(brand, cur);
+  }
+  const total = jobs.length;
+  const rows = [...byBrand.entries()].map(([brand, v]) => ({
+    brand,
+    count: v.count,
+    vehicles: v.bikes.size,
+    salesSen: v.salesSen,
+    share: total > 0 ? Math.round((v.count / total) * 1000) / 10 : 0,
+    topModels: [...v.models.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([model, n]) => ({ model, n })),
+  })).sort((a, b) => b.count - a.count);
+  return rows;
+}
