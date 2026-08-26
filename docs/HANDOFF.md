@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = main @ 6f5f092（analytics 增强已 merge）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已上线）→ **Rider App 语言 bug 修复**（merge 33aad24：全站 i18n cbebcbd + Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
+本地与生产 = main @ 9a54f5c（Mechanic 专属 App 已 merge）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已上线）→ **Rider App 语言 bug 修复**（merge 33aad24：全站 i18n cbebcbd + Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
 ## 会话信息
 - 原会话 ID：session-0dbaff06-4fb9-49b9-a857-ddffcd6950f1
@@ -37,6 +37,7 @@
 3j. 【已完成】技师结算/薪资/发薪闭环（merge ec60721，9 commit）：settlements 页 = 时间 filter（Today/3d/7d/30d+）+ foreman 发薪中心（点技师→每日账单含完成的 job 明细→tick 批量/分期）+ 薪资规则（Organisation.salaryRules）+ 发薪历史（StaffPayout/StaffPayoutPayment，生产表已建）+ Finance 周期收支（成本+薪资=出钱）+ 客户发票 tick/split 结清 + 发票完成流程改 ISSUED 待结清
 3k. 【已完成】技师考勤（merge f4e14a8）：Attendance 表（生产已建）；/workshop/attendance 打卡上下班 + 全员可用列表（ON DUTY 置顶/已下班/未打卡）；本地 mechanic authId 已重绑
 3l. 【已完成】Analytics 增强（merge 6f5f092）：月度服务量（12 个月 jobs+去重车辆）+ 品牌分析（服务量/收入/占比/Top 型号）+ 时间 filter（7d/30d/90d/12m）+ from→to 自定义范围；sales/service/customer/revenue 加 untilDays 边界
+3m. 【已完成】Mechanic 专属 App（merge 9a54f5c，6 commit）：/mechanic-app（仅 MECHANIC）——Grab 风格订单列表（金额+接单 Accept→IN_PROGRESS）+ job 详情（明细/检查单/审批/完成）+ Earnings（收入/发薪历史）+ Profile（统计/打卡/发薪通知/齿轮）+ Settings（资料编辑+语言切换）+ 发薪双向确认（workshop 发起 PENDING → mechanic approve MECHANIC_APPROVED → workshop Agree CASH/QR → PAID）+ 全 app i18n；生产 StaffPayout 已支持 PENDING/MECHANIC_APPROVED 态
 4. 【待确认】Rider App 语言 bug 修复（fix/rider-language，cbebcbd 已 push，本地预览全页面中文通过）——确认后 merge
 5. 可选：Sentry 验证、k6 压测
 
@@ -55,7 +56,7 @@
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：6f5f092（merge analytics 增强）｜ 未提交：仅 screenshots/ 截图
+- 分支：main ｜ HEAD：9a54f5c（merge Mechanic App）｜ 未提交：仅 screenshots/ 截图
 - 远程：与本地一致（分叉 0/0）；全部 feature/fix 分支已清理
 
 ## 关键决策与约定
