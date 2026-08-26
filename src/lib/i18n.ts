@@ -795,6 +795,26 @@ export const DICT: Dict = {
   "fin.out-total": { en: "Total outflow", zh: "总支出", ms: "Jumlah keluar" },
   "fin.period-sub": { en: "Revenue vs costs — daily / weekly / monthly", zh: "收支对比——按日 / 周 / 月", ms: "Hasil vs kos — harian / mingguan / bulanan" },
 
+  // --- foreman payouts (salary invoices) ---
+  "payout.title": { en: "Foreman Payouts", zh: "技师发薪", ms: "Bayaran Mekanik" },
+  "payout.subtitle": { en: "Salary invoices per foreman — tick to pay, or split payments", zh: "每位技师的薪资单——勾选发薪或分期支付", ms: "Invois gaji setiap mekanik — tandakan untuk bayar, atau bayaran berasingan" },
+  "payout.unpaid": { en: "Unpaid", zh: "待发", ms: "Belum bayar" },
+  "payout.paid": { en: "Paid", zh: "已发", ms: "Dibayar" },
+  "payout.partial": { en: "Partial", zh: "部分", ms: "Sebahagian" },
+  "payout.base": { en: "Base", zh: "底薪", ms: "Asas" },
+  "payout.commission": { en: "Commission", zh: "提成", ms: "Komisen" },
+  "payout.addon": { en: "Add-on bonus", zh: "附加奖励", ms: "Bonus tambahan" },
+  "payout.total": { en: "Salary", zh: "薪资", ms: "Gaji" },
+  "payout.pay-selected": { en: "Pay selected ({n})", zh: "发放选中（{n}）", ms: "Bayar pilihan ({n})" },
+  "payout.pay": { en: "Pay salary", zh: "发放薪资", ms: "Bayar gaji" },
+  "payout.paid-toast": { en: "{n} payout(s) settled", zh: "已发放 {n} 笔薪资", ms: "{n} bayaran diselesaikan" },
+  "payout.paid-note": { en: "Paid {date}", zh: "已发 {date}", ms: "Dibayar {date}" },
+  "payout.method": { en: "Method", zh: "方式", ms: "Kaedah" },
+  "payout.amount": { en: "Amount (RM)", zh: "金额（RM）", ms: "Jumlah (RM)" },
+  "payout.confirm": { en: "Confirm payment", zh: "确认支付", ms: "Sahkan bayaran" },
+  "payout.payment-added": { en: "Payout payment recorded", zh: "分期支付已记录", ms: "Bayaran direkod" },
+  "nav.payouts": { en: "Payouts", zh: "发薪", ms: "Bayaran" },
+
 };
 
 export function t(key: string, lang: Lang): string {

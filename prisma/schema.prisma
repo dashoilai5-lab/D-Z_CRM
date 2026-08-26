@@ -141,6 +141,35 @@ model User {
   tasksOwned     Task[]           @relation("OwnedTasks")
   tasksCompleted Task[]           @relation("CompletedTasks")
   testRidesAssigned TestRide[]    @relation("SalespersonTestRides")
+  payouts        StaffPayout[]   @relation("StaffPayouts")
+}
+
+// ---------- Foreman salary payouts ----------
+
+model StaffPayout {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation("StaffPayouts", fields: [userId], references: [id])
+  period        String   // "day" | "week" | "month"
+  periodStart   DateTime // 周期起点（UTC，periodWindow 的 start）
+  baseSen       Int      @default(0)
+  commissionSen Int      @default(0)
+  addonBonusSen Int      @default(0)
+  totalSen      Int
+  status        String   @default("UNPAID") // UNPAID | PARTIAL | PAID
+  paidAt        DateTime?
+  createdAt     DateTime @default(now())
+  payments      StaffPayoutPayment[]
+  @@unique([userId, period, periodStart])
+}
+
+model StaffPayoutPayment {
+  id        String      @id @default(cuid())
+  payoutId  String
+  payout    StaffPayout @relation(fields: [payoutId], references: [id])
+  amountSen Int
+  method    String      @default("CASH")
+  paidAt    DateTime    @default(now())
 }
 
 // ---------- Customers ----------

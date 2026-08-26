@@ -25,10 +25,17 @@ export function parseSalaryRules(raw: unknown): SalaryRules {
 }
 
 export function calcSalary(rules: SalaryRules, jobs: number, salesSen: number, addonJobs: number): number {
+  return calcSalaryBreakdown(rules, jobs, salesSen, addonJobs).total;
+}
+
+/** 薪资拆分：base + commission + addon 奖励。 */
+export function calcSalaryBreakdown(rules: SalaryRules, jobs: number, salesSen: number, addonJobs: number): { baseSen: number; commissionSen: number; addonBonusSen: number; total: number } {
   let commission = 0;
   if (rules.commissionType === "per_job") commission = rules.commissionValue * jobs;
   else if (rules.commissionType === "percent_sales") commission = Math.round(salesSen * (rules.commissionValue / 100));
-  return rules.baseSen + commission + (rules.addonBonusSen ?? 0) * addonJobs;
+  const baseSen = rules.baseSen;
+  const addonBonusSen = (rules.addonBonusSen ?? 0) * addonJobs;
+  return { baseSen, commissionSen: commission, addonBonusSen, total: baseSen + commission + addonBonusSen };
 }
 
 /**
@@ -42,7 +49,7 @@ export class StaffService {
   async settlement(period: "day" | "week" | "month", ref?: Date): Promise<{
     period: string; start: Date; end: Date;
     rules: SalaryRules;
-    foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[];
+    foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; salaryBreakdown: { baseSen: number; commissionSen: number; addonBonusSen: number }; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[];
     totals: { jobs: number; salesSen: number; hours: number; salarySen: number };
   }> {
     // +8 业务时区（Asia/Kuala_Lumpur）的周期窗口 → UTC 边界
@@ -68,7 +75,7 @@ export class StaffService {
     const org = await db.organisation.findFirst({ select: { salaryRules: true } });
     const rules = parseSalaryRules(org?.salaryRules);
     const users = await this.repo.listUsers();
-    const foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[] = [];
+    const foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; salaryBreakdown: { baseSen: number; commissionSen: number; addonBonusSen: number }; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[] = [];
 
     for (const u of users) {
       const jobs = u.jobs.filter((j) => j.status === "COMPLETED" && j.completedAt && j.completedAt >= start && j.completedAt < end);
@@ -94,6 +101,7 @@ export class StaffService {
         avgTicketSen: jobs.length ? Math.round(totalSales / jobs.length) : 0,
         addonJobs: addonJobs.size, hours: Math.round(hours * 10) / 10,
         salarySen: calcSalary(rules, jobs.length, totalSales, addonJobs.size),
+        salaryBreakdown: calcSalaryBreakdown(rules, jobs.length, totalSales, addonJobs.size),
         jobsList: jobs.map((j) => ({ id: j.id, jobNumber: j.jobNumber, serviceType: j.packageName ?? j.customerRequest ?? "", packageName: j.packageName, completedAt: j.completedAt!, salesSen: salesByJob.get(j.id) ?? 0 })).sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime()),
       });
     }
