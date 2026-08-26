@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Wallet, Clock } from "lucide-react";
+import { Home, Wallet, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ITEMS = [
   { href: "/mechanic-app", label: "Orders", icon: Home },
   { href: "/mechanic-app/earnings", label: "Earnings", icon: Wallet },
-  { href: "/workshop/attendance", label: "Attendance", icon: Clock },
+  { href: "/mechanic-app/profile", label: "Profile", icon: User },
 ];
 
 /** Mechanic App 底部导航（Grab 风格，active 高亮 + safe-area）。 */
