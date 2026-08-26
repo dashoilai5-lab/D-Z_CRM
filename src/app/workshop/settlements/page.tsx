@@ -1,16 +1,13 @@
 import Link from "next/link";
-import { Bike } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { SalaryRulesForm } from "@/components/workshop/salary-rules-form";
 import { ForemanPayoutView } from "@/components/workshop/foreman-payout-view";
 import { staffService } from "@/modules/staff/service";
-import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { formatRM } from "@/lib/money";
 import { fmtDate, fmtDateTime } from "@/lib/format";
-import { periodWindow } from "@/lib/period";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +18,7 @@ const DAY_FILTERS = [
   { key: "30", label: "30 days & above", days: 30 },
 ];
 
-/** Foreman 发薪中心 + 每日服务车辆：先点技师发薪；下方按天看当天服务的车。 */
+/** Foreman 发薪中心：点技师 → 每日账单（含他完成的 job 明细）→ tick 发薪；时间 filter + 历史。 */
 export default async function SettlementsPage({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
   const lang = await getLang();
   const sp = await searchParams;
@@ -31,27 +28,6 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
   const days = DAY_FILTERS.some((f) => f.key === sp.days) ? Number(sp.days) : 7;
   const [result, history] = await Promise.all([staffService.settlementByDay(days), staffService.payoutHistory()]);
   const foremen = isMechanic && session.user ? result.foremen.filter((f) => f.id === session.user!.id) : result.foremen;
-
-  // 每日服务车辆（窗口内完成工单，按 +8 日分组）
-  const window = periodWindow("day", result.end);
-  const vehiclesStart = new Date(window.start.getTime() - (days - 1) * 86400000);
-  const jobs = await db.serviceJob.findMany({
-    where: { status: "COMPLETED", completedAt: { gte: vehiclesStart, lt: result.end } },
-    include: { motorcycle: { select: { plate: true, brand: true, model: true } }, customer: { select: { name: true } } },
-    orderBy: { completedAt: "asc" },
-  });
-  const jobIds = jobs.map((j) => j.id);
-  const invs = jobIds.length ? await db.invoice.findMany({ where: { jobId: { in: jobIds } }, select: { jobId: true, totalSen: true } }) : [];
-  const salesByJob = new Map<string, number>();
-  for (const inv of invs) if (inv.jobId) salesByJob.set(inv.jobId, (salesByJob.get(inv.jobId) ?? 0) + inv.totalSen);
-  const dayVehicles = new Map<string, { plate: string; customer: string; service: string; salesSen: number; jobId: string }[]>();
-  for (const j of jobs) {
-    const key = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(j.completedAt!);
-    const arr = dayVehicles.get(key) ?? [];
-    arr.push({ plate: j.motorcycle.plate, customer: j.customer.name, service: j.packageName ?? "", salesSen: salesByJob.get(j.id) ?? 0, jobId: j.id });
-    dayVehicles.set(key, arr);
-  }
-  const daysList = [...dayVehicles.entries()].sort((a, b) => a[0].localeCompare(b[0]));
 
   const qs = (d: string) => "/workshop/settlements?days=" + d;
 
@@ -76,38 +52,14 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
             {f.label}
           </Link>
         ))}
-        <span className="text-xs text-muted-foreground ml-auto">{fmtDate(vehiclesStart)} – {fmtDate(result.end)}</span>
+        <span className="text-xs text-muted-foreground ml-auto">{fmtDate(result.start)} – {fmtDate(result.end)}</span>
       </div>
 
-      {/* 每日服务车辆 */}
-      <div className="rounded-2xl border bg-card p-4 mb-4">
-        <h3 className="font-semibold mb-3">Daily services</h3>
-        {daysList.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No services in this period.</p>}
-        <div className="space-y-3">
-          {daysList.map(([day, vehicles]) => (
-            <div key={day}>
-              <div className="mb-1.5 text-xs font-semibold text-muted-foreground">{fmtDate(new Date(day + "T00:00:00Z"))} · {vehicles.length} bike{vehicles.length > 1 ? "s" : ""}</div>
-              <div className="space-y-1">
-                {vehicles.map((v) => (
-                  <Link key={v.jobId} href={"/workshop/jobs/" + v.jobId} className="flex items-center gap-2 rounded-lg bg-muted/40 px-3 py-2 text-xs hover:bg-muted/70">
-                    <Bike className="h-3.5 w-3.5 shrink-0 text-primary" />
-                    <span className="font-mono font-semibold">{v.plate}</span>
-                    <span className="text-muted-foreground">{v.customer}</span>
-                    <span className="text-muted-foreground">{v.service}</span>
-                    <span className="ml-auto font-bold tabular-nums">{formatRM(v.salesSen)}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* foreman 中心发薪 */}
+      {/* foreman 中心发薪（每日账单含 job 明细） */}
       <ForemanPayoutView
         foremen={foremen.map((f) => ({
           id: f.id, name: f.name, totalJobs: f.totalJobs, totalSalesSen: f.totalSalesSen, totalSen: f.totalSen,
-          daily: f.daily.map((b) => ({ date: b.date, jobs: b.jobs, salesSen: b.salesSen, baseSen: b.baseSen, commissionSen: b.commissionSen, addonBonusSen: b.addonBonusSen, totalSen: b.totalSen, payoutStatus: b.payout?.status ?? null, paidSen: b.payout?.paidSen ?? 0 })),
+          daily: f.daily.map((b) => ({ date: b.date, jobs: b.jobs, salesSen: b.salesSen, baseSen: b.baseSen, commissionSen: b.commissionSen, addonBonusSen: b.addonBonusSen, totalSen: b.totalSen, payoutStatus: b.payout?.status ?? null, paidSen: b.payout?.paidSen ?? 0, jobsList: b.jobsList })),
         }))}
         lang={lang}
       />

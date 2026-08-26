@@ -184,7 +184,8 @@ export class StaffService {
     start: Date; end: Date; rules: SalaryRules;
     foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number;
       daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number;
-        payout: { status: string; paidSen: number; paidAt: Date | null } | null }[] }[];
+        payout: { status: string; paidSen: number; paidAt: Date | null } | null;
+        jobsList: { jobId: string; jobNumber: string; serviceType: string; plate: string; customer: string; salesSen: number }[] }[] }[];
   }> {
     const base = ref ?? new Date();
     const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(base).split("-").map(Number);
@@ -196,7 +197,7 @@ export class StaffService {
     const org = await db.organisation.findFirst({ select: { salaryRules: true } });
     const rules = parseSalaryRules(org?.salaryRules);
     const users = await this.repo.listUsers();
-    const foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number; daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number; payout: { status: string; paidSen: number; paidAt: Date | null } | null }[] }[] = [];
+    const foremen: { id: string; name: string; totalSen: number; totalJobs: number; totalSalesSen: number; daily: { date: Date; jobs: number; salesSen: number; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number; payout: { status: string; paidSen: number; paidAt: Date | null } | null; jobsList: { jobId: string; jobNumber: string; serviceType: string; plate: string; customer: string; salesSen: number }[] }[] }[] = [];
 
     for (const u of users) {
       const jobs = u.jobs.filter((j) => j.status === "COMPLETED" && j.completedAt && j.completedAt >= start && j.completedAt < end);
@@ -211,6 +212,13 @@ export class StaffService {
       const addonJobs = new Set<string>();
       for (const it of items) if (it.source === "COUNTER" || it.source === "APPROVAL") addonJobs.add(it.jobId);
       const addonJobIds = new Set<string>(jobIds.filter((id) => addonJobs.has(id)));
+
+      // 该 foreman 窗口内完成工单明细（车辆/客户）
+      const jobDetails = await db.serviceJob.findMany({
+        where: { id: { in: jobIds } },
+        include: { motorcycle: { select: { plate: true } }, customer: { select: { name: true } } },
+      });
+      const detailByJob = new Map(jobDetails.map((j) => [j.id, j]));
 
       // 按天分组
       const byDay = new Map<string, { date: Date; jobs: string[]; salesSen: number; addonCount: number }>();
@@ -236,6 +244,11 @@ export class StaffService {
           salesSen: day.salesSen,
           baseSen: bd.baseSen, commissionSen: bd.commissionSen, addonBonusSen: bd.addonBonusSen, totalSen: bd.total,
           payout: payout ? { status: payout.status, paidSen: payout.payments.reduce((s2, p) => s2 + p.amountSen, 0), paidAt: payout.paidAt } : null,
+          jobsList: day.jobs.map((jid) => {
+            const det = detailByJob.get(jid);
+            const job = jobs.find((j) => j.id === jid);
+            return { jobId: jid, jobNumber: job?.jobNumber ?? "", serviceType: job?.packageName ?? job?.customerRequest ?? "", plate: det?.motorcycle.plate ?? "", customer: det?.customer.name ?? "", salesSen: salesByJob.get(jid) ?? 0 };
+          }),
         });
       }
       foremen.push({

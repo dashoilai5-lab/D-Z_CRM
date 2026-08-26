@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 import { CheckSquare, ChevronDown, Square, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ export interface DailyBill {
   totalSen: number;
   payoutStatus: string | null;
   paidSen: number;
+  jobsList: { jobId: string; jobNumber: string; serviceType: string; plate: string; customer: string; salesSen: number }[];
 }
 
 export interface ForemanBill {
@@ -38,12 +40,13 @@ export interface ForemanBill {
 
 const METHODS = ["CASH", "BANK_TRANSFER", "EWALLET", "CARD"];
 
-/** Foreman 中心发薪：先点技师 → 展开每日账单 → tick 选择 → 批量发薪 / 分期。 */
+/** Foreman 中心发薪：点技师 → 展开每日账单（含当天完成的具体 job）→ tick 发薪。 */
 export function ForemanPayoutView({ foremen, lang }: { foremen: ForemanBill[]; lang: Lang }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [openForeman, setOpenForeman] = useState<string | null>(null);
+  const [openDay, setOpenDay] = useState<string | null>(null);
   const [payFor, setPayFor] = useState<{ userId: string; name: string; date: Date; baseSen: number; commissionSen: number; addonBonusSen: number; totalSen: number; paidSen: number } | null>(null);
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("CASH");
@@ -110,26 +113,48 @@ export function ForemanPayoutView({ foremen, lang }: { foremen: ForemanBill[]; l
                     const k = key(f.id, b.date);
                     const paid = b.payoutStatus === "PAID";
                     const partial = b.payoutStatus === "PARTIAL";
+                    const dayOpen = openDay === k;
                     return (
-                      <div key={k} className={"flex items-center gap-3 px-4 py-2.5 " + (paid ? "opacity-60" : "")}>
-                        <button type="button" onClick={() => toggle(k)} aria-label="select" className="shrink-0">
-                          {selected.has(k) ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5 text-muted-foreground/50" />}
-                        </button>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium">{fmtDate(b.date)}</div>
-                          <div className="text-[11px] text-muted-foreground">{b.jobs} jobs · {formatRM(b.salesSen)} · {t("payout.base", lang)} {formatRM(b.baseSen)} · {t("payout.commission", lang)} {formatRM(b.commissionSen)}</div>
+                      <div key={k} className={paid ? "opacity-60" : ""}>
+                        {/* 账单行 */}
+                        <div className="flex items-center gap-3 px-4 py-2.5">
+                          <button type="button" onClick={() => toggle(k)} aria-label="select" className="shrink-0">
+                            {selected.has(k) ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5 text-muted-foreground/50" />}
+                          </button>
+                          <button type="button" onClick={() => setOpenDay(dayOpen ? null : k)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                            <div className="min-w-0 flex-1">
+                              <div className="text-sm font-medium">{fmtDate(b.date)} · {b.jobs} job{b.jobs > 1 ? "s" : ""}</div>
+                              <div className="text-[11px] text-muted-foreground">{t("payout.base", lang)} {formatRM(b.baseSen)} · {t("payout.commission", lang)} {formatRM(b.commissionSen)}</div>
+                            </div>
+                            <div className="text-right">
+                              <div className={"text-sm font-bold tabular-nums " + (paid ? "" : "text-primary")}>{formatRM(b.totalSen)}</div>
+                              {partial && <div className="text-[10px] text-amber-600 dark:text-amber-400">{t("inv.remaining", lang)} {formatRM(b.totalSen - b.paidSen)}</div>}
+                            </div>
+                            <ChevronDown className={"h-3.5 w-3.5 text-muted-foreground transition-transform " + (dayOpen ? "rotate-180" : "")} />
+                          </button>
+                          <span className={"shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold " + (paid ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : partial ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")}>
+                            {paid ? t("payout.paid", lang) : partial ? t("payout.partial", lang) : t("payout.unpaid", lang)}
+                          </span>
+                          {!paid && (
+                            <Button size="sm" variant="outline" className="shrink-0" onClick={() => { setPayFor({ userId: f.id, name: f.name, date: b.date, baseSen: b.baseSen, commissionSen: b.commissionSen, addonBonusSen: b.addonBonusSen, totalSen: b.totalSen, paidSen: b.paidSen }); setAmount(String((b.totalSen - b.paidSen) / 100)); setMethod("CASH"); }}>
+                              {t("payout.pay", lang)}
+                            </Button>
+                          )}
                         </div>
-                        <div className="text-right">
-                          <div className={"text-sm font-bold tabular-nums " + (paid ? "" : "text-primary")}>{formatRM(b.totalSen)}</div>
-                          {partial && <div className="text-[10px] text-amber-600 dark:text-amber-400">{t("inv.remaining", lang)} {formatRM(b.totalSen - b.paidSen)}</div>}
-                        </div>
-                        <span className={"shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold " + (paid ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : partial ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")}>
-                          {paid ? t("payout.paid", lang) : partial ? t("payout.partial", lang) : t("payout.unpaid", lang)}
-                        </span>
-                        {!paid && (
-                          <Button size="sm" variant="outline" className="shrink-0" onClick={() => { setPayFor({ userId: f.id, name: f.name, date: b.date, baseSen: b.baseSen, commissionSen: b.commissionSen, addonBonusSen: b.addonBonusSen, totalSen: b.totalSen, paidSen: b.paidSen }); setAmount(String((b.totalSen - b.paidSen) / 100)); setMethod("CASH"); }}>
-                            {t("payout.pay", lang)}
-                          </Button>
+                        {/* 该 foreman 当天完成的具体 job */}
+                        {dayOpen && (
+                          <div className="mx-4 mb-2.5 rounded-xl bg-muted/40 p-2.5">
+                            {b.jobsList.length === 0 && <p className="text-[11px] text-muted-foreground px-1">No jobs.</p>}
+                            {b.jobsList.map((j) => (
+                              <Link key={j.jobId} href={"/workshop/jobs/" + j.jobId} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] hover:bg-muted/70">
+                                <span className="font-mono font-semibold text-primary">{j.jobNumber}</span>
+                                <span className="font-medium">{j.plate}</span>
+                                <span className="text-muted-foreground">{j.customer}</span>
+                                <span className="text-muted-foreground truncate">{j.serviceType}</span>
+                                <span className="ml-auto font-bold tabular-nums">{formatRM(j.salesSen)}</span>
+                              </Link>
+                            ))}
+                          </div>
                         )}
                       </div>
                     );
