@@ -814,6 +814,18 @@ export const DICT: Dict = {
   "payout.confirm": { en: "Confirm payment", zh: "确认支付", ms: "Sahkan bayaran" },
   "payout.payment-added": { en: "Payout payment recorded", zh: "分期支付已记录", ms: "Bayaran direkod" },
   "nav.payouts": { en: "Payouts", zh: "发薪", ms: "Bayaran" },
+  "nav.attendance": { en: "Attendance", zh: "考勤", ms: "Kehadiran" },
+  "att.title": { en: "Mechanic Attendance", zh: "技师考勤", ms: "Kehadiran Mekanik" },
+  "att.subtitle": { en: "Check in / out — see who is available today", zh: "打卡上下班——查看今日可用技师", ms: "Check in / out — lihat siapa yang tersedia hari ini" },
+  "att.check-in": { en: "Check in", zh: "打卡上班", ms: "Check in" },
+  "att.check-out": { en: "Check out", zh: "打卡下班", ms: "Check out" },
+  "att.on-duty": { en: "ON DUTY", zh: "在班", ms: "BERTUGAS" },
+  "att.checked-out": { en: "Checked out", zh: "已下班", ms: "Check out" },
+  "att.not-checked": { en: "Not checked in", zh: "未打卡", ms: "Belum check in" },
+  "att.you": { en: "You", zh: "你", ms: "Anda" },
+  "att.no-mechanics": { en: "No mechanics found.", zh: "暂无技师。", ms: "Tiada mekanik." },
+  "att.checked-in-at": { en: "In {time}", zh: "上班 {time}", ms: "Masuk {time}" },
+  "att.checked-out-at": { en: "Out {time}", zh: "下班 {time}", ms: "Keluar {time}" },
 
 };
 
