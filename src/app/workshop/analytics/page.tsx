@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { salesAnalytics, serviceAnalytics, customerAnalytics, revenueAnalytics, inventoryAnalytics, branchComparison, monthlyServiceAnalytics, brandAnalytics } from "@/modules/analytics/service";
 import { AnalyticsTabs } from "@/components/workshop/analytics-tabs";
@@ -6,23 +7,47 @@ import { PageTransition } from "@/components/shared/page-transition";
 
 export const dynamic = "force-dynamic";
 
-export default async function AnalyticsPage() {
+const PERIODS = [
+  { key: "7", label: "7 days", days: 7 },
+  { key: "30", label: "30 days", days: 30 },
+  { key: "90", label: "90 days", days: 90 },
+  { key: "365", label: "12 months", days: 365 },
+];
+
+export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
+  const sp = await searchParams;
+  const days = PERIODS.some((p) => p.key === sp.days) ? Number(sp.days) : 30;
+  const months = Math.max(1, Math.ceil(days / 30)); // 月度视图按月数对齐 filter
+
   const org = await db.organisation.findFirst();
   const orgId = org!.id;
   const [sales, service, customers, revenue, inventory, branches, monthly, brands] = await Promise.all([
-    salesAnalytics(orgId), serviceAnalytics(orgId), customerAnalytics(orgId), revenueAnalytics(orgId), inventoryAnalytics(orgId), branchComparison(orgId),
-    monthlyServiceAnalytics(orgId), brandAnalytics(orgId),
+    salesAnalytics(orgId, days), serviceAnalytics(orgId, days), customerAnalytics(orgId, days), revenueAnalytics(orgId, days), inventoryAnalytics(orgId), branchComparison(orgId),
+    monthlyServiceAnalytics(orgId, months), brandAnalytics(orgId, days),
   ]);
   const maxMonth = Math.max(...monthly.map((m) => m.count), 1);
   const maxBrand = Math.max(...brands.map((b) => b.count), 1);
 
+  const qs = (d: string) => "/workshop/analytics?days=" + d;
+
   return (
     <PageTransition>
     <div className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold">Analytics</h1>
-        <p className="text-sm text-muted-foreground">Last 30 days · consistent calculation rules with the dashboard (ANA-051)</p>
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Analytics</h1>
+          <p className="text-sm text-muted-foreground">Consistent calculation rules with the dashboard (ANA-051)</p>
+        </div>
+        {/* 时间 filter */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          {PERIODS.map((p) => (
+            <Link key={p.key} href={qs(p.key)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (days === p.days ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
+              {p.label}
+            </Link>
+          ))}
+        </div>
       </div>
+
       <AnalyticsTabs
         sales={sales}
         service={service}
@@ -35,7 +60,7 @@ export default async function AnalyticsPage() {
       {/* 月度服务量 */}
       <div className="rounded-2xl border bg-card p-5">
         <h3 className="font-semibold mb-1">Monthly services</h3>
-        <p className="text-xs text-muted-foreground mb-4">Completed jobs & unique motorcycles per month (last 12 months)</p>
+        <p className="text-xs text-muted-foreground mb-4">Completed jobs & unique motorcycles per month (last {months} month{months > 1 ? "s" : ""})</p>
         <div className="space-y-2">
           {monthly.map((m) => (
             <div key={m.key} className="flex items-center gap-3 text-xs">
@@ -54,7 +79,7 @@ export default async function AnalyticsPage() {
       {/* 品牌分析 */}
       <div className="rounded-2xl border bg-card p-5">
         <h3 className="font-semibold mb-1">Brand analysis</h3>
-        <p className="text-xs text-muted-foreground mb-4">Services by motorcycle brand (last 12 months)</p>
+        <p className="text-xs text-muted-foreground mb-4">Services by motorcycle brand (last {days} days)</p>
         {brands.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No data.</p>}
         <div className="space-y-3">
           {brands.map((b) => (
