@@ -57,7 +57,7 @@ test.describe("master journey", () => {
     await expect(page.getByText("Chain Adjustment", { exact: false }).first()).toBeVisible();
     await expect(page.getByText("Yamaha Genuine Oil Filter", { exact: false }).first()).toBeVisible();
     await expect(page.getByText("RM165", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText("PAID", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("ISSUED", { exact: true }).first()).toBeVisible(); // 待 workshop 结清
 
     // 8. Rider home shows the new next-service prediction
     await page.goto(BASE_URL + "/rider/home");

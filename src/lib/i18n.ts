@@ -767,6 +767,27 @@ export const DICT: Dict = {
   "settle.rules-saved": { en: "Salary rules saved", zh: "薪资规则已保存", ms: "Peraturan gaji disimpan" },
   "settle.rules-hint": { en: "Est. salary = base + commission (per job / % of service value) + add-on bonus", zh: "预估薪资 = 底薪 + 提成（每单 / 服务金额 %）+ 附加工单奖励", ms: "Anggaran gaji = asas + komisen (setiap kerja / % nilai servis) + bonus tambahan" },
 
+  // --- workshop invoices ---
+  "nav.invoices": { en: "Invoices", zh: "发票", ms: "Invois" },
+  "inv.title": { en: "Invoices", zh: "发票", ms: "Invois" },
+  "inv.subtitle": { en: "Tick to settle — bulk confirm or split payments", zh: "勾选结清——批量确认或分单收款", ms: "Tandakan untuk settle — sahkan pukal atau bayaran berasingan" },
+  "inv.unpaid": { en: "Unpaid", zh: "待结清", ms: "Belum bayar" },
+  "inv.all": { en: "All", zh: "全部", ms: "Semua" },
+  "inv.paid": { en: "Paid", zh: "已结清", ms: "Dibayar" },
+  "inv.settle-selected": { en: "Settle selected ({n})", zh: "结清选中（{n}）", ms: "Settle pilihan ({n})" },
+  "inv.select-all": { en: "Select all", zh: "全选", ms: "Pilih semua" },
+  "inv.remaining": { en: "Remaining", zh: "未结", ms: "Baki" },
+  "inv.receive": { en: "Receive payment", zh: "收款", ms: "Terima bayaran" },
+  "inv.amount": { en: "Amount (RM)", zh: "金额（RM）", ms: "Jumlah (RM)" },
+  "inv.method": { en: "Method", zh: "方式", ms: "Kaedah" },
+  "inv.pay": { en: "Confirm payment", zh: "确认收款", ms: "Sahkan bayaran" },
+  "inv.settled": { en: "{n} invoice(s) settled", zh: "已结清 {n} 张发票", ms: "{n} invois diselesaikan" },
+  "inv.payment-added": { en: "Payment recorded", zh: "收款已记录", ms: "Bayaran direkod" },
+  "inv.empty": { en: "No invoices.", zh: "暂无发票。", ms: "Tiada invois." },
+  "inv.customer": { en: "Customer", zh: "客户", ms: "Pelanggan" },
+  "inv.date": { en: "Date", zh: "日期", ms: "Tarikh" },
+  "inv.total": { en: "Total", zh: "总额", ms: "Jumlah" },
+
 };
 
 export function t(key: string, lang: Lang): string {

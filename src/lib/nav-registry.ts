@@ -7,7 +7,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard, Users, UserCheck, BellRing, CalendarClock, Wrench, ClipboardList, ListChecks, Package,
   Store, Megaphone, MessageSquare, Star, Users2, Gauge, Boxes, AlertTriangle, Archive, RefreshCw,
-  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike, Bell, Upload, Plug, ShieldCheck,
+  ShoppingCart, Truck, Wallet, Sparkles, Settings, Filter, Kanban, Timer, ListTodo, Bike, Bell, Upload, Plug, ShieldCheck, ReceiptText,
 } from "lucide-react";
 // 工作台导航分组（从真实 Role 映射，生产权限模型——非 demo）。
 export type WorkshopPersona = "OWNER" | "COUNTER_STAFF" | "MECHANIC" | "CUSTOMER";
@@ -121,7 +121,10 @@ export const NAV_SECTIONS: readonly NavSection[] = [
   },
   {
     section: "FINANCE",
-    items: [{ key: "profit", label: "Profit Dashboard", labelKey: "nav.profit", href: "/workshop/finance/profit", icon: Wallet, module: "FINANCE", access: ["OWNER"] }],
+    items: [
+      { key: "invoices", label: "Invoices", labelKey: "nav.invoices", href: "/workshop/finance/invoices", icon: ReceiptText, module: "FINANCE", access: ["OWNER", "COUNTER_STAFF"] },
+      { key: "profit", label: "Profit Dashboard", labelKey: "nav.profit", href: "/workshop/finance/profit", icon: Wallet, module: "FINANCE", access: ["OWNER"] },
+    ],
   },
   {
     section: "AI CENTRE",
