@@ -24,7 +24,9 @@ export function AttendancePanel({ mechanics, currentUserId, lang }: { mechanics:
   const [pending, start] = useTransition();
 
   const me = mechanics.find((m) => m.id === currentUserId);
-  const onDuty = me && me.checkInAt && !me.checkOutAt;
+  const lastIn = me && me.checkInAt ? new Date(me.checkInAt) : null;
+  const lastOut = me && me.checkOutAt ? new Date(me.checkOutAt) : null;
+  const onDuty = !!lastIn && (!lastOut || lastIn > lastOut); // 最后动作判定
   const today = new Date();
 
   const doCheckIn = () => start(async () => {
@@ -39,8 +41,8 @@ export function AttendancePanel({ mechanics, currentUserId, lang }: { mechanics:
   });
 
   const sorted = [...mechanics].sort((a, b) => {
-    const aOn = a.checkInAt && !a.checkOutAt ? 1 : 0;
-    const bOn = b.checkInAt && !b.checkOutAt ? 1 : 0;
+    const aOn = a.checkInAt && (!a.checkOutAt || new Date(a.checkInAt) > new Date(a.checkOutAt)) ? 1 : 0;
+    const bOn = b.checkInAt && (!b.checkOutAt || new Date(b.checkInAt) > new Date(b.checkOutAt)) ? 1 : 0;
     if (aOn !== bOn) return bOn - aOn;
     return a.name.localeCompare(b.name);
   });
@@ -75,7 +77,7 @@ export function AttendancePanel({ mechanics, currentUserId, lang }: { mechanics:
         {sorted.length === 0 && <div className="p-8 text-center text-sm text-muted-foreground">{t("att.no-mechanics", lang)}</div>}
         <div className="divide-y divide-border/60">
           {sorted.map((m) => {
-            const on = m.checkInAt && !m.checkOutAt;
+            const on = !!m.checkInAt && (!m.checkOutAt || new Date(m.checkInAt) > new Date(m.checkOutAt));
             return (
               <div key={m.id} className={"flex items-center gap-3 px-4 py-3 " + (on ? "" : "opacity-70")}>
                 <div className="h-9 w-9 shrink-0 rounded-xl bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold">{m.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()}</div>

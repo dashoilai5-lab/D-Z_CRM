@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { getSessionUser } from "@/lib/session-user";
 
 export interface PayoutDraft {
   userId: string;
@@ -13,28 +14,59 @@ export interface PayoutDraft {
   totalSen: number;
 }
 
-/** 批量发薪（tick 结清）：为每个 foreman 创建/更新 StaffPayout → PAID + 全额 payment。 */
+/** 发起发薪（workshop tick）：创建/更新 StaffPayout → PENDING（待 mechanic 确认收款后才出粮）。 */
 export async function settlePayouts(items: PayoutDraft[]) {
   const list = items.filter((i) => i.totalSen > 0);
   if (list.length === 0) return { ok: false as const, error: "Nothing to settle" };
   for (const it of list) {
-    const payout = await db.staffPayout.upsert({
+    const existing = await db.staffPayout.findUnique({
+      where: { userId_period_periodStart: { userId: it.userId, period: it.period, periodStart: it.periodStart } },
+      include: { payments: { select: { amountSen: true } } },
+    });
+    const paidSen = existing?.payments.reduce((s, p) => s + p.amountSen, 0) ?? 0;
+    if (existing?.status === "PAID" && paidSen >= it.totalSen) continue; // 已出粮
+    await db.staffPayout.upsert({
       where: { userId_period_periodStart: { userId: it.userId, period: it.period, periodStart: it.periodStart } },
       create: {
         userId: it.userId, period: it.period, periodStart: it.periodStart,
         baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, totalSen: it.totalSen,
-        status: "PAID", paidAt: new Date(),
-        payments: { create: { amountSen: it.totalSen, method: "CASH", paidAt: new Date() } },
+        status: "PENDING", // 待 mechanic 确认
       },
-      update: { baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, totalSen: it.totalSen, status: "PAID", paidAt: new Date() },
+      update: { baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, totalSen: it.totalSen, status: paidSen >= it.totalSen ? existing?.status ?? "PENDING" : "PENDING" },
     });
-    const paidSum = await db.staffPayoutPayment.aggregate({ where: { payoutId: payout.id }, _sum: { amountSen: true } });
-    if ((paidSum._sum.amountSen ?? 0) < it.totalSen) {
-      await db.staffPayoutPayment.create({ data: { payoutId: payout.id, amountSen: it.totalSen - (paidSum._sum.amountSen ?? 0), method: "CASH", paidAt: new Date() } });
-    }
   }
   revalidatePath("/workshop/settlements");
   return { ok: true as const, settled: list.length };
+}
+
+/** Mechanic 同意收款（双向确认第 1 步）：PENDING → MECHANIC_APPROVED（不建 payment，等 workshop 最终 agree）。 */
+export async function mechanicApprovePayout(payoutId: string) {
+  const session = await getSessionUser();
+  if (session.kind !== "staff" || !session.user || session.role !== "MECHANIC") return { ok: false as const, error: "Mechanic access required" };
+  const payout = await db.staffPayout.findUnique({ where: { id: payoutId }, select: { id: true, userId: true, status: true } });
+  if (!payout || payout.userId !== session.user.id) return { ok: false as const, error: "Not your payout" };
+  if (payout.status !== "PENDING") return { ok: false as const, error: "Not awaiting your approval" };
+
+  await db.staffPayout.update({ where: { id: payout.id }, data: { status: "MECHANIC_APPROVED" } });
+  revalidatePath("/mechanic-app/profile");
+  revalidatePath("/mechanic-app/earnings");
+  revalidatePath("/workshop/settlements");
+  return { ok: true as const };
+}
+
+/** Workshop 最终同意出粮（双向确认第 2 步）：MECHANIC_APPROVED → PAID + payment（CASH/QR）。 */
+export async function agreePayout(payoutId: string, method: string) {
+  const session = await getSessionUser();
+  if (session.kind !== "staff" || !session.user || session.role === "MECHANIC") return { ok: false as const, error: "Owner/manager access required" };
+  const payout = await db.staffPayout.findUnique({ where: { id: payoutId }, select: { id: true, totalSen: true, status: true } });
+  if (!payout) return { ok: false as const, error: "Payout not found" };
+  if (payout.status === "PAID") return { ok: false as const, error: "Already paid" };
+
+  await db.staffPayoutPayment.create({ data: { payoutId: payout.id, amountSen: payout.totalSen, method, paidAt: new Date() } });
+  await db.staffPayout.update({ where: { id: payout.id }, data: { status: "PAID", paidAt: new Date() } });
+  revalidatePath("/workshop/settlements");
+  revalidatePath("/mechanic-app/profile");
+  return { ok: true as const };
 }
 
 /** Split 分期发薪：为某 foreman 的周期薪资加一笔支付；累计满额自动 PAID。 */
