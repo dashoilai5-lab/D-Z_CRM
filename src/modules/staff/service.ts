@@ -49,7 +49,7 @@ export class StaffService {
   async settlement(period: "day" | "week" | "month", ref?: Date): Promise<{
     period: string; start: Date; end: Date;
     rules: SalaryRules;
-    foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; salaryBreakdown: { baseSen: number; commissionSen: number; addonBonusSen: number }; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[];
+    foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; salaryBreakdown: { baseSen: number; commissionSen: number; addonBonusSen: number }; payout: { status: string; paidSen: number; paidAt: Date | null } | null; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[];
     totals: { jobs: number; salesSen: number; hours: number; salarySen: number };
   }> {
     // +8 业务时区（Asia/Kuala_Lumpur）的周期窗口 → UTC 边界
@@ -75,7 +75,7 @@ export class StaffService {
     const org = await db.organisation.findFirst({ select: { salaryRules: true } });
     const rules = parseSalaryRules(org?.salaryRules);
     const users = await this.repo.listUsers();
-    const foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; salaryBreakdown: { baseSen: number; commissionSen: number; addonBonusSen: number }; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[] = [];
+    const foremen: { id: string; name: string; jobs: number; salesSen: number; avgTicketSen: number; addonJobs: number; hours: number; salarySen: number; salaryBreakdown: { baseSen: number; commissionSen: number; addonBonusSen: number }; payout: { status: string; paidSen: number; paidAt: Date | null } | null; jobsList: { id: string; jobNumber: string; serviceType: string; packageName: string | null; completedAt: Date; salesSen: number }[] }[] = [];
 
     for (const u of users) {
       const jobs = u.jobs.filter((j) => j.status === "COMPLETED" && j.completedAt && j.completedAt >= start && j.completedAt < end);
@@ -96,12 +96,18 @@ export class StaffService {
         return s2 + Math.max(0, (endT.getTime() - startT.getTime()) / 3600000);
       }, 0);
 
+      const payout = await db.staffPayout.findUnique({
+        where: { userId_period_periodStart: { userId: u.id, period, periodStart: start } },
+        include: { payments: { select: { amountSen: true } } },
+      });
+      const paidSen = payout?.payments.reduce((s2, p) => s2 + p.amountSen, 0) ?? 0;
       foremen.push({
         id: u.id, name: u.name, jobs: jobs.length, salesSen: totalSales,
         avgTicketSen: jobs.length ? Math.round(totalSales / jobs.length) : 0,
         addonJobs: addonJobs.size, hours: Math.round(hours * 10) / 10,
         salarySen: calcSalary(rules, jobs.length, totalSales, addonJobs.size),
         salaryBreakdown: calcSalaryBreakdown(rules, jobs.length, totalSales, addonJobs.size),
+        payout: payout ? { status: payout.status, paidSen, paidAt: payout.paidAt } : null,
         jobsList: jobs.map((j) => ({ id: j.id, jobNumber: j.jobNumber, serviceType: j.packageName ?? j.customerRequest ?? "", packageName: j.packageName, completedAt: j.completedAt!, salesSen: salesByJob.get(j.id) ?? 0 })).sort((a, b) => b.completedAt.getTime() - a.completedAt.getTime()),
       });
     }
@@ -171,6 +177,21 @@ export class StaffService {
     }
     const sorted = staff.sort((a, b) => b.score - a.score);
     return { staff: sorted, top: sorted[0] ?? null };
+  }
+
+  /** 发薪历史：全部 StaffPayout（含分期 payment），按发薪时间倒序。 */
+  async payoutHistory() {
+    const payouts = await db.staffPayout.findMany({
+      include: { user: { select: { name: true } }, payments: { select: { amountSen: true, method: true, paidAt: true } } },
+      orderBy: { paidAt: "desc" },
+      take: 200,
+    });
+    return payouts.map((p) => ({
+      id: p.id, name: p.user.name, period: p.period, periodStart: p.periodStart,
+      baseSen: p.baseSen, commissionSen: p.commissionSen, addonBonusSen: p.addonBonusSen, totalSen: p.totalSen,
+      status: p.status, paidAt: p.paidAt, paidSen: p.payments.reduce((s, x) => s + x.amountSen, 0),
+      payments: p.payments.map((x) => ({ amountSen: x.amountSen, method: x.method, paidAt: x.paidAt })),
+    }));
   }
 }
 

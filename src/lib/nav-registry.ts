@@ -122,7 +122,6 @@ export const NAV_SECTIONS: readonly NavSection[] = [
   {
     section: "FINANCE",
     items: [
-      { key: "payouts", label: "Payouts", labelKey: "nav.payouts", href: "/workshop/finance/invoices", icon: ReceiptText, module: "FINANCE", access: ["OWNER"] },
       { key: "profit", label: "Profit Dashboard", labelKey: "nav.profit", href: "/workshop/finance/profit", icon: Wallet, module: "FINANCE", access: ["OWNER"] },
     ],
   },

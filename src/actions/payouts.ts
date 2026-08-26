@@ -28,13 +28,12 @@ export async function settlePayouts(items: PayoutDraft[]) {
       },
       update: { baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, totalSen: it.totalSen, status: "PAID", paidAt: new Date() },
     });
-    // 若已是 PAID 且新 payment 未创建（update 分支），补一笔全额（幂等：先删 PENDING 再补）
     const paidSum = await db.staffPayoutPayment.aggregate({ where: { payoutId: payout.id }, _sum: { amountSen: true } });
     if ((paidSum._sum.amountSen ?? 0) < it.totalSen) {
       await db.staffPayoutPayment.create({ data: { payoutId: payout.id, amountSen: it.totalSen - (paidSum._sum.amountSen ?? 0), method: "CASH", paidAt: new Date() } });
     }
   }
-  revalidatePath("/workshop/finance/invoices");
+  revalidatePath("/workshop/settlements");
   return { ok: true as const, settled: list.length };
 }
 
@@ -56,6 +55,6 @@ export async function addPayoutPayment(input: { userId: string; period: string; 
   const paid = await db.staffPayoutPayment.aggregate({ where: { payoutId: payout.id }, _sum: { amountSen: true } });
   const status = (paid._sum.amountSen ?? 0) >= input.totalSen ? "PAID" : "PARTIAL";
   await db.staffPayout.update({ where: { id: payout.id }, data: { status, paidAt: status === "PAID" ? new Date() : null } });
-  revalidatePath("/workshop/finance/invoices");
+  revalidatePath("/workshop/settlements");
   return { ok: true as const };
 }
