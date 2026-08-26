@@ -3,8 +3,8 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = main @ a9db9cf，已全部 push（c0291f6 → 294dd21 → a9db9cf），三服务 200。
-Mechanic 专属 App（Grab 式接单/做单/收入/统计/打卡/发薪双向确认/全 i18n）+ Profile 工作统计均已上线。
+本地与生产 = main @ 9b9e412，已全部 push，三服务 200。
+Mechanic 专属 App（Grab 式接单/做单/收入/统计/打卡/发薪双向确认/全 i18n）+ Profile 工作统计均已上线。车型目录已拆：Yamaha LC135 → V1 / V2-V7 / V8（本地+生产实测）。
 剩余需求：Rider ①②④（手机/WhatsApp 登录、老客注册、每月换油提醒）+ Workshop ④（3-6-12 月保养时间线）+ 经销商验证 + provider 换真。
 流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
@@ -32,6 +32,7 @@ Mechanic 专属 App（Grab 式接单/做单/收入/统计/打卡/发薪双向确
 - Analytics 增强（merge 6f5f092）：月度服务量 + 品牌分析 + 时间 filter（7d/30d/90d/12m）+ from→to
 - Mechanic 专属 App（merge 9a54f5c，6 commit）：/mechanic-app（仅 MECHANIC）Grab 接单 + job 详情 + Earnings + Profile + Settings + 发薪双向确认（PENDING→MECHANIC_APPROVED→PAID）+ 全 i18n
 - Mechanic Profile 工作统计（294dd21）：汇总（工单/客单价/评分）+ 12 个月月度趋势柱状（+8 业务月）
+- Yamaha LC135 车型拆分（merge 9b9e412）：135LC Fi → LC135 V1 / LC135 V2 - V7 / LC135 V8（bike-models 下拉 + seed 目录，本地+生产实测）
 - 注：294dd21/a9db9cf 两次小改动直接在 main 提交（未走 branch 流程），已向用户说明后续按流程
 
 ## 下一步（按优先级）
@@ -58,7 +59,7 @@ Mechanic 专属 App（Grab 式接单/做单/收入/统计/打卡/发薪双向确
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：e32282c（docs: handoff - session pack 2026-08-26）｜ 已 push
+- 分支：main ｜ HEAD：9b9e412（Merge feat/lc135-model-split: split Yamaha LC135 into V1 / V2-V7 / V8）｜ 已 push（feature 分支已清理）
 - 未提交：仅 screenshots/ 截图 + scripts/_tmp-fix-dates.ts（临时脚本，可删）
 - 远程与本地一致（分叉 0/0）；全部 feature/fix 分支已清理
 
