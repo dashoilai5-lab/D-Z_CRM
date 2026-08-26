@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { Settings as SettingsIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
@@ -36,6 +38,11 @@ export default async function MechanicProfilePage() {
   return (
     <div className="space-y-4">
       {/* 头像 + 名字（rider profile 风格） */}
+      <div className="relative">
+        <Link href="/mechanic-app/settings" className="absolute right-0 top-0 inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label="Settings">
+          <SettingsIcon className="h-4 w-4" />
+        </Link>
+      </div>
       <div className="text-center">
         <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">{initials}</span>
         <h1 className="mt-3 text-xl font-bold">{me.name}</h1>
