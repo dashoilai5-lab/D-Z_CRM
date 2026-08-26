@@ -18,11 +18,12 @@ export default async function MechanicProfilePage() {
   if (session.kind !== "staff" || !session.user) redirect("/workshop/dashboard");
   const me = session.user;
 
-  const [user, jobs, payouts, pendingPayouts] = await Promise.all([
+  const [user, jobs, payouts, pendingPayouts, reviews] = await Promise.all([
     db.user.findUnique({ where: { id: me.id }, include: { attendance: { orderBy: { date: "desc" }, take: 1 } } }),
-    db.serviceJob.findMany({ where: { mechanicId: me.id, status: "COMPLETED" }, select: { id: true, invoice: { select: { totalSen: true } } } }),
+    db.serviceJob.findMany({ where: { mechanicId: me.id, status: "COMPLETED" }, select: { id: true, completedAt: true, invoice: { select: { totalSen: true } } } }),
     db.staffPayout.findMany({ where: { userId: me.id, status: "PAID" }, select: { totalSen: true } }),
     db.staffPayout.findMany({ where: { userId: me.id, status: "PENDING" }, select: { id: true, period: true, periodStart: true, totalSen: true }, orderBy: { createdAt: "desc" } }),
+    db.review.aggregate({ _avg: { rating: true }, _count: true, where: { job: { mechanicId: me.id }, rating: { not: null } } }),
   ]);
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date()) + "T00:00:00Z";
   const todayAtt = user?.attendance.find((a) => a.date.toISOString().slice(0, 10) === today.slice(0, 10));
@@ -36,7 +37,36 @@ export default async function MechanicProfilePage() {
   const completed = jobs.length;
   const value = jobs.reduce((s, j) => s + (j.invoice?.totalSen ?? 0), 0);
   const paid = payouts.reduce((s, p) => s + p.totalSen, 0);
+  const avgTicket = completed > 0 ? Math.round(value / completed) : 0;
+  const rating = reviews._avg.rating ?? 0;
   const initials = me.name.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+
+  // 月度工作统计（近 12 个月完成工单，+8 业务月）
+  const now = new Date();
+  const ymdNow = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit" }).format(now).split("-").map(Number);
+  const [cy, cm] = ymdNow as [number, number];
+  const monthStats: { key: string; label: string; count: number; valueSen: number }[] = [];
+  for (let i = 11; i >= 0; i--) {
+    const m = cm - i;
+    const yy = cy + Math.floor((m - 1) / 12);
+    const mm = ((m - 1) % 12 + 12) % 12 + 1;
+    monthStats.push({ key: yy + "-" + mm, label: yy + "/" + String(mm).padStart(2, "0"), count: 0, valueSen: 0 });
+  }
+  const byMonth = new Map<string, { count: number; valueSen: number }>();
+  for (const j of jobs) {
+    if (!j.completedAt) continue;
+    const ymd = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit" }).format(j.completedAt);
+    const cur = byMonth.get(ymd) ?? { count: 0, valueSen: 0 };
+    cur.count += 1;
+    cur.valueSen += j.invoice?.totalSen ?? 0;
+    byMonth.set(ymd, cur);
+  }
+  for (const ms of monthStats) {
+    const cur = byMonth.get(ms.key);
+    ms.count = cur?.count ?? 0;
+    ms.valueSen = cur?.valueSen ?? 0;
+  }
+  const maxMonth = Math.max(...monthStats.map((m) => m.count), 1);
 
   return (
     <div className="space-y-4">
@@ -81,6 +111,39 @@ export default async function MechanicProfilePage() {
         <div className="mb-2 text-sm font-semibold">{t("mech.attendance", lang)}</div>
         <AttendanceButton status={status} lang={lang} />
         <p className="mt-2 text-[11px] text-muted-foreground">{t("mech.synced", lang)}</p>
+      </div>
+
+      {/* 工作统计 */}
+      <div className="rounded-2xl border bg-card p-4">
+        <h3 className="font-semibold mb-3">My working statistics</h3>
+        {/* 汇总 */}
+        <div className="grid grid-cols-3 gap-2 mb-4">
+          <div className="rounded-xl bg-muted/50 p-3 text-center">
+            <div className="text-lg font-bold tabular-nums">{completed}</div>
+            <div className="text-[10px] text-muted-foreground">{t("mech.jobs", lang)}</div>
+          </div>
+          <div className="rounded-xl bg-muted/50 p-3 text-center">
+            <div className="text-lg font-bold tabular-nums">{formatRM(avgTicket)}</div>
+            <div className="text-[10px] text-muted-foreground">Avg ticket</div>
+          </div>
+          <div className="rounded-xl bg-muted/50 p-3 text-center">
+            <div className="text-lg font-bold tabular-nums">{rating ? rating.toFixed(1) : "—"}</div>
+            <div className="text-[10px] text-muted-foreground">Rating ★</div>
+          </div>
+        </div>
+        {/* 月度趋势 */}
+        <div className="text-xs font-semibold text-muted-foreground mb-2">Monthly jobs (12 months)</div>
+        <div className="space-y-1.5">
+          {monthStats.map((ms) => (
+            <div key={ms.key} className="flex items-center gap-2 text-[11px]">
+              <span className="w-14 shrink-0 font-mono text-muted-foreground">{ms.label}</span>
+              <div className="h-4 flex-1 rounded bg-muted/50 overflow-hidden">
+                <div className="h-full rounded bg-primary/80" style={{ width: Math.max(2, (ms.count / maxMonth) * 100) + "%" }} />
+              </div>
+              <span className="w-20 shrink-0 text-right text-muted-foreground">{ms.count} · {formatRM(ms.valueSen)}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
