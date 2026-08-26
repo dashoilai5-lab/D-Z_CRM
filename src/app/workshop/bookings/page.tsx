@@ -4,19 +4,32 @@ import { db } from "@/lib/db";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { PageTransition } from "@/components/shared/page-transition";
 import { BookingActions } from "@/components/workshop/booking-actions";
-import { fmtDate } from "@/lib/format";
+import { fmtDate, fmtRelative } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export default async function BookingsPage({ searchParams }: { searchParams: Promise<{ branch?: string; date?: string; view?: string }> }) {
+/** 状态筛选条：All + 各状态（URL ?status= 驱动，保留其他筛选参数）。 */
+const STATUS_FILTERS: { key: string; labelKey: string }[] = [
+  { key: "", labelKey: "ws.jobs.all" },
+  { key: "REQUESTED", labelKey: "book.REQUESTED" },
+  { key: "CONFIRMED", labelKey: "book.CONFIRMED" },
+  { key: "RESCHEDULED", labelKey: "book.RESCHEDULED" },
+  { key: "CHECKED_IN", labelKey: "book.CHECKED_IN" },
+  { key: "COMPLETED", labelKey: "book.COMPLETED" },
+  { key: "CANCELLED", labelKey: "book.CANCELLED" },
+  { key: "NO_SHOW", labelKey: "book.NO_SHOW" },
+];
+
+export default async function BookingsPage({ searchParams }: { searchParams: Promise<{ branch?: string; date?: string; view?: string; status?: string; sort?: string }> }) {
   const lang = await getLang();
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
   const branches = await db.branch.findMany({ where: { organisationId: org!.id } });
   const where: Record<string, unknown> = {};
   if (sp.branch) where.branchId = sp.branch;
+  if (sp.status) where.status = sp.status;
   if (sp.date) {
     // 业务日期过滤：与存储约定一致（UTC 零点），避免服务器时区差异
     const d = new Date(sp.date + "T00:00:00Z");
@@ -32,11 +45,12 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
     db.servicePackage.findMany({ where: { active: true }, select: { id: true, name: true, priceSen: true, isBestValue: true }, orderBy: { priceSen: "asc" } }),
   ]);
   const order: Record<string, number> = { REQUESTED: 0, CONFIRMED: 1, RESCHEDULED: 2, CHECKED_IN: 3, COMPLETED: 4, CANCELLED: 5, NO_SHOW: 6 };
-  // 同状态组内：未来/今天日期优先（新预约容易看到），过去日期沉底，其余按日期升序
+  // 同状态组内排序：显式 sort=desc 按日期降序；默认未来/今天优先（新预约可见），过去沉底，其余升序
   const todayStart = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00Z").getTime();
   const sorted = [...bookings].sort((a, b) => {
     const statusDiff = (order[a.status] ?? 9) - (order[b.status] ?? 9);
     if (statusDiff !== 0) return statusDiff;
+    if (sp.sort === "desc") return b.date.getTime() - a.date.getTime();
     const aFuture = a.date.getTime() >= todayStart;
     const bFuture = b.date.getTime() >= todayStart;
     if (aFuture !== bFuture) return aFuture ? -1 : 1;
@@ -61,6 +75,18 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
   }
 
   const view = sp.view ?? "list";
+  // 构造带参数链接（保留 branch/date/status/sort/view，覆盖指定键）
+  const qs = (extra: Record<string, string>) => {
+    const p = new URLSearchParams();
+    if (sp.branch) p.set("branch", sp.branch);
+    if (sp.date) p.set("date", sp.date);
+    if (sp.status) p.set("status", sp.status);
+    if (sp.sort) p.set("sort", sp.sort);
+    if (sp.view) p.set("view", sp.view);
+    Object.entries(extra).forEach(([k, v]) => { if (v) p.set(k, v); else p.delete(k); });
+    const str = p.toString();
+    return "/workshop/bookings" + (str ? "?" + str : "");
+  };
 
   return (
     <PageTransition>
@@ -82,6 +108,22 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
         <a href={"/workshop/bookings?view=list" + (sp.branch ? "&branch=" + sp.branch : "") + (sp.date ? "&date=" + sp.date : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "list" ? "bg-primary text-primary-foreground" : "")}><List className="h-3.5 w-3.5" />List</a>
         <a href={"/workshop/bookings?view=calendar" + (sp.branch ? "&branch=" + sp.branch : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "calendar" ? "bg-primary text-primary-foreground" : "")}><CalendarDays className="h-3.5 w-3.5" />Month</a>
       </form>
+
+      {/* 状态筛选条 + 日期排序切换 */}
+      <div className="flex flex-wrap items-center gap-1.5 mb-3">
+        {STATUS_FILTERS.map((f) => (
+          <Link
+            key={f.key || "all"}
+            href={qs({ status: f.key, view: "list" })}
+            className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + ((sp.status ?? "") === f.key ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}
+          >
+            {t(f.labelKey, lang)}
+          </Link>
+        ))}
+        <div className="flex-1" />
+        <Link href={qs({ sort: "" })} className={"inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium " + (sp.sort !== "desc" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{t("book.sort-date-asc", lang)}</Link>
+        <Link href={qs({ sort: "desc" })} className={"inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-medium " + (sp.sort === "desc" ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{t("book.sort-date-desc", lang)}</Link>
+      </div>
 
       {view === "calendar" ? (
         <div className="rounded-2xl border bg-card p-4">
@@ -126,6 +168,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
               <div className="min-w-32">
                 <div className="text-sm font-medium">{b.serviceType}</div>
                 <div className="text-xs text-muted-foreground">{fmtDate(b.date)} · {b.timeSlot} · {b.branch.city}</div>
+                <div className="text-[10px] text-muted-foreground/70">{t("book.submitted", lang)} {fmtRelative(b.createdAt)}</div>
               </div>
               <div className="text-[11px] uppercase text-muted-foreground">{b.source === "RIDER_APP" ? t("ws.bookings.source-rider", lang) : b.source}</div>
               <StatusBadge kind="booking" value={b.status} />
