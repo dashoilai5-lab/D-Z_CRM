@@ -34,7 +34,7 @@ const PHONE_PRE = ["012", "013", "014", "016", "017", "018", "019", "011"];
 const PLATE_PRE = ["WXY", "JKL", "BQE", "WWW", "VLL", "PRH", "JMR", "JQY", "KFX", "BSS", "WUL", "VKM"];
 // [brand, model, year, motorcycleTypeKey] — type aligned to lib/motorcycle-types (market taxonomy 2026)
 const BIKE_MODELS: [string, string, number, string][] = [
-  ["Yamaha", "Y15ZR", 2019, "UNDERBONE"], ["Yamaha", "Y16ZR", 2021, "UNDERBONE"], ["Yamaha", "LC135", 2018, "UNDERBONE"], ["Yamaha", "EX5", 2015, "UNDERBONE"],
+  ["Yamaha", "Y15ZR", 2019, "UNDERBONE"], ["Yamaha", "Y16ZR", 2021, "UNDERBONE"], ["Yamaha", "LC135 V1", 2016, "UNDERBONE"], ["Yamaha", "LC135 V2 - V7", 2018, "UNDERBONE"], ["Yamaha", "LC135 V8", 2021, "UNDERBONE"], ["Yamaha", "EX5", 2015, "UNDERBONE"],
   ["Yamaha", "NMAX155", 2022, "SCOOTER"], ["Yamaha", "XMAX250", 2023, "PREMIUM_SCOOTER"], ["Honda", "RS150R", 2020, "UNDERBONE"], ["Honda", "EX5 Dream", 2017, "UNDERBONE"],
   ["Honda", "PCX160", 2022, "SCOOTER"], ["Honda", "C70", 2014, "MODERN_CLASSIC"], ["Honda", "WAVE125", 2019, "UNDERBONE"], ["Modenas", "KRV150", 2023, "SCOOTER"],
   ["Modenas", "Elegan 150", 2016, "PREMIUM_SCOOTER"], ["Modenas", "Pulsar NS200", 2021, "NAKED"], ["Kawasaki", "Ninja 250", 2019, "SPORT"],
