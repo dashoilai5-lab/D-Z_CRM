@@ -67,6 +67,9 @@ export async function bookingAction(id: string, action: "CONFIRMED" | "RESCHEDUL
       packageId: extra?.packageId,
       mechanicId: extra?.mechanicId,
     });
+    if (!result) {
+      return { ok: false as const, error: "Booking not found or already cancelled/completed." };
+    }
     await audit({
       organisationId: org!.id,
       branchId: branch!.id,

@@ -67,7 +67,9 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
         pkg?.name,
         ...extrasList.map((x) => x.label),
       ].filter(Boolean).join(" + ") || "General Checkup";
-      await bookService({ customerId, motorcycleId: motorcycleId === "none" ? "" : motorcycleId, serviceType, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
+      // 结构化 service：套餐 + 附加服务（Check In 时同步到 job）
+      const addons = extrasList.map((x) => ({ description: x.label, kind: "SERVICE" as const, quantity: 1, unitPriceSen: x.priceSen }));
+      await bookService({ customerId, motorcycleId: motorcycleId === "none" ? "" : motorcycleId, serviceType, packageId: pkg?.id, addons, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
       router.push("/rider/bookings");
       toast.success(t("toast.booking-requested", lang));
     });

@@ -254,6 +254,10 @@ model Booking {
   motorcycleId  String
   motorcycle    Motorcycle    @relation(fields: [motorcycleId], references: [id])
   serviceType   String
+  // RIDER BOOK: structured service — package + add-ons (synced to job on check-in)
+  servicePackageId String?
+  servicePackage   ServicePackage? @relation(fields: [servicePackageId], references: [id])
+  serviceAddons    Json? // [{ description, kind, quantity, unitPriceSen }]
   date          DateTime
   timeSlot      String
   notes         String?
@@ -472,6 +476,7 @@ model ServicePackage {
   active       Boolean  @default(true)
   items        ServicePackageItem[]
   jobs         ServiceJob[]
+  bookings     Booking[]
 }
 
 model ServicePackageItem {
