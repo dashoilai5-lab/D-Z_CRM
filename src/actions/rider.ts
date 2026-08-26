@@ -20,7 +20,8 @@ export async function bookService(input: {
     customerId: input.customerId,
     motorcycleId: input.motorcycleId,
     serviceType: input.serviceType,
-    date: new Date(input.date + "T09:00:00"),
+    // 业务日期：存 UTC 零点（时区无关，显示端 toISOString/fmtDate 一致）
+    date: new Date(input.date + "T00:00:00Z"),
     timeSlot: input.timeSlot,
     notes: input.notes,
     source: "RIDER_APP",

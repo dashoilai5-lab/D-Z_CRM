@@ -23,6 +23,8 @@ const int = (min: number, max: number) => Math.floor(rand() * (max - min + 1)) +
 const RM = (n: number) => Math.round(n * 100);
 const daysAgo = (d: number) => new Date(Date.now() - d * 86400000);
 const daysFromNow = (d: number) => new Date(Date.now() + d * 86400000);
+/** 业务日期（UTC 零点 + n 天）：预约/时段等"日期"字段存时区无关的 UTC 零点。 */
+const utcDay = (n: number) => new Date(new Date(Date.now() + n * 86400000).toISOString().slice(0, 10) + "T00:00:00Z");
 const hoursAgo = (h: number) => new Date(Date.now() - h * 3600000);
 const sum = (arr: number[]) => arr.reduce((s, n) => s + n, 0);
 
@@ -687,7 +689,7 @@ export async function runSeed(): Promise<Record<string, number>> {
     const cust = nextCust();
     const bike = bikeOf(cust.id);
     const isPast = st === "COMPLETED" || st === "CANCELLED";
-    const date = isPast ? daysAgo(int(2, 20)) : daysFromNow(int(0, 6));
+    const date = isPast ? utcDay(-int(2, 20)) : utcDay(int(0, 6));
     const booking = await prisma.booking.create({
       data: {
         branchId: kl.id, customerId: cust.id, motorcycleId: bike.id,
@@ -703,7 +705,7 @@ export async function runSeed(): Promise<Record<string, number>> {
   }
   // Ahmad has a REQUESTED booking for the demo (tomorrow)
   const ahmadBooking = await prisma.booking.create({
-    data: { branchId: kl.id, customerId: ahmad.id, motorcycleId: ahmadBike.id, serviceType: "Standard Service", date: daysFromNow(1), timeSlot: "10:00", notes: "Mileage sekarang 31,800 km.", status: "REQUESTED", source: "RIDER_APP" },
+    data: { branchId: kl.id, customerId: ahmad.id, motorcycleId: ahmadBike.id, serviceType: "Standard Service", date: utcDay(1), timeSlot: "10:00", notes: "Mileage sekarang 31,800 km.", status: "REQUESTED", source: "RIDER_APP" },
   });
 
   // ----- reminders: one open per motorcycle that has completed jobs; 18 due/overdue -----
@@ -879,7 +881,7 @@ export async function runSeed(): Promise<Record<string, number>> {
   const slotTimes = ["09:00", "11:00", "14:00", "16:00"];
   for (let d = 0; d < 7; d++) {
     for (const st of slotTimes) {
-      await prisma.appointmentSlot.create({ data: { branchId: kl.id, date: daysFromNow(d), startTime: st, maxBookings: 2 } });
+      await prisma.appointmentSlot.create({ data: { branchId: kl.id, date: utcDay(d), startTime: st, maxBookings: 2 } });
     }
   }
   // demo leads (segment 3): website/whatsapp enquiries in various pipeline stages
