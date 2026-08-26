@@ -37,6 +37,7 @@ export class BookingService {
   async create(input: {
     branchId: string; customerId: string; motorcycleId: string;
     serviceType: string; date: Date; timeSlot: string; notes?: string; source: BookingSource; campaignId?: string;
+    packageId?: string; addons?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
   }) {
     // prevent overbooking: if an AppointmentSlot is configured for this branch/date/time, respect its capacity
     const slot = await db.appointmentSlot.findUnique({
@@ -50,6 +51,8 @@ export class BookingService {
       customer: { connect: { id: input.customerId } },
       motorcycle: { connect: { id: input.motorcycleId } },
       serviceType: input.serviceType,
+      servicePackage: input.packageId ? { connect: { id: input.packageId } } : undefined,
+      serviceAddons: input.addons && input.addons.length > 0 ? input.addons as never : undefined,
       date: input.date,
       timeSlot: input.timeSlot,
       notes: input.notes,
@@ -155,6 +158,9 @@ export class BookingService {
       const lastJob = await (tx as PrismaClient).serviceJob.findFirst({ orderBy: { jobNumber: "desc" } });
       const base = lastJob ? parseInt(lastJob.jobNumber.replace(/\D/g, ""), 10) : 1023;
       const jobNumber = "DZ" + (isNaN(base) ? 1024 : base + 1);
+      // service 内容：counter 可覆盖，缺省用 booking 里 rider 选好的（套餐 + 附加服务）
+      const pkgId = opts.packageId ?? booking.servicePackageId ?? undefined;
+      const addons = (booking.serviceAddons as { description: string; kind: string; quantity: number; unitPriceSen: number }[] | null) ?? [];
       const job = await (tx as PrismaClient).serviceJob.create({
         data: {
           jobNumber,
@@ -165,12 +171,13 @@ export class BookingService {
           booking: { connect: { id: booking.id } },
           mileage: opts.mileage,
           customerRequest: opts.customerRequest ?? booking.notes ?? undefined,
-          servicePackageId: opts.packageId || undefined,
+          servicePackageId: pkgId,
           mechanicId: opts.mechanicId || undefined,
           status: "WAITING",
         },
       });
-      await jobService.attachPackage(job.id, opts.packageId, undefined, tx);
+      // 同步 booking 的 service 内容（rider 选的套餐 + 附加服务）到 job
+      await jobService.attachPackage(job.id, pkgId, addons, tx);
       await this.repo.update(bookingId, { status: "CHECKED_IN" } as never, tx);
       return { bookingId, jobId: job.id, jobNumber };
     });

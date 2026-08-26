@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,7 +15,7 @@ import { t, tpl } from "@/lib/i18n";
 
 export interface PackageOption { id: string; name: string; priceSen: number; isBestValue?: boolean }
 
-export function BookingActions({ bookingId, status, packages }: { bookingId: string; status: string; packages: PackageOption[] }) {
+export function BookingActions({ bookingId, status, packages, servicePackageName, serviceAddons }: { bookingId: string; status: string; packages: PackageOption[]; servicePackageName?: string; serviceAddons?: { description?: string }[] }) {
   const router = useRouter();
   const lang = useLang();
   const [pending, start] = useTransition();
@@ -46,6 +47,15 @@ export function BookingActions({ bookingId, status, packages }: { bookingId: str
               <DialogDescription>Create the service job from this booking. Enter the current mileage.</DialogDescription>
             </DialogHeader>
             <div className="space-y-3 py-2">
+              {(servicePackageName || (serviceAddons && serviceAddons.length > 0)) && (
+                <div className="rounded-xl bg-muted/50 p-3 text-xs">
+                  <div className="font-semibold mb-1">Booking service</div>
+                  {servicePackageName && <div className="flex items-center gap-1"><Check className="h-3 w-3 text-primary" /> {servicePackageName}</div>}
+                  {(serviceAddons ?? []).filter((a) => a.description).map((a) => (
+                    <div key={a.description} className="flex items-center gap-1 mt-0.5"><Check className="h-3 w-3 text-primary" /> {a.description}</div>
+                  ))}
+                </div>
+              )}
               <div>
                 <Label>Current Mileage (km)</Label>
                 <Input data-testid="checkin-mileage" inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="e.g. 31800" className="mt-1.5" />

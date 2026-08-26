@@ -39,7 +39,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
   const [bookings, packages] = await Promise.all([
     db.booking.findMany({
       where,
-      include: { customer: { select: { id: true, name: true, phone: true } }, motorcycle: { select: { brand: true, model: true, plate: true } }, branch: { select: { id: true, city: true } }, job: { select: { id: true, jobNumber: true, status: true } } },
+      include: { customer: { select: { id: true, name: true, phone: true } }, motorcycle: { select: { brand: true, model: true, plate: true } }, branch: { select: { id: true, city: true } }, job: { select: { id: true, jobNumber: true, status: true } }, servicePackage: { select: { id: true, name: true } } },
       orderBy: { date: "asc" },
     }),
     db.servicePackage.findMany({ where: { active: true }, select: { id: true, name: true, priceSen: true, isBestValue: true }, orderBy: { priceSen: "asc" } }),
@@ -176,7 +176,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
               <div className="text-[11px] uppercase text-muted-foreground">{b.source === "RIDER_APP" ? t("ws.bookings.source-rider", lang) : b.source}</div>
               <StatusBadge kind="booking" value={b.status} />
               {b.job && <Link href={"/workshop/jobs/" + b.job.id} className="text-xs font-mono text-primary hover:underline">{b.job.jobNumber}</Link>}
-              <BookingActions bookingId={b.id} status={b.status} packages={packages} />
+              <BookingActions bookingId={b.id} status={b.status} packages={packages} servicePackageName={b.servicePackage?.name} serviceAddons={(b.serviceAddons as { description?: string }[] | null) ?? []} />
             </div>
             );
           })}
