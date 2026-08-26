@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = main @ 34fa9d4（QR 落地页布局修复 + 登录引导移除，已 merge 部署中）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已上线）→ **Rider App 语言 bug 修复**（merge 33aad24：全站 i18n cbebcbd + Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
+本地与生产 = main @ 969d638（人工测试 3 个 bug 修复已 merge：book 时段选择/剩余量/时区归一）。今日已完成：…Rider Settings（个人资料编辑）→ Rider Settings 扩展（已上线）→ **Rider App 语言 bug 修复**（merge 33aad24：全站 i18n cbebcbd + Special Offer 卡片等 e4d2f6d）。流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
 ## 会话信息
 - 原会话 ID：session-0dbaff06-4fb9-49b9-a857-ddffcd6950f1
@@ -30,6 +30,7 @@
 3c. 【已完成】Rider 首页 QR 扫码器（merge d871868）——首页右上角扫码按钮，复用 workshop QrScanner
 3d. 【已完成】QR 落地页布局修复（merge 29d460f）——workshop/motorcycle/rider 三页宽度压缩（flex mx-auto 吸收自由空间 298→512px）+ 垂直居中
 3e. 【已完成】移除登录引导页（merge 34fa9d4）——sign-in-prompt 删除，未登录访问 rider 页直接 307 → /rider/login 表单
+3f. 【已完成】人工测试 bug 修复（merge 969d638）：① book 时段选择——日期后显示真实 open slots 按钮组 + estimated 标注 ② 时段剩余量（剩 N 位）③ 预约/时段日期时区归一（UTC 零点，两端时间一致；生产 PG 数据已归一）
 4. 【待确认】Rider App 语言 bug 修复（fix/rider-language，cbebcbd 已 push，本地预览全页面中文通过）——确认后 merge
 5. 可选：Sentry 验证、k6 压测
 
@@ -48,7 +49,7 @@
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：34fa9d4（merge QR 落地页布局 + 登录引导移除）｜ 未提交：仅 screenshots/ 截图
+- 分支：main ｜ HEAD：969d638（merge 测试 bug 修复）｜ 未提交：仅 screenshots/ 截图
 - 远程：与本地一致（分叉 0/0）；全部 feature/fix 分支已清理
 
 ## 关键决策与约定
