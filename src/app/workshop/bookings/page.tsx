@@ -18,7 +18,8 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
   const where: Record<string, unknown> = {};
   if (sp.branch) where.branchId = sp.branch;
   if (sp.date) {
-    const d = new Date(sp.date + "T00:00:00");
+    // 业务日期过滤：与存储约定一致（UTC 零点），避免服务器时区差异
+    const d = new Date(sp.date + "T00:00:00Z");
     const next = new Date(d.getTime() + 86400000);
     where.date = { gte: d, lt: next };
   }
@@ -31,17 +32,26 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
     db.servicePackage.findMany({ where: { active: true }, select: { id: true, name: true, priceSen: true, isBestValue: true }, orderBy: { priceSen: "asc" } }),
   ]);
   const order: Record<string, number> = { REQUESTED: 0, CONFIRMED: 1, RESCHEDULED: 2, CHECKED_IN: 3, COMPLETED: 4, CANCELLED: 5, NO_SHOW: 6 };
-  const sorted = [...bookings].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9) || a.date.getTime() - b.date.getTime());
+  // 同状态组内：未来/今天日期优先（新预约容易看到），过去日期沉底，其余按日期升序
+  const todayStart = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00Z").getTime();
+  const sorted = [...bookings].sort((a, b) => {
+    const statusDiff = (order[a.status] ?? 9) - (order[b.status] ?? 9);
+    if (statusDiff !== 0) return statusDiff;
+    const aFuture = a.date.getTime() >= todayStart;
+    const bFuture = b.date.getTime() >= todayStart;
+    if (aFuture !== bFuture) return aFuture ? -1 : 1;
+    return a.date.getTime() - b.date.getTime();
+  });
 
   // month calendar (BOOK-026/027/028): counts per day for the displayed month
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
-  const first = new Date(year, month, 1);
+  const first = new Date(new Date(year, month, 1).toISOString().slice(0, 10) + "T00:00:00Z");
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstWeekday = first.getDay();
   const monthBookings = await db.booking.findMany({
-    where: { branchId: sp.branch || undefined, date: { gte: first, lt: new Date(year, month + 1, 1) } },
+    where: { branchId: sp.branch || undefined, date: { gte: first, lt: new Date(new Date(year, month + 1, 1).toISOString().slice(0, 10) + "T00:00:00Z") } },
     select: { date: true },
   });
   const counts = new Map<string, number>();
