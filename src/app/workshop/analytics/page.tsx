@@ -14,21 +14,33 @@ const PERIODS = [
   { key: "365", label: "12 months", days: 365 },
 ];
 
-export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<{ days?: string }> }) {
+export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<{ days?: string; from?: string; to?: string }> }) {
   const sp = await searchParams;
-  const days = PERIODS.some((p) => p.key === sp.days) ? Number(sp.days) : 30;
-  const months = Math.max(1, Math.ceil(days / 30)); // 月度视图按月数对齐 filter
+  // from/to 自定义范围优先；否则快捷周期
+  const from = sp.from;
+  const to = sp.to;
+  let sinceDays = PERIODS.some((p) => p.key === sp.days) ? Number(sp.days) : 30;
+  let untilDays = 0;
+  if (from) {
+    const f = new Date(from + "T00:00:00Z");
+    const t = to ? new Date(to + "T00:00:00Z") : new Date();
+    sinceDays = Math.max(1, Math.ceil((Date.now() - f.getTime()) / 86400000));
+    untilDays = Math.max(0, Math.ceil((Date.now() - t.getTime()) / 86400000));
+    if (untilDays >= sinceDays) { sinceDays = 1; untilDays = 0; }
+  }
+  const months = Math.max(1, Math.ceil((sinceDays - untilDays) / 30)); // 月度视图按月数对齐
 
   const org = await db.organisation.findFirst();
   const orgId = org!.id;
   const [sales, service, customers, revenue, inventory, branches, monthly, brands] = await Promise.all([
-    salesAnalytics(orgId, days), serviceAnalytics(orgId, days), customerAnalytics(orgId, days), revenueAnalytics(orgId, days), inventoryAnalytics(orgId), branchComparison(orgId),
-    monthlyServiceAnalytics(orgId, months), brandAnalytics(orgId, days),
+    salesAnalytics(orgId, sinceDays, untilDays), serviceAnalytics(orgId, sinceDays, untilDays), customerAnalytics(orgId, sinceDays, untilDays), revenueAnalytics(orgId, sinceDays, untilDays), inventoryAnalytics(orgId), branchComparison(orgId),
+    monthlyServiceAnalytics(orgId, months), brandAnalytics(orgId, sinceDays, untilDays),
   ]);
   const maxMonth = Math.max(...monthly.map((m) => m.count), 1);
   const maxBrand = Math.max(...brands.map((b) => b.count), 1);
 
   const qs = (d: string) => "/workshop/analytics?days=" + d;
+  const rangeLabel = from ? from + " → " + (to ?? "today") : "";
 
   return (
     <PageTransition>
@@ -36,15 +48,20 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
           <h1 className="text-2xl font-bold">Analytics</h1>
-          <p className="text-sm text-muted-foreground">Consistent calculation rules with the dashboard (ANA-051)</p>
+          <p className="text-sm text-muted-foreground">Consistent calculation rules with the dashboard (ANA-051){rangeLabel ? " · " + rangeLabel : ""}</p>
         </div>
-        {/* 时间 filter */}
         <div className="flex flex-wrap items-center gap-1.5">
           {PERIODS.map((p) => (
-            <Link key={p.key} href={qs(p.key)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (days === p.days ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
+            <Link key={p.key} href={qs(p.key)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (!from && sinceDays === p.days && untilDays === 0 ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
               {p.label}
             </Link>
           ))}
+          <form method="get" className="flex items-center gap-1 ml-2 text-xs">
+            <input type="date" name="from" defaultValue={from} className="rounded-md border bg-background px-2 py-1.5" />
+            <span className="text-muted-foreground">→</span>
+            <input type="date" name="to" defaultValue={to} className="rounded-md border bg-background px-2 py-1.5" />
+            <button className="rounded-md border px-2 py-1.5 font-medium">Go</button>
+          </form>
         </div>
       </div>
 
@@ -79,7 +96,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       {/* 品牌分析 */}
       <div className="rounded-2xl border bg-card p-5">
         <h3 className="font-semibold mb-1">Brand analysis</h3>
-        <p className="text-xs text-muted-foreground mb-4">Services by motorcycle brand (last {days} days)</p>
+        <p className="text-xs text-muted-foreground mb-4">Services by motorcycle brand ({from ? from + " → " + (to ?? "today") : "last " + sinceDays + " days"})</p>
         {brands.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No data.</p>}
         <div className="space-y-3">
           {brands.map((b) => (

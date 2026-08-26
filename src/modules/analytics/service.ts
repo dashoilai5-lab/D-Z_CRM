@@ -3,14 +3,15 @@ import { db } from "@/lib/db";
 
 const daysAgo = (d: number) => new Date(Date.now() - d * 86400000);
 
-export async function salesAnalytics(orgId: string, sinceDays = 30) {
+export async function salesAnalytics(orgId: string, sinceDays = 30, untilDays = 0) {
   const since = daysAgo(sinceDays);
+  const until = daysAgo(untilDays);
   const [leads, bySource, byStage, won, lost] = await Promise.all([
-    db.lead.findMany({ where: { organisationId: orgId, createdAt: { gte: since } }, include: { source: true, stage: true, assignedUser: { select: { name: true } } } }),
-    db.lead.groupBy({ by: ["sourceId"], where: { organisationId: orgId, createdAt: { gte: since } }, _count: true }),
-    db.lead.groupBy({ by: ["stageId"], where: { organisationId: orgId, status: "OPEN", createdAt: { gte: since } }, _count: true }),
-    db.lead.count({ where: { organisationId: orgId, status: "WON", createdAt: { gte: since } } }),
-    db.lead.count({ where: { organisationId: orgId, status: "LOST", createdAt: { gte: since } } }),
+    db.lead.findMany({ where: { organisationId: orgId, createdAt: { gte: since, lte: until } }, include: { source: true, stage: true, assignedUser: { select: { name: true } } } }),
+    db.lead.groupBy({ by: ["sourceId"], where: { organisationId: orgId, createdAt: { gte: since, lte: until } }, _count: true }),
+    db.lead.groupBy({ by: ["stageId"], where: { organisationId: orgId, status: "OPEN", createdAt: { gte: since, lte: until } }, _count: true }),
+    db.lead.count({ where: { organisationId: orgId, status: "WON", createdAt: { gte: since, lte: until } } }),
+    db.lead.count({ where: { organisationId: orgId, status: "LOST", createdAt: { gte: since, lte: until } } }),
   ]);
   const sources = await db.leadSource.findMany({ where: { organisationId: orgId } });
   const stages = await db.leadStage.findMany({ where: { organisationId: orgId } });
@@ -31,11 +32,12 @@ export async function salesAnalytics(orgId: string, sinceDays = 30) {
   };
 }
 
-export async function serviceAnalytics(orgId: string, sinceDays = 30) {
+export async function serviceAnalytics(orgId: string, sinceDays = 30, untilDays = 0) {
   const since = daysAgo(sinceDays);
+  const until = daysAgo(untilDays);
   const [bookings, jobs, techs] = await Promise.all([
-    db.booking.findMany({ where: { branch: { organisationId: orgId }, createdAt: { gte: since } } }),
-    db.serviceJob.findMany({ where: { branch: { organisationId: orgId }, createdAt: { gte: since } }, include: { mechanic: { select: { name: true } }, items: true } }),
+    db.booking.findMany({ where: { branch: { organisationId: orgId }, createdAt: { gte: since, lte: until } } }),
+    db.serviceJob.findMany({ where: { branch: { organisationId: orgId }, createdAt: { gte: since, lte: until } }, include: { mechanic: { select: { name: true } }, items: true } }),
     db.user.findMany({ where: { organisationId: orgId, role: "MECHANIC", active: true }, include: { jobs: { where: { status: { in: ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY"] } } } } }),
   ]);
   const completed = jobs.filter((j) => j.status === "COMPLETED");
@@ -55,8 +57,9 @@ export async function serviceAnalytics(orgId: string, sinceDays = 30) {
   };
 }
 
-export async function customerAnalytics(orgId: string, sinceDays = 30) {
+export async function customerAnalytics(orgId: string, sinceDays = 30, untilDays = 0) {
   const since = daysAgo(sinceDays);
+  const until = daysAgo(untilDays);
   const customers = await db.customer.findMany({ where: { organisationId: orgId }, include: { jobs: true, loyaltyAccount: true, referralsMade: true } });
   const newCount = customers.filter((c) => c.createdAt >= since).length;
   const repeat = customers.filter((c) => c.jobs.length >= 2).length;
@@ -76,10 +79,11 @@ export async function customerAnalytics(orgId: string, sinceDays = 30) {
   };
 }
 
-export async function revenueAnalytics(orgId: string, sinceDays = 30) {
+export async function revenueAnalytics(orgId: string, sinceDays = 30, untilDays = 0) {
   const since = daysAgo(sinceDays);
+  const until = daysAgo(untilDays);
   const invoices = await db.invoice.findMany({
-    where: { branch: { organisationId: orgId }, issuedAt: { gte: since }, status: { not: "DRAFT" } },
+    where: { branch: { organisationId: orgId }, issuedAt: { gte: since, lte: until }, status: { not: "DRAFT" } },
     include: { branch: { select: { city: true } }, customer: { select: { name: true } }, items: true },
   });
   const total = invoices.reduce((s, i) => s + i.totalSen, 0);
@@ -204,10 +208,11 @@ export async function monthlyServiceAnalytics(orgId: string, months = 12) {
 }
 
 /** 品牌分析：按摩托品牌聚合完成工单（服务量/车辆数/收入/占比）。 */
-export async function brandAnalytics(orgId: string, sinceDays = 365) {
+export async function brandAnalytics(orgId: string, sinceDays = 365, untilDays = 0) {
   const since = daysAgo(sinceDays);
+  const until = daysAgo(untilDays);
   const jobs = await db.serviceJob.findMany({
-    where: { status: "COMPLETED", completedAt: { gte: since }, branch: { organisationId: orgId } },
+    where: { status: "COMPLETED", completedAt: { gte: since, lte: until }, branch: { organisationId: orgId } },
     include: { motorcycle: { select: { brand: true, model: true, id: true } } },
   });
   const jobIds = jobs.map((j) => j.id);
