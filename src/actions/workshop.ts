@@ -78,7 +78,7 @@ export async function bookingAction(id: string, action: "CONFIRMED" | "RESCHEDUL
     revalidatePath("/", "layout");
     return { ok: true, result };
   }
-  await bookingService.transition(id, action, extra ? { date: extra.date ? new Date(extra.date) : undefined, timeSlot: extra.timeSlot } : undefined);
+  await bookingService.transition(id, action, extra ? { date: extra.date ? new Date(extra.date + "T00:00:00Z") : undefined, timeSlot: extra.timeSlot } : undefined);
   revalidatePath("/", "layout");
   return { ok: true };
 }

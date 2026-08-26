@@ -26,13 +26,15 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   const bikes = customer.motorcycles.map((m) => ({ id: m.id, brand: m.brand, model: m.model, plate: m.plate, type: m.type }));
   const packages = await db.servicePackage.findMany({ where: { active: true }, select: { id: true, name: true, tier: true, priceSen: true, isBestValue: true, description: true }, orderBy: { priceSen: "asc" } });
 
+  // 业务日期按 UTC 零点对齐（与 slot 存储一致，避免时区偏移）
+  const todayUtc = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00Z");
   // per-branch widgets: available slots (7d) + rating
   const branchInfo = await Promise.all(branches.map(async (b) => {
     // force-dynamic page: Date.now() is evaluated per request, not a purity violation here.
     // eslint-disable-next-line react-hooks/purity
-    const future = new Date(Date.now() + 7 * 86400000);
+    const future = new Date(todayUtc.getTime() + 7 * 86400000);
     const [slots, rating] = await Promise.all([
-      db.appointmentSlot.count({ where: { branchId: b.id, date: { gte: new Date(), lte: future }, isHoliday: false, bookedCount: { lt: db.appointmentSlot.fields.maxBookings } } }),
+      db.appointmentSlot.count({ where: { branchId: b.id, date: { gte: todayUtc, lte: future }, isHoliday: false, bookedCount: { lt: db.appointmentSlot.fields.maxBookings } } }),
       db.review.aggregate({ _avg: { rating: true }, where: { branchId: b.id, rating: { not: null } } }),
     ]);
     return { id: b.id, name: b.name, city: b.city, phone: b.phone, address: b.address, isMain: b.isMain, operatingHours: b.operatingHours, slots, avgRating: rating._avg.rating ?? null };
@@ -41,12 +43,11 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
   const selected = branch ? branchInfo.find((b) => b.id === branch) : null;
 
   // slots for the selected branch (14d)
-  // eslint-disable-next-line react-hooks/purity
-  const future = new Date(Date.now() + 14 * 86400000);
+  const future14 = new Date(todayUtc.getTime() + 14 * 86400000);
   const rawSlots = selected
-    ? await db.appointmentSlot.findMany({ where: { branchId: selected.id, date: { gte: new Date(), lte: future }, isHoliday: false }, select: { date: true, startTime: true, bookedCount: true, maxBookings: true } })
+    ? await db.appointmentSlot.findMany({ where: { branchId: selected.id, date: { gte: todayUtc, lte: future14 }, isHoliday: false }, select: { date: true, startTime: true, bookedCount: true, maxBookings: true } })
     : [];
-  const availableSlots = rawSlots.filter((s) => s.bookedCount < s.maxBookings).map((s) => ({ date: s.date.toISOString().slice(0, 10), time: s.startTime }));
+  const availableSlots = rawSlots.filter((s) => s.bookedCount < s.maxBookings).map((s) => ({ date: s.date.toISOString().slice(0, 10), time: s.startTime, remaining: Math.max(0, s.maxBookings - s.bookedCount) }));
   const campaignId = campaign || null;
   const promoName = promo || null;
 

@@ -23,7 +23,7 @@ export interface BikeOption { id: string; brand: string; model: string; plate: s
 export interface PackageOption { id: string; name: string; tier: string; priceSen: number; isBestValue?: boolean; description?: string | null }
 
 export function BookForm({ customerId, bikes, packages, campaignId, availableSlots = [], branchId }: {
-  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string }[]; branchId?: string;
+  customerId: string; bikes: BikeOption[]; packages: PackageOption[]; campaignId?: string | null; availableSlots?: { date: string; time: string; remaining?: number }[]; branchId?: string;
 }) {
   const router = useRouter();
   const lang = useLang();
@@ -34,10 +34,18 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("10:00");
   // BOOK-008: only slots configured & available for the picked date
-  const daySlots = date
-    ? [...new Set(availableSlots.filter((s) => s.date === date).map((s) => s.time))].sort()
-    : [];
-  const slotOptions = daySlots.length > 0 ? daySlots : ["10:00", "11:00", "14:00", "16:00"];
+  // 当日可约时段（time → 剩余容量，同 time 多条取最小值——最保守）
+  const daySlotRemaining: Record<string, number> = {};
+  for (const s of availableSlots) {
+    if (s.date !== date) continue;
+    const rem = s.remaining ?? 1;
+    daySlotRemaining[s.time] = daySlotRemaining[s.time] === undefined ? rem : Math.min(daySlotRemaining[s.time], rem);
+  }
+  const daySlots = Object.keys(daySlotRemaining).sort();
+  // 选了日期但当天无真实可用时段 → 提供预计时段（门店将确认）
+  const EST_TIMES = ["10:00", "11:00", "14:00", "16:00"];
+  const slotOptions = daySlots.length > 0 ? daySlots : EST_TIMES;
+  const isEstimated = !!date && daySlots.length === 0;
   const [notes, setNotes] = useState("");
 
   const selectedBike = bikes.find((b) => b.id === motorcycleId);
@@ -183,19 +191,43 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
       <div className="space-y-4">
         <div>
           <Label>{t("rider.date", lang)}</Label>
-          <input type="date" min={TOMORROW} value={date} onChange={(e) => setDate(e.target.value)} className="mt-1.5 h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
+          <input type="date" min={TOMORROW} value={date} onChange={(e) => { setDate(e.target.value); setTimeSlot(""); }} className="mt-1.5 h-10 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
         </div>
         <div>
           <Label>{t("rider.time", lang)}</Label>
-          <Select value={timeSlot} onValueChange={(v) => setTimeSlot(v ?? "")}>
-            <SelectTrigger className="mt-1.5 w-full"><SelectValue placeholder={daySlots.length > 0 ? t("book.pick-slot", lang) : t("toast.pick-time", lang)} /></SelectTrigger>
-            <SelectContent>
-              {slotOptions.map((t) => (
-                <SelectItem key={t} value={t}>{t}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {daySlots.length === 0 && date && <p className="mt-1 text-[11px] text-muted-foreground">{t("book.no-slots-day", lang)}</p>}
+          {!date ? (
+            <p className="mt-1.5 text-[11px] text-muted-foreground">{t("book.pick-date-first", lang)}</p>
+          ) : (
+            <>
+              {isEstimated ? (
+                <p className="mt-1.5 text-[11px] text-amber-600 dark:text-amber-400">{t("book.est-slots-hint", lang)}</p>
+              ) : (
+                <p className="mt-1.5 text-[11px] text-muted-foreground">{tpl("book.slots-free", lang, { n: slotOptions.length })}</p>
+              )}
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {slotOptions.map((tm) => (
+                  <button
+                    key={tm}
+                    type="button"
+                    onClick={() => setTimeSlot(tm)}
+                    className={cn(
+                      "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                      timeSlot === tm ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:border-primary/50"
+                    )}
+                  >
+                    {tm}
+                    {isEstimated ? (
+                      <span className="ml-1 text-[9px] opacity-70">{t("book.est", lang)}</span>
+                    ) : (
+                      daySlotRemaining[tm] != null && (
+                        <span className="ml-1 text-[9px] opacity-70">{tpl("book.slots-left", lang, { n: daySlotRemaining[tm] })}</span>
+                      )
+                    )}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
       <div>
