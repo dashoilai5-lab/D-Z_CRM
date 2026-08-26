@@ -716,6 +716,9 @@ export const DICT: Dict = {
   "book.choose-branch": { en: "Choose a branch to continue — slots are shown for that branch only.", zh: "请选择门店继续——时段仅显示该门店的。", ms: "Pilih cawangan untuk teruskan — slot hanya ditunjukkan untuk cawangan itu." },
   "book.current-promos": { en: "Current promotions", zh: "当前促销", ms: "Promosi semasa" },
   "book.change": { en: "Change", zh: "更换", ms: "Tukar" },
+  "book.pick-date-first": { en: "Pick a date first to see open slots", zh: "先选择日期以查看可用时段", ms: "Pilih tarikh dahulu untuk lihat slot kosong" },
+  "book.est-slots-hint": { en: "No open slots on this date — estimated times shown (workshop will confirm)", zh: "该日暂无可用时段——以下为预计时段（门店将确认）", ms: "Tiada slot kosong pada tarikh ini — masa anggaran ditunjukkan (bengkel akan sahkan)" },
+  "book.est": { en: "est", zh: "预计", ms: "anggaran" },
 
   // --- rider service status / bike detail ---
   "svc.estimated-ready": { en: "Estimated ready: ", zh: "预计完成：", ms: "Anggaran siap: " },
