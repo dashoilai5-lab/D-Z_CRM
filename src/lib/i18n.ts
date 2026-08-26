@@ -737,6 +737,24 @@ export const DICT: Dict = {
   "qr.point-hint": { en: "Point at a D&Z QR code — it will open automatically", zh: "对准 D&Z 二维码——将自动打开", ms: "Halakan ke kod QR D&Z — ia akan dibuka secara automatik" },
   "qr.camera-error": { en: "Camera unavailable or permission denied. Tip: scan with the phone camera and open the link.", zh: "相机不可用或权限被拒。提示：用手机相机扫码后打开链接。", ms: "Kamera tidak tersedia atau kebenaran ditolak. Petua: imbas dengan kamera telefon dan buka pautan." },
 
+  // --- foreman settlement ---
+  "nav.settlements": { en: "Settlements", zh: "技师结算", ms: "Penyelesaian" },
+  "settle.title": { en: "Foreman Settlements", zh: "技师结算", ms: "Penyelesaian Mekanik" },
+  "settle.subtitle": { en: "Completed jobs, service value & hours per foreman — daily / weekly / monthly", zh: "按技师汇总完成工单、服务金额与工时——按日 / 周 / 月", ms: "Kerja siap, nilai servis & jam setiap mekanik — harian / mingguan / bulanan" },
+  "settle.day": { en: "Day", zh: "日", ms: "Hari" },
+  "settle.week": { en: "Week", zh: "周", ms: "Minggu" },
+  "settle.month": { en: "Month", zh: "月", ms: "Bulan" },
+  "settle.col-foreman": { en: "Foreman", zh: "技师", ms: "Mekanik" },
+  "settle.col-jobs": { en: "Jobs", zh: "工单", ms: "Kerja" },
+  "settle.col-sales": { en: "Service Value", zh: "服务金额", ms: "Nilai Servis" },
+  "settle.col-avg": { en: "Avg Ticket", zh: "平均客单价", ms: "Purata Tiket" },
+  "settle.col-addon": { en: "Add-on Jobs", zh: "附加工单", ms: "Kerja Tambahan" },
+  "settle.col-hours": { en: "Hours", zh: "工时", ms: "Jam" },
+  "settle.totals": { en: "Totals", zh: "合计", ms: "Jumlah" },
+  "settle.details": { en: "Details", zh: "明细", ms: "Butiran" },
+  "settle.empty": { en: "No completed jobs in this period.", zh: "该周期暂无已完成工单。", ms: "Tiada kerja siap dalam tempoh ini." },
+  "settle.period-label": { en: "Period", zh: "周期", ms: "Tempoh" },
+
 };
 
 export function t(key: string, lang: Lang): string {
