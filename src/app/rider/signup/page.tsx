@@ -36,7 +36,8 @@ export default function RiderSignupPage() {
     if (res.emailConfirm) {
       setInfo("Account created! Check your email for a confirmation link, then sign in.");
     } else {
-      router.push("/rider/home");
+      // 新注册必无摩托 → 引导注册第一辆
+      router.push("/rider/bike-first");
       router.refresh();
     }
   }

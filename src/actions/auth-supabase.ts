@@ -101,7 +101,11 @@ export async function signInWithPassword(input: { email?: string; identifier?: s
   // 关联业务身份 → 注入 claims
   const linked = await injectBizClaims(data.user.id);
   if (!linked.ok) return { ok: false as const, error: linked.error };
-  return { ok: true as const, role: linked.claims.role };
+  let hasBike = false;
+  if (linked.claims.customerId) {
+    hasBike = (await db.motorcycle.count({ where: { customerId: linked.claims.customerId } })) > 0;
+  }
+  return { ok: true as const, role: linked.claims.role, hasBike };
 }
 
 export async function signInWithOtp(input: { email: string }) {
@@ -118,7 +122,11 @@ export async function verifyOtp(input: { email: string; token: string }) {
   if (!data.user) return { ok: false as const, error: "No user returned." };
   const linked = await injectBizClaims(data.user.id);
   if (!linked.ok) return { ok: false as const, error: linked.error };
-  return { ok: true as const };
+  let hasBike = false;
+  if (linked.claims.customerId) {
+    hasBike = (await db.motorcycle.count({ where: { customerId: linked.claims.customerId } })) > 0;
+  }
+  return { ok: true as const, role: linked.claims.role, hasBike };
 }
 
 /**

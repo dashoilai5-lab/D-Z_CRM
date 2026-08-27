@@ -29,7 +29,8 @@ export default function RiderLoginPage() {
     const res = await signInWithPassword({ identifier, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
-    router.push("/rider/home");
+    // 首次登录无摩托 → 引导注册第一辆；否则直入首页
+    router.push(res.hasBike === false ? "/rider/bike-first" : "/rider/home");
     router.refresh();
   }
 
@@ -49,7 +50,7 @@ export default function RiderLoginPage() {
     const res = await verifyOtp({ email, token: otpToken });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
-    router.push("/rider/home");
+    router.push(res.hasBike === false ? "/rider/bike-first" : "/rider/home");
     router.refresh();
   }
 
