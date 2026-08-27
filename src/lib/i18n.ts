@@ -692,6 +692,8 @@ export const DICT: Dict = {
   "common.cancel-short": { en: "Cancel", zh: "取消", ms: "Batal" },
 
   // --- rider login ---
+  "login.phone": { en: "Phone", zh: "手机", ms: "Telefon" },
+  "login.email": { en: "Email", zh: "邮箱", ms: "E-mel" },
   "login.password-tab": { en: "Password", zh: "密码", ms: "Kata Laluan" },
   "login.phone-or-email": { en: "Phone or email", zh: "手机号或邮箱", ms: "Telefon atau e-mel" },
   "login.email-code": { en: "Email code", zh: "邮箱验证码", ms: "Kod e-mel" },
