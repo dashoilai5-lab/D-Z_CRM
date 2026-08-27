@@ -701,6 +701,8 @@ export const DICT: Dict = {
   "signup.title": { en: "Join D&Z Rider", zh: "加入 D&Z 车手", ms: "Sertai D&Z Rider" },
   "signup.sub": { en: "Create your account — your bikes & service in one place", zh: "创建账号——您的爱车与服务尽在一处", ms: "Cipta akaun — motosikal & servis anda di satu tempat" },
   "signup.full-name": { en: "Full name", zh: "全名", ms: "Nama penuh" },
+  "signup.gender-male": { en: "Male", zh: "男", ms: "Lelaki" },
+  "signup.gender-female": { en: "Female", zh: "女", ms: "Perempuan" },
   "signup.password-min": { en: "Password (min 8 chars)", zh: "密码（至少 8 个字符）", ms: "Kata laluan (min 8 aksara)" },
   "signup.creating": { en: "Creating account…", zh: "正在创建账号…", ms: "Mencipta akaun…" },
   "signup.create": { en: "Create account", zh: "创建账号", ms: "Cipta akaun" },

@@ -60,8 +60,8 @@ async function createAdminClient() {
 }
 
 /** 手机号 → Customer.phone（归一化匹配）→ authId。 */
-async function customerByPhone(local: string): Promise<(Pick<Customer, "id" | "phone" | "authId" | "organisationId" | "branchId"> & { email: string | null }) | null> {
-  const candidates = await db.customer.findMany({ where: { phone: { not: null } }, select: { id: true, phone: true, authId: true, email: true, organisationId: true, branchId: true } });
+async function customerByPhone(local: string): Promise<(Pick<Customer, "id" | "phone" | "authId" | "organisationId" | "branchId" | "gender"> & { email: string | null }) | null> {
+  const candidates = await db.customer.findMany({ where: { phone: { not: null } }, select: { id: true, phone: true, authId: true, email: true, organisationId: true, branchId: true, gender: true } });
   return candidates.find((c) => phoneDigits(c.phone) === local) ?? null;
 }
 
@@ -127,8 +127,9 @@ export async function verifyOtp(input: { email: string; token: string }) {
  * - 手机号：归一化匹配老客 Customer.phone → 绑定 authId（老客注册）；无老客则新建 Customer。
  *   auth 用户：老客有 email 用 email 创建；否则 phone-only（createUser({phone})，登录需 Supabase Phone provider 开启）。
  */
-export async function signUpRider(input: { name: string; email?: string; identifier?: string; password: string }) {
+export async function signUpRider(input: { name: string; email?: string; identifier?: string; gender?: string; password: string }) {
   const name = input.name.trim();
+  const gender = input.gender === "M" || input.gender === "F" ? input.gender : null;
   if (name.length < 2) return { ok: false as const, error: "Please enter your name." };
   if (input.password.length < 8) return { ok: false as const, error: "Password must be at least 8 characters." };
 
@@ -197,12 +198,12 @@ export async function signUpRider(input: { name: string; email?: string; identif
       const org = await db.organisation.findFirst({ orderBy: { name: "asc" } });
       if (!org) return { ok: false as const, error: "No workshop organisation configured." };
       customer = await db.customer.create({
-        data: { organisationId: org.id, name, email: email ?? null, phone: phoneLocal ? fmtStoredPhone(phoneLocal) : undefined, authId: authUserId, qrToken: generateQrToken() },
+        data: { organisationId: org.id, name, email: email ?? null, phone: phoneLocal ? fmtStoredPhone(phoneLocal) : undefined, gender, authId: authUserId, qrToken: generateQrToken() },
       });
     } else if (!customer.authId) {
       customer = await db.customer.update({
         where: { id: customer.id },
-        data: { authId: authUserId, ...(phoneLocal && !customer.phone ? { phone: fmtStoredPhone(phoneLocal) } : {}) },
+        data: { authId: authUserId, ...(phoneLocal && !customer.phone ? { phone: fmtStoredPhone(phoneLocal) } : {}), ...(gender && !customer.gender ? { gender } : {}) },
       });
     }
 

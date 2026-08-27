@@ -13,6 +13,7 @@ export default function RiderSignupPage() {
   const lang = useLang();
   const [name, setName] = useState("");
   const [identifier, setIdentifier] = useState(""); // 手机号或邮箱
+  const [gender, setGender] = useState(""); // "" | "M" | "F"
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -21,7 +22,7 @@ export default function RiderSignupPage() {
   async function doSignup(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(""); setInfo("");
-    const res = await signUpRider({ name, identifier, password });
+    const res = await signUpRider({ name, identifier, gender, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
     if (res.signInFailed) {
@@ -61,6 +62,14 @@ export default function RiderSignupPage() {
             <div>
               <label className={labelCls}>{t("login.phone-or-email", lang)}</label>
               <input className={inputCls} type="text" inputMode="tel" autoComplete="tel" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="012-345 6789 / you@example.com" />
+            </div>
+            <div>
+              <label className={labelCls}>{t("form.gender", lang)}</label>
+              <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
+                <option value="">{t("form.prefer-not", lang)}</option>
+                <option value="M">{t("signup.gender-male", lang)}</option>
+                <option value="F">{t("signup.gender-female", lang)}</option>
+              </select>
             </div>
             <div>
               <label className={labelCls}>{t("signup.password-min", lang)}</label>
