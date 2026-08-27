@@ -643,6 +643,10 @@ export const DICT: Dict = {
   "bike.edit-details": { en: "Edit Details", zh: "编辑详情", ms: "Sunting Butiran" },
   "bike.save-changes": { en: "SAVE CHANGES", zh: "保存更改", ms: "SIMPAN PERUBAHAN" },
   "bike.list-title": { en: "My Motorcycles", zh: "我的摩托", ms: "Motosikal Saya" },
+  "bike.first-title": { en: "Add your first motorcycle", zh: "添加您的第一辆摩托", ms: "Tambah motosikal pertama anda" },
+  "bike.first-desc": { en: "Register your bike to book services, track maintenance and get reminders — you can skip this and add it later.", zh: "注册您的爱车即可预约服务、跟踪保养并获得提醒——也可稍后再添加。", ms: "Daftarkan motosikal anda untuk tempah servis, jejak penyelenggaraan & dapatkan peringatan — boleh langkau dan tambah kemudian." },
+  "bike.add-first": { en: "Add motorcycle", zh: "添加摩托", ms: "Tambah motosikal" },
+  "bike.skip": { en: "Skip for now", zh: "稍后再说", ms: "Langkau buat masa ini" },
   "bike.add-short": { en: "Add", zh: "添加", ms: "Tambah" },
   "bike.add-desc": { en: "Register your bike to get type-specific service recommendations", zh: "注册您的爱车以获取针对车型的服务建议", ms: "Daftarkan motosikal anda untuk cadangan servis khusus jenis" },
 

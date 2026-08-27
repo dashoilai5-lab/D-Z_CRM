@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Bike, ChevronRight, Plus, X } from "lucide-react";
+import { Bike, ChevronRight, Plus, X, ArrowRight } from "lucide-react";
 import { fmtKM } from "@/lib/format";
 import { motorcycleTypeInfo } from "@/lib/motorcycle-types";
 import { AddMotorcycle } from "@/components/rider/add-motorcycle";
@@ -40,6 +40,17 @@ export function MotorcycleList({ customerId, bikes }: { customerId: string; bike
             </button>
           </div>
           <AddMotorcycle customerId={customerId} onDone={() => setAdding(false)} />
+        </div>
+      )}
+
+      {bikes.length === 0 && (
+        <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 p-6 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Plus className="h-6 w-6" /></div>
+          <div className="mt-3 font-semibold">{t("bike.first-title", lang)}</div>
+          <div className="mt-1 text-xs text-muted-foreground">{t("bike.first-desc", lang)}</div>
+          <button onClick={() => setAdding(true)} className="mt-4 inline-flex items-center gap-1 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">
+            {t("bike.add-first", lang)} <ArrowRight className="h-3.5 w-3.5" />
+          </button>
         </div>
       )}
 

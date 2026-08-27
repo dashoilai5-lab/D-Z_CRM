@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Bike, CalendarPlus, ChevronRight, Wrench, AlertTriangle, Clock, Bell, Tag } from "lucide-react";
+import { Bike, CalendarPlus, ChevronRight, Wrench, AlertTriangle, Clock, Bell, Tag, ArrowRight } from "lucide-react";
 import { getRiderCustomer } from "@/lib/rider-customer";
 import { db } from "@/lib/db";
 import { fmtKM, fmtDate } from "@/lib/format";
@@ -74,6 +74,21 @@ export default async function RiderHomePage() {
           </Link>
         </div>
       </header>
+
+      {!bike && (
+        <Link href="/rider/bike-first" className="block rounded-2xl border-2 border-dashed border-primary/40 bg-primary/5 p-5">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Bike className="h-6 w-6" /></div>
+            <div>
+              <div className="font-semibold">{t("bike.first-title", lang)}</div>
+              <div className="text-xs text-muted-foreground">{t("bike.first-desc", lang)}</div>
+            </div>
+          </div>
+          <div className="mt-3 inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+            {t("bike.add-first", lang)} <ArrowRight className="h-3.5 w-3.5" />
+          </div>
+        </Link>
+      )}
 
       {activeJob && (
         <Link href="/rider/service-status" className="block rounded-2xl bg-primary text-primary-foreground p-5">
