@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = main @ 38b7063，已全部 push，三服务 200。
+本地与生产 = main @ 35c69cf，已全部 push，三服务 200。
 Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登录&注册**（手机必填/邮箱选填/gender/密码确认/老客手机号绑定 authId）已上线（生产实测手机+email 登录、注册页全字段）。上线准备：docs/ONBOARDING_PLAN.md（资料收集表+模块开放策略）+ scripts/setup-workshop-modules.ts（模块覆盖脚本，留在 feat/workshop-module-setup 分支未 merge）。
 剩余需求：Rider ①②④（手机/WhatsApp 登录、老客注册、每月换油提醒）+ Workshop ④（3-6-12 月保养时间线）+ 经销商验证 + provider 换真。
 流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
@@ -33,6 +33,7 @@ Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登�
 - Mechanic 专属 App（merge 9a54f5c，6 commit）：/mechanic-app（仅 MECHANIC）Grab 接单 + job 详情 + Earnings + Profile + Settings + 发薪双向确认（PENDING→MECHANIC_APPROVED→PAID）+ 全 i18n
 - Mechanic Profile 工作统计（294dd21）：汇总（工单/客单价/评分）+ 12 个月月度趋势柱状（+8 业务月）
 - Yamaha LC135 车型拆分（merge 9b9e412）：135LC Fi → LC135 V1 / LC135 V2 - V7 / LC135 V8（bike-models 下拉 + seed 目录，本地+生产实测）
+- 登录/注册页语言切换（merge 35c69cf）：/rider/login、/rider/signup、/login 顶部加 LanguageSwitcher（EN/中文/BM）默认英文——生产实测三页切换器 ✓
 - 手机号注册/登录放宽+国家区号（merge 38b7063）：phone.ts 加 digitsOnly/combinePhone/normalizePhoneLoose/matchKey/COUNTRY_CODES；任意数字号码即通过（不再报 Phone required）；注册/登录页区号下拉显示国家名（默认 Malaysia +60）；Customer.phone 存 E.164 兼容旧本地格式；e2e 20 过——生产实测区号下拉 ✓
 - Rider 首辆摩托引导（merge 859c21d）：登录/注册 action 返回 hasBike；无车用户登录/注册跳 /rider/bike-first（表单+稍后再说）；home 无车虚线引导卡；motorcycles 空态引导卡；三语词条 bike.first-*——生产实测注册→跳引导 ✓
 - Workshop 自动刷新（merge 9345744）：顶部常驻刷新按钮 + Auto 开关（默认开 30s router.refresh 软刷新不丢状态），desktop header + mobile sticky 条——生产实测控件显示 ✓
@@ -67,7 +68,7 @@ Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登�
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：38b7063（Merge fix/phone-register）｜ 已 push
+- 分支：main ｜ HEAD：35c69cf（Merge feat/login-lang）｜ 已 push
 - 本地 dev.db：试用空店状态（业务全清、配置保留）；员工 authId 已全重绑（owner/manager/counter/marketing/inventory/mechanic×3）
 - feat/workshop-module-setup @ a614dc0：模块覆盖脚本 + 台账（未 merge 未 push，用户决定不需要；ONBOARDING_PLAN.md 已在 main）
 - feat/rider-phone-login 已合并上线并清理（5cc2978 → 生产）
