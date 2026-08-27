@@ -85,8 +85,8 @@ export default function RiderLoginPage() {
               <div>
                 <label className={labelCls}>{t("login.phone-or-email", lang)}</label>
                 <div className="flex gap-2">
-                  <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className="w-24 rounded-md border bg-background px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
-                    {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.code}</option>)}
+                  <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className="w-32 rounded-md border bg-background px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
+                    {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
                   </select>
                   <input className={inputCls} type="text" inputMode="tel" autoComplete="tel" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="123-456 789 / you@dz.my" />
                 </div>
