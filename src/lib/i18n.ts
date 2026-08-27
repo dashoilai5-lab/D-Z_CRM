@@ -711,6 +711,7 @@ export const DICT: Dict = {
   "signup.email-optional": { en: "Email (optional)", zh: "邮箱（选填）", ms: "E-mel (pilihan)" },
   "signup.confirm-password": { en: "Confirm password", zh: "确认密码", ms: "Sahkan kata laluan" },
   "signup.password-mismatch": { en: "Passwords do not match.", zh: "两次输入的密码不一致。", ms: "Kata laluan tidak sepadan." },
+  "signup.country-hint": { en: "Country code · default +60 Malaysia", zh: "国家区号 · 默认 +60 马来西亚", ms: "Kod negara · lalai +60 Malaysia" },
   "signup.creating": { en: "Creating account…", zh: "正在创建账号…", ms: "Mencipta akaun…" },
   "signup.create": { en: "Create account", zh: "创建账号", ms: "Cipta akaun" },
   "signup.has-account": { en: "Already have an account? Sign in", zh: "已有账号？登录", ms: "Sudah ada akaun? Log masuk" },

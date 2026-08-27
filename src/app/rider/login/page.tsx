@@ -6,6 +6,7 @@ import { Bike } from "lucide-react";
 import { signInWithPassword, signInWithOtp, verifyOtp } from "@/actions/auth-supabase";
 import { useLang } from "@/components/shared/language-context";
 import { t } from "@/lib/i18n";
+import { COUNTRY_CODES } from "@/lib/phone";
 
 type Tab = "password" | "otp";
 
@@ -15,6 +16,7 @@ export default function RiderLoginPage() {
   const lang = useLang();
   const [tab, setTab] = useState<Tab>("password");
   const [identifier, setIdentifier] = useState(""); // 手机号或邮箱
+  const [countryCode, setCountryCode] = useState("+60"); // 手机号区号（默认马来西亚）
   const [email, setEmail] = useState(""); // otp tab 用
   const [password, setPassword] = useState("");
   const [otpToken, setOtpToken] = useState("");
@@ -26,7 +28,7 @@ export default function RiderLoginPage() {
   async function doPassword(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(""); setInfo("");
-    const res = await signInWithPassword({ identifier, password });
+    const res = await signInWithPassword({ identifier, countryCode, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
     // 首次登录无摩托 → 引导注册第一辆；否则直入首页
@@ -82,7 +84,12 @@ export default function RiderLoginPage() {
             <form onSubmit={doPassword} className="space-y-3">
               <div>
                 <label className={labelCls}>{t("login.phone-or-email", lang)}</label>
-                <input className={inputCls} type="text" inputMode="tel" autoComplete="tel" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="012-345 6789 / you@dz.my" />
+                <div className="flex gap-2">
+                  <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className="w-32 rounded-md border bg-background px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
+                    {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+                  </select>
+                  <input className={inputCls} type="text" inputMode="tel" autoComplete="tel" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="123-456 789 / you@dz.my" />
+                </div>
               </div>
               <div>
                 <label className={labelCls}>{t("login.password-tab", lang)}</label>

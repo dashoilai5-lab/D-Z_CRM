@@ -6,12 +6,14 @@ import { Bike } from "lucide-react";
 import { signUpRider } from "@/actions/auth-supabase";
 import { useLang } from "@/components/shared/language-context";
 import { t } from "@/lib/i18n";
+import { COUNTRY_CODES } from "@/lib/phone";
 
 /** Rider 顾客自助注册页。 */
 export default function RiderSignupPage() {
   const router = useRouter();
   const lang = useLang();
   const [name, setName] = useState("");
+  const [countryCode, setCountryCode] = useState("+60"); // 默认马来西亚
   const [phone, setPhone] = useState(""); // 必填
   const [email, setEmail] = useState(""); // 选填
   const [gender, setGender] = useState(""); // "" | "M" | "F"
@@ -25,7 +27,7 @@ export default function RiderSignupPage() {
     e.preventDefault();
     setBusy(true); setError(""); setInfo("");
     if (password !== confirmPassword) { setBusy(false); setError(t("signup.password-mismatch", lang)); return; }
-    const res = await signUpRider({ name, phone, email: email.trim() || undefined, gender, password });
+    const res = await signUpRider({ name, phone, countryCode, email: email.trim() || undefined, gender, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
     if (res.signInFailed) {
@@ -65,7 +67,13 @@ export default function RiderSignupPage() {
             </div>
             <div>
               <label className={labelCls}>{t("common.phone", lang)}</label>
-              <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="012-345 6789" />
+              <div className="flex gap-2">
+                <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className="w-32 rounded-md border bg-background px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
+                  {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+                </select>
+                <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="123-456 789" />
+              </div>
+              <p className="mt-1 text-[10px] text-muted-foreground">{t("signup.country-hint", lang)}</p>
             </div>
             <div>
               <label className={labelCls}>{t("signup.email-optional", lang)}</label>
