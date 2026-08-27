@@ -3,12 +3,18 @@ import { ThemeControls } from "@/components/shared/theme-controls";
 import { ScanQrButton } from "@/components/workshop/scan-qr-button";
 import { Sidebar } from "@/components/workshop/sidebar";
 import { MobileNav, type MobileNavItem } from "@/components/workshop/mobile-nav";
+import { redirect } from "next/navigation";
 import { navForRole } from "@/lib/nav-registry";
 import { getSessionUser, personaForRole } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
 
 export default async function WorkshopLayout({ children }: { children: React.ReactNode }) {
   const [session, lang] = await Promise.all([getSessionUser(), getLang()]);
+
+  // —— Workshop OS 访问守卫：仅员工且非 MECHANIC ——
+  if (!session.authenticated) redirect("/login");
+  if (session.kind === "customer") redirect("/rider/home"); // rider 不能进 workshop OS（电脑版也不行）
+  if (session.role === "MECHANIC") redirect("/mechanic-app"); // mechanic 只能 app
 
   // Sidebar 需要 persona（nav-registry 按角色导航分组过滤）+ 用户信息
   const persona = personaForRole(session.role);

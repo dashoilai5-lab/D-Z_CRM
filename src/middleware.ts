@@ -32,6 +32,33 @@ export async function middleware(req: NextRequest) {
   // 1. Supabase Auth session. getUser() also refreshes tokens.
   const { response, user } = await updateSession(req);
   if (user) {
+    // —— 路由隔离矩阵（角色级；layout 层用 DB 权威数据兜底）——
+    // JWT claims 由登录时 injectBizClaims 写入 user_metadata（orgId/branchId/role/userId/customerId）
+    const role = (user.user_metadata?.role as string) ?? "";
+    const isCustomer = role === "CUSTOMER";
+    const isMechanic = role === "MECHANIC";
+    const go = (path: string): NextResponse => {
+      const url = new URL(path, req.url);
+      const r = NextResponse.redirect(url);
+      r.headers.set("x-pathname", pathname);
+      return r;
+    };
+
+    // /workshop/*：仅员工且非 MECHANIC（rider → rider app，mechanic → mechanic app）
+    if (pathname.startsWith("/workshop")) {
+      if (isCustomer) return go("/rider/home");
+      if (isMechanic) return go("/mechanic-app");
+    }
+    // /mechanic-app/*：仅 MECHANIC
+    if (pathname.startsWith("/mechanic-app")) {
+      if (isCustomer) return go("/rider/home");
+      if (!isMechanic) return go("/workshop/dashboard");
+    }
+    // /rider/* 私有页：仅 CUSTOMER
+    if (isRiderPrivate(pathname)) {
+      if (isMechanic) return go("/mechanic-app");
+      if (!isCustomer) return go("/workshop/dashboard");
+    }
     response.headers.set("x-pathname", pathname);
     return response;
   }

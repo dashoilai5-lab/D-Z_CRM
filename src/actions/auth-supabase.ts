@@ -101,7 +101,7 @@ export async function signInWithPassword(input: { email?: string; identifier?: s
   // 关联业务身份 → 注入 claims
   const linked = await injectBizClaims(data.user.id);
   if (!linked.ok) return { ok: false as const, error: linked.error };
-  return { ok: true as const };
+  return { ok: true as const, role: linked.claims.role };
 }
 
 export async function signInWithOtp(input: { email: string }) {

@@ -211,6 +211,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
                   <button
                     key={tm}
                     type="button"
+                    data-testid={"slot-" + tm}
                     onClick={() => setTimeSlot(tm)}
                     className={cn(
                       "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",

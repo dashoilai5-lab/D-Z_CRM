@@ -44,7 +44,7 @@ test.describe("master journey", () => {
     // 6. Workshop sees the approval; mechanic completes the service
     await setPersona(ctx, "MECHANIC");
     await settle(page);
-    await page.goto(BASE_URL + "/workshop/mechanic/jobs/" + jobId);
+    await page.goto(BASE_URL + "/mechanic-app/jobs/" + jobId); // 隔离：mechanic 只能 mechanic app
     await expect(page.getByText("CUSTOMER APPROVED").first()).toBeVisible();
     await page.getByTestId("complete-service").click();
     await expect(page.getByText("Completed", { exact: true }).first()).toBeVisible({ timeout: 30_000 });

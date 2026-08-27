@@ -16,6 +16,11 @@ export default async function RiderLayout({ children }: { children: React.ReactN
     redirect("/rider/login");
   }
 
+  // 已登录员工/技师：rider 端仅顾客可用 → 重定向各自入口
+  if (!isAuthPage && session.authenticated && session.kind === "staff") {
+    redirect(session.role === "MECHANIC" ? "/mechanic-app" : "/workshop/dashboard");
+  }
+
   return (
     <div className="flex min-h-dvh flex-col bg-muted/40">
       {/* 认证页（login/signup）无底部导航；其他页保留（内容底部预留 nav 空间） */}
