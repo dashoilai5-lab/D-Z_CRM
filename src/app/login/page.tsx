@@ -24,7 +24,8 @@ export default function LoginPage() {
     const res = await signInWithPassword({ email, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
-    router.push("/workshop/dashboard");
+    // 按角色跳转：MECHANIC → mechanic app；其他员工 → workshop OS
+    router.push(res.role === "MECHANIC" ? "/mechanic-app" : "/workshop/dashboard");
     router.refresh();
   }
 

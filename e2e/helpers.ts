@@ -20,8 +20,8 @@ export async function setPersona(context: BrowserContext, persona: DemoPersona) 
   await context.clearCookies();
   await page.goto(BASE_URL + account.path);
   await page.waitForTimeout(600);
-  // 登录页：email + password 输入 + Sign in 按钮
-  await page.fill('input[type="email"]', account.email);
+  // 登录页：第一个非密码输入框（rider login 是手机/邮箱 type=text；workshop login 是 email）+ 密码 + Sign in
+  await page.fill('form input:not([type="password"])', account.email);
   await page.fill('input[type="password"]', "Dashoil@!789");
   await page.getByRole("button", { name: /sign in/i }).click();
   // 等待 session cookie 写入（跳转或 header 更新）
@@ -62,6 +62,9 @@ export async function bookViaRider(page: Page, ctx: BrowserContext, days = 2) {
   await settle(page);
   const date = isoInDays(days);
   await page.fill('input[type="date"]', date);
+  await page.waitForTimeout(400);
+  // 选第一个可用时段（真实 slots 或 estimated；book-submit 需 timeSlot）
+  await page.locator('[data-testid^="slot-"]').first().click();
   await page.getByTestId("book-submit").click();
   await page.waitForURL("**/rider/bookings");
   await expect(page.getByText("Waiting for confirmation").first()).toBeVisible();
@@ -94,7 +97,7 @@ export async function confirmAndCheckIn(page: Page, ctx: BrowserContext, mileage
 export async function runMechanicInspection(page: Page, jobId: string) {
   await setPersona(page.context() as unknown as BrowserContext, "MECHANIC");
   await settle(page);
-  await page.goto(BASE_URL + "/workshop/mechanic/jobs/" + jobId);
+  await page.goto(BASE_URL + "/mechanic-app/jobs/" + jobId); // 隔离：mechanic 只能 mechanic app
   await page.getByTestId("start-checklist").click();
   for (const item of ["Engine-Oil", "Oil-Filter", "Brake"]) {
     await page.getByTestId("result-" + item + "-PASS").click();

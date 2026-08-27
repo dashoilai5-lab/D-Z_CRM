@@ -33,13 +33,12 @@ test.describe("sidebar user block + centering", () => {
     await expect(aside).toHaveCSS("width", "208px", { timeout: 5000 });
     await expect(nameWrap).toHaveCSS("opacity", "1", { timeout: 5000 });
 
-    // role-aware: switch to MECHANIC → different user shown (real login via setPersona)
+    // role-aware: MECHANIC 被隔离到 mechanic app（访问 workshop OS 重定向）
     await setPersona(ctx, "MECHANIC");
     await page.goto(BASE_URL + "/workshop/dashboard");
-    await page.waitForTimeout(300);
-    await aside.hover();
-    await expect(aside.getByText("Aizat bin Ismail").locator("..")).toHaveCSS("opacity", "1", { timeout: 5000 });
-    await expect(aside.getByText("MECHANIC", { exact: true }).first()).toBeVisible();
+    await page.waitForTimeout(600);
+    // 隔离：mechanic 访问 workshop OS 被重定向到 mechanic app
+    await expect(page).toHaveURL(/\/mechanic-app/);
 
     await ctx.close();
   });

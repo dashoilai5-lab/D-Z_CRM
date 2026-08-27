@@ -51,7 +51,7 @@ test.describe("§75 booking & approval flows", () => {
     await expect(page.getByTestId("approval-card")).toHaveCount(0, { timeout: 15_000 });
 
     await setPersona(ctx, "MECHANIC");
-    await page.goto(BASE_URL + "/workshop/mechanic/jobs/" + jobId);
+    await page.goto(BASE_URL + "/mechanic-app/jobs/" + jobId); // 隔离：mechanic 只能 mechanic app
     await expect(page.getByText("CUSTOMER DECLINED").first()).toBeVisible();
     await ctx.close();
   });

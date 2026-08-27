@@ -9,8 +9,9 @@ import { MechanicNav } from "@/components/mechanic/mechanic-nav";
 export default async function MechanicAppLayout({ children }: { children: React.ReactNode }) {
   const lang = await getLang();
   const session = await getSessionUser();
+  if (session.kind === "customer") redirect("/rider/home"); // rider 顾客不能进 mechanic app
   if (session.kind !== "staff" || session.role !== "MECHANIC") {
-    redirect("/workshop/dashboard");
+    redirect("/workshop/dashboard"); // 其他员工 → workshop OS
   }
 
   return (
