@@ -3,8 +3,8 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-生产 = main @ 190441e（已 push）；本地 main 领先 2 commit（ONBOARDING_PLAN 文档，按用户要求不推送）。三服务 200。
-Mechanic 专属 App + Profile 工作统计已上线；车型目录已拆 LC135 → V1/V2-V7/V8（生产实测）。上线准备：docs/ONBOARDING_PLAN.md（资料收集表+模块开放策略）+ scripts/setup-workshop-modules.ts（模块覆盖脚本，留在 feat/workshop-module-setup 分支未 merge）。
+本地与生产 = main @ 5cc2978，已全部 push，三服务 200。
+Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登录&注册**（手机必填/邮箱选填/gender/密码确认/老客手机号绑定 authId）已上线（生产实测手机+email 登录、注册页全字段）。上线准备：docs/ONBOARDING_PLAN.md（资料收集表+模块开放策略）+ scripts/setup-workshop-modules.ts（模块覆盖脚本，留在 feat/workshop-module-setup 分支未 merge）。
 剩余需求：Rider ①②④（手机/WhatsApp 登录、老客注册、每月换油提醒）+ Workshop ④（3-6-12 月保养时间线）+ 经销商验证 + provider 换真。
 流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
@@ -33,6 +33,7 @@ Mechanic 专属 App + Profile 工作统计已上线；车型目录已拆 LC135 �
 - Mechanic 专属 App（merge 9a54f5c，6 commit）：/mechanic-app（仅 MECHANIC）Grab 接单 + job 详情 + Earnings + Profile + Settings + 发薪双向确认（PENDING→MECHANIC_APPROVED→PAID）+ 全 i18n
 - Mechanic Profile 工作统计（294dd21）：汇总（工单/客单价/评分）+ 12 个月月度趋势柱状（+8 业务月）
 - Yamaha LC135 车型拆分（merge 9b9e412）：135LC Fi → LC135 V1 / LC135 V2 - V7 / LC135 V8（bike-models 下拉 + seed 目录，本地+生产实测）
+- Rider 手机/邮箱双通道（merge 5cc2978，8 commit）：登录手机或邮箱二选一（src/lib/phone.ts 归一化 013-125 2832/0131252832/+60131252832，E.164 去 60 前缀补前导 0）；手机号→Customer.phone→authId→email 登录（兼容现有账号）/phone-only 走 Supabase phone（需开 Phone provider）；注册页手机必填+邮箱选填+gender+密码确认；手机号匹配老客绑 authId 不新建（Rider ② 核心）｜生产实测：手机号 012-345 6789 登录 ✓ email 登录 ✓ 注册页全字段 ✓；注意生产 Customer 是旧 seed（email 全 null、phone 占位号）
 - 上线准备（本地存档，未部署）：docs/ONBOARDING_PLAN.md——workshop 上线计划（资料收集表 §1/模块开放策略 §2 第一波开 13 关 15/CSV 模板/检查清单）；scripts/setup-workshop-modules.ts——按 org×角色×模块 写 Permission 覆盖行关闭进阶模块（--dry-run/--open/--close/--open-all 可逆）
 - 注：294dd21/a9db9cf 两次小改动直接在 main 提交（未走 branch 流程），已向用户说明后续按流程
 
@@ -60,9 +61,9 @@ Mechanic 专属 App + Profile 工作统计已上线；车型目录已拆 LC135 �
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：7dc9c97（本地，领先 origin/main 2 commit：ONBOARDING_PLAN 文档 merge，按用户要求未推送）
-- feat/workshop-module-setup @ a614dc0：模块覆盖脚本 + 台账（未 merge 未 push，用户决定不需要）
-- feat/lc135-model-split 已合并上线并清理（9b9e412 → 生产，HANDOFF 190441e 已 push）
+- 分支：main ｜ HEAD：5cc2978（Merge feat/rider-phone-login）｜ 已 push（含 ONBOARDING_PLAN 文档一并上线）
+- feat/workshop-module-setup @ a614dc0：模块覆盖脚本 + 台账（未 merge 未 push，用户决定不需要；ONBOARDING_PLAN.md 已在 main）
+- feat/rider-phone-login 已合并上线并清理（5cc2978 → 生产）
 - 未提交：仅 screenshots/ 截图 + scripts/_tmp-fix-dates.ts（临时脚本，可删）
 - 远程与本地一致（分叉 0/0）；全部 feature/fix 分支已清理
 
