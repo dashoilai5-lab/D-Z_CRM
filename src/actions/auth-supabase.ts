@@ -122,33 +122,29 @@ export async function verifyOtp(input: { email: string; token: string }) {
 }
 
 /**
- * Rider 顾客自助注册：邮箱或手机号二选一。
- * - email：现有逻辑（测试域自动确认 + 自动登录）
- * - 手机号：归一化匹配老客 Customer.phone → 绑定 authId（老客注册）；无老客则新建 Customer。
- *   auth 用户：老客有 email 用 email 创建；否则 phone-only（createUser({phone})，登录需 Supabase Phone provider 开启）。
+ * Rider 顾客自助注册：手机号必填 + 邮箱选填。
+ * - 手机号：必填，归一化匹配老客 Customer.phone → 绑定 authId（老客注册）；无老客则新建 Customer。
+ * - 邮箱：选填；填了用邮箱建 auth（登录双通道）；没填 → 老客有 email 用老客 email；否则 phone-only（登录需 Supabase Phone provider）。
  */
-export async function signUpRider(input: { name: string; email?: string; identifier?: string; gender?: string; password: string }) {
+export async function signUpRider(input: { name: string; phone?: string; email?: string; gender?: string; password: string }) {
   const name = input.name.trim();
   const gender = input.gender === "M" || input.gender === "F" ? input.gender : null;
   if (name.length < 2) return { ok: false as const, error: "Please enter your name." };
   if (input.password.length < 8) return { ok: false as const, error: "Password must be at least 8 characters." };
 
-  // 归一化 identifier：邮箱或手机号（二选一）
-  const id = (input.identifier ?? input.email ?? "").trim();
-  let email: string | undefined = id.includes("@") ? id.toLowerCase() : undefined;
-  let phoneLocal: string | undefined;
-  if (!email && id) {
-    phoneLocal = normalizePhone(id);
-    if (!phoneLocal) return { ok: false as const, error: "Invalid phone number — use e.g. 012-345 6789." };
-  }
-  if (!email && !phoneLocal) return { ok: false as const, error: "Enter your email or phone number." };
+  // 手机号必填归一化
+  const phoneLocal = normalizePhone(input.phone ?? "");
+  if (!phoneLocal) return { ok: false as const, error: "Phone number is required — use e.g. 012-345 6789." };
+  // 邮箱选填（去空格小写；空则 undefined）
+  let email = input.email?.trim().toLowerCase() || undefined;
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false as const, error: "Invalid email address." };
 
   const admin = await createAdminClient();
 
   // 老客匹配：手机号 → Customer.phone（老客注册，绑定 authId）
-  let existing = phoneLocal ? await customerByPhone(phoneLocal) : null;
+  let existing = await customerByPhone(phoneLocal);
   // 老客有 email 且本次未填 → 用老客 email 建 auth（保持双通道同一账号）
-  if (phoneLocal && !email && existing?.email) email = existing.email;
+  if (!email && existing?.email) email = existing.email;
   // 重复检测
   if (email) {
     const dup = await db.customer.findFirst({ where: { email } });
@@ -203,7 +199,7 @@ export async function signUpRider(input: { name: string; email?: string; identif
     } else if (!customer.authId) {
       customer = await db.customer.update({
         where: { id: customer.id },
-        data: { authId: authUserId, ...(phoneLocal && !customer.phone ? { phone: fmtStoredPhone(phoneLocal) } : {}), ...(gender && !customer.gender ? { gender } : {}) },
+        data: { authId: authUserId, ...(phoneLocal && !customer.phone ? { phone: fmtStoredPhone(phoneLocal) } : {}), ...(email && !customer.email ? { email } : {}), ...(gender && !customer.gender ? { gender } : {}) },
       });
     }
 

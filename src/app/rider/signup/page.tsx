@@ -12,9 +12,11 @@ export default function RiderSignupPage() {
   const router = useRouter();
   const lang = useLang();
   const [name, setName] = useState("");
-  const [identifier, setIdentifier] = useState(""); // 手机号或邮箱
+  const [phone, setPhone] = useState(""); // 必填
+  const [email, setEmail] = useState(""); // 选填
   const [gender, setGender] = useState(""); // "" | "M" | "F"
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
@@ -22,7 +24,8 @@ export default function RiderSignupPage() {
   async function doSignup(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(""); setInfo("");
-    const res = await signUpRider({ name, identifier, gender, password });
+    if (password !== confirmPassword) { setBusy(false); setError(t("signup.password-mismatch", lang)); return; }
+    const res = await signUpRider({ name, phone, email: email.trim() || undefined, gender, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
     if (res.signInFailed) {
@@ -60,8 +63,12 @@ export default function RiderSignupPage() {
               <input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
             </div>
             <div>
-              <label className={labelCls}>{t("login.phone-or-email", lang)}</label>
-              <input className={inputCls} type="text" inputMode="tel" autoComplete="tel" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="012-345 6789 / you@example.com" />
+              <label className={labelCls}>{t("common.phone", lang)}</label>
+              <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="012-345 6789" />
+            </div>
+            <div>
+              <label className={labelCls}>{t("signup.email-optional", lang)}</label>
+              <input className={inputCls} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
             </div>
             <div>
               <label className={labelCls}>{t("form.gender", lang)}</label>
@@ -74,6 +81,10 @@ export default function RiderSignupPage() {
             <div>
               <label className={labelCls}>{t("signup.password-min", lang)}</label>
               <input className={inputCls} type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            <div>
+              <label className={labelCls}>{t("signup.confirm-password", lang)}</label>
+              <input className={inputCls} type="password" required minLength={8} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" />
             </div>
             <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
               {busy ? t("signup.creating", lang) : t("signup.create", lang)}
