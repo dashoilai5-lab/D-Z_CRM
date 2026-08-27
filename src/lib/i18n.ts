@@ -836,6 +836,7 @@ export const DICT: Dict = {
 
   // --- mechanic app ---
   "mech.app": { en: "Mechanic", zh: "技师", ms: "Mekanik" },
+  "mech.signout": { en: "Sign out", zh: "退出登录", ms: "Log keluar" },
   "mech.orders": { en: "Orders", zh: "订单", ms: "Tempahan" },
   "mech.earnings": { en: "Earnings", zh: "收入", ms: "Pendapatan" },
   "mech.profile": { en: "Profile", zh: "我的", ms: "Profil" },

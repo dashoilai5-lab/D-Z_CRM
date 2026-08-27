@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 
-/** Profile 页右上角登出按钮。 */
-export function SignOutIconButton({ title = "Sign out" }: { title?: string }) {
+/** 登出按钮（rider profile 右上角；mechanic 复用并传 href="/login"）。 */
+export function SignOutIconButton({ title = "Sign out", href = "/rider/login" }: { title?: string; href?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   return (
@@ -16,7 +16,7 @@ export function SignOutIconButton({ title = "Sign out" }: { title?: string }) {
         setBusy(true);
         const { signOutSupabase } = await import("@/actions/auth-supabase");
         await signOutSupabase();
-        router.push("/rider/login");
+        router.push(href);
         router.refresh();
       }}
       title={title}

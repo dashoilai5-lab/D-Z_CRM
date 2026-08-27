@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
 import { AttendanceButton } from "@/components/mechanic/attendance-button";
 import { EarningsConfirm } from "@/components/mechanic/earnings-confirm";
+import { SignOutIconButton } from "@/components/rider/sign-out-button";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { formatRM } from "@/lib/money";
@@ -72,9 +73,12 @@ export default async function MechanicProfilePage() {
     <div className="space-y-4">
       {/* 头像 + 名字（rider profile 风格） */}
       <div className="relative">
-        <Link href="/mechanic-app/settings" className="absolute right-0 top-0 inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label="Settings">
-          <SettingsIcon className="h-4 w-4" />
-        </Link>
+        <div className="absolute right-0 top-0 flex items-center gap-2">
+          <SignOutIconButton href="/login" title={t("mech.signout", lang)} />
+          <Link href="/mechanic-app/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label="Settings">
+            <SettingsIcon className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
       <div className="text-center">
         <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">{initials}</span>
