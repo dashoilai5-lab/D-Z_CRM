@@ -689,6 +689,7 @@ export const DICT: Dict = {
 
   // --- rider login ---
   "login.password-tab": { en: "Password", zh: "密码", ms: "Kata Laluan" },
+  "login.phone-or-email": { en: "Phone or email", zh: "手机号或邮箱", ms: "Telefon atau e-mel" },
   "login.email-code": { en: "Email code", zh: "邮箱验证码", ms: "Kod e-mel" },
   "login.otp-code": { en: "OTP code", zh: "验证码", ms: "Kod OTP" },
   "login.new-here": { en: "New here? Create an account", zh: "新用户？创建账号", ms: "Baharu di sini? Cipta akaun" },
@@ -700,7 +701,12 @@ export const DICT: Dict = {
   "signup.title": { en: "Join D&Z Rider", zh: "加入 D&Z 车手", ms: "Sertai D&Z Rider" },
   "signup.sub": { en: "Create your account — your bikes & service in one place", zh: "创建账号——您的爱车与服务尽在一处", ms: "Cipta akaun — motosikal & servis anda di satu tempat" },
   "signup.full-name": { en: "Full name", zh: "全名", ms: "Nama penuh" },
+  "signup.gender-male": { en: "Male", zh: "男", ms: "Lelaki" },
+  "signup.gender-female": { en: "Female", zh: "女", ms: "Perempuan" },
   "signup.password-min": { en: "Password (min 8 chars)", zh: "密码（至少 8 个字符）", ms: "Kata laluan (min 8 aksara)" },
+  "signup.email-optional": { en: "Email (optional)", zh: "邮箱（选填）", ms: "E-mel (pilihan)" },
+  "signup.confirm-password": { en: "Confirm password", zh: "确认密码", ms: "Sahkan kata laluan" },
+  "signup.password-mismatch": { en: "Passwords do not match.", zh: "两次输入的密码不一致。", ms: "Kata laluan tidak sepadan." },
   "signup.creating": { en: "Creating account…", zh: "正在创建账号…", ms: "Mencipta akaun…" },
   "signup.create": { en: "Create account", zh: "创建账号", ms: "Cipta akaun" },
   "signup.has-account": { en: "Already have an account? Sign in", zh: "已有账号？登录", ms: "Sudah ada akaun? Log masuk" },

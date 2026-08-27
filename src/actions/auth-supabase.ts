@@ -3,6 +3,8 @@
 import { db } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 import { generateQrToken } from "@/lib/qr-token";
+import { normalizePhone, phoneDigits, toE164, fmtStoredPhone } from "@/lib/phone";
+import type { Customer } from "@prisma/client";
 
 /** 业务身份（JWT claims）——A2 RLS 读取 request.jwt.claims 依赖这些字段。 */
 export interface BizClaims {
@@ -47,9 +49,53 @@ export async function injectBizClaims(authUserId: string) {
   return { ok: false as const, error: "No D&Z account linked to this auth user." };
 }
 
-export async function signInWithPassword(input: { email: string; password: string }) {
+/** Service-role admin client（建号/查号/注入 claims 用，server-only）。 */
+async function createAdminClient() {
+  const { createClient } = await import("@supabase/supabase-js");
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+}
+
+/** 手机号 → Customer.phone（归一化匹配）→ authId。 */
+async function customerByPhone(local: string): Promise<(Pick<Customer, "id" | "phone" | "authId" | "organisationId" | "branchId" | "gender"> & { email: string | null }) | null> {
+  const candidates = await db.customer.findMany({ where: { phone: { not: null } }, select: { id: true, phone: true, authId: true, email: true, organisationId: true, branchId: true, gender: true } });
+  return candidates.find((c) => phoneDigits(c.phone) === local) ?? null;
+}
+
+/**
+ * 登录：email（workshop/rider）或手机号（rider，identifier 二选一）。
+ * - email：直接 signInWithPassword
+ * - 手机号：Customer.phone → authId → auth email（兼容现有 email 账号）；phone-only 用户走 Supabase phone
+ */
+export async function signInWithPassword(input: { email?: string; identifier?: string; password: string }) {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword(input);
+  let email = input.email;
+  let phone: string | undefined;
+
+  const id = (input.identifier ?? "").trim();
+  if (id) {
+    if (id.includes("@")) {
+      email = id.toLowerCase();
+    } else {
+      const local = normalizePhone(id);
+      if (!local) return { ok: false as const, error: "Invalid phone number — use e.g. 012-345 6789." };
+      const cust = await customerByPhone(local);
+      if (!cust) return { ok: false as const, error: "No account found with this phone number — try signing up." };
+      if (!cust.authId) return { ok: false as const, error: "No D&Z account linked to this phone." };
+      const admin = await createAdminClient();
+      const { data: au, error: auErr } = await admin.auth.admin.getUserById(cust.authId);
+      if (auErr || !au.user) return { ok: false as const, error: "Could not resolve account — contact the workshop." };
+      if (au.user.email) email = au.user.email;
+      else phone = toE164(local); // phone-only 用户（需 Supabase Phone provider 开启）
+    }
+  }
+
+  const { data, error } = email
+    ? await supabase.auth.signInWithPassword({ email, password: input.password })
+    : await supabase.auth.signInWithPassword({ phone: phone!, password: input.password });
   if (error) return { ok: false as const, error: error.message };
   if (!data.user) return { ok: false as const, error: "No user returned." };
   // 关联业务身份 → 注入 claims
@@ -76,39 +122,53 @@ export async function verifyOtp(input: { email: string; token: string }) {
 }
 
 /**
- * Rider 顾客自助注册：建 Supabase auth 用户 + 自动创建 Customer 记录并绑定 authId + 注入 claims。
- * 新顾客挂到默认组织（首个 Organisation），branchId 留空（workshop 员工后续分配）。
+ * Rider 顾客自助注册：手机号必填 + 邮箱选填。
+ * - 手机号：必填，归一化匹配老客 Customer.phone → 绑定 authId（老客注册）；无老客则新建 Customer。
+ * - 邮箱：选填；填了用邮箱建 auth（登录双通道）；没填 → 老客有 email 用老客 email；否则 phone-only（登录需 Supabase Phone provider）。
  */
-export async function signUpRider(input: { name: string; email: string; password: string }) {
+export async function signUpRider(input: { name: string; phone?: string; email?: string; gender?: string; password: string }) {
   const name = input.name.trim();
-  const email = input.email.trim().toLowerCase();
+  const gender = input.gender === "M" || input.gender === "F" ? input.gender : null;
   if (name.length < 2) return { ok: false as const, error: "Please enter your name." };
   if (input.password.length < 8) return { ok: false as const, error: "Password must be at least 8 characters." };
 
-  // 测试域 / 开发环境：admin API 直建 + 自动确认（免 signUp 邮件限流、免点确认邮件）
-  const isTestEmail = /@dz\.my$/.test(email) || email.startsWith("test.") || email.startsWith("dztest") || email.startsWith("autoconf");
-  const wantAutoConfirm = process.env.NODE_ENV !== "production" || isTestEmail;
+  // 手机号必填归一化
+  const phoneLocal = normalizePhone(input.phone ?? "");
+  if (!phoneLocal) return { ok: false as const, error: "Phone number is required — use e.g. 012-345 6789." };
+  // 邮箱选填（去空格小写；空则 undefined）
+  let email = input.email?.trim().toLowerCase() || undefined;
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false as const, error: "Invalid email address." };
+
+  const admin = await createAdminClient();
+
+  // 老客匹配：手机号 → Customer.phone（老客注册，绑定 authId）
+  let existing = await customerByPhone(phoneLocal);
+  // 老客有 email 且本次未填 → 用老客 email 建 auth（保持双通道同一账号）
+  if (!email && existing?.email) email = existing.email;
+  // 重复检测
+  if (email) {
+    const dup = await db.customer.findFirst({ where: { email } });
+    if (dup?.authId) return { ok: false as const, error: "An account with this email already exists — try signing in." };
+  } else if (existing?.authId) {
+    return { ok: false as const, error: "An account with this phone already exists — try signing in." };
+  }
+
+  // 测试域 / 开发环境：admin API 直建 + 自动确认（免 signUp 邮件限流、免点确认邮件）；phone 注册一律自动确认
+  const isTestEmail = email ? /@dz\.my$/.test(email) || email.startsWith("test.") || email.startsWith("dztest") || email.startsWith("autoconf") : false;
+  const wantAutoConfirm = process.env.NODE_ENV !== "production" || isTestEmail || !email;
+  const phoneE164 = phoneLocal ? toE164(phoneLocal) : undefined;
 
   // 1. 建 auth 用户
   let authUserId: string | undefined;
   let autoSession = false;
-  const { createClient: createAdmin } = await import("@supabase/supabase-js");
-  const admin = createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } },
-  );
 
   if (wantAutoConfirm) {
-    const { data: ad, error: aErr } = await admin.auth.admin.createUser({
-      email,
-      password: input.password,
-      email_confirm: true,
-      user_metadata: { name },
-    });
+    const { data: ad, error: aErr } = email
+      ? await admin.auth.admin.createUser({ email, password: input.password, email_confirm: true, user_metadata: { name } })
+      : await admin.auth.admin.createUser({ phone: phoneE164, password: input.password, phone_confirm: true, user_metadata: { name } });
     if (aErr) {
-      if (/already registered|already been registered|email.*exist/i.test(aErr.message)) {
-        return { ok: false as const, error: "An account with this email already exists — try signing in." };
+      if (/already registered|already been registered|email.*exist|phone.*exist|phone number.*exist/i.test(aErr.message)) {
+        return { ok: false as const, error: "An account with this " + (email ? "email" : "phone") + " already exists — try signing in." };
       }
       return { ok: false as const, error: aErr.message };
     }
@@ -117,7 +177,7 @@ export async function signUpRider(input: { name: string; email: string; password
   } else {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: email!,
       password: input.password,
       options: { data: { name } },
     });
@@ -127,17 +187,20 @@ export async function signUpRider(input: { name: string; email: string; password
     if (!authUserId) return { ok: false as const, error: "Sign-up failed — try again." };
   }
 
-  // 2. 自动创建 Customer 并绑定 authId（幂等：同 email 已有则跳过创建只绑 authId）
+  // 2. 绑定 Customer：老客（phone/email 匹配）→ 绑 authId；新客 → 创建
   try {
-    let customer = await db.customer.findFirst({ where: { email } });
+    let customer = existing ?? (email ? await db.customer.findFirst({ where: { email } }) : null);
     if (!customer) {
       const org = await db.organisation.findFirst({ orderBy: { name: "asc" } });
       if (!org) return { ok: false as const, error: "No workshop organisation configured." };
       customer = await db.customer.create({
-        data: { organisationId: org.id, name, email, authId: authUserId, qrToken: generateQrToken() },
+        data: { organisationId: org.id, name, email: email ?? null, phone: phoneLocal ? fmtStoredPhone(phoneLocal) : undefined, gender, authId: authUserId, qrToken: generateQrToken() },
       });
     } else if (!customer.authId) {
-      customer = await db.customer.update({ where: { id: customer.id }, data: { authId: authUserId } });
+      customer = await db.customer.update({
+        where: { id: customer.id },
+        data: { authId: authUserId, ...(phoneLocal && !customer.phone ? { phone: fmtStoredPhone(phoneLocal) } : {}), ...(email && !customer.email ? { email } : {}), ...(gender && !customer.gender ? { gender } : {}) },
+      });
     }
 
     // 3. 注入 CUSTOMER claims（RLS 用）
@@ -154,14 +217,16 @@ export async function signUpRider(input: { name: string; email: string; password
     return { ok: false as const, error: "Account created but profile setup failed: " + String((e as Error).message).slice(0, 120) };
   }
 
-  // 测试域：admin 建号无客户端 session——自动登录（密码登录建立 cookie session）
+  // admin 建号无客户端 session——自动登录（密码登录建立 cookie session）
   if (autoSession) {
     const supabase = await createClient();
-    const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password: input.password });
+    const { error: signInErr } = email
+      ? await supabase.auth.signInWithPassword({ email, password: input.password })
+      : await supabase.auth.signInWithPassword({ phone: phoneE164!, password: input.password });
     if (signInErr) return { ok: true as const, emailConfirm: false, signInFailed: signInErr.message };
   }
 
-  // 测试域已自动确认（前端直接跳转）；非测试域（email confirm 开启）提示查邮件
+  // 已自动确认（前端直接跳转）；非测试域（email confirm 开启）提示查邮件
   return { ok: true as const, emailConfirm: !autoSession };
 }
 

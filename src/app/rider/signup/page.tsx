@@ -12,8 +12,11 @@ export default function RiderSignupPage() {
   const router = useRouter();
   const lang = useLang();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState(""); // 必填
+  const [email, setEmail] = useState(""); // 选填
+  const [gender, setGender] = useState(""); // "" | "M" | "F"
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
@@ -21,9 +24,15 @@ export default function RiderSignupPage() {
   async function doSignup(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(""); setInfo("");
-    const res = await signUpRider({ name, email, password });
+    if (password !== confirmPassword) { setBusy(false); setError(t("signup.password-mismatch", lang)); return; }
+    const res = await signUpRider({ name, phone, email: email.trim() || undefined, gender, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
+    if (res.signInFailed) {
+      // 账号已建，但自动登录失败（如 phone-only 需 Supabase Phone provider）——引导手动登录
+      setInfo("Account created! Sign in with your " + (res.signInFailed.includes("phone") || res.signInFailed.includes("Phone") ? "phone number" : "email") + " and password.");
+      return;
+    }
     if (res.emailConfirm) {
       setInfo("Account created! Check your email for a confirmation link, then sign in.");
     } else {
@@ -54,12 +63,28 @@ export default function RiderSignupPage() {
               <input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
             </div>
             <div>
-              <label className={labelCls}>{t("common.email", lang)}</label>
-              <input className={inputCls} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              <label className={labelCls}>{t("common.phone", lang)}</label>
+              <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="012-345 6789" />
+            </div>
+            <div>
+              <label className={labelCls}>{t("signup.email-optional", lang)}</label>
+              <input className={inputCls} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+            </div>
+            <div>
+              <label className={labelCls}>{t("form.gender", lang)}</label>
+              <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
+                <option value="">{t("form.prefer-not", lang)}</option>
+                <option value="M">{t("signup.gender-male", lang)}</option>
+                <option value="F">{t("signup.gender-female", lang)}</option>
+              </select>
             </div>
             <div>
               <label className={labelCls}>{t("signup.password-min", lang)}</label>
               <input className={inputCls} type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+            </div>
+            <div>
+              <label className={labelCls}>{t("signup.confirm-password", lang)}</label>
+              <input className={inputCls} type="password" required minLength={8} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" />
             </div>
             <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
               {busy ? t("signup.creating", lang) : t("signup.create", lang)}
