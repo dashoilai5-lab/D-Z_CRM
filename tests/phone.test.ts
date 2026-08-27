@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizePhone, phoneDigits, toE164 } from "@/lib/phone";
+import { normalizePhone, phoneDigits, toE164, fmtStoredPhone } from "@/lib/phone";
 
 describe("phone normalization (rider phone login)", () => {
   it("accepts local formats with separators", () => {
@@ -25,5 +25,8 @@ describe("phone normalization (rider phone login)", () => {
   });
   it("converts local to E.164", () => {
     expect(toE164("0131252832")).toBe("+60131252832");
+  });
+  it("formats local to stored pattern", () => {
+    expect(fmtStoredPhone("0131252832")).toBe("013-125 2832");
   });
 });

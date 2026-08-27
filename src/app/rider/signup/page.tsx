@@ -12,7 +12,7 @@ export default function RiderSignupPage() {
   const router = useRouter();
   const lang = useLang();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // 手机号或邮箱
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
@@ -21,9 +21,14 @@ export default function RiderSignupPage() {
   async function doSignup(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(""); setInfo("");
-    const res = await signUpRider({ name, email, password });
+    const res = await signUpRider({ name, identifier, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
+    if (res.signInFailed) {
+      // 账号已建，但自动登录失败（如 phone-only 需 Supabase Phone provider）——引导手动登录
+      setInfo("Account created! Sign in with your " + (res.signInFailed.includes("phone") || res.signInFailed.includes("Phone") ? "phone number" : "email") + " and password.");
+      return;
+    }
     if (res.emailConfirm) {
       setInfo("Account created! Check your email for a confirmation link, then sign in.");
     } else {
@@ -54,8 +59,8 @@ export default function RiderSignupPage() {
               <input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
             </div>
             <div>
-              <label className={labelCls}>{t("common.email", lang)}</label>
-              <input className={inputCls} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              <label className={labelCls}>{t("login.phone-or-email", lang)}</label>
+              <input className={inputCls} type="text" inputMode="tel" autoComplete="tel" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="012-345 6789 / you@example.com" />
             </div>
             <div>
               <label className={labelCls}>{t("signup.password-min", lang)}</label>

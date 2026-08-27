@@ -24,3 +24,8 @@ export function phoneDigits(phone: string | null | undefined): string {
 export function toE164(local: string): string {
   return "+60" + local.slice(1);
 }
+
+/** 本地 10 位 → 存储格式（0131252832 → "013-125 2832"，与 seed Customer.phone 一致）。 */
+export function fmtStoredPhone(local: string): string {
+  return local.slice(0, 3) + "-" + local.slice(3, 6) + " " + local.slice(6);
+}
