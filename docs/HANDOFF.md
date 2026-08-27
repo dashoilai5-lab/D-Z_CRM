@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = main @ 9345744，已全部 push，三服务 200。
+本地与生产 = main @ 859c21d，已全部 push，三服务 200。
 Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登录&注册**（手机必填/邮箱选填/gender/密码确认/老客手机号绑定 authId）已上线（生产实测手机+email 登录、注册页全字段）。上线准备：docs/ONBOARDING_PLAN.md（资料收集表+模块开放策略）+ scripts/setup-workshop-modules.ts（模块覆盖脚本，留在 feat/workshop-module-setup 分支未 merge）。
 剩余需求：Rider ①②④（手机/WhatsApp 登录、老客注册、每月换油提醒）+ Workshop ④（3-6-12 月保养时间线）+ 经销商验证 + provider 换真。
 流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
@@ -33,6 +33,7 @@ Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登�
 - Mechanic 专属 App（merge 9a54f5c，6 commit）：/mechanic-app（仅 MECHANIC）Grab 接单 + job 详情 + Earnings + Profile + Settings + 发薪双向确认（PENDING→MECHANIC_APPROVED→PAID）+ 全 i18n
 - Mechanic Profile 工作统计（294dd21）：汇总（工单/客单价/评分）+ 12 个月月度趋势柱状（+8 业务月）
 - Yamaha LC135 车型拆分（merge 9b9e412）：135LC Fi → LC135 V1 / LC135 V2 - V7 / LC135 V8（bike-models 下拉 + seed 目录，本地+生产实测）
+- Rider 首辆摩托引导（merge 859c21d）：登录/注册 action 返回 hasBike；无车用户登录/注册跳 /rider/bike-first（表单+稍后再说）；home 无车虚线引导卡；motorcycles 空态引导卡；三语词条 bike.first-*——生产实测注册→跳引导 ✓
 - Workshop 自动刷新（merge 9345744）：顶部常驻刷新按钮 + Auto 开关（默认开 30s router.refresh 软刷新不丢状态），desktop header + mobile sticky 条——生产实测控件显示 ✓
 - Developer Settings（merge 21dff21）：/workshop/settings/developer 仅 OWNER——密码门禁 15min（dz_dev HttpOnly cookie，secure 按协议判断）+ 角色×模块访问矩阵（Permission 覆盖行即时生效：navForRoleWithPerms 导航过滤 + layout can() URL 守卫）+ first-wave 预置 + 清空业务数据（保留配置，事务删 40 业务表）｜踩坑：server→client 传 icon 组件引用报 ERROR 60597609（sidebar 改 key 内部映射图标）；本地 dev.db 已清空为试用空店（备份 prisma/dev.db.bak-1054，恢复=cp 回+重启）｜生产实测解锁+矩阵 ✓
 - 账号控制·路由隔离矩阵（merge 8ac3027）：middleware 按 JWT claims role 隔离 + 三端 layout 权威守卫——rider 只能 rider app（访问 workshop OS 弹回 /rider/home）、mechanic 只能 mechanic app（登录直达）、员工（除 mechanic）才能 workshop OS；登录后按角色跳转；e2e 全量 74/75（1 并发 flake 单跑过），生产实测三角色隔离 ✓
@@ -65,7 +66,7 @@ Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登�
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：9345744（Merge feat/workshop-autorefresh）｜ 已 push
+- 分支：main ｜ HEAD：859c21d（Merge feat/rider-first-bike）｜ 已 push
 - 本地 dev.db：试用空店状态（业务全清、配置保留）；员工 authId 已全重绑（owner/manager/counter/marketing/inventory/mechanic×3）
 - feat/workshop-module-setup @ a614dc0：模块覆盖脚本 + 台账（未 merge 未 push，用户决定不需要；ONBOARDING_PLAN.md 已在 main）
 - feat/rider-phone-login 已合并上线并清理（5cc2978 → 生产）
