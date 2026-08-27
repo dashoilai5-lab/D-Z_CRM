@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Bike } from "lucide-react";
 import { signInWithPassword, signInWithOtp, verifyOtp } from "@/actions/auth-supabase";
+import { LanguageSwitcher } from "@/components/rider/language-switcher";
 import { useLang } from "@/components/shared/language-context";
 import { t } from "@/lib/i18n";
 import { COUNTRY_CODES } from "@/lib/phone";
@@ -64,6 +65,9 @@ export default function RiderLoginPage() {
     <div className="flex justify-center px-4 py-4 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5" aria-hidden />
       <div className="w-full max-w-sm relative">
+        <div className="mb-4 flex justify-end">
+          <LanguageSwitcher current={lang} />
+        </div>
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/25">
             <Bike className="h-7 w-7" />
