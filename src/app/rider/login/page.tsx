@@ -14,7 +14,8 @@ export default function RiderLoginPage() {
   const router = useRouter();
   const lang = useLang();
   const [tab, setTab] = useState<Tab>("password");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // 手机号或邮箱
+  const [email, setEmail] = useState(""); // otp tab 用
   const [password, setPassword] = useState("");
   const [otpToken, setOtpToken] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -25,7 +26,7 @@ export default function RiderLoginPage() {
   async function doPassword(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setError(""); setInfo("");
-    const res = await signInWithPassword({ email, password });
+    const res = await signInWithPassword({ identifier, password });
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
     router.push("/rider/home");
@@ -79,8 +80,8 @@ export default function RiderLoginPage() {
           {tab === "password" && (
             <form onSubmit={doPassword} className="space-y-3">
               <div>
-                <label className={labelCls}>{t("common.email", lang)}</label>
-                <input className={inputCls} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@dz.my" />
+                <label className={labelCls}>{t("login.phone-or-email", lang)}</label>
+                <input className={inputCls} type="text" inputMode="tel" autoComplete="tel" required value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder="012-345 6789 / you@dz.my" />
               </div>
               <div>
                 <label className={labelCls}>{t("login.password-tab", lang)}</label>

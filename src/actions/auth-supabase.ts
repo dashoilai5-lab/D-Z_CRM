@@ -3,6 +3,8 @@
 import { db } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 import { generateQrToken } from "@/lib/qr-token";
+import { normalizePhone, phoneDigits, toE164 } from "@/lib/phone";
+import type { Customer } from "@prisma/client";
 
 /** 业务身份（JWT claims）——A2 RLS 读取 request.jwt.claims 依赖这些字段。 */
 export interface BizClaims {
@@ -47,9 +49,53 @@ export async function injectBizClaims(authUserId: string) {
   return { ok: false as const, error: "No D&Z account linked to this auth user." };
 }
 
-export async function signInWithPassword(input: { email: string; password: string }) {
+/** Service-role admin client（建号/查号/注入 claims 用，server-only）。 */
+async function createAdminClient() {
+  const { createClient } = await import("@supabase/supabase-js");
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } },
+  );
+}
+
+/** 手机号 → Customer.phone（归一化匹配）→ authId。 */
+async function customerByPhone(local: string): Promise<(Pick<Customer, "id" | "phone" | "authId"> & { email: string | null }) | null> {
+  const candidates = await db.customer.findMany({ where: { phone: { not: null } }, select: { id: true, phone: true, authId: true, email: true } });
+  return candidates.find((c) => phoneDigits(c.phone) === local) ?? null;
+}
+
+/**
+ * 登录：email（workshop/rider）或手机号（rider，identifier 二选一）。
+ * - email：直接 signInWithPassword
+ * - 手机号：Customer.phone → authId → auth email（兼容现有 email 账号）；phone-only 用户走 Supabase phone
+ */
+export async function signInWithPassword(input: { email?: string; identifier?: string; password: string }) {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword(input);
+  let email = input.email;
+  let phone: string | undefined;
+
+  const id = (input.identifier ?? "").trim();
+  if (id) {
+    if (id.includes("@")) {
+      email = id.toLowerCase();
+    } else {
+      const local = normalizePhone(id);
+      if (!local) return { ok: false as const, error: "Invalid phone number — use e.g. 012-345 6789." };
+      const cust = await customerByPhone(local);
+      if (!cust) return { ok: false as const, error: "No account found with this phone number — try signing up." };
+      if (!cust.authId) return { ok: false as const, error: "No D&Z account linked to this phone." };
+      const admin = await createAdminClient();
+      const { data: au, error: auErr } = await admin.auth.admin.getUserById(cust.authId);
+      if (auErr || !au.user) return { ok: false as const, error: "Could not resolve account — contact the workshop." };
+      if (au.user.email) email = au.user.email;
+      else phone = toE164(local); // phone-only 用户（需 Supabase Phone provider 开启）
+    }
+  }
+
+  const { data, error } = email
+    ? await supabase.auth.signInWithPassword({ email, password: input.password })
+    : await supabase.auth.signInWithPassword({ phone: phone!, password: input.password });
   if (error) return { ok: false as const, error: error.message };
   if (!data.user) return { ok: false as const, error: "No user returned." };
   // 关联业务身份 → 注入 claims
@@ -92,12 +138,7 @@ export async function signUpRider(input: { name: string; email: string; password
   // 1. 建 auth 用户
   let authUserId: string | undefined;
   let autoSession = false;
-  const { createClient: createAdmin } = await import("@supabase/supabase-js");
-  const admin = createAdmin(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } },
-  );
+  const admin = await createAdminClient();
 
   if (wantAutoConfirm) {
     const { data: ad, error: aErr } = await admin.auth.admin.createUser({

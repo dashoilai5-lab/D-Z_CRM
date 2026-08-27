@@ -689,6 +689,7 @@ export const DICT: Dict = {
 
   // --- rider login ---
   "login.password-tab": { en: "Password", zh: "密码", ms: "Kata Laluan" },
+  "login.phone-or-email": { en: "Phone or email", zh: "手机号或邮箱", ms: "Telefon atau e-mel" },
   "login.email-code": { en: "Email code", zh: "邮箱验证码", ms: "Kod e-mel" },
   "login.otp-code": { en: "OTP code", zh: "验证码", ms: "Kod OTP" },
   "login.new-here": { en: "New here? Create an account", zh: "新用户？创建账号", ms: "Baharu di sini? Cipta akaun" },
