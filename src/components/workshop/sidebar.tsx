@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Bike } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/workshop/sign-out-button";
-import { navForPersona, navForRole, type WorkshopPersona } from "@/lib/nav-registry";
+import { navForPersona, type NavSection, type WorkshopPersona } from "@/lib/nav-registry";
 import { t, type Lang } from "@/lib/i18n";
 
 export interface SidebarUser {
@@ -29,13 +29,13 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href + "/");
 }
 
-export function Sidebar({ persona, role, user, lang = "en" }: { persona: WorkshopPersona; role?: string; user?: SidebarUser | null; lang?: Lang }) {
+export function Sidebar({ persona, role, sections, user, lang = "en" }: { persona: WorkshopPersona; role?: string; sections?: NavSection[]; user?: SidebarUser | null; lang?: Lang }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
-  // 有真实 role → 按权限矩阵过滤；否则退回 persona 过滤
-  const sections = role ? navForRole(role, persona) : navForPersona(persona);
+  // 有真实 role → 使用 server 已按权限矩阵（含 DB 覆盖）过滤的 sections；否则退回 persona 过滤
+  const sectionsFinal = role ? sections ?? navForPersona(persona) : navForPersona(persona);
 
-  if (sections.length === 0) return null;
+  if (sectionsFinal.length === 0) return null;
 
   return (
     <aside
@@ -68,7 +68,7 @@ export function Sidebar({ persona, role, user, lang = "en" }: { persona: Worksho
         </div>
       )}
       <nav className={cn("flex-1 pb-4", expanded ? "pt-0 px-3 space-y-5" : "pt-0 px-2 space-y-2")}>
-        {sections.map((group, gi) => (
+        {sectionsFinal.map((group, gi) => (
           <div key={gi}>
             {group.section && expanded && <div className="px-2 mb-1.5 text-[10px] font-semibold tracking-wider text-sidebar-foreground/40">{t(sectionKey(group.section), lang)}</div>}
             <div className="space-y-0.5">

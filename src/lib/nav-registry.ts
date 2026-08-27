@@ -157,7 +157,7 @@ export function navForRole(role: string, persona: WorkshopPersona): NavSection[]
 }
 
 /** 同步的 module→view 判定（与 permissions.ts DEFAULT_MATRIX 一致，避免 server-only 依赖）。 */
-function moduleAllowed(role: string, module: string): boolean {
+export function moduleAllowed(role: string, module: string): boolean {
   const M = DEFAULT_VIEW_MATRIX as Record<string, string[] | "*">;
   const r = M[role];
   if (!r) return false;
