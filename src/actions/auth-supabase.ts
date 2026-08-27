@@ -3,7 +3,7 @@
 import { db } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 import { generateQrToken } from "@/lib/qr-token";
-import { normalizePhone, phoneDigits, toE164, fmtStoredPhone } from "@/lib/phone";
+import { normalizePhoneLoose, combinePhone, digitsOnly, matchKey, phoneDigits, toE164, fmtStoredPhone } from "@/lib/phone";
 import type { Customer } from "@prisma/client";
 
 /** 业务身份（JWT claims）——A2 RLS 读取 request.jwt.claims 依赖这些字段。 */
@@ -62,7 +62,7 @@ async function createAdminClient() {
 /** 手机号 → Customer.phone（归一化匹配）→ authId。 */
 async function customerByPhone(local: string): Promise<(Pick<Customer, "id" | "phone" | "authId" | "organisationId" | "branchId" | "gender"> & { email: string | null }) | null> {
   const candidates = await db.customer.findMany({ where: { phone: { not: null } }, select: { id: true, phone: true, authId: true, email: true, organisationId: true, branchId: true, gender: true } });
-  return candidates.find((c) => phoneDigits(c.phone) === local) ?? null;
+  return candidates.find((c) => matchKey(c.phone) === matchKey(normalizePhoneLoose(local))) ?? null;
 }
 
 /**
@@ -70,7 +70,7 @@ async function customerByPhone(local: string): Promise<(Pick<Customer, "id" | "p
  * - email：直接 signInWithPassword
  * - 手机号：Customer.phone → authId → auth email（兼容现有 email 账号）；phone-only 用户走 Supabase phone
  */
-export async function signInWithPassword(input: { email?: string; identifier?: string; password: string }) {
+export async function signInWithPassword(input: { email?: string; identifier?: string; countryCode?: string; password: string }) {
   const supabase = await createClient();
   let email = input.email;
   let phone: string | undefined;
@@ -80,8 +80,11 @@ export async function signInWithPassword(input: { email?: string; identifier?: s
     if (id.includes("@")) {
       email = id.toLowerCase();
     } else {
-      const local = normalizePhone(id);
-      if (!local) return { ok: false as const, error: "Invalid phone number — use e.g. 012-345 6789." };
+      // 任意格式手机号（放宽）+ 可选区号；组合成 E.164 找号
+      const cc = input.countryCode?.trim() || "+60";
+      const full = combinePhone(cc, id);
+      if (digitsOnly(full).length < 7) return { ok: false as const, error: "Invalid phone number — enter at least 7 digits." };
+      const local = normalizePhoneLoose(full);
       const cust = await customerByPhone(local);
       if (!cust) return { ok: false as const, error: "No account found with this phone number — try signing up." };
       if (!cust.authId) return { ok: false as const, error: "No D&Z account linked to this phone." };
@@ -89,7 +92,7 @@ export async function signInWithPassword(input: { email?: string; identifier?: s
       const { data: au, error: auErr } = await admin.auth.admin.getUserById(cust.authId);
       if (auErr || !au.user) return { ok: false as const, error: "Could not resolve account — contact the workshop." };
       if (au.user.email) email = au.user.email;
-      else phone = toE164(local); // phone-only 用户（需 Supabase Phone provider 开启）
+      else phone = full; // phone-only 用户（需 Supabase Phone provider 开启）
     }
   }
 
@@ -134,15 +137,17 @@ export async function verifyOtp(input: { email: string; token: string }) {
  * - 手机号：必填，归一化匹配老客 Customer.phone → 绑定 authId（老客注册）；无老客则新建 Customer。
  * - 邮箱：选填；填了用邮箱建 auth（登录双通道）；没填 → 老客有 email 用老客 email；否则 phone-only（登录需 Supabase Phone provider）。
  */
-export async function signUpRider(input: { name: string; phone?: string; email?: string; gender?: string; password: string }) {
+export async function signUpRider(input: { name: string; phone?: string; countryCode?: string; email?: string; gender?: string; password: string }) {
   const name = input.name.trim();
   const gender = input.gender === "M" || input.gender === "F" ? input.gender : null;
   if (name.length < 2) return { ok: false as const, error: "Please enter your name." };
   if (input.password.length < 8) return { ok: false as const, error: "Password must be at least 8 characters." };
 
-  // 手机号必填归一化
-  const phoneLocal = normalizePhone(input.phone ?? "");
-  if (!phoneLocal) return { ok: false as const, error: "Phone number is required — use e.g. 012-345 6789." };
+  // 手机号：任意格式只要含数字（放宽）；区号默认 +60；组合成 E.164 完整号
+  const cc = input.countryCode?.trim() || "+60";
+  const fullPhone = combinePhone(cc, input.phone ?? "");
+  if (digitsOnly(fullPhone).length < 7) return { ok: false as const, error: "Enter a valid phone number." };
+  const phoneLocal = normalizePhoneLoose(fullPhone);
   // 邮箱选填（去空格小写；空则 undefined）
   let email = input.email?.trim().toLowerCase() || undefined;
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false as const, error: "Invalid email address." };
@@ -164,7 +169,7 @@ export async function signUpRider(input: { name: string; phone?: string; email?:
   // 测试域 / 开发环境：admin API 直建 + 自动确认（免 signUp 邮件限流、免点确认邮件）；phone 注册一律自动确认
   const isTestEmail = email ? /@dz\.my$/.test(email) || email.startsWith("test.") || email.startsWith("dztest") || email.startsWith("autoconf") : false;
   const wantAutoConfirm = process.env.NODE_ENV !== "production" || isTestEmail || !email;
-  const phoneE164 = phoneLocal ? toE164(phoneLocal) : undefined;
+  const phoneE164 = fullPhone; // 已有 E.164（combinePhone 结果），供 Supabase phone 登录/创建
 
   // 1. 建 auth 用户
   let authUserId: string | undefined;
@@ -202,12 +207,12 @@ export async function signUpRider(input: { name: string; phone?: string; email?:
       const org = await db.organisation.findFirst({ orderBy: { name: "asc" } });
       if (!org) return { ok: false as const, error: "No workshop organisation configured." };
       customer = await db.customer.create({
-        data: { organisationId: org.id, name, email: email ?? null, phone: phoneLocal ? fmtStoredPhone(phoneLocal) : undefined, gender, authId: authUserId, qrToken: generateQrToken() },
+        data: { organisationId: org.id, name, email: email ?? null, phone: fullPhone || undefined, gender, authId: authUserId, qrToken: generateQrToken() },
       });
     } else if (!customer.authId) {
       customer = await db.customer.update({
         where: { id: customer.id },
-        data: { authId: authUserId, ...(phoneLocal && !customer.phone ? { phone: fmtStoredPhone(phoneLocal) } : {}), ...(email && !customer.email ? { email } : {}), ...(gender && !customer.gender ? { gender } : {}) },
+        data: { authId: authUserId, ...(fullPhone && !customer.phone ? { phone: fullPhone } : {}), ...(email && !customer.email ? { email } : {}), ...(gender && !customer.gender ? { gender } : {}) },
       });
     }
 
