@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { randomUUID } from "node:crypto";
 import { db } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
@@ -27,7 +27,10 @@ export async function verifyDeveloperPassword(password: string) {
   const { error } = await supabase.auth.signInWithPassword({ email: who.email, password });
   if (error) return { ok: false as const, error: "Incorrect password." };
   const store = await cookies();
-  store.set(DEV_COOKIE, randomUUID(), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/", maxAge: DEV_TTL_SECONDS });
+  const reqHeaders = await headers();
+  // secure 按实际协议：生产 https（x-forwarded-proto）才设，本地 http（含局域网 IP）不设——否则 Secure cookie 在 http 下被浏览器拒绝导致解锁无反应
+  const isHttps = reqHeaders.get("x-forwarded-proto") === "https";
+  store.set(DEV_COOKIE, randomUUID(), { httpOnly: true, sameSite: "lax", secure: isHttps, path: "/", maxAge: DEV_TTL_SECONDS });
   return { ok: true as const };
 }
 
