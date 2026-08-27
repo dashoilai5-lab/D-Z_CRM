@@ -61,3 +61,7 @@ Part_Catalogue/
 
 # prisma engine cache redirect (sandbox: XDG_CACHE_HOME=$PWD/.cache for prisma generate)
 .cache/
+
+# local db backups (trial data snapshots)
+prisma/*.db.bak-*
+prisma/*.db-*
