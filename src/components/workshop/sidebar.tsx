@@ -3,11 +3,29 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Bike } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/workshop/sign-out-button";
-import { navForPersona, navForRole, type WorkshopPersona } from "@/lib/nav-registry";
+import {
+  LayoutDashboard, Filter, Kanban, Timer, ListTodo, Sparkles, MessageSquare, Star, Gauge, Bell, Upload,
+  Plug, ShieldCheck, Users, Bike, UserCheck, BellRing, CalendarClock, Wrench, ClipboardList, ListChecks,
+  Package, Store, Megaphone, Users2, Wallet, Clock, Boxes, AlertTriangle, Archive, RefreshCw,
+  ShoppingCart, Truck, Settings, type LucideIcon,
+} from "lucide-react";
+import { navForPersona, type WorkshopPersona } from "@/lib/nav-registry";
+import type { NavSectionData } from "@/lib/nav-perms";
 import { t, type Lang } from "@/lib/i18n";
+
+/** key → 图标（client 内部映射——server 传的导航不含组件引用）。 */
+const ICONS: Record<string, LucideIcon> = {
+  dashboard: LayoutDashboard, leads: Filter, pipeline: Kanban, "test-rides": Timer, tasks: ListTodo,
+  automations: Sparkles, templates: MessageSquare, loyalty: Star, analytics: Gauge, notifications: Bell,
+  import: Upload, integrations: Plug, "audit-logs": ShieldCheck, customers: Users, motorcycles: Bike,
+  "return-list": UserCheck, reminders: BellRing, bookings: CalendarClock, jobs: Wrench, mechanic: ClipboardList,
+  checklists: ListChecks, packages: Package, calendar: Store, posters: Megaphone, scripts: MessageSquare,
+  reviews: Star, staff: Users2, kpi: Gauge, settlements: Wallet, attendance: Clock, products: Boxes,
+  stock: Package, alerts: AlertTriangle, "dead-stock": Archive, reorder: RefreshCw, "purchase-orders": ShoppingCart,
+  suppliers: Truck, profit: Wallet, ai: Sparkles, settings: Settings,
+};
 
 export interface SidebarUser {
   id: string;
@@ -29,13 +47,13 @@ function isActive(pathname: string, href: string): boolean {
   return pathname.startsWith(href + "/");
 }
 
-export function Sidebar({ persona, role, user, lang = "en" }: { persona: WorkshopPersona; role?: string; user?: SidebarUser | null; lang?: Lang }) {
+export function Sidebar({ persona, role, sections, user, lang = "en" }: { persona: WorkshopPersona; role?: string; sections?: NavSectionData[]; user?: SidebarUser | null; lang?: Lang }) {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
-  // 有真实 role → 按权限矩阵过滤；否则退回 persona 过滤
-  const sections = role ? navForRole(role, persona) : navForPersona(persona);
+  // 有真实 role → 使用 server 已按权限矩阵（含 DB 覆盖）过滤的 sections；否则退回 persona 过滤
+  const sectionsFinal = role ? sections ?? navForPersona(persona) : navForPersona(persona);
 
-  if (sections.length === 0) return null;
+  if (sectionsFinal.length === 0) return null;
 
   return (
     <aside
@@ -68,13 +86,14 @@ export function Sidebar({ persona, role, user, lang = "en" }: { persona: Worksho
         </div>
       )}
       <nav className={cn("flex-1 pb-4", expanded ? "pt-0 px-3 space-y-5" : "pt-0 px-2 space-y-2")}>
-        {sections.map((group, gi) => (
+        {sectionsFinal.map((group, gi) => (
           <div key={gi}>
             {group.section && expanded && <div className="px-2 mb-1.5 text-[10px] font-semibold tracking-wider text-sidebar-foreground/40">{t(sectionKey(group.section), lang)}</div>}
             <div className="space-y-0.5">
               {group.items.map((item) => {
                 const active = isActive(pathname, item.href);
                 const label = item.labelKey ? t(item.labelKey, lang) : item.label;
+                const Icon = ICONS[item.key] ?? Wrench;
                 return (
                   <Link
                     key={item.key}
@@ -91,7 +110,7 @@ export function Sidebar({ persona, role, user, lang = "en" }: { persona: Worksho
                     )}
                   >
                     {active && <span className={cn("absolute top-1/2 -translate-y-1/2 h-3.5 w-1 rounded-full bg-sidebar-primary-foreground/80", expanded ? "left-1" : "left-0.5")} aria-hidden />}
-                    <item.icon className="h-5 w-5 shrink-0" />
+                    <Icon className="h-5 w-5 shrink-0" />
                     <span className={cn("truncate transition-opacity duration-200", expanded ? "opacity-100" : "opacity-0 w-0")}>{label}</span>
                   </Link>
                 );

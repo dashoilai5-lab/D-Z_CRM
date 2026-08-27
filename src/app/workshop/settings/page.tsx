@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { Users, CalendarClock, Bot, Star, Plug, ShieldCheck, FileUp, MessageSquare } from "lucide-react";
+import { Users, CalendarClock, Bot, Star, Plug, ShieldCheck, FileUp, MessageSquare, Code2 } from "lucide-react";
 import { db } from "@/lib/db";
+import { getSessionUser } from "@/lib/session-user";
 import { OrgProfileForm, BranchManager, ServiceTypeManager, LostReasonsEditor } from "@/components/workshop/settings-forms";
 import { QrSettings } from "@/components/workshop/qr-settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
+  const session = await getSessionUser();
+  const isOwner = session.kind === "staff" && (session.role === "OWNER" || session.role === "SUPER_ADMIN");
   const org = await db.organisation.findFirst();
   const [branches, serviceTypes, users] = await Promise.all([
     db.branch.findMany({ where: { organisationId: org!.id }, orderBy: { isMain: "desc" } }),
@@ -22,6 +25,7 @@ export default async function SettingsPage() {
     { href: "/workshop/integrations", label: "Integrations", desc: "Provider configs", icon: Plug },
     { href: "/workshop/settings/audit-logs", label: "Audit Logs", desc: "Sensitive operations", icon: ShieldCheck },
     { href: "/workshop/import", label: "CSV Import / Export", desc: "Data migration", icon: FileUp },
+    ...(isOwner ? [{ href: "/workshop/settings/developer", label: "Developer Settings", desc: "Access matrix · data mgmt", icon: Code2 }] : []),
   ];
   return (
     <div className="space-y-6">

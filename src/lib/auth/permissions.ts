@@ -123,7 +123,7 @@ const DEFAULT_MATRIX: Record<string, Record<string, PermissionAction[]>> = {
   },
 };
 
-function defaultAllowed(role: string, module: string, action: PermissionAction): boolean {
+export function defaultAllowed(role: string, module: string, action: PermissionAction): boolean {
   const wildcard = DEFAULT_MATRIX[role]?.["*"];
   if (wildcard) return wildcard.includes(action);
   return DEFAULT_MATRIX[role]?.[module]?.includes(action) ?? false;
