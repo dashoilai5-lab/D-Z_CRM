@@ -96,7 +96,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
       ) : (
         <>
           {/* STEP 1 · branch locator */}
-          <div className="space-y-2.5">
+          <div data-tut="rider-book-branch" className="space-y-2.5">
             {branchInfo.map((b) => (
               <Link key={b.id} href={"/rider/book?branch=" + b.id + (campaign ? "&campaign=" + campaign : "") + (promo ? "&promo=" + promo : "")} className="dz-card-link block rounded-2xl border bg-card p-4">
                 <div className="flex items-start justify-between gap-2">

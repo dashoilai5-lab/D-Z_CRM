@@ -32,7 +32,8 @@ export const RIDER_TUTORIALS: RiderTutorialDef[] = [
     labelKey: "navr.book",
     steps: [
       { target: "", titleKey: "tutr.book.0.title", bodyKey: "tutr.book.0.body", placement: "bottom" },
-      { target: "[data-tut='rider-book-package']", titleKey: "tutr.book.1.title", bodyKey: "tutr.book.1.body", placement: "top" },
+      { target: "[data-tut='rider-book-branch']", titleKey: "tutr.book.1.title", bodyKey: "tutr.book.1.body", placement: "bottom" },
+      { target: "[data-tut='rider-book-package']", titleKey: "tutr.book.2.title", bodyKey: "tutr.book.2.body", placement: "top" },
     ],
   },
   {
