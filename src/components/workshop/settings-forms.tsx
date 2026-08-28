@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateOrganisation, updateBranch, createBranch, createServiceType, toggleServiceType } from "@/actions/settings";
+import { updateOrganisation, updateBranch, createBranch, createServiceType, toggleServiceType, deleteServiceType } from "@/actions/settings";
+import { formatRM } from "@/lib/money";
 
 const inputCls = "w-full rounded-md border bg-background px-3 py-1.5 text-sm";
 const labelCls = "text-[11px] font-medium text-muted-foreground mb-0.5 block";
@@ -79,23 +80,55 @@ export function BranchManager({ branches }: { branches: { id: string; name: stri
 
 export function ServiceTypeManager({ serviceTypes }: { serviceTypes: { id: string; name: string; category: string | null; durationMin: number | null; priceSen: number | null; active: boolean }[] }) {
   const router = useRouter();
-  const [nf, setNf] = useState({ name: "", category: "MAINTENANCE", durationMin: "60" });
+  const [nf, setNf] = useState({ name: "", category: "MAINTENANCE", durationMin: "60", price: "" });
+  const activeCount = serviceTypes.filter((s) => s.active).length;
   return (
     <div className="rounded-xl border bg-card p-4">
-      <h2 className="font-semibold text-sm mb-3">Service catalogue</h2>
-      <div className="flex gap-2 mb-3">
-        <input className={inputCls + " flex-1"} placeholder="Service name *" value={nf.name} onChange={(e) => setNf({ ...nf, name: e.target.value })} />
-        <select className={inputCls + " w-40"} value={nf.category} onChange={(e) => setNf({ ...nf, category: e.target.value })}>
-          <option>MAINTENANCE</option><option>REPAIR</option><option>DIAGNOSTIC</option><option>DETAILING</option>
-        </select>
-        <input className={inputCls + " w-24"} type="number" placeholder="min" value={nf.durationMin} onChange={(e) => setNf({ ...nf, durationMin: e.target.value })} />
-        <button className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium" disabled={!nf.name} onClick={async () => { await createServiceType({ name: nf.name, category: nf.category, durationMin: parseInt(nf.durationMin) || undefined }); setNf({ name: "", category: "MAINTENANCE", durationMin: "60" }); router.refresh(); }}>Add</button>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-semibold text-sm">Service catalogue</h2>
+        <span className="text-[11px] text-muted-foreground">{activeCount} active · {serviceTypes.length} total</span>
       </div>
-      <div className="flex flex-wrap gap-1.5">
+
+      {/* 添加服务 */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <input className={inputCls + " flex-1 min-w-[120px]"} placeholder="Service name *" value={nf.name} onChange={(e) => setNf({ ...nf, name: e.target.value })} />
+        <select className={inputCls + " w-36"} value={nf.category} onChange={(e) => setNf({ ...nf, category: e.target.value })}>
+          <option value="MAINTENANCE">MAINTENANCE</option><option value="REPAIR">REPAIR</option><option value="DIAGNOSTIC">DIAGNOSTIC</option><option value="DETAILING">DETAILING</option>
+        </select>
+        <input className={inputCls + " w-20"} type="number" placeholder="min" value={nf.durationMin} onChange={(e) => setNf({ ...nf, durationMin: e.target.value })} />
+        <input className={inputCls + " w-28"} type="number" placeholder="Price (RM)" value={nf.price} onChange={(e) => setNf({ ...nf, price: e.target.value })} />
+        <button className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium" disabled={!nf.name} onClick={async () => {
+          await createServiceType({ name: nf.name, category: nf.category, durationMin: parseInt(nf.durationMin) || undefined, priceSen: nf.price ? Math.round(parseFloat(nf.price) * 100) : undefined });
+          setNf({ name: "", category: "MAINTENANCE", durationMin: "60", price: "" });
+          router.refresh();
+        }}>Add</button>
+      </div>
+
+      {/* 服务列表：每行 名称/分类/时长/价格/状态 + 开关 + 删除 */}
+      <div className="border rounded-lg divide-y divide-border">
+        {serviceTypes.length === 0 && <p className="p-4 text-sm text-muted-foreground">No services yet — add one above.</p>}
         {serviceTypes.map((s) => (
-          <button key={s.id} className={"rounded-full border px-2.5 py-1 text-xs " + (s.active ? "" : "opacity-50")} onClick={async () => { await toggleServiceType(s.id, !s.active); router.refresh(); }}>
-            {s.name} <span className="text-muted-foreground">({s.category ?? "—"})</span>
-          </button>
+          <div key={s.id} className={"flex items-center gap-3 px-3 py-2 " + (s.active ? "" : "opacity-55 bg-muted/30")}>
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-sm truncate">{s.name}</div>
+              <div className="text-[11px] text-muted-foreground">
+                {s.category ?? "—"}{s.durationMin ? " · " + s.durationMin + " min" : ""}{s.priceSen != null ? " · " + formatRM(s.priceSen) : ""}
+              </div>
+            </div>
+            <span className={"rounded-full px-2 py-0.5 text-[10px] font-semibold " + (s.active ? "bg-emerald-100 text-emerald-700" : "bg-muted text-muted-foreground")}>
+              {s.active ? "Active" : "Inactive"}
+            </span>
+            <button
+              className={"relative h-5 w-9 rounded-full transition-colors " + (s.active ? "bg-primary" : "bg-muted")}
+              aria-label={"Toggle " + s.name}
+              onClick={async () => { await toggleServiceType(s.id, !s.active); router.refresh(); }}
+            >
+              <span className={"absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all " + (s.active ? "left-[18px]" : "left-0.5")} />
+            </button>
+            <button aria-label={"Delete " + s.name} className="text-muted-foreground hover:text-destructive" onClick={async () => { if (confirm('Delete service "' + s.name + '"?')) { await deleteServiceType(s.id); router.refresh(); } }}>
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14Z" /></svg>
+            </button>
+          </div>
         ))}
       </div>
     </div>

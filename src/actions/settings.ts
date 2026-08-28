@@ -36,3 +36,10 @@ export async function toggleServiceType(id: string, active: boolean) {
   revalidatePath("/", "layout");
   return { ok: true };
 }
+
+/** 删除一个服务类型。若已被工单/历史引用，关联字段会置空（或需先停用）。 */
+export async function deleteServiceType(id: string) {
+  await db.serviceType.delete({ where: { id } });
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
