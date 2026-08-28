@@ -97,7 +97,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
       </div>
       <p className="text-sm text-muted-foreground mb-4">{t("ws.bookings.subtitle", lang)} · {bookings.length} shown</p>
 
-      <form method="get" className="flex flex-wrap items-center gap-2 mb-4 text-sm">
+      <form method="get" data-tut="bookings-filters" className="flex flex-wrap items-center gap-2 mb-4 text-sm">
         <select name="branch" defaultValue={sp.branch} className="rounded-md border bg-background px-3 py-2">
           <option value="">All branches</option>
           {branches.map((b) => <option key={b.id} value={b.id}>{b.city}</option>)}
@@ -153,7 +153,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
           </div>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div data-tut="bookings-list" className="space-y-2">
           {sorted.map((b) => {
             const stripe = {
               REQUESTED: "border-l-amber-400", CONFIRMED: "border-l-blue-400", RESCHEDULED: "border-l-purple-400",
