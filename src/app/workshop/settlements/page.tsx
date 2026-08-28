@@ -46,7 +46,7 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
       )}
 
       {/* 时间 filter */}
-      <div className="flex flex-wrap items-center gap-1.5 mb-3">
+      <div data-tut="settlements-filter" className="flex flex-wrap items-center gap-1.5 mb-3">
         {DAY_FILTERS.map((f) => (
           <Link key={f.key} href={qs(f.key)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (days === f.days ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
             {f.label}
@@ -70,7 +70,7 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
         {history.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">No payouts yet.</p>
         ) : (
-          <div className="overflow-x-auto">
+          <div data-tut="settlements-table" className="overflow-x-auto max-h-[560px] overflow-y-auto">
             <table className="dz-table w-full text-xs">
               <thead><tr className="border-b bg-muted/40 text-left text-muted-foreground">
                 <th className="px-3 py-2 font-medium">Date</th><th className="px-3 py-2 font-medium">Foreman</th><th className="px-3 py-2 font-medium">Period</th>

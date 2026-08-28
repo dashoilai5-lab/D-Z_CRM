@@ -16,7 +16,7 @@ export function TaskList({ items }: { items: TaskItem[] }) {
   const prio = (p: string) => p === "HIGH" ? "bg-rose-500/15 text-rose-600 dark:text-rose-300" : p === "LOW" ? "bg-muted text-muted-foreground" : "bg-amber-500/15 text-amber-600 dark:text-amber-300";
 
   return (
-    <div className="rounded-xl border bg-card divide-y">
+    <div data-tut="tasks-list" className="rounded-xl border bg-card divide-y">
       {items.length === 0 && <div className="px-4 py-10 text-center text-sm text-muted-foreground">No tasks.</div>}
       {items.map((t) => (
         <div key={t.id} className="px-4 py-3 flex items-start gap-3 transition-colors hover:bg-muted/30" data-testid="task-row">

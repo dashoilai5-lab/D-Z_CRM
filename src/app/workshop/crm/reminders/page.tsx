@@ -23,7 +23,7 @@ export default async function RemindersPage() {
         <SendDueButton dueCount={dueCount} />
       </div>
       <div className="dz-panel overflow-x-auto">
-        <div className="overflow-x-auto">
+        <div data-tut="reminders-table" className="overflow-x-auto max-h-[560px] overflow-y-auto">
           <table className="dz-table">
             <thead>
               <tr>

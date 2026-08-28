@@ -73,7 +73,7 @@ export default async function MarketingCalendarPage() {
         action={<CampaignForm />}
       />
       <div className="mb-5"><PromoCalendarGrid campaigns={calendarCampaigns} /></div>
-      <div className="space-y-2">
+      <div data-tut="calendar-list" className="space-y-2">
         {sorted.map((c) => {
           const conversions = convMap.get(c.id) ?? 0;
           return (

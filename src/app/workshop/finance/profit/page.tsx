@@ -42,7 +42,7 @@ export default async function ProfitPage({ searchParams }: { searchParams: Promi
       <PageHeader title={t("nav.profit", lang)} subtitle={t("fin.period-sub", lang)} />
 
       {/* 周期切换 + 日期 */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div data-tut="profit-range" className="flex flex-wrap items-center gap-2 mb-4">
         {PERIODS.map((pd) => (
           <Link key={pd} href={qs(pd, sp.date)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (period === pd ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
             {t("settle." + pd, lang)}
@@ -57,7 +57,7 @@ export default async function ProfitPage({ searchParams }: { searchParams: Promi
       </div>
 
       {/* 收支卡 */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div data-tut="profit-cards" className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard label={t("dash.today-sales", lang)} value={<Money sen={p.revenue} />} />
         <StatCard label={t("fin.cogs", lang)} value={<Money sen={p.cogs} />} tone="danger" />
         <StatCard label={t("fin.salary", lang)} value={<Money sen={salarySen} />} tone="danger" />

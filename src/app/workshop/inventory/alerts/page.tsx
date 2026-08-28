@@ -17,7 +17,7 @@ export default async function StockAlertsPage() {
   return (
     <div>
       <PageHeader title={t("ws.alerts.title", lang)} subtitle={t("ws.alerts.subtitle", lang)} />
-      <div className="space-y-2">
+      <div data-tut="alerts-list" className="space-y-2">
         {alerts.map((r) => (
           <div key={r.productId} className="flex flex-wrap items-center gap-3 dz-panel p-4">
             <div className="flex-1 min-w-44">

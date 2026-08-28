@@ -87,4 +87,97 @@ export const WORKSHOP_TUTORIALS: TutorialDef[] = [
       { target: "[data-tut='products-list']", titleKey: "tut.products.1.title", bodyKey: "tut.products.1.body", placement: "top" },
     ],
   },
+  {
+    id: "stock",
+    route: "/workshop/inventory/stock",
+    labelKey: "nav.stock",
+    steps: [
+      { target: "", titleKey: "tut.stock.0.title", bodyKey: "tut.stock.0.body", placement: "bottom" },
+      { target: "[data-tut='stock-list']", titleKey: "tut.stock.1.title", bodyKey: "tut.stock.1.body", placement: "top" },
+    ],
+  },
+  {
+    id: "alerts",
+    route: "/workshop/inventory/alerts",
+    labelKey: "nav.alerts",
+    steps: [
+      { target: "", titleKey: "tut.alerts.0.title", bodyKey: "tut.alerts.0.body", placement: "bottom" },
+      { target: "[data-tut='alerts-list']", titleKey: "tut.alerts.1.title", bodyKey: "tut.alerts.1.body", placement: "top" },
+    ],
+  },
+  {
+    id: "motorcycles",
+    route: "/workshop/motorcycles",
+    labelKey: "nav.motorcycles",
+    steps: [
+      { target: "", titleKey: "tut.motorcycles.0.title", bodyKey: "tut.motorcycles.0.body", placement: "bottom" },
+      { target: "[data-tut='motorcycles-search']", titleKey: "tut.motorcycles.1.title", bodyKey: "tut.motorcycles.1.body", placement: "bottom" },
+      { target: "[data-tut='motorcycles-list']", titleKey: "tut.motorcycles.2.title", bodyKey: "tut.motorcycles.2.body", placement: "top" },
+    ],
+  },
+  {
+    id: "packages",
+    route: "/workshop/packages",
+    labelKey: "nav.packages",
+    steps: [
+      { target: "", titleKey: "tut.packages.0.title", bodyKey: "tut.packages.0.body", placement: "bottom" },
+      { target: "[data-tut='packages-grid']", titleKey: "tut.packages.1.title", bodyKey: "tut.packages.1.body", placement: "top" },
+    ],
+  },
+  {
+    id: "tasks",
+    route: "/workshop/tasks",
+    labelKey: "nav.tasks",
+    steps: [
+      { target: "", titleKey: "tut.tasks.0.title", bodyKey: "tut.tasks.0.body", placement: "bottom" },
+      { target: "[data-tut='tasks-list']", titleKey: "tut.tasks.1.title", bodyKey: "tut.tasks.1.body", placement: "top" },
+    ],
+  },
+  {
+    id: "profit",
+    route: "/workshop/finance/profit",
+    labelKey: "nav.profit",
+    steps: [
+      { target: "", titleKey: "tut.profit.0.title", bodyKey: "tut.profit.0.body", placement: "bottom" },
+      { target: "[data-tut='profit-range']", titleKey: "tut.profit.1.title", bodyKey: "tut.profit.1.body", placement: "bottom" },
+      { target: "[data-tut='profit-cards']", titleKey: "tut.profit.2.title", bodyKey: "tut.profit.2.body", placement: "top" },
+    ],
+  },
+  {
+    id: "kpi",
+    route: "/workshop/staff/kpi",
+    labelKey: "nav.kpi",
+    steps: [
+      { target: "", titleKey: "tut.kpi.0.title", bodyKey: "tut.kpi.0.body", placement: "bottom" },
+      { target: "[data-tut='kpi-table']", titleKey: "tut.kpi.1.title", bodyKey: "tut.kpi.1.body", placement: "top" },
+    ],
+  },
+  {
+    id: "settlements",
+    route: "/workshop/settlements",
+    labelKey: "nav.settlements",
+    steps: [
+      { target: "", titleKey: "tut.settlements.0.title", bodyKey: "tut.settlements.0.body", placement: "bottom" },
+      { target: "[data-tut='settlements-filter']", titleKey: "tut.settlements.1.title", bodyKey: "tut.settlements.1.body", placement: "bottom" },
+      { target: "[data-tut='settlements-table']", titleKey: "tut.settlements.2.title", bodyKey: "tut.settlements.2.body", placement: "top" },
+    ],
+  },
+  {
+    id: "calendar",
+    route: "/workshop/marketing/calendar",
+    labelKey: "nav.calendar",
+    steps: [
+      { target: "", titleKey: "tut.calendar.0.title", bodyKey: "tut.calendar.0.body", placement: "bottom" },
+      { target: "[data-tut='calendar-list']", titleKey: "tut.calendar.1.title", bodyKey: "tut.calendar.1.body", placement: "top" },
+    ],
+  },
+  {
+    id: "reminders",
+    route: "/workshop/crm/reminders",
+    labelKey: "nav.reminders",
+    steps: [
+      { target: "", titleKey: "tut.reminders.0.title", bodyKey: "tut.reminders.0.body", placement: "bottom" },
+      { target: "[data-tut='reminders-table']", titleKey: "tut.reminders.1.title", bodyKey: "tut.reminders.1.body", placement: "top" },
+    ],
+  },
 ];

@@ -36,7 +36,7 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
         </Link>
       </div>
 
-      <PendingForm className="flex gap-2">
+      <PendingForm data-tut="motorcycles-search" className="flex gap-2">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input name="q" defaultValue={sp.q} placeholder="Search plate, VIN, brand, model…" className="w-full rounded-md border bg-background pl-8 pr-3 py-2 text-sm" />
@@ -48,7 +48,7 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
         <button className="rounded-md border px-3 py-2 text-sm font-medium">Search</button>
       </PendingForm>
 
-      <div className="rounded-xl border bg-card overflow-x-auto">
+      <div data-tut="motorcycles-list" className="rounded-xl border bg-card overflow-x-auto max-h-[560px] overflow-y-auto">
         <table className="dz-table">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
             <tr>

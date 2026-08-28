@@ -941,6 +941,72 @@ export const DICT: Dict = {
   "tut.products.0.body": { en: "Your catalogue of parts & consumables with cost, sell price and margin.", zh: "配件与耗材目录，含成本、售价和毛利。", ms: "Katalog alat ganti dengan kos, harga dan margin." },
   "tut.products.1.title": { en: "Product list", zh: "产品列表", ms: "Senarai produk" },
   "tut.products.1.body": { en: "Browse products with SKU, brand, category and margin. Add or edit pricing here.", zh: "浏览产品（SKU、品牌、分类、毛利）。在此添加或编辑价格。", ms: "Semak produk dengan SKU, jenama, kategori dan margin." },
+  // Stock
+  "tut.stock.0.title": { en: "Stock", zh: "库存", ms: "Stok" },
+  "tut.stock.0.body": { en: "Live stock levels per branch, with health (healthy / low / critical / out of stock).", zh: "各分支的实时库存水位和健康度（正常/偏低/紧缺/缺货）。", ms: "Tahap stok langsung setiap cawangan dan kesihatan." },
+  "tut.stock.1.title": { en: "Stock list", zh: "库存列表", ms: "Senarai stok" },
+  "tut.stock.1.body": { en: "Quantity, minimum stock, value and days remaining. Adjust or transfer stock here.", zh: "数量、最低库存、价值和剩余天数。在此调整或调拨库存。", ms: "Kuantiti, stok minimum, nilai dan baki hari. Laraskan atau pindah di sini." },
+
+  // Alerts
+  "tut.alerts.0.title": { en: "Stock Alerts", zh: "库存告警", ms: "Amaran Stok" },
+  "tut.alerts.0.body": { en: "A focused list of parts that are low, critical or out of stock — the fastest way to keep popular items in stock.", zh: "低库存/紧缺/缺货配件的聚焦列表——最快补足热销配件的入口。", ms: "Senarai alat ganti yang rendah, kritikal atau habis." },
+  "tut.alerts.1.title": { en: "Alerts", zh: "告警列表", ms: "Senarai amaran" },
+  "tut.alerts.1.body": { en: "Create a reorder (purchase order) straight from an alert to refill stock.", zh: "可直接从告警创建补货（采购单）以补充库存。", ms: "Cipta pesanan belian terus dari amaran." },
+
+  // Motorcycles
+  "tut.motorcycles.0.title": { en: "Motorcycles", zh: "车辆", ms: "Motorsikal" },
+  "tut.motorcycles.0.body": { en: "The registry of all bikes in the workshop and their service schedule.", zh: "店里所有车辆的注册表及服务计划。", ms: "Daftar semua motosikal di bengkel dan jadual servis." },
+  "tut.motorcycles.1.title": { en: "Search", zh: "搜索", ms: "Cari" },
+  "tut.motorcycles.1.body": { en: "Find a bike by plate, VIN, brand or model.", zh: "按车牌、VIN、品牌或型号找车。", ms: "Cari motosikal mengikut plat, VIN, jenama atau model." },
+  "tut.motorcycles.2.title": { en: "Bike list", zh: "车辆列表", ms: "Senarai motosikal" },
+  "tut.motorcycles.2.body": { en: "Each bike with mileage and last/next service. Open one for its full record.", zh: "每台车的里程和上次/下次服务。打开查看完整记录。", ms: "Setiap motosikal dengan jarak dan servis terakhir/seterusnya." },
+
+  // Packages
+  "tut.packages.0.title": { en: "Service Packages", zh: "服务套餐", ms: "Pakej Servis" },
+  "tut.packages.0.body": { en: "Build and price the service packages riders can book (Standard, Major etc.).", zh: "搭建并定价顾客可预约的服务套餐（标准/大保养等）。", ms: "Bina dan hargakan pakej servis yang boleh ditempah rider." },
+  "tut.packages.1.title": { en: "Package grid", zh: "套餐卡片", ms: "Kad pakej" },
+  "tut.packages.1.body": { en: "Each card is a package with its included services and price. Edit contents here.", zh: "每张卡片是一个套餐，含包含的服务和价格。在此编辑内容。", ms: "Setiap kad ialah pakej dengan servis dan harga." },
+
+  // Tasks
+  "tut.tasks.0.title": { en: "Tasks", zh: "任务", ms: "Tugas" },
+  "tut.tasks.0.body": { en: "The team to-do list across leads, customers, bookings and bikes.", zh: "团队的待办清单（线索/客户/预约/车辆）。", ms: "Senarai tugas pasukan merentas prospek, pelanggan, tempahan dan motosikal." },
+  "tut.tasks.1.title": { en: "Task list", zh: "任务列表", ms: "Senarai tugas" },
+  "tut.tasks.1.body": { en: "Create, assign and complete follow-ups. Tasks can be auto-created by automations.", zh: "创建、分配并完成跟进。任务可由自动化自动生成。", ms: "Cipta, beri dan selesaikan tugasan." },
+
+  // Profit
+  "tut.profit.0.title": { en: "Profit Dashboard", zh: "利润看板", ms: "Papan Untung" },
+  "tut.profit.0.body": { en: "Revenue, costs (parts + wages) and net profit for a period.", zh: "一段时期的收入、成本（配件+工资）和净利润。", ms: "Hasil, kos (alat ganti + gaji) dan untung bersih." },
+  "tut.profit.1.title": { en: "Date range", zh: "日期范围", ms: "Julat tarikh" },
+  "tut.profit.1.body": { en: "Switch between day, week and month views or pick a date.", zh: "切换日/周/月视图或选日期。", ms: "Tukar antara hari, minggu, bulan atau pilih tarikh." },
+  "tut.profit.2.title": { en: "Profit cards", zh: "利润卡片", ms: "Kad untung" },
+  "tut.profit.2.body": { en: "Top-line numbers: revenue, cost, net profit and the service vs parts split.", zh: "核心数字：收入、成本、净利润和服务/配件构成。", ms: "Nombor utama: hasil, kos, untung bersih dan pecahan servis/alat ganti." },
+
+  // KPI
+  "tut.kpi.0.title": { en: "KPI Board", zh: "绩效看板", ms: "Papan KPI" },
+  "tut.kpi.0.body": { en: "Score every mechanic's performance across jobs, sales and quality.", zh: "给每位技师的工单、销售和质量打分。", ms: "Skor prestasi setiap mekanik merentas kerja, jualan dan kualiti." },
+  "tut.kpi.1.title": { en: "KPI table", zh: "绩效表格", ms: "Jadual KPI" },
+  "tut.kpi.1.body": { en: "Ranked mechanics with score, sales, average ticket and rating.", zh: "技师排名及分数、销售、客单价和评分。", ms: "Mekanik kedudukan dengan skor, jualan dan penilaian." },
+
+  // Settlements
+  "tut.settlements.0.title": { en: "Settlements", zh: "结算发薪", ms: "Bayaran" },
+  "tut.settlements.0.body": { en: "The foreman pays centre — settle mechanics' wages from the jobs they did.", zh: "班长的发薪中心——按技师做的工单结算工资。", ms: "Pusat bayaran mandor — selesaikan gaji mekanik." },
+  "tut.settlements.1.title": { en: "Date filter", zh: "时间筛选", ms: "Tapis tarikh" },
+  "tut.settlements.1.body": { en: "Pick the period to settle. Each mechanic's daily bill is shown.", zh: "选择要结算的周期。每位技师的每日账单会显示。", ms: "Pilih tempoh untuk bayaran." },
+  "tut.settlements.2.title": { en: "Settlement table", zh: "结算表格", ms: "Jadual bayaran" },
+  "tut.settlements.2.body": { en: "Tick to pay a mechanic; payouts are two-way (mechanic confirms in their app).", zh: "勾选发薪给技师；发薪双向确认（技师在 app 确认）。", ms: "Tanda untuk bayar mekanik." },
+
+  // Calendar (marketing)
+  "tut.calendar.0.title": { en: "Promotion Calendar", zh: "促销日历", ms: "Kalendar Promosi" },
+  "tut.calendar.0.body": { en: "Plan and schedule promotions, reminders and campaigns on a calendar.", zh: "在日历上规划排期促销、提醒和活动。", ms: "Rancang dan jadualkan promosi, peringatan dan kempen." },
+  "tut.calendar.1.title": { en: "Campaign list", zh: "活动列表", ms: "Senarai kempen" },
+  "tut.calendar.1.body": { en: "Each campaign with status (active/scheduled/draft/ended) and audience.", zh: "每个活动含状态（进行中/已排期/草稿/已结束）和受众。", ms: "Setiap kempen dengan status dan audiens." },
+
+  // Reminders
+  "tut.reminders.0.title": { en: "Service Reminders", zh: "服务提醒", ms: "Peringatan Servis" },
+  "tut.reminders.0.body": { en: "Which bikes are due for their next service, and send reminders.", zh: "哪些车即将到下次保养，以及发送提醒。", ms: "Motosikal yang perlu servis seterusnya, dan hantar peringatan." },
+  "tut.reminders.1.title": { en: "Reminder list", zh: "提醒列表", ms: "Senarai peringatan" },
+  "tut.reminders.1.body": { en: "Due/overdue customers, next mileage and date. Send reminders in bulk.", zh: "到期/逾期客户、下次里程和日期。批量发送提醒。", ms: "Pelanggan perlu/terlewat, jarak dan tarikh seterusnya." },
+
 
 };
 

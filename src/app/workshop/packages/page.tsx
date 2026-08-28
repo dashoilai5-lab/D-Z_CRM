@@ -46,7 +46,7 @@ export default async function PackagesPage() {
           <NewPackageForm candidates={allCandidates} />
         </div>
       </div>
-      <div className="grid md:grid-cols-3 gap-4" id="package-grid">
+      <div data-tut="packages-grid" className="grid md:grid-cols-3 gap-4" id="package-grid">
         {packages.map((p) => (
           <div key={p.id} data-price={p.priceSen} data-tier={p.tier} className={"rounded-3xl border p-6 flex flex-col " + (p.isBestValue ? "border-primary ring-2 ring-primary/20" : "bg-card")}>
             <div className="flex items-center justify-between">
