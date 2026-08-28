@@ -50,7 +50,7 @@ export default async function DashboardPage() {
   return (
     <PageTransition>
     <div className="space-y-8">
-      <div>
+      <div data-tut="greeting">
         <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           {session.authenticated ? (

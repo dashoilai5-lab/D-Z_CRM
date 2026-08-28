@@ -884,6 +884,42 @@ export const DICT: Dict = {
   "mech.value": { en: "Value", zh: "价值", ms: "Nilai" },
   "mech.job-detail": { en: "Job detail", zh: "工单详情", ms: "Butiran kerja" },
 
+  // --- in-app feature tutorial (Workshop OS) ---
+  "tut.step": { en: "Step", zh: "步骤", ms: "Langkah" },
+  "tut.next": { en: "Next", zh: "下一步", ms: "Seterusnya" },
+  "tut.prev": { en: "Back", zh: "上一步", ms: "Kembali" },
+  "tut.skip": { en: "Skip", zh: "跳过", ms: "Langkau" },
+  "tut.done": { en: "Done", zh: "完成", ms: "Selesai" },
+  "tut.close": { en: "Close", zh: "关闭", ms: "Tutup" },
+  "tut.help": { en: "Guide", zh: "引导教程", ms: "Panduan" },
+  "tut.help-title": { en: "Feature guide", zh: "功能引导", ms: "Panduan Fungsi" },
+  "tut.help-sub": { en: "Replay a feature walkthrough", zh: "重放某个功能的引导", ms: "Main semula panduan fungsi" },
+
+  // Dashboard
+  "tut.dashboard.0.title": { en: "Welcome to Workshop OS", zh: "欢迎使用 Workshop OS", ms: "Selamat datang ke Workshop OS" },
+  "tut.dashboard.0.body": { en: "This is your workshop dashboard. Let's walk through the key areas one at a time — just open each feature and its guide appears.", zh: "这是你的门店工作台。我们逐个功能了解——打开哪个功能，就会出现那个功能的引导。", ms: "Ini ialah papan pemuka bengkel anda. Mari lihat setiap fungsi satu demi satu — buka fungsi dan panduannya muncul." },
+  "tut.dashboard.1.title": { en: "Your greeting & role", zh: "问候与角色", ms: "Salam & peranan" },
+  "tut.dashboard.1.body": { en: "Shows who is signed in and the role they're viewing as. Your role decides which modules appear in the sidebar.", zh: "显示登录人和当前角色。角色决定侧边栏能看到哪些模块。", ms: "Tunjukkan siapa masuk dan peranan. Peranan menentukan modul di bar sisi." },
+  "tut.dashboard.2.title": { en: "Today's numbers", zh: "今日数据", ms: "Nombor hari ini" },
+  "tut.dashboard.2.body": { en: "Sales, profit, jobs and average ticket for today. Click a card to open the relevant screen.", zh: "今日的销售、利润、工单数和客单价。点击卡片进入对应页面。", ms: "Jualan, untung, kerja dan purata tiket hari ini. Klik kad untuk buka skrin." },
+  "tut.dashboard.3.title": { en: "Live job board", zh: "实时工单看板", ms: "Papan kerja langsung" },
+  "tut.dashboard.3.body": { en: "Jobs by status — waiting, in progress, awaiting approval, ready, completed. This is where the workshop stays on top of every bike.", zh: "按状态分组的工单：排队、进行中、待审批、待取车、已完成。这里掌握店里的每一台车。", ms: "Kerja mengikut status — menunggu, dalam proses, menunggu kelulusan, sedia, selesai." },
+
+  // Bookings
+  "tut.bookings.0.title": { en: "Bookings", zh: "预约管理", ms: "Tempahan" },
+  "tut.bookings.0.body": { en: "Every service appointment a rider requests lands here. Confirm requests, check customers in and create the job.", zh: "顾客申请的每一次预约都会出现在这里。确认请求、登记进店、创建工单。", ms: "Setiap tempahan rider masuk ke sini. Sahkan permintaan, daftar masuk dan cipta kerja." },
+  "tut.bookings.1.title": { en: "Filters", zh: "筛选", ms: "Tapis" },
+  "tut.bookings.1.body": { en: "Filter by branch, date or status. New requests come in as REQUESTED — confirm them first.", zh: "按分支/日期/状态筛选。新请求是 REQUESTED——先确认。", ms: "Tapis mengikut cawangan, tarikh atau status." },
+  "tut.bookings.2.title": { en: "Booking list", zh: "预约列表", ms: "Senarai tempahan" },
+  "tut.bookings.2.body": { en: "Each row is a booking. Confirm, check in, or cancel right from here.", zh: "每行一个预约。可直接确认、登记或取消。", ms: "Setiap baris ialah tempahan. Sahkan, daftar masuk atau batal." },
+
+  // Customers
+  "tut.customers.0.title": { en: "Customers", zh: "客户", ms: "Pelanggan" },
+  "tut.customers.0.body": { en: "Every rider with their bikes, visits and spend. Open a passport for the full service story.", zh: "每一位骑车人及他们的车、到店次数与消费。打开护照看完整服务记录。", ms: "Setiap rider dengan motosikal, lawatan dan belanja." },
+  "tut.customers.1.title": { en: "Search", zh: "搜索", ms: "Cari" },
+  "tut.customers.1.body": { en: "Find a customer by name, phone or plate.", zh: "按姓名/电话/车牌查找客户。", ms: "Cari pelanggan mengikut nama, telefon atau plat." },
+  "tut.customers.2.title": { en: "Customer list", zh: "客户列表", ms: "Senarai pelanggan" },
+  "tut.customers.2.body": { en: "The directory. Click a customer to open their passport with service history.", zh: "客户名录。点击打开客户的护照与历史。", ms: "Direktori. Klik untuk buka pasport dengan sejarah servis." },
 };
 
 export function t(key: string, lang: Lang): string {

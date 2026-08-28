@@ -4,6 +4,8 @@ import { ScanQrButton } from "@/components/workshop/scan-qr-button";
 import { RefreshControls } from "@/components/workshop/refresh-controls";
 import { Sidebar } from "@/components/workshop/sidebar";
 import { MobileNav, type MobileNavItem } from "@/components/workshop/mobile-nav";
+import { FeatureTutorial } from "@/components/workshop/feature-tutorial";
+import { TutorialHelpMenu } from "@/components/workshop/tutorial-help-menu";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { can } from "@/lib/auth/permissions";
@@ -53,6 +55,7 @@ export default async function WorkshopLayout({ children }: { children: React.Rea
           <div className="flex-1" />
           <RefreshControls />
           <ScanQrButton />
+          <TutorialHelpMenu userId={sidebarUser?.id ?? ""} />
           <ThemeControls />
         </div>
         {/* 移动端：顶部 sticky 刷新条（自动刷新 + 手动按钮常驻） */}
@@ -62,6 +65,8 @@ export default async function WorkshopLayout({ children }: { children: React.Rea
         <main className="flex-1 px-4 md:px-6 py-6 pb-24 lg:pb-8 max-w-7xl w-full mx-auto">{children}</main>
         <MobileNav items={mobileItems.length ? mobileItems : [{ key: "dashboard", href: "/workshop/dashboard", label: "Dashboard" }]} />
       </div>
+      {/* In-app feature tutorial: 首次进入某功能页触发该页引导 */}
+      <FeatureTutorial userId={sidebarUser?.id ?? ""} />
     </div>
   );
 }
