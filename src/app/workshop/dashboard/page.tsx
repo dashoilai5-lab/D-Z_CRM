@@ -66,7 +66,7 @@ export default async function DashboardPage() {
 
       {/* today metrics — role-scoped */}
       {isMechanic ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div data-tut="stats" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <StatCard label={t("dash.my-active-jobs", lang)} value={myJobs.filter((j) => ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "READY"].includes(j.status)).length} unit={t("dash.unit-jobs", lang)} href="/workshop/mechanic" />
           <StatCard label={t("dash.my-jobs-today", lang)} value={todayJobs.length} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs" />
           <StatCard label={t("dash.awaiting-approval", lang)} value={dash.statuses.AWAITING_APPROVAL} unit={t("dash.unit-approvals", lang)} href="/workshop/jobs?status=AWAITING_APPROVAL" tone="warn" />
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
       </section>
 
       {/* workshop status */}
-      <section>
+      <section data-tut="board">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold">{t("dash.workshop-status", lang)}</h2>
           <Link href="/workshop/jobs" className="text-xs font-medium text-primary flex items-center gap-1">{t("dash.view-job-board", lang)} <ArrowRight className="h-3 w-3" /></Link>

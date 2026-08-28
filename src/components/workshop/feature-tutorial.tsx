@@ -19,6 +19,7 @@ export function FeatureTutorial({ userId }: Props) {
   const [def, setDef] = useState<TutorialDef | null>(null);
   const [stepIdx, setStepIdx] = useState(0);
   const [active, setActive] = useState(false);
+  const [spot, setSpot] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
   // 路由匹配：到哪个功能页才触发哪个引导
   useEffect(() => {
@@ -56,19 +57,33 @@ export function FeatureTutorial({ userId }: Props) {
     return () => window.removeEventListener("dz-tutorial-replay", onReplay);
   }, [userId]);
 
+  // 步骤变化：滚动到目标元素并读取其位置 → spotlight 高亮跟随（全部 setState 延迟到 rAF/setTimeout，避免 effect 内同步 setState）
+  useEffect(() => {
+    if (!active || !def) return;
+    const target = def.steps[stepIdx]?.target;
+    const raf = requestAnimationFrame(() => {
+      if (!target) { setSpot(null); return; }
+      const read = () => {
+        const el = document.querySelector(target) as HTMLElement | null;
+        if (!el) { setSpot(null); return; }
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        const r = el.getBoundingClientRect();
+        setSpot({ top: r.top, left: r.left, width: r.width, height: r.height });
+      };
+      read();
+      const t = setTimeout(read, 320);
+      return () => clearTimeout(t);
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [active, def?.id, def?.steps?.[stepIdx]?.target, stepIdx]);
+
   if (!active || !def) return null;
   const step: TutorialStep = def.steps[stepIdx] ?? def.steps[0];
   const title = t(step.titleKey, lang);
   const body = t(step.bodyKey, lang);
 
-  function targetRect() {
-    if (!step.target) return { top: 120, left: 40, width: 0, height: 0 };
-    const el = document.querySelector(step.target) as HTMLElement | null;
-    if (!el) return { top: 120, left: 40, width: 0, height: 0 };
-    const r = el.getBoundingClientRect();
-    return { top: r.top, left: r.left, width: r.width, height: r.height };
-  }
-  const rect = targetRect();
+  const hasTarget = !!step.target && step.target !== "";
+  const rect = spot ?? { top: 120, left: 40, width: 0, height: 0 };
   const isLast = stepIdx === def.steps.length - 1;
   const tipLeft = rect.width ? rect.left + rect.width / 2 - 190 : 40;
   const tipTop = rect.top > 200 ? rect.top - 90 : rect.top + rect.height + 20;
@@ -83,12 +98,18 @@ export function FeatureTutorial({ userId }: Props) {
     window.sessionStorage.setItem(SESSION_DISMISS_KEY(userId, def!.id), "1");
     setActive(false); setDef(null);
   }
-  function next() { isLast ? finish() : setStepIdx((i) => i + 1); }
+  function next() { if (isLast) { finish(); return; } setStepIdx((i) => i + 1); }
   function prev() { if (stepIdx > 0) setStepIdx((i) => i - 1); }
 
   return (
     <div className="fixed inset-0 z-[120] pointer-events-none" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-black/40" />
+      {/* 有 target：挖空高亮该元素（spotlight 用超大 box-shadow 压暗周围）；无 target：整页遮罩 */}
+      {hasTarget ? (
+        <div className="pointer-events-none absolute rounded-lg border-2 border-primary ring-4 ring-primary/20 transition-all duration-200"
+          style={{ left: rect.left - 4, top: rect.top - 4, width: rect.width + 8, height: rect.height + 8, boxShadow: "0 0 0 9999px rgba(0,0,0,0.45)" }} />
+      ) : (
+        <div className="absolute inset-0 bg-black/40" />
+      )}
       <div className="pointer-events-auto absolute w-[380px] rounded-2xl border bg-white shadow-2xl" style={{ left: Math.max(16, tipLeft), top: tipTop }}>
         <div className="flex items-start justify-between gap-2 p-4 pb-2">
           <div className="flex items-center gap-2">
