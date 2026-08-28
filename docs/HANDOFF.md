@@ -1,16 +1,16 @@
-# HANDOFF — D&Z Platform（2026-08-26 16:30，会话 session-48b43fbb 续接更新）
+# HANDOFF — D&Z Platform（2026-08-27 16:47，会话 session-d5638e96 打包）
 
 > 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
 
 ## 一句话状态
-本地与生产 = main @ 3febb06，已全部 push，三服务 200。
-Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登录&注册**（手机必填/邮箱选填/gender/密码确认/老客手机号绑定 authId）已上线（生产实测手机+email 登录、注册页全字段）。上线准备：docs/ONBOARDING_PLAN.md（资料收集表+模块开放策略）+ scripts/setup-workshop-modules.ts（模块覆盖脚本，留在 feat/workshop-module-setup 分支未 merge）。
+本地与生产 = main @ 8def9dc，已全部 push，三服务 200。
+今日（8-27）上线 8 项：Rider 手机/邮箱双通道登录注册 → 账号隔离（rider/mechanic/员工三端）→ Developer Settings（模块矩阵+清空数据）→ Workshop 自动刷新 → 首辆摩托引导 → 手机号放宽+国家区号 → 登录语言切换 → Rider 登录页拆分（Phone/Email）。上线准备：docs/ONBOARDING_PLAN.md + 模块覆盖脚本（feat/workshop-module-setup 分支未 merge）。
 剩余需求：Rider ①②④（手机/WhatsApp 登录、老客注册、每月换油提醒）+ Workshop ④（3-6-12 月保养时间线）+ 经销商验证 + provider 换真。
 流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
 
 ## 会话信息
-- 原会话 ID：session-48b43fbb-52c1-4525-b241-f66f5c279c34（名称「继续D&Z开发」）
-- 打包时间：2026-08-26 16:30
+- 会话 ID：session-d5638e96-57df-4f76-9aff-2e55301e19fb（名称「继续D&Z会话」）
+- 打包时间：2026-08-27 16:47
 - 续接口令：继续 D&Z
 
 ## 完成进度
@@ -57,7 +57,7 @@ Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登�
 ## 基线测试（命令 + 期望通过数）
 - pnpm exec tsc --noEmit：0 错误
 - pnpm lint：0 errors（89 warnings 存量）
-- pnpm test：20 个通过
+- pnpm test：26 个通过
 - pnpm exec playwright test：75 过 / 6 skip / 0 败
 - pnpm run build：通过
 
@@ -69,7 +69,7 @@ Mechanic App + 工作统计 + LC135 拆分 + **Rider 手机/邮箱双通道登�
 - 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
 
 ## git 状态
-- 分支：main ｜ HEAD：3febb06（Merge fix/rider-login-tabs）｜ 已 push
+- 分支：main ｜ HEAD：8def9dc（docs: handoff - rider login tabs deployed）｜ 已 push
 - 本地 dev.db：试用空店状态（业务全清、配置保留）；员工 authId 已全重绑（owner/manager/counter/marketing/inventory/mechanic×3）
 - feat/workshop-module-setup @ a614dc0：模块覆盖脚本 + 台账（未 merge 未 push，用户决定不需要；ONBOARDING_PLAN.md 已在 main）
 - feat/rider-phone-login 已合并上线并清理（5cc2978 → 生产）
