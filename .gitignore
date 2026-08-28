@@ -65,3 +65,7 @@ Part_Catalogue/
 # local db backups (trial data snapshots)
 prisma/*.db.bak-*
 prisma/*.db-*
+
+# D&Z teaching PPT build artifacts
+.ppt-build/
+docs/ppt-assets/

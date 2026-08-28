@@ -155,7 +155,7 @@ export async function signUpRider(input: { name: string; phone?: string; country
   const admin = await createAdminClient();
 
   // 老客匹配：手机号 → Customer.phone（老客注册，绑定 authId）
-  let existing = await customerByPhone(phoneLocal);
+  const existing = await customerByPhone(phoneLocal);
   // 老客有 email 且本次未填 → 用老客 email 建 auth（保持双通道同一账号）
   if (!email && existing?.email) email = existing.email;
   // 重复检测

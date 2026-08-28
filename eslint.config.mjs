@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     // Dev helper scripts (CJS) — not product code.
     "scripts/**",
     "e2e/**",
+    // D&Z teaching-PPT build artifacts — not product code.
+    ".ppt-build/**",
+    "docs/ppt-assets/**",
   ]),
 ]);
 

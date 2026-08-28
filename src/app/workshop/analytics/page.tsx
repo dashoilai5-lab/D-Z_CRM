@@ -22,10 +22,11 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   let sinceDays = PERIODS.some((p) => p.key === sp.days) ? Number(sp.days) : 30;
   let untilDays = 0;
   if (from) {
+    const now = new Date();
     const f = new Date(from + "T00:00:00Z");
-    const t = to ? new Date(to + "T00:00:00Z") : new Date();
-    sinceDays = Math.max(1, Math.ceil((Date.now() - f.getTime()) / 86400000));
-    untilDays = Math.max(0, Math.ceil((Date.now() - t.getTime()) / 86400000));
+    const t = to ? new Date(to + "T00:00:00Z") : now;
+    sinceDays = Math.max(1, Math.ceil((now.getTime() - f.getTime()) / 86400000));
+    untilDays = Math.max(0, Math.ceil((now.getTime() - t.getTime()) / 86400000));
     if (untilDays >= sinceDays) { sinceDays = 1; untilDays = 0; }
   }
   const months = Math.max(1, Math.ceil((sinceDays - untilDays) / 30)); // 月度视图按月数对齐
