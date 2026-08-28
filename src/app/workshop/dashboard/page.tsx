@@ -73,14 +73,14 @@ export default async function DashboardPage() {
           <StatCard label={t("dash.ready", lang)} value={dash.statuses.READY} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs?status=READY" tone="success" />
         </div>
       ) : isOwner ? (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div data-tut="stats" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <StatCard icon={<Wallet className="h-4 w-4" />} label={t("dash.today-sales", lang)} value={<Money sen={dash.todaySales} />} href="/workshop/finance/profit" />
           <StatCard icon={<TrendingUp className="h-4 w-4" />} label={t("dash.gross-profit", lang)} value={<Money sen={dash.todayGrossProfit} />} href="/workshop/finance/profit" tone="success" />
           <StatCard icon={<Wrench className="h-4 w-4" />} label={t("dash.jobs-today", lang)} value={dash.jobsToday} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs" />
           <StatCard icon={<Receipt className="h-4 w-4" />} label={t("dash.avg-ticket", lang)} value={<Money sen={dash.avgTicket} />} href="/workshop/finance/profit" />
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <div data-tut="stats" className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <StatCard label={t("dash.jobs-today", lang)} value={dash.jobsToday} unit={t("dash.unit-jobs", lang)} href="/workshop/jobs" />
           <StatCard label={t("dash.customers-due", lang)} value={dash.customersDue} unit={t("dash.unit-customers", lang)} href="/workshop/crm/reminders" tone="danger" />
           <StatCard label={t("dash.new-bookings", lang)} value={dash.statuses.WAITING + dash.statuses.IN_PROGRESS} unit={t("dash.unit-bookings", lang)} href="/workshop/bookings" />
