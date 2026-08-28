@@ -18,7 +18,7 @@ export function MotorcycleList({ customerId, bikes }: { customerId: string; bike
   const [adding, setAdding] = useState(false);
 
   return (
-    <div className="space-y-4">
+    <div data-tut="rider-motorcycles-list" className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("bike.list-title", lang)}</h1>
         {!adding && (

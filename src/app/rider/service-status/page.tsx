@@ -41,7 +41,7 @@ export default async function ServiceStatusPage() {
     const pct = Math.round(((idx + 1) / LIFECYCLE_STEPS.length) * 100);
     const eta = r.job?.estimatedCompletionAt;
     return (
-      <div className="mt-5">
+      <div data-tut="rider-status-progress" className="mt-5">
         <div className="mb-4 flex items-center justify-between text-xs">
           <span className="text-muted-foreground">{t("svc.overall-progress", lang)}</span>
           <span className="font-bold tabular-nums text-primary">{pct}%</span>

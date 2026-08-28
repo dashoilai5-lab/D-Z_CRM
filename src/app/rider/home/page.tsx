@@ -52,7 +52,7 @@ export default async function RiderHomePage() {
   return (
     <PageTransition>
     <div className="space-y-5">
-      <header className="flex items-start justify-between">
+      <header data-tut="rider-hello" className="flex items-start justify-between">
         <div>
           <p className="text-sm text-muted-foreground">{greeting},</p>
           <h1 className="text-2xl font-bold tracking-tight">{customer.name.split(" ")[0]}</h1>
@@ -175,7 +175,7 @@ export default async function RiderHomePage() {
       )}
 
       {bike && (
-        <Link href={"/rider/motorcycles/" + bike.id} className="dz-card-link flex items-center justify-between rounded-2xl border bg-card p-4">
+        <Link data-tut="rider-bike" href={"/rider/motorcycles/" + bike.id} className="dz-card-link flex items-center justify-between rounded-2xl border bg-card p-4">
           <div className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center"><Wrench className="h-4 w-4" /></div>
             <div>

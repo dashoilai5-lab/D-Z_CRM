@@ -31,7 +31,7 @@ export default async function RiderProfilePage() {
   return (
     <PageTransition>
     <div className="space-y-5">
-      <div className="relative">
+      <div data-tut="rider-profile-card" className="relative">
         <div className="absolute right-0 top-0 z-10 flex items-center gap-2">
           <Link href="/rider/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label="Settings">
             <SettingsIcon className="h-4 w-4" />

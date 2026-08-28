@@ -98,7 +98,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
       </div>
 
       {/* package — single select (workshop-style) */}
-      <div>
+      <div data-tut="rider-book-package">
         <div className="flex items-baseline justify-between">
           <Label>{t("book.package", lang)}</Label>
           <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("book.pick-one", lang)}</span>

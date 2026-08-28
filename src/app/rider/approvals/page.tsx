@@ -15,7 +15,7 @@ export default async function ApprovalsPage() {
   const past = approvals.filter((a) => a.status !== "PENDING");
 
   return (
-    <div className="space-y-4">
+    <div data-tut="rider-approvals-list" className="space-y-4">
       <h1 className="text-2xl font-bold">{t("approvals.title", lang)}</h1>
       {pending.length > 0 && (
         <>

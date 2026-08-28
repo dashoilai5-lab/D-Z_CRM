@@ -2,10 +2,14 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/rider/bottom-nav";
 import { getSessionUser } from "@/lib/session-user";
+import { getRiderCustomer } from "@/lib/rider-customer";
 import { getLang } from "@/lib/get-lang";
+import { FeatureTutorialRider } from "@/components/rider/feature-tutorial-rider";
 
 export default async function RiderLayout({ children }: { children: React.ReactNode }) {
   const [session, lang] = await Promise.all([getSessionUser(), getLang()]);
+  // 顾客教程：拿 customerId + 是否有车（无车交由 bike-first 注册引导，先不弹教程）
+  const rider = session.kind === "customer" ? await getRiderCustomer() : null;
 
   const h = await headers();
   const pathname = h.get("x-pathname") ?? "";
@@ -28,6 +32,7 @@ export default async function RiderLayout({ children }: { children: React.ReactN
         {children}
       </main>
       {!isAuthPage && <BottomNav lang={lang} />}
+      {!isAuthPage && rider && <FeatureTutorialRider customerId={rider.id} hasBike={(rider.motorcycles?.length ?? 0) > 0} />}
     </div>
   );
 }
