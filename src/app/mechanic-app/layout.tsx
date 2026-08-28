@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { Wrench } from "lucide-react";
+import { AppBrandIcon } from "@/components/shared/app-brand-icon";
 import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
@@ -19,7 +19,7 @@ export default async function MechanicAppLayout({ children }: { children: React.
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"><Wrench className="h-4 w-4" /></span>
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"><AppBrandIcon app="mechanic" className="h-4 w-4" /></span>
             <span className="font-semibold">{t("mech.app", lang)}</span>
           </div>
           <span className="text-xs text-muted-foreground">{session.user?.name}</span>

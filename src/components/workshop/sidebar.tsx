@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SignOutButton } from "@/components/workshop/sign-out-button";
+import { AppBrandIcon } from "@/components/shared/app-brand-icon";
 import {
   LayoutDashboard, Filter, Kanban, Timer, ListTodo, Sparkles, MessageSquare, Star, Gauge, Bell, Upload,
   Plug, ShieldCheck, Users, Bike, UserCheck, BellRing, CalendarClock, Wrench, ClipboardList, ListChecks,
@@ -67,7 +68,7 @@ export function Sidebar({ persona, role, sections, user, lang = "en" }: { person
     >
       <Link href="/workshop/dashboard" className={cn("flex items-center h-16 border-b border-sidebar-border", expanded ? "gap-2.5 px-5 mt-3 mb-4" : "gap-0 justify-center mt-3 mb-3")}>
         <div className="h-8 w-8 shrink-0 rounded-xl bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center">
-          <Bike className="h-5 w-5" />
+          <AppBrandIcon app="workshop" className="h-5 w-5" />
         </div>
         <div className={cn("leading-tight overflow-hidden whitespace-nowrap transition-opacity duration-200", expanded ? "opacity-100" : "opacity-0 w-0")}>
           <div className="font-bold text-sm">D&Z WORKSHOP OS</div>

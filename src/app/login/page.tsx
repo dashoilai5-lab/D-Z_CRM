@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Bike } from "lucide-react";
+import { AppBrandIcon } from "@/components/shared/app-brand-icon";
 import { signInWithPassword, signInWithOtp, verifyOtp } from "@/actions/auth-supabase";
 import { LanguageSwitcher } from "@/components/rider/language-switcher";
 import { useLang } from "@/components/shared/language-context";
@@ -65,7 +65,7 @@ export default function LoginPage() {
         </div>
         <div className="mb-6 flex flex-col items-center text-center">
           <div className="h-14 w-14 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/25">
-            <Bike className="h-7 w-7" />
+            <AppBrandIcon app="workshop" className="h-7 w-7" />
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight">D&Z AI CRM</h1>
           <p className="text-sm text-muted-foreground">Dealer · Workshop · Rider — one platform</p>
