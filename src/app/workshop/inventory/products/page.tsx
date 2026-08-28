@@ -13,7 +13,7 @@ export default async function ProductsPage() {
   return (
     <div>
       <PageHeader title={t("ws.products.title", lang)} subtitle={t("ws.products.subtitle", lang).replace("{n}", String(rows.length))} />
-      <div className="rounded-2xl border bg-card overflow-hidden">
+      <div data-tut="products-list" className="rounded-2xl border bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">

@@ -58,4 +58,33 @@ export const WORKSHOP_TUTORIALS: TutorialDef[] = [
       { target: "[data-tut='customers-list']", titleKey: "tut.customers.2.title", bodyKey: "tut.customers.2.body", placement: "top" },
     ],
   },
+  {
+    id: "jobs",
+    route: "/workshop/jobs",
+    labelKey: "nav.jobs",
+    steps: [
+      { target: "", titleKey: "tut.jobs.0.title", bodyKey: "tut.jobs.0.body", placement: "bottom" },
+      { target: "[data-tut='jobs-filter']", titleKey: "tut.jobs.1.title", bodyKey: "tut.jobs.1.body", placement: "bottom" },
+      { target: "[data-tut='jobs-board']", titleKey: "tut.jobs.2.title", bodyKey: "tut.jobs.2.body", placement: "top" },
+    ],
+  },
+  {
+    id: "analytics",
+    route: "/workshop/analytics",
+    labelKey: "nav.analytics",
+    steps: [
+      { target: "", titleKey: "tut.analytics.0.title", bodyKey: "tut.analytics.0.body", placement: "bottom" },
+      { target: "[data-tut='analytics-range']", titleKey: "tut.analytics.1.title", bodyKey: "tut.analytics.1.body", placement: "bottom" },
+      { target: "[data-tut='analytics-chart']", titleKey: "tut.analytics.2.title", bodyKey: "tut.analytics.2.body", placement: "top" },
+    ],
+  },
+  {
+    id: "products",
+    route: "/workshop/inventory/products",
+    labelKey: "nav.products",
+    steps: [
+      { target: "", titleKey: "tut.products.0.title", bodyKey: "tut.products.0.body", placement: "bottom" },
+      { target: "[data-tut='products-list']", titleKey: "tut.products.1.title", bodyKey: "tut.products.1.body", placement: "top" },
+    ],
+  },
 ];

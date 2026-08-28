@@ -51,7 +51,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           <h1 className="text-2xl font-bold">Analytics</h1>
           <p className="text-sm text-muted-foreground">Consistent calculation rules with the dashboard (ANA-051){rangeLabel ? " · " + rangeLabel : ""}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div data-tut="analytics-range" className="flex flex-wrap items-center gap-1.5">
           {PERIODS.map((p) => (
             <Link key={p.key} href={qs(p.key)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (!from && sinceDays === p.days && untilDays === 0 ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
               {p.label}
@@ -76,7 +76,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       />
 
       {/* 月度服务量 */}
-      <div className="rounded-2xl border bg-card p-5">
+      <div data-tut="analytics-chart" className="rounded-2xl border bg-card p-5">
         <h3 className="font-semibold mb-1">Monthly services</h3>
         <p className="text-xs text-muted-foreground mb-4">Completed jobs & unique motorcycles per month (last {months} month{months > 1 ? "s" : ""})</p>
         <div className="space-y-2">

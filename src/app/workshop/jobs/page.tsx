@@ -58,7 +58,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
       </div>
 
       {/* status filter pills */}
-      <div className="flex flex-wrap gap-1.5 mb-5">
+      <div data-tut="jobs-filter" className="flex flex-wrap gap-1.5 mb-5">
         <Link href="/workshop/jobs" className={"rounded-full border px-3 py-1 text-xs font-medium " + (!status ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground hover:border-primary/40")}>{t("ws.jobs.all", lang)} {board.jobs.length}</Link>
         {columns.map((c) => (
           <Link key={c.id} href={"/workshop/jobs?status=" + c.id} className={"rounded-full border px-3 py-1 text-xs font-medium flex items-center gap-1.5 " + (status === c.id ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground hover:border-primary/40")}>
@@ -68,7 +68,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
       </div>
 
       {isKanban ? (
-        <div className="grid md:grid-cols-3 xl:grid-cols-5 gap-3">
+        <div data-tut="jobs-board" className="grid md:grid-cols-3 xl:grid-cols-5 gap-3">
           {columns.map((col) => (
             <div key={col.id} className="rounded-2xl border bg-muted/30 p-2.5 min-h-40 flex flex-col">
               <div className="flex items-center justify-between px-1.5 pb-2">
@@ -94,7 +94,7 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border bg-card overflow-hidden">
+        <div data-tut="jobs-board" className="rounded-2xl border bg-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>

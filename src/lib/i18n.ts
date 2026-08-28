@@ -920,6 +920,28 @@ export const DICT: Dict = {
   "tut.customers.1.body": { en: "Find a customer by name, phone or plate.", zh: "按姓名/电话/车牌查找客户。", ms: "Cari pelanggan mengikut nama, telefon atau plat." },
   "tut.customers.2.title": { en: "Customer list", zh: "客户列表", ms: "Senarai pelanggan" },
   "tut.customers.2.body": { en: "The directory. Click a customer to open their passport with service history.", zh: "客户名录。点击打开客户的护照与历史。", ms: "Direktori. Klik untuk buka pasport dengan sejarah servis." },
+  // Jobs
+  "tut.jobs.0.title": { en: "Service Jobs", zh: "工单", ms: "Kerja Servis" },
+  "tut.jobs.0.body": { en: "Every service job in the workshop, from check-in to completion. Track work by status.", zh: "门店里的每一张工单，从进店到完成。按状态追踪进度。", ms: "Setiap kerja servis di bengkel, dari daftar masuk hingga selesai." },
+  "tut.jobs.1.title": { en: "Status filters", zh: "状态筛选", ms: "Tapis status" },
+  "tut.jobs.1.body": { en: "Filter jobs by status (waiting, in progress, ready...). Each pill shows how many jobs are in that state.", zh: "按状态筛选工单（排队、进行中、待取车…）。每个胶囊显示该状态的工单数。", ms: "Tapis kerja mengikut status. Setiap pill menunjukkan bilangan kerja." },
+  "tut.jobs.2.title": { en: "Job board / table", zh: "工单看板/表格", ms: "Papan kerja / jadual" },
+  "tut.jobs.2.body": { en: "Switch between kanban board and table view here. Each card is a job you can open and act on.", zh: "在这里切换看板/表格视图。每张卡片是一张可打开的工单。", ms: "Tukar antara papan kanban dan jadual. Setiap kad ialah kerja yang boleh dibuka." },
+
+  // Analytics
+  "tut.analytics.0.title": { en: "Analytics", zh: "数据分析", ms: "Analitik" },
+  "tut.analytics.0.body": { en: "See sales, services, customers and inventory performance over time.", zh: "查看销售、服务、客户和库存的长期表现。", ms: "Lihat prestasi jualan, servis, pelanggan dan inventori mengikut masa." },
+  "tut.analytics.1.title": { en: "Date range", zh: "日期范围", ms: "Julat tarikh" },
+  "tut.analytics.1.body": { en: "Pick a quick range (7/30/90 days, 12 months) or a custom from→to date window.", zh: "选快捷范围（7/30/90 天、12 个月）或自定义起止日期。", ms: "Pilih julat pantas atau tempoh tarikh tersuai." },
+  "tut.analytics.2.title": { en: "Charts", zh: "图表", ms: "Carta" },
+  "tut.analytics.2.body": { en: "Monthly service volume and brand breakdown. Hover / tap for exact numbers.", zh: "每月服务量和品牌分布。悬停/点击看精确数字。", ms: "Jumlah servis bulanan dan pecahan jenama." },
+
+  // Products
+  "tut.products.0.title": { en: "Products (Parts)", zh: "产品（配件）", ms: "Produk (alat ganti)" },
+  "tut.products.0.body": { en: "Your catalogue of parts & consumables with cost, sell price and margin.", zh: "配件与耗材目录，含成本、售价和毛利。", ms: "Katalog alat ganti dengan kos, harga dan margin." },
+  "tut.products.1.title": { en: "Product list", zh: "产品列表", ms: "Senarai produk" },
+  "tut.products.1.body": { en: "Browse products with SKU, brand, category and margin. Add or edit pricing here.", zh: "浏览产品（SKU、品牌、分类、毛利）。在此添加或编辑价格。", ms: "Semak produk dengan SKU, jenama, kategori dan margin." },
+
 };
 
 export function t(key: string, lang: Lang): string {
