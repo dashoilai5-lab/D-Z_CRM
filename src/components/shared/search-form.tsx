@@ -9,6 +9,7 @@ export function PendingForm({
   children,
   className = "",
   label = "Searching…",
+  ...rest
 }: {
   children: React.ReactNode;
   className?: string;
@@ -16,7 +17,7 @@ export function PendingForm({
 }) {
   const [pending, setPending] = useState(false);
   return (
-    <form method="get" className={"relative " + className} onSubmit={() => setPending(true)}>
+    <form method="get" className={"relative " + className} onSubmit={() => setPending(true)} {...rest}>
       {children}
       {pending && (
         <span className="absolute -top-3 right-2 z-20 inline-flex items-center gap-1.5 rounded-full border bg-card px-2.5 py-1 text-[11px] font-medium text-muted-foreground shadow-sm animate-pulse">
