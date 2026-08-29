@@ -52,6 +52,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       />
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <StatusBadge kind="job" value={detail.status} />
+        {detail.type === "REPAIR" && <span className="rounded-full bg-rose-500/15 px-2.5 py-1 text-[11px] font-bold text-rose-600 dark:text-rose-300">{t("job-type.repair", lang)}</span>}
         {pendingApprovals.length > 0 && (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:ring-amber-900">
             <AlertTriangle className="h-3.5 w-3.5" /> {pendingApprovals.length} {t(pendingApprovals.length > 1 ? "ws.job.pending-approvals" : "ws.job.pending-approval", lang)}

@@ -47,6 +47,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
   const slotOptions = daySlots.length > 0 ? daySlots : EST_TIMES;
   const isEstimated = !!date && daySlots.length === 0;
   const [notes, setNotes] = useState("");
+  const [jobType, setJobType] = useState<"service" | "repair">("service");
 
   const selectedBike = bikes.find((b) => b.id === motorcycleId);
   const bikeType = selectedBike ? motorcycleTypeInfo(selectedBike.type) : undefined;
@@ -62,20 +63,24 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
     start(async () => {
       if (!date) { toast.error(t("toast.pick-date", lang)); return; }
       if (!timeSlot) { toast.error(t("toast.pick-time", lang)); return; }
-      // build a readable service summary: package + selected extras
-      const serviceType = [
-        pkg?.name,
-        ...extrasList.map((x) => x.label),
-      ].filter(Boolean).join(" + ") || "General Checkup";
-      // 结构化 service：套餐 + 附加服务（Check In 时同步到 job）
-      const addons = extrasList.map((x) => ({ description: x.label, kind: "SERVICE" as const, quantity: 1, unitPriceSen: x.priceSen }));
-      await bookService({ customerId, motorcycleId: motorcycleId === "none" ? "" : motorcycleId, serviceType, packageId: pkg?.id, addons, date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
+      const isRepairType = jobType === "repair";
+      // build a readable service summary: package + selected extras (service) OR Repair (repair)
+      const serviceType = isRepairType ? t("job-type.repair", lang) : ([pkg?.name, ...extrasList.map((x) => x.label)].filter(Boolean).join(" + ") || "General Checkup");
+      // 结构化 service：套餐 + 附加服务（Check In 时同步到 job）；维修只带描述
+      const addons = isRepairType ? undefined : extrasList.map((x) => ({ description: x.label, kind: "SERVICE" as const, quantity: 1, unitPriceSen: x.priceSen }));
+      await bookService({ customerId, motorcycleId: motorcycleId === "none" ? "" : motorcycleId, serviceType, packageId: isRepairType ? undefined : pkg?.id, addons, type: isRepairType ? "REPAIR" : "SERVICE", date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });
       router.push("/rider/bookings");
       toast.success(t("toast.booking-requested", lang));
     });
 
   return (
     <div className="space-y-5">
+      {/* Service / Repair toggle */}
+      <div className="grid grid-cols-2 gap-1 rounded-2xl border bg-muted/40 p-1">
+        <button type="button" onClick={() => setJobType("service")} className={cn("rounded-xl py-2 text-sm font-semibold transition-colors", jobType === "service" ? "bg-background shadow-sm" : "text-muted-foreground")}>{t("job-type.service", lang)}</button>
+        <button type="button" onClick={() => setJobType("repair")} className={cn("rounded-xl py-2 text-sm font-semibold transition-colors", jobType === "repair" ? "bg-background shadow-sm" : "text-muted-foreground")}>{t("job-type.repair", lang)}</button>
+      </div>
+
       {/* motorcycle */}
       <div>
         <Label>{t("rider.motorcycle", lang)}</Label>
@@ -97,6 +102,8 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
         )}
       </div>
 
+      {jobType === "service" && (
+      <>
       {/* package — single select (workshop-style) */}
       <div data-tut="rider-book-package">
         <div className="flex items-baseline justify-between">
@@ -173,6 +180,23 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
           ))}
         </div>
       </div>
+      </>
+      )}
+
+      {/* repair: describe the problem instead of package/extras */}
+      {jobType === "repair" && (
+        <div>
+          <Label>{t("repair.problem", lang)}</Label>
+          <p className="text-[11px] text-muted-foreground mt-1">{t("repair.problem-hint", lang)}</p>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={3}
+            placeholder={t("repair.problem-hint", lang)}
+            className="mt-1.5 h-auto w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+          />
+        </div>
+      )}
 
       {/* summary */}
       <div className="rounded-2xl border bg-muted/30 p-4">

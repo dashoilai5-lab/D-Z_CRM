@@ -53,7 +53,8 @@ export default async function JobsPage({ searchParams }: { searchParams: Promise
             <Link href="/workshop/jobs" className={"rounded-md px-3 py-1.5 font-medium " + (!isKanban ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>{t("ws.jobs.view-table", lang)}</Link>
             <Link href="/workshop/jobs?view=kanban" className={"rounded-md px-3 py-1.5 font-medium " + (isKanban ? "bg-primary text-primary-foreground" : "text-muted-foreground")}>{t("ws.jobs.view-kanban", lang)}</Link>
           </div>
-          <Link href="/workshop/jobs/new"><Button size="sm"><Plus className="h-4 w-4 mr-1" /> {t("ws.jobs.create", lang)}</Button></Link>
+          <Link href="/workshop/jobs/new"><Button size="sm"><Plus className="h-4 w-4 mr-1" /> {t("ws.job.create-service", lang)}</Button></Link>
+        <Link href="/workshop/jobs/new?type=repair"><Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-1" /> {t("ws.job.create-repair", lang)}</Button></Link>
         </div>
       </div>
 

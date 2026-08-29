@@ -266,6 +266,7 @@ model Booking {
   timeSlot      String
   notes         String?
   status        BookingStatus @default(REQUESTED)
+  type          JobType       @default(SERVICE)
   source        BookingSource @default(RIDER_APP)
   campaignId    String?       // promo attribution: which campaign drove this booking
   campaign      Campaign?     @relation(fields: [campaignId], references: [id])
@@ -287,6 +288,11 @@ enum JobStatus {
   READY
   COMPLETED
   CANCELLED
+}
+
+enum JobType {
+  SERVICE
+  REPAIR
 }
 
 enum ItemStatus {
@@ -321,6 +327,7 @@ model ServiceJob {
   mileage         Int
   customerRequest String?
   status          JobStatus  @default(WAITING)
+  type            JobType    @default(SERVICE)
   estimatedCompletionAt DateTime? // JOB-016: estimated ready time (derived from service duration)
   startedAt       DateTime?
   readyAt         DateTime?

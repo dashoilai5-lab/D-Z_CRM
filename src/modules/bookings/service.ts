@@ -38,7 +38,8 @@ export class BookingService {
   async create(input: {
     branchId: string; customerId: string; motorcycleId: string;
     serviceType: string; date: Date; timeSlot: string; notes?: string; source: BookingSource; campaignId?: string;
-    packageId?: string; addons?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
+    packageId?: string; type?: "SERVICE" | "REPAIR";
+    addons?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
   }) {
     // prevent overbooking: if an AppointmentSlot is configured for this branch/date/time, respect its capacity
     const slot = await db.appointmentSlot.findUnique({
@@ -52,6 +53,7 @@ export class BookingService {
       customer: { connect: { id: input.customerId } },
       motorcycle: { connect: { id: input.motorcycleId } },
       serviceType: input.serviceType,
+      type: input.type ?? "SERVICE",
       servicePackage: input.packageId ? { connect: { id: input.packageId } } : undefined,
       serviceAddons: input.addons && input.addons.length > 0 ? input.addons as never : undefined,
       date: input.date,
@@ -174,6 +176,7 @@ export class BookingService {
           customerRequest: opts.customerRequest ?? booking.notes ?? undefined,
           servicePackageId: pkgId,
           mechanicId: opts.mechanicId || undefined,
+          type: booking.type ?? "SERVICE",
           status: "WAITING",
         },
       });
@@ -182,8 +185,8 @@ export class BookingService {
       await this.repo.update(bookingId, { status: "CHECKED_IN" } as never, tx);
       return { bookingId, jobId: job.id, jobNumber };
     });
-    // QUOT-001: 建 job 后自动生成报价单（PENDING），推送给 rider 确认
-    if (res) {
+    // QUOT-001: 服务 job 建后自动生成报价单（PENDING）；维修 job 不自动建（counter 加配件/工时后 Send）
+    if (res && (booking.type ?? "SERVICE") === "SERVICE") {
       try { await quotationService.send(res.jobId); } catch (e) { console.error("quotation create failed:", e); }
     }
     return res;

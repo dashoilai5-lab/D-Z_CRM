@@ -66,7 +66,7 @@ export class JobService {
   /** Create a service job (counter flow, §22). Returns the new job id. */
   async create(input: {
     branchId: string; customerId: string; motorcycleId: string; mileage: number;
-    customerRequest?: string; packageId?: string; mechanicId?: string;
+    customerRequest?: string; packageId?: string; mechanicId?: string; type?: "SERVICE" | "REPAIR";
     addons?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
   }): Promise<{ id: string; jobNumber: string }> {
     const jobNumber = await this.repo.nextJobNumber();
@@ -79,6 +79,7 @@ export class JobService {
       customerRequest: input.customerRequest,
       servicePackageId: input.packageId || undefined,
       mechanicId: input.mechanicId || undefined,
+      type: input.type ?? "SERVICE",
       status: "WAITING",
     });
     await this.attachPackage(created.id, input.packageId, input.addons);
@@ -161,10 +162,11 @@ export class JobService {
     if (to === "IN_PROGRESS" && (job.photos?.length ?? 0) < 5) {
       throw new Error("Pre-service photos required — capture all 5 angles (front / back / left / right / meter) before starting service.");
     }
-    // QUOT-001: quotation (if present) must be approved before starting service; legacy jobs without one are unaffected
+    // QUOT-001: repair jobs (or jobs with a quotation) must be approved before starting service
     if (to === "IN_PROGRESS") {
       const q = await db.quotation.findUnique({ where: { jobId: id } });
-      if (q && q.status !== "APPROVED") throw new Error("Quotation must be approved by the customer before starting service.");
+      const needsQuote = job.type === "REPAIR" || !!q;
+      if (needsQuote && (!q || q.status !== "APPROVED")) throw new Error("Quotation must be approved by the customer before starting service.");
     }
     const data: Prisma.ServiceJobUpdateInput = { status: to };
     if (to === "IN_PROGRESS") {

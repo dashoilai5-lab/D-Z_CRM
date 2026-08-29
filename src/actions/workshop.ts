@@ -13,22 +13,32 @@ import { audit } from "@/lib/auth/audit";
 
 export async function createJob(input: {
   customerId: string; motorcycleId: string; mileage: number; customerRequest?: string;
-  packageId?: string; mechanicId?: string;
+  packageId?: string; mechanicId?: string; type?: "SERVICE" | "REPAIR";
   addons?: { description: string; kind: string; quantity: number; unitPriceSen: number; productId?: string; unitCostSen?: number }[];
+  parts?: { productId: string; quantity: number; unitPriceSen: number; unitCostSen?: number }[];
+  labour?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
 }) {
   const org = await db.organisation.findFirst();
   const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
+  const isRepair = input.type === "REPAIR";
   const job = await jobService.create({
     branchId: branch!.id,
     customerId: input.customerId,
     motorcycleId: input.motorcycleId,
     mileage: input.mileage,
     customerRequest: input.customerRequest,
-    packageId: input.packageId,
+    packageId: isRepair ? undefined : input.packageId,
     mechanicId: input.mechanicId,
-    addons: input.addons?.map((a) => ({ description: a.description, kind: a.kind, quantity: a.quantity, unitPriceSen: a.unitPriceSen })),
+    type: isRepair ? "REPAIR" : "SERVICE",
+    addons: (isRepair ? input.labour : input.addons)?.map((a) => ({ description: a.description, kind: a.kind, quantity: a.quantity, unitPriceSen: a.unitPriceSen })),
   });
-  // accepted parts from recommendations
+  // repair parts → ServiceJobPart (no package item duplication)
+  for (const p of input.parts ?? []) {
+    await db.serviceJobPart.create({
+      data: { jobId: job.id, productId: p.productId, quantity: p.quantity, unitCostSen: p.unitCostSen ?? 0, unitPriceSen: p.unitPriceSen, lineTotalSen: p.unitPriceSen * p.quantity, status: "ACCEPTED", source: "COUNTER" },
+    });
+  }
+  // accepted parts from recommendations (service addons)
   for (const a of input.addons ?? []) {
     if (a.kind === "PART" && a.productId) {
       await db.serviceJobPart.create({
@@ -58,12 +68,13 @@ export async function transitionJob(id: string, to: "WAITING" | "IN_PROGRESS" | 
 export async function assignMechanic(id: string, mechanicId: string | null) {
   const before = await db.serviceJob.findUnique({
     where: { id },
-    select: { id: true, jobNumber: true, branchId: true, mechanicId: true },
+    select: { id: true, jobNumber: true, branchId: true, mechanicId: true, type: true },
   });
-  // QUOT-001: 报价（若存在）必须已获客户确认（APPROVED）才能派给技师；无报价的历史工单不受限
+  // QUOT-001: 维修 job 必须报价已确认；服务 job 若已有报价也必须确认（无报价历史工单不受限）
   if (mechanicId) {
     const q = await db.quotation.findUnique({ where: { jobId: id } });
-    if (q && q.status !== "APPROVED") return { ok: false, error: "Quotation must be approved by the customer before assigning a mechanic." };
+    const needsQuote = before?.type === "REPAIR" || !!q;
+    if (needsQuote && (!q || q.status !== "APPROVED")) return { ok: false, error: "Quotation must be approved by the customer before assigning a mechanic." };
   }
   await jobService.assignMechanic(id, mechanicId);
   // 给被指派技师发一条站内通知（mechanic app alerts feed）

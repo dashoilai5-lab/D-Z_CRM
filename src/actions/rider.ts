@@ -11,7 +11,8 @@ import { fmtKM } from "@/lib/format";
 
 export async function bookService(input: {
   customerId: string; motorcycleId: string; serviceType: string; date: string; timeSlot: string; notes?: string; campaignId?: string; branchId?: string;
-  packageId?: string; addons?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
+  packageId?: string; type?: "SERVICE" | "REPAIR";
+  addons?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
 }) {
   const org = await db.organisation.findFirst();
   const branch = input.branchId
@@ -23,6 +24,7 @@ export async function bookService(input: {
     motorcycleId: input.motorcycleId,
     serviceType: input.serviceType,
     packageId: input.packageId,
+    type: input.type,
     addons: input.addons,
     // 业务日期：存 UTC 零点（时区无关，显示端 toISOString/fmtDate 一致）
     date: new Date(input.date + "T00:00:00Z"),
