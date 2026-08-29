@@ -899,6 +899,11 @@ export const DICT: Dict = {
   "mech.sop.progress": { en: "{n}/5 captured", zh: "{n}/5 已拍", ms: "{n}/5 dirakam" },
   "mech.sop.need-all": { en: "Capture all 5 photos to start service.", zh: "拍齐 5 张才能开始服务。", ms: "Rakam 5 foto untuk mula servis." },
   "mech.sop.start-blocked": { en: "Capture all 5 photos first", zh: "请先拍齐 5 张", ms: "Rakam 5 foto dahulu" },
+  "mech.alerts": { en: "Alerts", zh: "提醒", ms: "Makluman" },
+  "mech.notifications-title": { en: "Notifications", zh: "通知", ms: "Pemberitahuan" },
+  "mech.no-notifications": { en: "No notifications yet.", zh: "暂无通知。", ms: "Tiada pemberitahuan lagi." },
+  "mech.mark-all-read": { en: "Mark all read", zh: "全部已读", ms: "Tandakan semua dibaca" },
+  "mech.unread": { en: "{n} unread", zh: "{n} 未读", ms: "{n} belum dibaca" },
 
   // --- in-app feature tutorial (Workshop OS) ---
   "tut.step": { en: "Step", zh: "步骤", ms: "Langkah" },
