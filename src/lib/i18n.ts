@@ -904,6 +904,10 @@ export const DICT: Dict = {
   "mech.no-notifications": { en: "No notifications yet.", zh: "暂无通知。", ms: "Tiada pemberitahuan lagi." },
   "mech.mark-all-read": { en: "Mark all read", zh: "全部已读", ms: "Tandakan semua dibaca" },
   "mech.unread": { en: "{n} unread", zh: "{n} 未读", ms: "{n} belum dibaca" },
+  "mech.tab.current": { en: "Current", zh: "进行中", ms: "Semasa" },
+  "mech.tab.completed": { en: "Completed", zh: "已完成", ms: "Selesai" },
+  "mech.refresh": { en: "Refresh", zh: "刷新", ms: "Segar semula" },
+  "mech.auto-refresh": { en: "Auto refresh", zh: "自动刷新", ms: "Auto segar" },
 
   // --- in-app feature tutorial (Workshop OS) ---
   "tut.step": { en: "Step", zh: "步骤", ms: "Langkah" },

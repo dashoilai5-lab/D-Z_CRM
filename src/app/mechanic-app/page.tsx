@@ -1,31 +1,24 @@
 import { redirect } from "next/navigation";
+import type { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
-import { getLang } from "@/lib/get-lang";
-import { t, tpl } from "@/lib/i18n";
-import { JobCard } from "@/components/mechanic/job-card";
+import { MechanicOrdersView } from "@/components/mechanic/mechanic-orders-view";
+import type { OrderCard } from "@/components/mechanic/job-card";
 
 export const dynamic = "force-dynamic";
 
-/** Mechanic App 首页：Grab 风格订单列表（金额 + 接单）。 */
-export default async function MechanicAppHome() {
-  const lang = await getLang();
-  const session = await getSessionUser();
-  if (session.kind !== "staff" || !session.user) redirect("/workshop/dashboard");
+const include = {
+  customer: { select: { name: true } },
+  motorcycle: { select: { brand: true, model: true, plate: true } },
+  booking: { select: { date: true, timeSlot: true, branch: { select: { city: true } } } },
+  items: { where: { status: { not: "DECLINED" } }, select: { lineTotalSen: true } },
+  parts: { where: { status: { not: "DECLINED" } }, select: { lineTotalSen: true } },
+} satisfies Prisma.ServiceJobInclude;
 
-  const jobs = await db.serviceJob.findMany({
-    where: { mechanicId: session.user.id, status: { notIn: ["COMPLETED", "CANCELLED"] } },
-    include: {
-      customer: { select: { name: true } },
-      motorcycle: { select: { brand: true, model: true, plate: true } },
-      booking: { select: { date: true, timeSlot: true, branch: { select: { city: true } } } },
-      items: { where: { status: { not: "DECLINED" } }, select: { lineTotalSen: true } },
-      parts: { where: { status: { not: "DECLINED" } }, select: { lineTotalSen: true } },
-    },
-    orderBy: [{ status: "asc" }, { createdAt: "asc" }],
-  });
+type JobRow = Prisma.ServiceJobGetPayload<{ include: typeof include }>;
 
-  const orders = jobs.map((j) => ({
+function toOrder(j: JobRow): OrderCard {
+  return {
     id: j.id, jobNumber: j.jobNumber, status: j.status, customer: j.customer.name,
     brand: j.motorcycle.brand, model: j.motorcycle.model, plate: j.motorcycle.plate,
     city: j.booking?.branch.city ?? "",
@@ -33,31 +26,30 @@ export default async function MechanicAppHome() {
     bookingTime: j.booking?.timeSlot ?? null,
     amountSen: j.items.reduce((s, i) => s + i.lineTotalSen, 0) + j.parts.reduce((s, p) => s + p.lineTotalSen, 0),
     packageName: j.packageName,
-  }));
+  };
+}
 
-  const pending = orders.filter((o) => o.status === "WAITING");
-  const active = orders.filter((o) => o.status !== "WAITING");
+/** Mechanic App 首页：Grab 风格订单列表（进行中 / 已完成 筛选 + 自动/手动刷新）。 */
+export default async function MechanicAppHome() {
+  const session = await getSessionUser();
+  if (session.kind !== "staff" || !session.user) redirect("/workshop/dashboard");
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold">{t("mech.orders", lang)}</h1>
-          <p className="text-xs text-muted-foreground">{tpl("mech.order-count", lang, { n: orders.length, name: session.user.name })}</p>
-        </div>
-        {pending.length > 0 && (
-          <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">{tpl("mech.new", lang, { n: pending.length })}</span>
-        )}
-      </div>
+  const [currentJobs, completedJobs] = await Promise.all([
+    db.serviceJob.findMany({
+      where: { mechanicId: session.user.id, status: { notIn: ["COMPLETED", "CANCELLED"] } },
+      include,
+      orderBy: [{ status: "asc" }, { createdAt: "asc" }],
+    }),
+    db.serviceJob.findMany({
+      where: { mechanicId: session.user.id, status: "COMPLETED" },
+      include,
+      orderBy: { completedAt: "desc" },
+      take: 50,
+    }),
+  ]);
 
-      {orders.length === 0 && (
-        <div className="rounded-2xl border bg-card p-10 text-center">
-          <p className="text-sm text-muted-foreground">{t("mech.no-orders", lang)}</p>
-        </div>
-      )}
+  const current = currentJobs.map(toOrder);
+  const completed = completedJobs.map(toOrder);
 
-      {pending.map((o) => <JobCard key={o.id} order={o} />)}
-      {active.map((o) => <JobCard key={o.id} order={o} />)}
-    </div>
-  );
+  return <MechanicOrdersView current={current} completed={completed} name={session.user.name} />;
 }

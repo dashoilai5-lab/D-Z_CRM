@@ -4,7 +4,7 @@ import { useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Bike, CheckCheck, ChevronRight, MapPin } from "lucide-react";
+import { Bike, CheckCheck, CheckCircle2, ChevronRight, MapPin } from "lucide-react";
 import { transitionJob } from "@/actions/workshop";
 import { useLang } from "@/components/shared/language-context";
 import { t } from "@/lib/i18n";
@@ -26,7 +26,7 @@ export interface OrderCard {
 }
 
 /** Grab 风格订单卡：金额醒目 + 接单（WAITING → IN_PROGRESS）。 */
-export function JobCard({ order }: { order: OrderCard }) {
+export function JobCard({ order, completed = false }: { order: OrderCard; completed?: boolean }) {
   const router = useRouter();
   const lang = useLang();
   const [pending, start] = useTransition();
@@ -50,6 +50,11 @@ export function JobCard({ order }: { order: OrderCard }) {
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs font-semibold text-primary">{order.jobNumber}</span>
             {order.packageName && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary">{order.packageName}</span>}
+            {completed && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                <CheckCircle2 className="h-3 w-3" /> {t("mech.tab.completed", lang)}
+              </span>
+            )}
           </div>
           <div className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
             <Bike className="h-4 w-4 shrink-0 text-muted-foreground" />
