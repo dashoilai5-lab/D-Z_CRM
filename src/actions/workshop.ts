@@ -51,7 +51,26 @@ export async function transitionJob(id: string, to: "WAITING" | "IN_PROGRESS" | 
 }
 
 export async function assignMechanic(id: string, mechanicId: string | null) {
+  const before = await db.serviceJob.findUnique({
+    where: { id },
+    select: { id: true, jobNumber: true, branchId: true, mechanicId: true },
+  });
   await jobService.assignMechanic(id, mechanicId);
+  // 给被指派技师发一条站内通知（mechanic app alerts feed）
+  if (mechanicId && before && before.mechanicId !== mechanicId) {
+    await db.notification
+      .create({
+        data: {
+          userId: mechanicId,
+          branchId: before.branchId,
+          title: "New job assigned",
+          body: before.jobNumber + " — service job assigned to you",
+          type: "JOB",
+          link: "/mechanic-app/jobs/" + before.id,
+        },
+      })
+      .catch(() => {});
+  }
   revalidatePath("/", "layout");
   return { ok: true };
 }

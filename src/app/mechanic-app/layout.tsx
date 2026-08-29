@@ -3,6 +3,7 @@ import { AppBrandIcon } from "@/components/shared/app-brand-icon";
 import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { db } from "@/lib/db";
 import { MechanicNav } from "@/components/mechanic/mechanic-nav";
 
 /** Mechanic App：仅 MECHANIC 角色；移动端 app 布局（rider 风格 + Grab 底部导航）。 */
@@ -13,6 +14,9 @@ export default async function MechanicAppLayout({ children }: { children: React.
   if (session.kind !== "staff" || session.role !== "MECHANIC") {
     redirect("/workshop/dashboard"); // 其他员工 → workshop OS
   }
+
+  // alerts 未读角标（userId-scoped notifications 未读计数）
+  const unread = session.user ? await db.notification.count({ where: { userId: session.user.id, readAt: null } }) : 0;
 
   return (
     <div className="flex min-h-dvh flex-col bg-muted/40">
@@ -26,7 +30,7 @@ export default async function MechanicAppLayout({ children }: { children: React.
         </div>
       </header>
       <main className="mx-auto w-full max-w-md flex-1 px-4 py-5 pb-28">{children}</main>
-      <MechanicNav />
+      <MechanicNav unread={unread} />
     </div>
   );
 }

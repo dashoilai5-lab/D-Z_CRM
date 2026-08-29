@@ -883,6 +883,11 @@ export const DICT: Dict = {
   "mech.jobs": { en: "Jobs", zh: "工单", ms: "Kerja" },
   "mech.value": { en: "Value", zh: "价值", ms: "Nilai" },
   "mech.job-detail": { en: "Job detail", zh: "工单详情", ms: "Butiran kerja" },
+  "mech.alerts": { en: "Alerts", zh: "提醒", ms: "Makluman" },
+  "mech.notifications-title": { en: "Notifications", zh: "通知", ms: "Pemberitahuan" },
+  "mech.no-notifications": { en: "No notifications yet.", zh: "暂无通知。", ms: "Tiada pemberitahuan lagi." },
+  "mech.mark-all-read": { en: "Mark all read", zh: "全部已读", ms: "Tandakan semua dibaca" },
+  "mech.unread": { en: "{n} unread", zh: "{n} 未读", ms: "{n} belum dibaca" },
 
   // --- in-app feature tutorial (Workshop OS) ---
   "tut.step": { en: "Step", zh: "步骤", ms: "Langkah" },

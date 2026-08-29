@@ -238,6 +238,7 @@ pnpm db:studio    # Prisma Studio 可视化
 
 | 日期 | 改动 | 影响 |
 | --- | --- | --- |
+| 2026-08-29 | Mechanic App 新增通知中心（Alerts）：/mechanic-app/notifications 页面 + 底部导航 Alerts tab（Bell 图标 + 未读角标随 layout 计数）+ src/actions/mechanic-notifications.ts markMechanicNotificationsRead；assignMechanic 给被指派技师发 JOB 站内通知 | Mechanic App 三端通知对齐（workshop/rider 已有）；i18n 加 mech.alerts/mech.notifications-* 等 5 key；tsc0/lint0(111w)/unit26/build 全绿 |
 | 2026-08-19 | 新增迁移 `booking_campaign_attr`、`review_reply` | Booking.campaignId、Review.reply |
 | 2026-08-19 | 新增迁移 `motorcycle_type`、`promo_discount` | Motorcycle.type、Campaign.discountPercent |
 | 2026-08-19 | i18n 三语支持（dz_lang cookie） | 全部页面文案 |
