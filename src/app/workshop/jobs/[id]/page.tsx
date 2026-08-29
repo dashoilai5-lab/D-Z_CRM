@@ -11,6 +11,7 @@ import { RecommendationActions } from "@/components/workshop/recommendation-acti
 import { AiRecommendationActions } from "@/components/workshop/ai-recommendation-actions";
 import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-form";
 import { MileageCorrector } from "@/components/workshop/mileage-corrector";
+import { JobPhotosView } from "@/components/workshop/job-photos-view";
 import { fmtDate, fmtDateTime, fmtKM } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { db } from "@/lib/db";
@@ -145,17 +146,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             {(detail.photos ?? []).length === 0 ? (
               <p className="text-sm text-muted-foreground">{t("ws.job.sop-empty", lang)}</p>
             ) : (
-              <div className="grid grid-cols-5 gap-2">
-                {["FRONT", "BACK", "LEFT", "RIGHT", "METER"].map((a) => {
-                  const p = (detail.photos ?? []).find((ph) => ph.angle === a);
-                  return (
-                    <div key={a} className="relative aspect-square overflow-hidden rounded-xl border bg-muted/40">
-                      {p ? <img src={p.photoUrl} alt={a} className="h-full w-full object-cover" /> : <span className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground/60">—</span>}
-                      <span className="absolute inset-x-0 bottom-0 bg-black/55 py-0.5 text-center text-[10px] font-medium text-white">{t("mech.sop." + a.toLowerCase(), lang)}</span>
-                    </div>
-                  );
-                })}
-              </div>
+              <JobPhotosView photos={(detail.photos ?? []).map((p) => ({ angle: p.angle, photoUrl: p.photoUrl }))} />
             )}
           </section>
 
