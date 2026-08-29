@@ -161,6 +161,11 @@ export class JobService {
     if (to === "IN_PROGRESS" && (job.photos?.length ?? 0) < 5) {
       throw new Error("Pre-service photos required — capture all 5 angles (front / back / left / right / meter) before starting service.");
     }
+    // QUOT-001: quotation (if present) must be approved before starting service; legacy jobs without one are unaffected
+    if (to === "IN_PROGRESS") {
+      const q = await db.quotation.findUnique({ where: { jobId: id } });
+      if (q && q.status !== "APPROVED") throw new Error("Quotation must be approved by the customer before starting service.");
+    }
     const data: Prisma.ServiceJobUpdateInput = { status: to };
     if (to === "IN_PROGRESS") {
       data.startedAt = job.startedAt ?? new Date();

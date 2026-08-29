@@ -15,6 +15,7 @@ const jobInclude = {
   booking: true,
   reminder: true,
   photos: { orderBy: { angle: "asc" } },
+  quotation: true,
 } satisfies Prisma.ServiceJobInclude;
 
 const rowInclude = {

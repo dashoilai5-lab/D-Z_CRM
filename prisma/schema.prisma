@@ -381,6 +381,7 @@ model ServiceJob {
   statusHistory   JobStatusHistory[]
   serviceHistory  ServiceHistory?
   photos          ServiceJobPhoto[]
+  quotation       Quotation?
 }
 
 // ---------- Mechanic pre-service SOP photos (开工前拍照记录) ----------
@@ -403,6 +404,28 @@ model ServiceJobPhoto {
   capturedAt   DateTime      @default(now())
   // 每工单每角度一张：重拍即 upsert 覆盖
   @@unique([jobId, angle])
+}
+
+// ---------- Pre-service quotation (开工前报价确认) ----------
+
+enum QuotationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Quotation {
+  id          String         @id @default(cuid())
+  jobId       String         @unique
+  job         ServiceJob     @relation(fields: [jobId], references: [id])
+  status      QuotationStatus @default(PENDING)
+  revision    Int            @default(1)
+  totalSen    Int            @default(0)
+  itemsJson   String?        // 报价行快照 [{description,qty,unitPriceSen,lineTotalSen,kind}]
+  sentAt      DateTime       @default(now())
+  respondedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 }
 
 model ServiceJobItem {

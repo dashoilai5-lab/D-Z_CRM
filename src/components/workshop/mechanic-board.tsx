@@ -19,6 +19,7 @@ export interface BoardJob {
   packageName: string | null;
   pendingApprovals: number;
   mechanicId: string | null;
+  quotationApproved: boolean;
   motorcycle: { brand: string; model: string; plate: string };
   customer: { name: string };
   isToday: boolean;
@@ -114,13 +115,14 @@ export function MechanicBoard({ mechanics, initialMechanicId, ownerView, allMech
               <div className="text-xs text-muted-foreground mt-0.5">{j.motorcycle.plate} · {j.customer.name}</div>
               <div className="mt-1.5 text-xs font-medium">{fmtKM(j.mileage)}{j.packageName ? " · " + j.packageName : ""}</div>
               {j.pendingApprovals > 0 && <div className="mt-2 text-xs font-semibold text-amber-600 dark:text-amber-300">⏳ {j.pendingApprovals} customer approval pending</div>}
+              {!j.quotationApproved && <div className="mt-2 text-xs font-semibold text-primary dark:text-primary">📄 {t("ws.mech.quote-pending", lang)}</div>}
             </Link>
             {ownerView && (
               <div className="mt-3 flex items-center gap-2 border-t border-border/60 pt-2.5">
                 <UserCog className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
                 <select
                   value={j.mechanicId ?? ""}
-                  disabled={pending}
+                  disabled={pending || !j.quotationApproved}
                   onChange={(e) => reassign(j.id, e.target.value)}
                   className="h-7 flex-1 rounded-md border bg-background px-2 text-xs outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
                   aria-label={"Assign mechanic for " + j.jobNumber}

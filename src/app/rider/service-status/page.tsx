@@ -4,6 +4,7 @@ import { getRiderCustomer } from "@/lib/rider-customer";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
 import { getRiderStatus, LIFECYCLE_STEPS } from "@/modules/rider/status";
+import { QuotationCard, type QuotationItem } from "@/components/rider/quotation-card";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,10 @@ export default async function ServiceStatusPage() {
   const rest = rows.filter((r) => r.outcome !== "active");
   const stepLabel = (s: string) => t("svc." + s, lang);
 
+  const parseItems = (itemsJson: string | null): QuotationItem[] => {
+    try { return itemsJson ? (JSON.parse(itemsJson) as QuotationItem[]) : []; } catch { return []; }
+  };
+
   const stepIcon = (state: "done" | "active" | "todo") =>
     state === "done" ? <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
     : state === "active" ? <Loader2 className="h-5 w-5 animate-spin text-primary" />
@@ -25,6 +30,7 @@ export default async function ServiceStatusPage() {
     if (r.sub?.kind === "waiting_parts") return <span className="rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 text-[11px] px-2.5 py-0.5 font-semibold">⏳ {t("svc.waiting_parts", lang)}</span>;
     if (r.sub?.kind === "on_hold") return <span className="rounded-full bg-slate-500/15 text-slate-600 dark:text-slate-300 text-[11px] px-2.5 py-0.5 font-semibold">⏸ {t("svc.on_hold", lang)}</span>;
     if (r.sub?.kind === "approval") return <Link href="/rider/approvals" className="rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-300 text-[11px] px-2.5 py-0.5 font-semibold hover:underline">✋ {t("svc.approval", lang)}</Link>;
+    if (r.sub?.kind === "quotation") return <span className="rounded-full bg-primary/10 text-primary dark:text-primary text-[11px] px-2.5 py-0.5 font-semibold">📄 {t("quotation.pending", lang)}</span>;
     return null;
   };
 
@@ -112,6 +118,13 @@ export default async function ServiceStatusPage() {
             </div>
           )}
           {renderSteps(r)}
+          {r.quotation && (
+            <div className="mt-4">
+              <QuotationCard
+                quotation={{ id: r.quotation.id, status: r.quotation.status, revision: r.quotation.revision, totalSen: r.quotation.totalSen, items: parseItems(r.quotation.itemsJson) }}
+              />
+            </div>
+          )}
         </div>
       ))}
 

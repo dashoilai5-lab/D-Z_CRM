@@ -14,6 +14,10 @@ export default async function MechanicPage() {
   const isMechanic = session.kind === "staff" && session.role === "MECHANIC";
   const board = await jobService.listBoard();
   const active = board.jobs.filter((j) => ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "READY"].includes(j.status));
+  // quotation status per active job (default allowed for no-quotation legacy jobs)
+  const activeIds = active.map((j) => j.id);
+  const quotes = activeIds.length ? await db.quotation.findMany({ where: { jobId: { in: activeIds } }, select: { jobId: true, status: true } }) : [];
+  const quoteStatus = new Map(quotes.map((q) => [q.jobId, q.status]));
 
   // group active jobs by mechanic (including unassigned)
   const byMechanic = new Map<string, BoardJob[]>();
@@ -24,6 +28,7 @@ export default async function MechanicPage() {
       id: j.id, jobNumber: j.jobNumber, status: j.status, mileage: j.mileage,
       packageName: j.packageName, pendingApprovals: j.pendingApprovals,
       mechanicId: j.mechanic?.id ?? null,
+      quotationApproved: (quoteStatus.get(j.id) ?? "APPROVED") === "APPROVED",
       motorcycle: j.motorcycle, customer: j.customer, isToday: j.isToday,
     });
     byMechanic.set(id, arr);

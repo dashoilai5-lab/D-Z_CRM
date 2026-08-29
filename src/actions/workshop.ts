@@ -7,6 +7,7 @@ import { completionService } from "@/services/completion";
 import { inspectionService } from "@/modules/inspections/service";
 import { crmService } from "@/modules/crm/service";
 import { inventoryService } from "@/modules/inventory/service";
+import { quotationService } from "@/modules/quotations/service";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/auth/audit";
 
@@ -59,6 +60,11 @@ export async function assignMechanic(id: string, mechanicId: string | null) {
     where: { id },
     select: { id: true, jobNumber: true, branchId: true, mechanicId: true },
   });
+  // QUOT-001: 报价（若存在）必须已获客户确认（APPROVED）才能派给技师；无报价的历史工单不受限
+  if (mechanicId) {
+    const q = await db.quotation.findUnique({ where: { jobId: id } });
+    if (q && q.status !== "APPROVED") return { ok: false, error: "Quotation must be approved by the customer before assigning a mechanic." };
+  }
   await jobService.assignMechanic(id, mechanicId);
   // 给被指派技师发一条站内通知（mechanic app alerts feed）
   if (mechanicId && before && before.mechanicId !== mechanicId) {
@@ -77,6 +83,12 @@ export async function assignMechanic(id: string, mechanicId: string | null) {
   }
   revalidatePath("/", "layout");
   return { ok: true };
+}
+
+export async function sendQuotation(jobId: string) {
+  const quotation = await quotationService.send(jobId);
+  revalidatePath("/", "layout");
+  return { ok: true, quotation };
 }
 
 export async function bookingAction(id: string, action: "CONFIRMED" | "RESCHEDULED" | "CANCELLED" | "CHECKED_IN" | "NO_SHOW", extra?: { date?: string; timeSlot?: string; mileage?: number; packageId?: string; mechanicId?: string }) {

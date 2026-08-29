@@ -17,8 +17,10 @@ export interface BikeStatus {
   stepIndex: number | null;
   /** terminal flag: cancelled / no-show / completed */
   outcome: "active" | "completed" | "cancelled" | "no_show" | "none";
-  /** sub-status badge, e.g. waiting parts / on hold / approval needed */
-  sub: { kind: "waiting_parts" | "on_hold" | "approval" | "none"; text?: string } | null;
+  /** sub-status badge, e.g. waiting parts / on hold / approval needed / quotation */
+  sub: { kind: "waiting_parts" | "on_hold" | "approval" | "quotation" | "none"; text?: string } | null;
+  /** pre-service quotation awaiting/confirmed (customer confirmation) */
+  quotation: { id: string; status: string; revision: number; totalSen: number; itemsJson: string | null } | null;
 }
 
 /** Resolve lifecycle step from booking + job statuses. */
@@ -78,14 +80,18 @@ export async function getRiderStatus(customerId: string): Promise<BikeStatus[]> 
         orderBy: { createdAt: "desc" },
       }));
     const pendingApprovals = job ? await db.customerApproval.count({ where: { jobId: job.id, status: "PENDING" } }) : 0;
+    const quotation = job ? await db.quotation.findUnique({ where: { jobId: job.id } }) : null;
     const { stepIndex, outcome } = resolveStep(activeBooking?.status ?? null, job?.status ?? null);
+    // quotation awaiting → show the quotation badge/card (pre-service step)
+    const sub = quotation?.status === "PENDING" ? { kind: "quotation" as const } : subStatusOf(job?.status ?? null, pendingApprovals);
     out.push({
       bike: { id: bike.id, brand: bike.brand, model: bike.model, plate: bike.plate, year: bike.year, currentMileage: bike.currentMileage },
       booking: activeBooking ? { id: activeBooking.id, serviceType: activeBooking.serviceType, date: activeBooking.date, timeSlot: activeBooking.timeSlot, status: activeBooking.status, source: activeBooking.source } : null,
       job: job ? { id: job.id, jobNumber: job.jobNumber, status: job.status, packageName: job.packageName, readyAt: job.readyAt, completedAt: job.completedAt, mileage: job.mileage, estimatedCompletionAt: job.estimatedCompletionAt } : null,
       stepIndex,
       outcome,
-      sub: subStatusOf(job?.status ?? null, pendingApprovals),
+      sub,
+      quotation: quotation ? { id: quotation.id, status: quotation.status, revision: quotation.revision, totalSen: quotation.totalSen, itemsJson: quotation.itemsJson } : null,
     });
   }
   return out;

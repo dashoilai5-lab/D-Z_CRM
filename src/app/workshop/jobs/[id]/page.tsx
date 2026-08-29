@@ -12,6 +12,7 @@ import { AiRecommendationActions } from "@/components/workshop/ai-recommendation
 import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-form";
 import { MileageCorrector } from "@/components/workshop/mileage-corrector";
 import { JobPhotosView } from "@/components/workshop/job-photos-view";
+import { QuotationPanel } from "@/components/workshop/quotation-panel";
 import { fmtDate, fmtDateTime, fmtKM } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { db } from "@/lib/db";
@@ -232,6 +233,12 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         </div>
 
         <div className="space-y-5">
+          {/* quotation (customer confirmation before start) */}
+          <QuotationPanel
+            jobId={detail.id}
+            quotation={detail.quotation ? { status: detail.quotation.status, revision: detail.quotation.revision, totalSen: detail.quotation.totalSen } : null}
+          />
+
           {/* approvals */}
           <section className="dz-panel p-5">
             <h3 className="font-semibold mb-3">{t("ws.job.customer-approvals", lang)}</h3>

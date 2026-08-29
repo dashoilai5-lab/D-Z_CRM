@@ -3,6 +3,7 @@ import { PrismaBookingRepository } from "@/repositories/prisma/bookings.reposito
 import type { BookingSource, BookingStatus, PrismaClient } from "@prisma/client";
 import { db } from "@/lib/db";
 import { jobService } from "@/modules/service-jobs/service";
+import { quotationService } from "@/modules/quotations/service";
 import type { DbLike } from "@/modules/customers/repository";
 
 export type BookingStatusInput = BookingStatus;
@@ -154,7 +155,7 @@ export class BookingService {
       await this.repo.update(bookingId, { status: "CHECKED_IN" } as never);
       return { bookingId, jobId: booking.jobId, jobNumber: booking.job?.jobNumber ?? "—" };
     }
-    return db.$transaction(async (tx: DbLike) => {
+    const res = await db.$transaction(async (tx: DbLike) => {
       const lastJob = await (tx as PrismaClient).serviceJob.findFirst({ orderBy: { jobNumber: "desc" } });
       const base = lastJob ? parseInt(lastJob.jobNumber.replace(/\D/g, ""), 10) : 1023;
       const jobNumber = "DZ" + (isNaN(base) ? 1024 : base + 1);
@@ -181,6 +182,11 @@ export class BookingService {
       await this.repo.update(bookingId, { status: "CHECKED_IN" } as never, tx);
       return { bookingId, jobId: job.id, jobNumber };
     });
+    // QUOT-001: 建 job 后自动生成报价单（PENDING），推送给 rider 确认
+    if (res) {
+      try { await quotationService.send(res.jobId); } catch (e) { console.error("quotation create failed:", e); }
+    }
+    return res;
   }
 }
 

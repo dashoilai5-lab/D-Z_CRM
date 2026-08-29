@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { generateQrToken } from "@/lib/qr-token";
 import { bookingService } from "@/modules/bookings/service";
 import { inspectionService } from "@/modules/inspections/service";
+import { quotationService } from "@/modules/quotations/service";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/auth/audit";
 import { fmtKM } from "@/lib/format";
@@ -38,6 +39,12 @@ export async function respondApproval(approvalId: string, decision: "APPROVED" |
   const result = await inspectionService.respondApproval(approvalId, decision);
   revalidatePath("/", "layout");
   return { ok: true, ...result };
+}
+
+export async function respondQuotation(quotationId: string, decision: "APPROVED" | "REJECTED") {
+  await quotationService.respond(quotationId, decision);
+  revalidatePath("/", "layout");
+  return { ok: true };
 }
 
 export async function updateProfile(input: { customerId: string; name?: string; phone?: string }) {
