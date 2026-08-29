@@ -157,6 +157,10 @@ export class JobService {
     if (!job) throw new Error("Job not found");
     if (job.status === "COMPLETED" || job.status === "CANCELLED") throw new Error("Job is already closed");
     if (!this.canTransition(job.status, to)) throw new Error("Illegal transition " + job.status + " to " + to);
+    // SOP-001: pre-service condition photos must be complete before starting service
+    if (to === "IN_PROGRESS" && (job.photos?.length ?? 0) < 5) {
+      throw new Error("Pre-service photos required — capture all 5 angles (front / back / left / right / meter) before starting service.");
+    }
     const data: Prisma.ServiceJobUpdateInput = { status: to };
     if (to === "IN_PROGRESS") {
       data.startedAt = job.startedAt ?? new Date();

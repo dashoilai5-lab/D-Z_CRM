@@ -14,6 +14,7 @@ export type JobFull = Prisma.ServiceJobGetPayload<{
     invoice: { include: { items: true; payments: true } };
     booking: true;
     reminder: true;
+    photos: true;
   };
 }>;
 

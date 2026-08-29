@@ -57,7 +57,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
         )}
         <div className="flex-1" />
         <EditJobForm data={editData} mechanics={mechanics} />
-        <JobActions jobId={detail.id} status={detail.status} />
+        <JobActions jobId={detail.id} status={detail.status} sopComplete={(detail.photos ?? []).length >= 5} />
       </div>
 
       {/* JOB-016 / rider lifecycle: customer-facing progress + ETA (linked to rider service-status) */}
@@ -136,6 +136,27 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
                 </div>
               )}
             </div>
+          </section>
+
+          {/* SOP pre-service photos (counter view) */}
+          <section className="dz-panel p-5">
+            <h3 className="font-semibold mb-1">{t("ws.job.sop-title", lang)}</h3>
+            <p className="text-xs text-muted-foreground mb-3">{t("ws.job.sop-sub", lang)}</p>
+            {(detail.photos ?? []).length === 0 ? (
+              <p className="text-sm text-muted-foreground">{t("ws.job.sop-empty", lang)}</p>
+            ) : (
+              <div className="grid grid-cols-5 gap-2">
+                {["FRONT", "BACK", "LEFT", "RIGHT", "METER"].map((a) => {
+                  const p = (detail.photos ?? []).find((ph) => ph.angle === a);
+                  return (
+                    <div key={a} className="relative aspect-square overflow-hidden rounded-xl border bg-muted/40">
+                      {p ? <img src={p.photoUrl} alt={a} className="h-full w-full object-cover" /> : <span className="flex h-full w-full items-center justify-center text-[10px] text-muted-foreground/60">—</span>}
+                      <span className="absolute inset-x-0 bottom-0 bg-black/55 py-0.5 text-center text-[10px] font-medium text-white">{t("mech.sop." + a.toLowerCase(), lang)}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
           {/* items & parts */}

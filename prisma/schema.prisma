@@ -380,6 +380,29 @@ model ServiceJob {
   messages        Message[]  @relation("JobMessages")
   statusHistory   JobStatusHistory[]
   serviceHistory  ServiceHistory?
+  photos          ServiceJobPhoto[]
+}
+
+// ---------- Mechanic pre-service SOP photos (开工前拍照记录) ----------
+
+enum JobPhotoAngle {
+  FRONT
+  BACK
+  LEFT
+  RIGHT
+  METER // 仪表(里程读数)
+}
+
+model ServiceJobPhoto {
+  id           String        @id @default(cuid())
+  jobId        String
+  job          ServiceJob    @relation(fields: [jobId], references: [id])
+  angle        JobPhotoAngle
+  photoUrl     String
+  capturedById String?
+  capturedAt   DateTime      @default(now())
+  // 每工单每角度一张：重拍即 upsert 覆盖
+  @@unique([jobId, angle])
 }
 
 model ServiceJobItem {

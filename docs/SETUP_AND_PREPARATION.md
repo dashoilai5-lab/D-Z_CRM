@@ -238,6 +238,7 @@ pnpm db:studio    # Prisma Studio 可视化
 
 | 日期 | 改动 | 影响 |
 | --- | --- | --- |
+| 2026-08-29 | Mechanic 开工前 SOP 拍照（SOP-001）：新增 ServiceJobPhoto 表 + JobPhotoAngle 枚举（迁移 pre_service_photo_sop）；/api/jobs/[id]/photos 上传；jobService.transition 对 IN_PROGRESS 强校验 5 角度齐全；技师端 sop-photo-capture（5 角度 capture）/workshop jobs 照片查看；照片走 storageProvider（生产 Supabase Storage，本地 ./storage） | 开工前必拍 5 张车辆状态照（front/back/left/right/meter），缺张无法开工；counter 可在工单查看；i18n 加 mech.sop.*/ws.job.sop-*；tsc0/lint0/unit26/build 全绿 |
 | 2026-08-19 | 新增迁移 `booking_campaign_attr`、`review_reply` | Booking.campaignId、Review.reply |
 | 2026-08-19 | 新增迁移 `motorcycle_type`、`promo_discount` | Motorcycle.type、Campaign.discountPercent |
 | 2026-08-19 | i18n 三语支持（dz_lang cookie） | 全部页面文案 |

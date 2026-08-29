@@ -14,6 +14,7 @@ const jobInclude = {
   invoice: { include: { items: true, payments: true } },
   booking: true,
   reminder: true,
+  photos: { orderBy: { angle: "asc" } },
 } satisfies Prisma.ServiceJobInclude;
 
 const rowInclude = {

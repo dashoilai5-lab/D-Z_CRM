@@ -9,6 +9,7 @@ import { t } from "@/lib/i18n";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { JobActions } from "@/components/workshop/job-actions";
 import { ChecklistRunner } from "@/components/workshop/checklist-runner";
+import { SopPhotoCapture } from "@/components/mechanic/sop-photo-capture";
 import { formatRM } from "@/lib/money";
 import { fmtKM } from "@/lib/format";
 
@@ -28,6 +29,8 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
   const pendingApprovals = detail.approvals.filter((a) => a.status === "PENDING");
   const billed = detail.items.filter((i) => i.status !== "DECLINED").reduce((s, i) => s + i.lineTotalSen, 0)
     + detail.parts.filter((p) => p.status !== "DECLINED").reduce((s, p) => s + p.lineTotalSen, 0);
+  const photos = detail.photos ?? [];
+  const sopComplete = photos.length >= 5;
 
   return (
     <div className="space-y-4">
@@ -51,7 +54,15 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
             {t("mech.approval-waiting", lang).replace("{n}", String(pendingApprovals.length))}
           </div>
         )}
-        <div className="mt-3"><JobActions jobId={detail.id} status={detail.status} /></div>
+        <div className="mt-3"><JobActions jobId={detail.id} status={detail.status} sopComplete={sopComplete} /></div>
+      </div>
+
+      <div className="rounded-2xl border bg-card p-4">
+        <SopPhotoCapture
+          jobId={detail.id}
+          canCapture={detail.status === "WAITING"}
+          photos={photos.map((p) => ({ angle: p.angle, photoUrl: p.photoUrl, capturedAt: p.capturedAt ? p.capturedAt.toISOString() : null }))}
+        />
       </div>
 
       <div className="rounded-2xl border bg-card p-4">

@@ -8,7 +8,7 @@ import { transitionJob } from "@/actions/workshop";
 import { useLang } from "@/components/shared/language-context";
 import { t, tpl } from "@/lib/i18n";
 
-export function JobActions({ jobId, status }: { jobId: string; status: string }) {
+export function JobActions({ jobId, status, sopComplete = true }: { jobId: string; status: string; sopComplete?: boolean }) {
   const router = useRouter();
   const lang = useLang();
   const [pending, start] = useTransition();
@@ -28,7 +28,10 @@ export function JobActions({ jobId, status }: { jobId: string; status: string })
 
   return (
     <div className="flex flex-wrap gap-2">
-      {status === "WAITING" && <Button size="sm" disabled={pending} onClick={() => run("IN_PROGRESS", "Job started")}>Start Service</Button>}
+      {status === "WAITING" && <Button size="sm" disabled={pending || !sopComplete} onClick={() => run("IN_PROGRESS", "Job started")}>Start Service</Button>}
+      {status === "WAITING" && !sopComplete && (
+        <span className="w-full text-[11px] font-medium text-amber-600 dark:text-amber-400">{t("mech.sop.start-blocked", lang)}</span>
+      )}
       {["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK"].includes(status) && (
         <Button size="sm" variant="outline" disabled={pending} onClick={() => run("QC_CHECK", "Sent to QC")}>QC Check</Button>
       )}
