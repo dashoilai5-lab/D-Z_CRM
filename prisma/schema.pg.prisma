@@ -142,6 +142,8 @@ model User {
   testRidesAssigned TestRide[]    @relation("SalespersonTestRides")
   payouts        StaffPayout[]   @relation("StaffPayouts")
   attendance     Attendance[]
+  /** 个人提成算法 { commissionType, commissionValue, addonBonusSen? } — null 用 org 默认 */
+  commissionRules String?
 }
 
 // ---------- Customers ----------
