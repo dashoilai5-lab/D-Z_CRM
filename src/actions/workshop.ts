@@ -45,7 +45,11 @@ export async function transitionJob(id: string, to: "WAITING" | "IN_PROGRESS" | 
     revalidatePath("/", "layout");
     return { ok: true, result };
   }
-  await jobService.transition(id, to);
+  try {
+    await jobService.transition(id, to);
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
   revalidatePath("/", "layout");
   return { ok: true };
 }

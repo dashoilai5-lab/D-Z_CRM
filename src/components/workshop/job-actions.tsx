@@ -17,6 +17,7 @@ export function JobActions({ jobId, status, sopComplete = true }: { jobId: strin
     start(async () => {
       try {
         const r = await transitionJob(jobId, to);
+        if (!r.ok) { toast.error(r.error ?? t("toast.failed", lang)); return; }
         router.refresh();
         if (r.ok && r.result) toast.success(tpl("toast.service-completed", lang, { inv: r.result.invoiceNumber, gp: "RM" + (r.result.grossProfitSen / 100) }));
         else toast.success(msg ?? t("toast.job-updated", lang));

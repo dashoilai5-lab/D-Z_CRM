@@ -36,7 +36,11 @@ export function JobCard({ order }: { order: OrderCard }) {
     start(async () => {
       const r = await transitionJob(order.id, "IN_PROGRESS");
       if (r.ok) { toast.success(t("mech.accepted", lang)); router.refresh(); }
-      else toast.error(t("toast.failed", lang));
+      else {
+        // SOP-001: 开工前需先拍齐 5 张照片——引导到工单详情页拍照
+        toast.error(r.error ?? t("toast.failed", lang));
+        router.push("/mechanic-app/jobs/" + order.id);
+      }
     });
 
   return (
