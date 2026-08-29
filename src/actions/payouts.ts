@@ -11,6 +11,7 @@ export interface PayoutDraft {
   baseSen: number;
   commissionSen: number;
   addonBonusSen: number;
+  bonusSen?: number;
   totalSen: number;
 }
 
@@ -29,10 +30,10 @@ export async function settlePayouts(items: PayoutDraft[]) {
       where: { userId_period_periodStart: { userId: it.userId, period: it.period, periodStart: it.periodStart } },
       create: {
         userId: it.userId, period: it.period, periodStart: it.periodStart,
-        baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, totalSen: it.totalSen,
+        baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, bonusSen: it.bonusSen ?? 0, totalSen: it.totalSen,
         status: "PENDING", // 待 mechanic 确认
       },
-      update: { baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, totalSen: it.totalSen, status: paidSen >= it.totalSen ? existing?.status ?? "PENDING" : "PENDING" },
+      update: { baseSen: it.baseSen, commissionSen: it.commissionSen, addonBonusSen: it.addonBonusSen, bonusSen: it.bonusSen ?? 0, totalSen: it.totalSen, status: paidSen >= it.totalSen ? existing?.status ?? "PENDING" : "PENDING" },
     });
   }
   revalidatePath("/workshop/settlements");

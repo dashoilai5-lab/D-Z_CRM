@@ -816,7 +816,7 @@ export const DICT: Dict = {
   "settle.addon-bonus": { en: "Add-on job bonus (RM)", zh: "附加工单奖励（RM）", ms: "Bonus kerja tambahan (RM)" },
   "settle.save-rules": { en: "Save rules", zh: "保存规则", ms: "Simpan peraturan" },
   "settle.rules-saved": { en: "Salary rules saved", zh: "薪资规则已保存", ms: "Peraturan gaji disimpan" },
-  "settle.rules-hint": { en: "Est. salary = base + commission (per job / % of service value) + add-on bonus", zh: "预估薪资 = 底薪 + 提成（每单 / 服务金额 %）+ 附加工单奖励", ms: "Anggaran gaji = asas + komisen (setiap kerja / % nilai servis) + bonus tambahan" },
+  "settle.rules-hint": { en: "Salary = commission (per job / % of service value) + add-on bonus + manual bonus (no base)", zh: "薪资 = 提成（每单 / 服务金额 %）+ 附加工单奖励 + 手填奖金（无底薪）", ms: "Gaji = komisen (setiap kerja / % nilai servis) + bonus tambahan + bonus manual (tiada asas)" },
 
   // --- workshop invoices ---
   "nav.invoices": { en: "Invoices", zh: "发票", ms: "Invois" },
@@ -864,6 +864,15 @@ export const DICT: Dict = {
   "payout.amount": { en: "Amount (RM)", zh: "金额（RM）", ms: "Jumlah (RM)" },
   "payout.confirm": { en: "Confirm payment", zh: "确认支付", ms: "Sahkan bayaran" },
   "payout.payment-added": { en: "Payout payment recorded", zh: "分期支付已记录", ms: "Bayaran direkod" },
+  "payout.bonus": { en: "Bonus", zh: "奖金", ms: "Bonus" },
+  "payout.addon-short": { en: "Addon", zh: "增项", ms: "Tambahan" },
+  "settle.bonus-label": { en: "Bonus (RM)", zh: "奖金（RM）", ms: "Bonus (RM)" },
+  "settle.mech-rules": { en: "Commission rules", zh: "提成算法", ms: "Peraturan komisen" },
+  "settle.per-mech-hint": { en: "This mechanic's own commission; blank = shop default.", zh: "该技师自己的提成算法；留空用门店默认。", ms: "Komisen sendiri; kosong = lalai kedai." },
+  "settle.use-default": { en: "Use shop default", zh: "用门店默认", ms: "Guna lalai kedai" },
+  "settle.job-comm": { en: "Comm.", zh: "提成", ms: "Kom." },
+  "settle.save-mech": { en: "Save rules", zh: "保存", ms: "Simpan" },
+
   "nav.payouts": { en: "Payouts", zh: "发薪", ms: "Bayaran" },
   "nav.attendance": { en: "Attendance", zh: "考勤", ms: "Kehadiran" },
   "att.title": { en: "Mechanic Attendance", zh: "技师考勤", ms: "Kehadiran Mekanik" },

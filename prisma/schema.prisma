@@ -143,6 +143,8 @@ model User {
   testRidesAssigned TestRide[]    @relation("SalespersonTestRides")
   payouts        StaffPayout[]   @relation("StaffPayouts")
   attendance     Attendance[]
+  /** 个人提成算法 { commissionType, commissionValue, addonBonusSen? } — null 用 org 默认 */
+  commissionRules String?
 }
 
 // ---------- Mechanic attendance (check in / out) ----------
@@ -169,6 +171,7 @@ model StaffPayout {
   baseSen       Int      @default(0)
   commissionSen Int      @default(0)
   addonBonusSen Int      @default(0)
+  bonusSen      Int      @default(0) // 结算时老板手填的奖金
   totalSen      Int
   status        String   @default("UNPAID") // UNPAID | PARTIAL | PAID
   paidAt        DateTime?
@@ -389,6 +392,8 @@ model ServiceJob {
   serviceHistory  ServiceHistory?
   photos          ServiceJobPhoto[]
   quotation       Quotation?
+  /** 该 job 给技师的手工提成（sen）；null=按个人算法结算时自动算 */
+  commissionSen   Int?
 }
 
 // ---------- Mechanic pre-service SOP photos (开工前拍照记录) ----------

@@ -16,7 +16,6 @@ export function SalaryRulesForm({ rules }: { rules: SalaryRules }) {
   const router = useRouter();
   const lang = useLang();
   const [pending, start] = useTransition();
-  const [base, setBase] = useState(String(rules.baseSen / 100));
   const [type, setType] = useState<SalaryRules["commissionType"]>(rules.commissionType);
   const [value, setValue] = useState(String(rules.commissionValue));
   const [addon, setAddon] = useState(String((rules.addonBonusSen ?? 0) / 100));
@@ -24,7 +23,7 @@ export function SalaryRulesForm({ rules }: { rules: SalaryRules }) {
   const save = () =>
     start(async () => {
       const r = await updateSalaryRules({
-        baseSen: Math.round(parseFloat(base || "0") * 100),
+        baseSen: 0,
         commissionType: type,
         commissionValue: type === "percent_sales" ? parseFloat(value || "0") : Math.round(parseFloat(value || "0") * 100),
         addonBonusSen: Math.round(parseFloat(addon || "0") * 100),
@@ -38,13 +37,10 @@ export function SalaryRulesForm({ rules }: { rules: SalaryRules }) {
       <p className="text-xs text-muted-foreground">{t("settle.rules-hint", lang)}</p>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label>{t("settle.base", lang)}</Label>
-          <Input inputMode="decimal" value={base} onChange={(e) => setBase(e.target.value)} className="mt-1.5" placeholder="0" />
-        </div>
-        <div>
           <Label>{t("settle.addon-bonus", lang)}</Label>
           <Input inputMode="decimal" value={addon} onChange={(e) => setAddon(e.target.value)} className="mt-1.5" placeholder="0" />
         </div>
+        <div />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
