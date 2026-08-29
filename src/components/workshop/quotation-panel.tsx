@@ -1,7 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FileDown } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { sendQuotation } from "@/actions/workshop";
@@ -38,10 +40,13 @@ export function QuotationPanel({ jobId, quotation }: { jobId: string; quotation:
             {quotation.status === "APPROVED" ? t("ws.job.quotation-approved", lang) : quotation.status === "REJECTED" ? t("ws.job.quotation-rejected", lang) : t("ws.job.quotation-pending", lang)}
           </div>
           <div className="mt-1 text-xs text-muted-foreground">{tpl("quotation.rev", lang, { n: quotation.revision })} · {formatRM(quotation.totalSen)}</div>
-          <div className="mt-3">
+          <div className="mt-3 flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={send} disabled={pending}>
               {quotation.status === "REJECTED" ? t("ws.job.quotation-resend", lang) : t("ws.job.quotation-send", lang)}
             </Button>
+            <Link href={"/quotation/" + jobId} target="_blank">
+              <Button size="sm" variant="ghost"><FileDown className="h-3.5 w-3.5 mr-1.5" /> {t("pdf.download", lang)}</Button>
+            </Link>
           </div>
         </>
       )}

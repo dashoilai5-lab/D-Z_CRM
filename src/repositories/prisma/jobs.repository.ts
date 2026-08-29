@@ -13,6 +13,7 @@ const jobInclude = {
   checklist: { include: { items: true } },
   invoice: { include: { items: true, payments: true } },
   booking: true,
+  branch: true,
   reminder: true,
   photos: { orderBy: { angle: "asc" } },
   quotation: true,
