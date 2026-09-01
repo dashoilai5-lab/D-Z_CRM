@@ -7,7 +7,13 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function getRiderCustomer() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] = null;
+  try {
+    const { data: { user: u } } = await supabase.auth.getUser();
+    user = u;
+  } catch {
+    return null;
+  }
   if (!user) return null;
   return db.customer.findUnique({
     where: { authId: user.id },

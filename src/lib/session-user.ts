@@ -27,7 +27,13 @@ function initialsOf(name: string): string {
  */
 export async function getSessionUser(): Promise<SessionUser> {
   const supabase = await createClient();
-  const { data: { user: authUser } } = await supabase.auth.getUser();
+  let authUser: Awaited<ReturnType<typeof supabase.auth.getUser>>["data"]["user"] = null;
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    authUser = user;
+  } catch {
+    return { kind: "none", user: null, role: "", name: "", initials: "", orgId: "", branchId: null, authenticated: false };
+  }
   if (!authUser) {
     return { kind: "none", user: null, role: "", name: "", initials: "", orgId: "", branchId: null, authenticated: false };
   }
