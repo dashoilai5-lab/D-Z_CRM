@@ -10,6 +10,7 @@ import { inventoryService } from "@/modules/inventory/service";
 import { quotationService } from "@/modules/quotations/service";
 import { db } from "@/lib/db";
 import { audit } from "@/lib/auth/audit";
+import { createClient } from "@supabase/supabase-js";
 
 export async function createJob(input: {
   customerId: string; motorcycleId: string; mileage: number; customerRequest?: string;
@@ -286,10 +287,28 @@ export async function addAiRecommendation(input: {
   return { ok: true, id: (r as { id: string }).id };
 }
 
-export async function createStaff(input: { name: string; role: string; phone?: string; email?: string }) {
+export async function createStaff(input: { name: string; role: string; phone?: string; email?: string; password?: string }) {
   const org = await db.organisation.findFirst();
   const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
-  await db.user.create({
+  // 若提供 email + password：创建 Supabase auth 账号（staff 可登录），并绑定 User.authId。
+  let authId: string | null = null;
+  const email = (input.email ?? "").trim();
+  if (email && input.password && input.password.length >= 6) {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      { auth: { autoRefreshToken: false, persistSession: false } },
+    );
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password: input.password,
+      email_confirm: true,
+      user_metadata: { name: input.name.trim() },
+    });
+    if (error) throw new Error("Failed to create staff login: " + error.message);
+    authId = data.user.id;
+  }
+  const created = await db.user.create({
     data: {
       organisationId: org!.id,
       branchId: branch?.id,
@@ -298,10 +317,11 @@ export async function createStaff(input: { name: string; role: string; phone?: s
       phone: input.phone || null,
       email: input.email || null,
       active: true,
+      authId,
     },
   });
   revalidatePath("/", "layout");
-  return { ok: true };
+  return { ok: true, authCreated: !!authId, authEmail: authId ? email : null, userId: created.id };
 }
 
 export async function toggleStaffActive(userId: string) {
