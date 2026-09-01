@@ -2,8 +2,8 @@ import { Document, Packer, Paragraph, TextRun, HeadingLevel, TableOfContents, Im
 import * as fs from "node:fs";
 import * as path from "node:path";
 const SCREENS = "tutorial-screens";
-function pngSize(p){const b=fs.readFileSync(p);const w=b.readUInt32BE(16),h=b.readUInt32BE(20);return{w,h};}
-function imageRun(p){const{w,h}=pngSize(p);const MAXW=560,MAXH=800;const scale=Math.min(MAXW/w,MAXH/h);const dw=Math.round(w*scale),dh=Math.round(h*scale);return new ImageRun({type:"png",data:fs.readFileSync(p),transformation:{width:dw,height:dh}});}
+function pngSize(p: string){const b=fs.readFileSync(p);const w=b.readUInt32BE(16),h=b.readUInt32BE(20);return{w,h};}
+function imageRun(p: string){const{w,h}=pngSize(p);const MAXW=560,MAXH=800;const scale=Math.min(MAXW/w,MAXH/h);const dw=Math.round(w*scale),dh=Math.round(h*scale);return new ImageRun({type:"png",data:fs.readFileSync(p),transformation:{width:dw,height:dh}});}
 const GROUPS: Record<string,string> = { workshop:"Workshop OS", rider:"Rider App", mechanic:"Mechanic App" };
 const C: Record<string, Record<string,{title:string;bullets:string[]}>> = {
   workshop:{
