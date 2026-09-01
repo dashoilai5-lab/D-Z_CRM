@@ -13,6 +13,7 @@ import { EditJobForm, type EditJobData } from "@/components/workshop/edit-job-fo
 import { MileageCorrector } from "@/components/workshop/mileage-corrector";
 import { JobPhotosView } from "@/components/workshop/job-photos-view";
 import { QuotationPanel } from "@/components/workshop/quotation-panel";
+import { InvoicePaymentPanel } from "@/components/workshop/invoice-payment-panel";
 import { fmtDate, fmtDateTime, fmtKM } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { db } from "@/lib/db";
@@ -239,6 +240,19 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
             jobId={detail.id}
             quotation={detail.quotation ? { status: detail.quotation.status, revision: detail.quotation.revision, totalSen: detail.quotation.totalSen } : null}
           />
+
+          {/* invoice + payment (completed job; customer pays here) */}
+          {detail.invoice && (
+            <InvoicePaymentPanel
+              invoice={{
+                id: detail.invoice.id,
+                invoiceNumber: detail.invoice.invoiceNumber,
+                status: detail.invoice.status,
+                totalSen: detail.invoice.totalSen,
+                paidSen: (detail.invoice.payments ?? []).filter((p) => p.status === "PAID" && p.method !== "PAY_LATER").reduce((s, p) => s + p.amountSen, 0),
+              }}
+            />
+          )}
 
           {/* approvals */}
           <section className="dz-panel p-5">
