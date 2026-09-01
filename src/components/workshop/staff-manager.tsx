@@ -41,14 +41,16 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
   const [role, setRole] = useState("MECHANIC");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const submit = () =>
     start(async () => {
       if (!name.trim()) { toast.error(t("toast.enter-staff-name", lang)); return; }
-      await createStaff({ name, role, phone: phone || undefined, email: email || undefined });
-      setName(""); setPhone(""); setEmail(""); setAdding(false);
+      const r = await createStaff({ name, role, phone: phone || undefined, email: email || undefined, password: password || undefined });
+      if (r.authCreated) toast.success(tpl("toast.staff-login-created", lang, { email: r.authEmail ?? email }));
+      else toast.success(t("toast.staff-added", lang));
+      setName(""); setPhone(""); setEmail(""); setPassword(""); setAdding(false);
       router.refresh();
-      toast.success(t("toast.staff-added", lang));
     });
 
   const toggle = (id: string, active: boolean, name: string) =>
@@ -86,7 +88,9 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
             </div>
             <div><Label>Phone (optional)</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. 012-345 6789" className="mt-1.5" /></div>
             <div><Label>Email (optional)</Label><Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. ali@dz.my" className="mt-1.5" /></div>
+            <div><Label>{t("staff.password", lang)} <span className="text-muted-foreground">({t("staff.optional", lang)})</span></Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("staff.password-hint", lang)} className="mt-1.5" /></div>
           </div>
+          <p className="text-xs text-muted-foreground">{t("staff.login-hint", lang)}</p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button>
             <Button disabled={pending || !name.trim()} onClick={submit}>{pending ? "Adding…" : "Add Staff"}</Button>
