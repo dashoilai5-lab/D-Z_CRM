@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
@@ -16,7 +17,7 @@ const STATUS_FILTERS: { key: string; labelKey: string }[] = [
   { key: "PAID", labelKey: "inv.paid" },
 ];
 
-export default async function WorkshopInvoicesPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+export default async function WorkshopInvoicesPage({ searchParams }: { searchParams: Promise<{ status?: string; date?: string; q?: string }> }) {
   const sp = await searchParams;
   const lang = await getLang();
   const session = await getSessionUser();
@@ -24,25 +25,52 @@ export default async function WorkshopInvoicesPage({ searchParams }: { searchPar
   if (session.kind !== "staff") {
     return <p className="text-sm text-muted-foreground p-8">{t("common.denied", lang)}</p>;
   }
-  const where: Record<string, unknown> = {};
-  if (sp.status) where.status = sp.status;
-  const invoices = await db.invoice.findMany({
-    where,
-    include: {
-      job: { include: { customer: { select: { id: true, name: true } }, motorcycle: { select: { brand: true, model: true, plate: true } } } },
-      payments: true,
-    },
-    orderBy: { issuedAt: "desc" },
-  });
+  const q = sp.q?.trim() ?? "";
+  // 日期(issuedAt 当日)+ 搜索(发票号/工单号/客户名/车牌) —— 计数也按此范围(不含 status)统计
+  const searchWhere: Record<string, unknown> = {};
+  if (sp.date) {
+    const d = new Date(sp.date + "T00:00:00Z");
+    const next = new Date(d.getTime() + 86400000);
+    searchWhere.issuedAt = { gte: d, lt: next };
+  }
+  if (q) {
+    searchWhere.OR = [
+      { invoiceNumber: { contains: q } },
+      { job: { jobNumber: { contains: q } } },
+      { job: { customer: { name: { contains: q } } } },
+      { job: { motorcycle: { plate: { contains: q } } } },
+    ];
+  }
+  const countWhere = { ...searchWhere };
+  const where = { ...searchWhere, ...(sp.status ? { status: sp.status } : {}) };
+  const [invoices, statusGroups] = await Promise.all([
+    db.invoice.findMany({
+      where: where as Prisma.InvoiceWhereInput,
+      include: {
+        job: { include: { customer: { select: { id: true, name: true } }, motorcycle: { select: { brand: true, model: true, plate: true } } } },
+        payments: true,
+      },
+      orderBy: { issuedAt: "desc" },
+    }),
+    db.invoice.groupBy({ by: ["status"], where: countWhere as Prisma.InvoiceWhereInput, _count: { _all: true } }),
+  ]);
   const statusCounts: Record<string, number> = {};
-  for (const inv of invoices) statusCounts[inv.status] = (statusCounts[inv.status] ?? 0) + 1;
-  const allCount = invoices.length;
+  for (const g of statusGroups) statusCounts[g.status] = g._count._all;
+  const allCount = statusGroups.reduce((s, g) => s + g._count._all, 0);
 
   return (
     <PageTransition>
       <div>
         <h1 className="text-2xl font-bold tracking-tight">{t("inv.page-title", lang)}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">{t("inv.page-sub", lang)} · {allCount} {t("inv.invoices", lang)}</p>
+
+        {/* date + search filters */}
+        <form method="get" className="flex flex-wrap items-center gap-2 mt-4 mb-3 text-sm">
+          <input name="date" type="date" defaultValue={sp.date} className="rounded-md border bg-background px-3 py-2" />
+          <input name="q" type="search" defaultValue={sp.q} placeholder={t("inv.search-hint", lang)} className="rounded-md border bg-background px-3 py-2 min-w-64" />
+          <button className="rounded-md border px-3 py-2 font-medium hover:bg-accent">{t("common.apply", lang)}</button>
+          {(sp.status || sp.date || sp.q) && <Link href="/workshop/finance/invoices" className="rounded-md border border-dashed px-3 py-2 font-medium text-muted-foreground hover:text-foreground hover:bg-accent">{t("book.reset-filters", lang)}</Link>}
+        </form>
 
         {/* status filter pills with counts */}
         <div className="flex flex-wrap items-center gap-1.5 mt-4 mb-4">

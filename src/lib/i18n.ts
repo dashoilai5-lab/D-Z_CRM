@@ -886,6 +886,8 @@ export const DICT: Dict = {
   "inv.page-sub": { en: "Manage & collect on issued invoices", zh: "管理并收取已开票款", ms: "Urus & kutip invois dikeluarkan" },
   "inv.invoices": { en: "invoices", zh: "张发票", ms: "invois" },
   "inv.no-job": { en: "No linked job", zh: "无关联工单", ms: "Tiada kerja berkait" },
+  "inv.search-hint": { en: "Search invoice / job / customer / plate", zh: "搜索发票/工单/客户/车牌", ms: "Cari invois / kerja / pelanggan / plat" },
+  "common.apply": { en: "Apply", zh: "应用", ms: "Guna" },
   "common.denied": { en: "Not allowed", zh: "无权访问", ms: "Tidak dibenarkan" },
 
   // --- finance period ---
