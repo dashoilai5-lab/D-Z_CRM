@@ -255,6 +255,7 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-09-01 | 发票页加日期 + 搜索（feat/job-invoice-payment 追加）：/workshop/finance/invoices 支持按 issuedAt 当日过滤 + 搜索（发票号/工单号/客户名/车牌），计数按 日期+搜索 范围（不含 status）统计 | 筛选发票更直观；tsc0/build 全绿 + 实测搜索 DZ-2026-00003→1 张 |
 | 2026-09-01 | 发票打印 PDF（feat/job-invoice-payment 追加）：新增 /invoice/[id] 打印页（复用 quotation 的 window.print() 模式，pdf.invoice-* 词条）；QuotationPrintActions 支持 title 属性；InvoicePaymentPanel 头部加 Download PDF（job 页/发票页均有）；i18n 补 pdf.invoice/invoice-no/branch/no-bike/no-items/subtotal/discount/tax/thanks | 发票可打印/存 PDF；tsc0/build 全绿 + 实测渲染明细/小计/总价/未结 |
 | 2026-09-01 | Add Staff 支持创建登录账号（fix/staff-login-password）：createStaff 增加可选 email+password —— 提供时用 Supabase admin API 建 auth 账号(email_confirm) 并把 User.authId 绑上（登录时 injectBizClaims 读 User 注入 claims）；staff-manager 加 Password 字段 + toast「login created」；i18n staff.*/toast.staff-login-created | 新员工可立即用 邮箱+密码 登录（按角色路由）；无 schema 变更；tsc0/build 全绿 + 实测新增 MECHANIC staff 用 teststaff@dz.my/Test12345 登录落在 /mechanic-app |
+| 2026-09-01 | 教程 DOCX 生成工具（scripts/tutorial-capture.ts + tutorial-docx.ts，依赖 docx）：Playwright 全页截图（workshop 42/rider 12/mechanic 4，生产）+ docx 库生成带 TOC/每页标题/截图/说明的《D&Z Platform User Guide.docx》；gitignore tutorial-screens/ 与生成的 docx（大产物） | 一键重生成全功能教程；脚本可复用；51MB（高分辨率全页截图） |
 | 2026-08-19 | 新增迁移 `booking_campaign_attr`、`review_reply` | Booking.campaignId、Review.reply |
 | 2026-08-19 | 新增迁移 `motorcycle_type`、`promo_discount` | Motorcycle.type、Campaign.discountPercent |
 | 2026-08-19 | i18n 三语支持（dz_lang cookie） | 全部页面文案 |
