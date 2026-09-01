@@ -3,7 +3,7 @@
 -- 可重复执行：所有策略 DROP IF EXISTS
 
 -- ============ helper 函数 ============
-CREATE OR REPLACE FUNCTION app_jwt_claim(name text) RETURNS text LANGUAGE sql STABLE AS $$ SELECT COALESCE(NULLIF(current_setting('request.jwt.claims', true), '')::jsonb->>name, NULLIF(current_setting('request.jwt.claims', true)::jsonb->'user_metadata'->>name, ''), '') $$;
+CREATE OR REPLACE FUNCTION app_jwt_claim(name text) RETURNS text LANGUAGE sql STABLE AS $$ SELECT COALESCE(NULLIF(current_setting('request.jwt.claims', true)::jsonb->'user_metadata'->>name, ''), NULLIF(current_setting('request.jwt.claims', true)::jsonb->>name, ''), '') $$;
 CREATE OR REPLACE FUNCTION app_current_org_id() RETURNS text LANGUAGE sql STABLE AS $$ SELECT app_jwt_claim('orgId') $$;
 CREATE OR REPLACE FUNCTION app_current_branch_id() RETURNS text LANGUAGE sql STABLE AS $$ SELECT app_jwt_claim('branchId') $$;
 CREATE OR REPLACE FUNCTION app_current_role() RETURNS text LANGUAGE sql STABLE AS $$ SELECT app_jwt_claim('role') $$;
