@@ -99,7 +99,7 @@ export default async function ServiceStatusPage() {
       )}
 
       {active.map((r) => (
-        <div key={r.bike.id} className="rounded-3xl border bg-card p-5" data-testid="svc-card">
+        <div key={r.bike.id + ":" + (r.job?.id ?? r.booking?.id ?? "")} className="rounded-3xl border bg-card p-5" data-testid="svc-card">
           <div className="flex items-start justify-between gap-2 flex-wrap">
             <div>
               <div className="font-semibold">{r.bike.brand} {r.bike.model}</div>
