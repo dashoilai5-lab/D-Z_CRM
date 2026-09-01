@@ -36,14 +36,21 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
     const next = new Date(d.getTime() + 86400000);
     where.date = { gte: d, lt: next };
   }
-  const [bookings, packages] = await Promise.all([
+  // 统计分支/日期范围内的各 status 数量（不含当前 status 过滤，供筛选条显示）+ 总列表
+  const countWhere = { ...where };
+  delete countWhere.status;
+  const [bookings, packages, statusGroups] = await Promise.all([
     db.booking.findMany({
       where,
       include: { customer: { select: { id: true, name: true, phone: true } }, motorcycle: { select: { id: true, brand: true, model: true, plate: true } }, branch: { select: { id: true, city: true } }, job: { select: { id: true, jobNumber: true, status: true } }, servicePackage: { select: { id: true, name: true } } },
       orderBy: { date: "asc" },
     }),
     db.servicePackage.findMany({ where: { active: true }, select: { id: true, name: true, priceSen: true, isBestValue: true }, orderBy: { priceSen: "asc" } }),
+    db.booking.groupBy({ by: ["status"], where: countWhere, _count: { _all: true } }),
   ]);
+  const statusCounts: Record<string, number> = {};
+  for (const g of statusGroups) statusCounts[g.status] = g._count._all;
+  const allCount = statusGroups.reduce((s, g) => s + g._count._all, 0);
   const order: Record<string, number> = { REQUESTED: 0, CONFIRMED: 1, RESCHEDULED: 2, CHECKED_IN: 3, COMPLETED: 4, CANCELLED: 5, NO_SHOW: 6 };
   // 同状态组内排序：显式 sort=desc 按日期降序；默认未来/今天优先（新预约可见），过去沉底，其余升序
   const todayStart = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00Z").getTime();
@@ -120,7 +127,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
             href={qs({ status: f.key, view: "list" })}
             className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + ((sp.status ?? "") === f.key ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}
           >
-            {t(f.labelKey, lang)}
+            {t(f.labelKey, lang)} <span className={"ml-1 tabular-nums " + ((sp.status ?? "") === f.key ? "text-primary-foreground/80" : "text-muted-foreground/70")}>{f.key ? (statusCounts[f.key] ?? 0) : allCount}</span>
           </Link>
         ))}
         <div className="flex-1" />
