@@ -68,31 +68,53 @@ export async function getRiderStatus(customerId: string): Promise<BikeStatus[]> 
   });
   if (!customer) return [];
 
+  const ACTIVE_JOB = ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY"] as const;
+  type BookingT = (typeof customer.bookings)[number];
+  type JobT = Awaited<ReturnType<typeof db.serviceJob.findMany>>[number];
+
   const out: BikeStatus[] = [];
   for (const bike of customer.motorcycles) {
-    const booking = customer.bookings
+    const activeBooking = customer.bookings
       .filter((b) => b.motorcycleId === bike.id && b.status !== "COMPLETED" && b.status !== "CANCELLED" && b.status !== "NO_SHOW")
-      .sort((a, b) => b.date.getTime() - a.date.getTime())[0];
-    const activeBooking = booking;
-    const job = booking?.job ??
-      (await db.serviceJob.findFirst({
-        where: { motorcycleId: bike.id, status: { in: ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY"] } },
-        orderBy: { createdAt: "desc" },
-      }));
-    const pendingApprovals = job ? await db.customerApproval.count({ where: { jobId: job.id, status: "PENDING" } }) : 0;
-    const quotation = job ? await db.quotation.findUnique({ where: { jobId: job.id } }) : null;
-    const { stepIndex, outcome } = resolveStep(activeBooking?.status ?? null, job?.status ?? null);
-    // quotation awaiting → show the quotation badge/card (pre-service step)
-    const sub = quotation?.status === "PENDING" ? { kind: "quotation" as const } : subStatusOf(job?.status ?? null, pendingApprovals);
-    out.push({
-      bike: { id: bike.id, brand: bike.brand, model: bike.model, plate: bike.plate, year: bike.year, currentMileage: bike.currentMileage },
-      booking: activeBooking ? { id: activeBooking.id, serviceType: activeBooking.serviceType, date: activeBooking.date, timeSlot: activeBooking.timeSlot, status: activeBooking.status, source: activeBooking.source } : null,
-      job: job ? { id: job.id, jobNumber: job.jobNumber, status: job.status, packageName: job.packageName, readyAt: job.readyAt, completedAt: job.completedAt, mileage: job.mileage, estimatedCompletionAt: job.estimatedCompletionAt } : null,
-      stepIndex,
-      outcome,
-      sub,
-      quotation: quotation ? { id: quotation.id, status: quotation.status, revision: quotation.revision, totalSen: quotation.totalSen, itemsJson: quotation.itemsJson } : null,
+      .sort((a, b) => b.date.getTime() - a.date.getTime())[0] ?? null;
+    // 该 bike 的全部 active job（service + repair …）。每个 job 单独一行，携带各自的 status/quotation，
+    // 避免「有 booking 关联的 service job」把「无 booking 的维修单」挤掉 —— rider 看不到 repair status。
+    const activeJobs = await db.serviceJob.findMany({
+      where: { motorcycleId: bike.id, status: { in: [...ACTIVE_JOB] } },
+      orderBy: { createdAt: "desc" },
     });
+
+    const makeRow = async (job: JobT | null, booking: BookingT | null): Promise<BikeStatus> => {
+      const quotation = job ? await db.quotation.findUnique({ where: { jobId: job.id } }) : null;
+      const pendingApprovals = job ? await db.customerApproval.count({ where: { jobId: job.id, status: "PENDING" } }) : 0;
+      const { stepIndex, outcome } = resolveStep(booking?.status ?? null, job?.status ?? null);
+      // quotation awaiting → show the quotation badge/card (pre-service step)
+      const sub = quotation?.status === "PENDING" ? { kind: "quotation" as const } : subStatusOf(job?.status ?? null, pendingApprovals);
+      return {
+        bike: { id: bike.id, brand: bike.brand, model: bike.model, plate: bike.plate, year: bike.year, currentMileage: bike.currentMileage },
+        booking: booking ? { id: booking.id, serviceType: booking.serviceType, date: booking.date, timeSlot: booking.timeSlot, status: booking.status, source: booking.source } : null,
+        job: job ? { id: job.id, jobNumber: job.jobNumber, status: job.status, packageName: job.packageName, readyAt: job.readyAt, completedAt: job.completedAt, mileage: job.mileage, estimatedCompletionAt: job.estimatedCompletionAt } : null,
+        stepIndex,
+        outcome,
+        sub,
+        quotation: quotation ? { id: quotation.id, status: quotation.status, revision: quotation.revision, totalSen: quotation.totalSen, itemsJson: quotation.itemsJson } : null,
+      };
+    };
+
+    if (activeJobs.length > 0) {
+      // 每个 active job 一行；把与它关联的 booking 附给它（无 booking 的维修单 booking=null）
+      for (const job of activeJobs) {
+        const jobBooking = activeBooking && activeBooking.jobId === job.id ? activeBooking : null;
+        out.push(await makeRow(job, jobBooking));
+      }
+    } else if (activeBooking) {
+      // booking active 但尚无 job（如 repair check-in 后待 createJob）
+      out.push(await makeRow(null, activeBooking));
+    } else {
+      // 无 active job/booking → 用最近一条 booking 归纳 terminal 结果（completed/cancelled/no_show/none）
+      const term = customer.bookings.filter((b) => b.motorcycleId === bike.id).sort((a, b) => b.date.getTime() - a.date.getTime())[0] ?? null;
+      out.push(await makeRow(null, term));
+    }
   }
   return out;
 }
