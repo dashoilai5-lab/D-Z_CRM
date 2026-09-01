@@ -253,6 +253,7 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-09-01 | bookings 状态筛选条加每状态数量（feat/bookings-filter-counts）：按 branch/date 范围 groupBy status 统计各状态 booking 数 + 总数，在筛选 pill 上显示（对齐 Service Jobs 的 board.counts 样式） | 老板一目了然每状态单量；tsc0/build 全绿 |
 | 2026-09-01 | 完成的 job 发票收款 + 独立 workshop 发票页（feat/job-invoice-payment）：① InvoicePaymentPanel（job 详情右列 + 发票页复用）——总额/已收/剩余 + 录入金额/方式(CASH/CARD/ONLINE/EWALLET) 调 addInvoicePayment，满额自动结清 ② 新增 /workshop/finance/invoices 发票管理页（卡片列表 + 每状态数量 + 收款面板）③ addInvoicePayment/settleInvoices 增强：已收=状态 PAID 且非 PAY_LATER；结清时关闭自动生成的 PAY_LATER/PENDING 应收（保留记录标记 PAID，避免重复计收）④ nav 加 Invoices ⑤ i18n inv.* | 完单即可在 job 页收款；独立发票页统一管理；无 schema 变更；tsc0/build 全绿 + 实测录款 RM50→已收 RM50/剩余 RM85 |
 | 2026-09-01 | 发票页加日期 + 搜索（feat/job-invoice-payment 追加）：/workshop/finance/invoices 支持按 issuedAt 当日过滤 + 搜索（发票号/工单号/客户名/车牌），计数按 日期+搜索 范围（不含 status）统计 | 筛选发票更直观；tsc0/build 全绿 + 实测搜索 DZ-2026-00003→1 张 |
+| 2026-09-01 | 发票打印 PDF（feat/job-invoice-payment 追加）：新增 /invoice/[id] 打印页（复用 quotation 的 window.print() 模式，pdf.invoice-* 词条）；QuotationPrintActions 支持 title 属性；InvoicePaymentPanel 头部加 Download PDF（job 页/发票页均有）；i18n 补 pdf.invoice/invoice-no/branch/no-bike/no-items/subtotal/discount/tax/thanks | 发票可打印/存 PDF；tsc0/build 全绿 + 实测渲染明细/小计/总价/未结 |
 | 2026-08-19 | 新增迁移 `booking_campaign_attr`、`review_reply` | Booking.campaignId、Review.reply |
 | 2026-08-19 | 新增迁移 `motorcycle_type`、`promo_discount` | Motorcycle.type、Campaign.discountPercent |
 | 2026-08-19 | i18n 三语支持（dz_lang cookie） | 全部页面文案 |

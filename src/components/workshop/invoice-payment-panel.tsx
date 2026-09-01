@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, FileDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -52,9 +52,14 @@ export function InvoicePaymentPanel({ invoice }: { invoice: InvoicePaymentDto })
     <div className="dz-panel p-5">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">{t("inv.title", lang)}</h3>
-        <span className={"text-[11px] font-bold uppercase " + (isPaid ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-300")}>
-          {isPaid ? t("inv.paid", lang) : t("inv.issued", lang)}
-        </span>
+        <div className="flex items-center gap-2">
+          <a href={"/invoice/" + invoice.id} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground">
+            <FileDown className="h-3.5 w-3.5" /> {t("pdf.download", lang)}
+          </a>
+          <span className={"text-[11px] font-bold uppercase " + (isPaid ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-300")}>
+            {isPaid ? t("inv.paid", lang) : t("inv.issued", lang)}
+          </span>
+        </div>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{tpl("inv.number", lang, { n: invoice.invoiceNumber })}</p>
 
