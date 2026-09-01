@@ -150,12 +150,18 @@ export class BookingService {
   }
 
   /** Check in a booking and create the associated service job (shared workflow). */
-  async checkIn(bookingId: string, opts: { mileage: number; branchId: string; packageId?: string; mechanicId?: string; customerRequest?: string }): Promise<{ bookingId: string; jobId: string; jobNumber: string } | null> {
+  async checkIn(bookingId: string, opts: { mileage: number; branchId: string; packageId?: string; mechanicId?: string; customerRequest?: string }): Promise<{ bookingId: string; jobId: string | null; jobNumber: string | null; type: string; customerId: string; motorcycleId: string } | null> {
     const booking = await this.repo.getById(bookingId);
     if (!booking || booking.status === "CANCELLED" || booking.status === "COMPLETED") return null;
+    const type = booking.type ?? "SERVICE";
     if (booking.jobId) {
       await this.repo.update(bookingId, { status: "CHECKED_IN" } as never);
-      return { bookingId, jobId: booking.jobId, jobNumber: booking.job?.jobNumber ?? "—" };
+      return { bookingId, jobId: booking.jobId, jobNumber: booking.job?.jobNumber ?? null, type, customerId: booking.customerId, motorcycleId: booking.motorcycleId };
+    }
+    // Model A: 维修（REPAIR）check-in 不预建 job——仅置 CHECKED_IN，跳 RepairJobForm 现场创建并绑定 booking
+    if (type === "REPAIR") {
+      await this.repo.update(bookingId, { status: "CHECKED_IN" } as never);
+      return { bookingId, jobId: null, jobNumber: null, type: "REPAIR", customerId: booking.customerId, motorcycleId: booking.motorcycleId };
     }
     const res = await db.$transaction(async (tx: DbLike) => {
       const lastJob = await (tx as PrismaClient).serviceJob.findFirst({ orderBy: { jobNumber: "desc" } });
@@ -176,7 +182,7 @@ export class BookingService {
           customerRequest: opts.customerRequest ?? booking.notes ?? undefined,
           servicePackageId: pkgId,
           mechanicId: opts.mechanicId || undefined,
-          type: booking.type ?? "SERVICE",
+          type: "SERVICE",
           status: "WAITING",
         },
       });
@@ -186,10 +192,11 @@ export class BookingService {
       return { bookingId, jobId: job.id, jobNumber };
     });
     // QUOT-001: 服务 job 建后自动生成报价单（PENDING）；维修 job 不自动建（counter 加配件/工时后 Send）
-    if (res && (booking.type ?? "SERVICE") === "SERVICE") {
+    if (res && type === "SERVICE") {
       try { await quotationService.send(res.jobId); } catch (e) { console.error("quotation create failed:", e); }
     }
-    return res;
+    if (!res) return null;
+    return { ...res, type: "SERVICE", customerId: booking.customerId, motorcycleId: booking.motorcycleId };
   }
 }
 

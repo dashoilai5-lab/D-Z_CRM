@@ -256,6 +256,7 @@ export const DICT: Dict = {
   "ws.bookings.title": { en: "Bookings", zh: "预约", ms: "Tempahan" },
   "ws.bookings.subtitle": { en: "Rider App requests and counter bookings — one shared calendar.", zh: "车手 App 预约与前台预约——同一个共享日历。", ms: "Permintaan Apl Penunggang dan tempahan kaunter — satu kalendar dikongsi." },
   "ws.bookings.source-rider": { en: "Rider App", zh: "车手 App", ms: "Apl Penunggang" },
+  "ws.bookings.create-repair": { en: "Create repair", zh: "创建维修单", ms: "Buat baiki" },
 
   // --- workshop: service jobs ---
   "ws.jobs.title": { en: "Service Jobs", zh: "服务工单", ms: "Kerja Servis" },
@@ -560,6 +561,7 @@ export const DICT: Dict = {
   "toast.job-updated": { en: "Job updated", zh: "工单已更新", ms: "Job dikemas kini" },
   "toast.service-completed": { en: "Service completed — invoice {inv} · GP {gp}", zh: "服务完成 — 发票 {inv} · 毛利 {gp}", ms: "Servis selesai — invois {inv} · GP {gp}" },
   "toast.checked-in": { en: "Checked in — job {job} created", zh: "已进店 — 工单 {job} 已创建", ms: "Daftar masuk — job {job} dicipta" },
+  "toast.checked-in-repair": { en: "Checked in — create repair", zh: "已进店 — 创建维修单", ms: "Daftar masuk — buat baiki" },
   "toast.booking-action": { en: "Booking {action}", zh: "预约{action}", ms: "Tempahan {action}" },
   "toast.action-confirmed": { en: "confirmed", zh: "已确认", ms: "disahkan" },
   "toast.action-rescheduled": { en: "rescheduled", zh: "已改期", ms: "dijadualkan semula" },

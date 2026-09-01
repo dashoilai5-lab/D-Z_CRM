@@ -79,7 +79,15 @@ export function BookingActions({ bookingId, status, packages, servicePackageName
                 const result = await bookingAction(bookingId, "CHECKED_IN", { mileage: Number(mileage), packageId: packageId === "none" ? undefined : packageId });
                 setOpen(false);
                 router.refresh();
-                if (result.ok && result.result) { toast.success(tpl("toast.checked-in", lang, { job: result.result.jobNumber })); router.push("/workshop/jobs/" + result.result.jobId); }
+                if (result.ok && result.result) {
+                  if (result.result.type === "REPAIR") {
+                    toast.success(t("toast.checked-in-repair", lang));
+                    router.push("/workshop/jobs/new?type=repair&customer=" + result.result.customerId + "&motorcycle=" + result.result.motorcycleId + "&bookingId=" + result.result.bookingId);
+                  } else {
+                    toast.success(tpl("toast.checked-in", lang, { job: result.result.jobNumber ?? "" }));
+                    router.push("/workshop/jobs/" + result.result.jobId);
+                  }
+                }
                 else if (!result.ok) { toast.error(result.error ?? "Check in failed"); }
               })}>Check In</Button>
             </DialogFooter>
