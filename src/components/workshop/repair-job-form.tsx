@@ -21,13 +21,14 @@ export interface PartLine { productId: string; name: string; quantity: number; u
 export interface LabourLine { description: string; kind: string; quantity: number; unitPriceSen: number }
 
 export function RepairJobForm({
-  customers, motorcyclesByCustomer, mechanics, preselectCustomer, preselectMotorcycle,
+  customers, motorcyclesByCustomer, mechanics, preselectCustomer, preselectMotorcycle, bookingId,
 }: {
   customers: CustomerOption[];
   motorcyclesByCustomer: Record<string, MotorcycleOption[]>;
   mechanics: MechanicOption[];
   preselectCustomer: string | null;
   preselectMotorcycle?: string | null;
+  bookingId?: string | null;
 }) {
   const router = useRouter();
   const lang = useLang();
@@ -79,6 +80,7 @@ export function RepairJobForm({
           customerId, motorcycleId, mileage: Number(mileage), customerRequest: problem || undefined,
           mechanicId: mechanicId === "none" ? undefined : mechanicId,
           type: "REPAIR",
+          bookingId: bookingId ?? undefined,
           parts: parts.map((p) => ({ productId: p.productId, quantity: p.quantity, unitPriceSen: p.unitPriceSen, unitCostSen: p.unitCostSen })),
           labour: labour.map((l) => ({ description: l.description, kind: l.kind, quantity: l.quantity, unitPriceSen: l.unitPriceSen })),
         });

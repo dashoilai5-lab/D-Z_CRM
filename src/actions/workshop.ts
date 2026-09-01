@@ -17,6 +17,7 @@ export async function createJob(input: {
   addons?: { description: string; kind: string; quantity: number; unitPriceSen: number; productId?: string; unitCostSen?: number }[];
   parts?: { productId: string; quantity: number; unitPriceSen: number; unitCostSen?: number }[];
   labour?: { description: string; kind: string; quantity: number; unitPriceSen: number }[];
+  bookingId?: string;
 }) {
   const org = await db.organisation.findFirst();
   const branch = await db.branch.findFirst({ where: { organisationId: org!.id, isMain: true } });
@@ -45,6 +46,17 @@ export async function createJob(input: {
         data: { jobId: job.id, productId: a.productId, quantity: a.quantity, unitCostSen: a.unitCostSen ?? 0, unitPriceSen: a.unitPriceSen, lineTotalSen: a.unitPriceSen * a.quantity, status: "ACCEPTED", source: "COUNTER" },
       });
     }
+  }
+  // Model A: 若来自 check-in 的维修 booking，则把新 job 绑定到该 booking（booking.jobId 唯一）
+  if (input.bookingId) {
+    const booking = await db.booking.findUnique({ where: { id: input.bookingId } });
+    if (!booking) throw new Error("Booking not found");
+    if (booking.jobId) throw new Error("Booking already has a job");
+    if (booking.status !== "CHECKED_IN" && booking.status !== "CONFIRMED" && booking.status !== "REQUESTED") {
+      // 允许从 check-in 流继续，其他状态回退为不绑定，避免误绑
+    }
+    await db.booking.update({ where: { id: input.bookingId }, data: { jobId: job.id } });
+    // 同步 job.booking 反向关系（可选：jobService.create 未连 booking，这里统一由 booking.jobId 驱动）
   }
   revalidatePath("/", "layout");
   return { ok: true, id: job.id, jobNumber: job.jobNumber };

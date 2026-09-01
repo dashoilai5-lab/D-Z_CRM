@@ -7,8 +7,8 @@ import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export default async function NewJobPage({ searchParams }: { searchParams: Promise<{ customer?: string; motorcycle?: string; type?: string }> }) {
-  const { customer, motorcycle, type } = await searchParams;
+export default async function NewJobPage({ searchParams }: { searchParams: Promise<{ customer?: string; motorcycle?: string; type?: string; bookingId?: string }> }) {
+  const { customer, motorcycle, type, bookingId } = await searchParams;
   const lang = await getLang();
   const isRepair = type === "repair";
   const [customers, motorcycles, packages, mechanics] = await Promise.all([
@@ -30,7 +30,7 @@ export default async function NewJobPage({ searchParams }: { searchParams: Promi
         backHref="/workshop/jobs"
       />
       {isRepair ? (
-        <RepairJobForm customers={customers} motorcyclesByCustomer={motorcyclesByCustomer} mechanics={mechanics} preselectCustomer={customer ?? null} preselectMotorcycle={motorcycle ?? null} />
+        <RepairJobForm customers={customers} motorcyclesByCustomer={motorcyclesByCustomer} mechanics={mechanics} preselectCustomer={customer ?? null} preselectMotorcycle={motorcycle ?? null} bookingId={bookingId ?? null} />
       ) : (
         <CreateJobForm customers={customers} motorcyclesByCustomer={motorcyclesByCustomer} packages={packages} mechanics={mechanics} preselectCustomer={customer ?? null} preselectMotorcycle={motorcycle ?? null} />
       )}
