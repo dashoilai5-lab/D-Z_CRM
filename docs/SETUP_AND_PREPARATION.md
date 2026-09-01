@@ -61,6 +61,8 @@ plist 文件：`com.dz-platform.server.plist` / `com.dz-platform.e2e.plist`
 | `OPENAI_API_KEY` | AI provider（生产） | OpenAI |
 | `WHATSAPP_API_TOKEN` | Meta WhatsApp Business API | Meta Developers |
 | `WHATSAPP_PHONE_ID` | WhatsApp 商业号 | Meta |
+| `WHATSAPP_VERIFY_TOKEN` | WhatsApp webhook 验签 | Meta Developers |
+| `WHATSAPP_APP_SECRET` | WhatsApp webhook HMAC 验签（可选） | Meta Developers |
 | `STORAGE_BUCKET` | Supabase Storage bucket | Supabase |
 | `SENTRY_DSN` | 错误监控 | Sentry |
 | `NEXTAUTH_SECRET` / `AUTH_SECRET` | 认证加密 | 自生成 |
@@ -85,6 +87,7 @@ plist 文件：`com.dz-platform.server.plist` / `com.dz-platform.e2e.plist`
 | `20260819021924_motorcycle_type` | Motorcycle.type（车型分类） |
 | `20260819043819_booking_campaign_attr` | Booking.campaignId（促销归因） |
 | `20260819044007_review_reply` | Review.reply/repliedAt（评价运营） |
+| `20260901005433_whatsapp_message_external_id` | Message.externalId（WhatsApp 回执关联键） |
 
 ### 3.3 数据模型（33 模型）
 身份：`Organisation → Branch → User / Customer (+CustomerAuthProfile)`
@@ -175,7 +178,7 @@ pnpm db:studio    # Prisma Studio 可视化
 - [ ] 中间件从 cookie-persona 改为真实 session（现有 nav-registry/middleware 复用）
 
 ### 5.3 Provider 换真
-- [ ] Messaging → Meta WhatsApp Business API（`WHATSAPP_API_TOKEN`/PHONE_ID）
+- [ ] Messaging → Meta WhatsApp Business API（`WHATSAPP_API_TOKEN`/PHONE_ID——代码就绪（E.164 归一化 + externalId 落地 + 回执 webhook），仅欠真实密钥）
 - [ ] AI → OpenAI（`OPENAI_API_KEY`）
 - [ ] Storage → Supabase Storage（海报 url 从 /posters/ 迁移到 bucket）
 - [ ] Payment → 网关（Stripe/FPX）
@@ -246,6 +249,7 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-08-29 | 维修 job（REPAIR）：新增 JobType 枚举 + ServiceJob.type + Booking.type（迁移 job_type，两个 schema）；createJob 支持 type/parts/labour；bookService/booking.create 支持 type；checkIn 维修 job 不自动建报价（counter 加配件/工时后 Send）；RepairJobForm（/workshop/jobs/new?type=repair）+ jobs 列表「Create Repair Job」按钮 + /api/repair-parts 搜索；rider book 加 Service/Repair 切换（维修不选套餐只描述问题+时段）；门禁：维修 job 必须报价 APPROVED 才可派工/开工；i18n job-type.*/repair.*/ws.job.repair-* | workshop 可建维修工单（自定义配件+工时）、rider 可预约维修；结构与报价共用；tsc0/lint0/unit26/build 全绿 |
 | 2026-08-29 | 每技师独立提成 + 去底薪（feat/commission-per-mechanic）：User.commissionRules（个人算法）+ ServiceJob.commissionSen（每单提成，可手动覆盖）+ StaffPayout.bonusSen（手填奖金），迁移 per_mechanic_commission（两 schema）；staffService 用 per-user rules + 每单提成计算（Σ每单提成 + 增项奖励 + 手填 bonus，无底薪）；actions：updateMechanicCommissionRules/updateJobCommission/setPayoutBonus；Settlements 每技师可配 commission + 每日账单每 job 显示/编辑提成 + bonus 输入；i18n payout.*/settle.* 更新 | 每个技师用自己的提成算法；每张账单可看/改提成；可填 bonus；去底薪。tsc0/lint0/unit26/build 全绿 |
 | 2026-08-29 | 报价 PDF 下载（feat/quotation-pdf）：新增 /quotation/[id] 打印页（A4 版式：门店抬头/单据号/客户/车辆/工单/明细行含 kind/配件+工时小计/合计/有效期/签字区）；客户端 window.print() 存 PDF（零新依赖）；quote 面板加「Download PDF」按钮；jobInclude 加 branch；i18n pdf.* | workshop 可下载 service/repair 报价 PDF；结构同报价快照，零新依赖。tsc0/lint0/unit26/build 全绿 |
+| 2026-09-01 | provider 换真收尾（Messaging→Meta WhatsApp）：① phone.ts 加 toE164ForWhatsApp（本地 "013-125 2832"→"+60131252832"）并在 whatsapp-business.send() 归一化 to（真实 Graph API 要求 E.164，否则换真即失败）② Message 加 externalId（迁移 whatsapp_message_external_id，两 schema 同步）③ 三处发送持久化 externalId（messaging.service/crm.service/marketing.broadcastCampaign）④ 新增 /api/webhooks/whatsapp（GET 验签 hub.challenge + POST 按 externalId 更新 status，可选 HMAC） | Messaging 换真代码完备：配好 WHATSAPP_API_TOKEN/PHONE_ID/VERIFY_TOKEN 即真发+回执可追踪；生产 PG 需加 Message.externalId 列 + 4 个 env；tsc0/lint0/unit26/build 全绿 |
 | 2026-08-19 | 新增迁移 `booking_campaign_attr`、`review_reply` | Booking.campaignId、Review.reply |
 | 2026-08-19 | 新增迁移 `motorcycle_type`、`promo_discount` | Motorcycle.type、Campaign.discountPercent |
 | 2026-08-19 | i18n 三语支持（dz_lang cookie） | 全部页面文案 |

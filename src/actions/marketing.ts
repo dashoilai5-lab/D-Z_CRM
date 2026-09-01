@@ -145,6 +145,7 @@ export async function broadcastCampaign(input: { campaignId: string; message?: s
         channel: "WHATSAPP",
         body,
         status: result.status,
+        externalId: result.externalId ?? null,
         referenceType: "CAMPAIGN",
         referenceId: campaign.id,
       },

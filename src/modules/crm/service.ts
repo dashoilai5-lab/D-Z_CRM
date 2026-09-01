@@ -108,6 +108,7 @@ export class CrmService {
       channel: input.channel ?? "WHATSAPP",
       body: input.body,
       status: result.status,
+      externalId: result.externalId ?? null,
       jobId: input.jobId,
       referenceType: "REMINDER",
     });

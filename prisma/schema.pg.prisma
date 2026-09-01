@@ -784,6 +784,7 @@ model Message {
   status        MessageStatus   @default(SENT)
   referenceType String?
   referenceId   String?
+  externalId    String?          // Meta WhatsApp Graph API message id（投递回执关联键）
   jobId         String?
   job           ServiceJob?     @relation("JobMessages", fields: [jobId], references: [id])
   createdAt     DateTime        @default(now())

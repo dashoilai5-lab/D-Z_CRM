@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizePhone, phoneDigits, toE164, fmtStoredPhone } from "@/lib/phone";
+import { normalizePhone, phoneDigits, toE164, fmtStoredPhone, toE164ForWhatsApp } from "@/lib/phone";
 
 describe("phone normalization (rider phone login)", () => {
   it("accepts local formats with separators", () => {
@@ -28,5 +28,23 @@ describe("phone normalization (rider phone login)", () => {
   });
   it("formats local to stored pattern", () => {
     expect(fmtStoredPhone("0131252832")).toBe("013-125 2832");
+  });
+});
+
+describe("toE164ForWhatsApp (Meta WhatsApp requirement)", () => {
+  it("converts stored local to E.164", () => {
+    expect(toE164ForWhatsApp("013-125 2832")).toBe("+60131252832");
+    expect(toE164ForWhatsApp("0131252832")).toBe("+60131252832");
+    expect(toE164ForWhatsApp("013 125 2832")).toBe("+60131252832");
+  });
+  it("keeps already-E.164 and bare international", () => {
+    expect(toE164ForWhatsApp("+60131252832")).toBe("+60131252832");
+    expect(toE164ForWhatsApp("60131252832")).toBe("+60131252832");
+  });
+  it("fail-safe on empty/non-numeric", () => {
+    expect(toE164ForWhatsApp("")).toBe("");
+    expect(toE164ForWhatsApp(null)).toBe("");
+    expect(toE164ForWhatsApp(undefined)).toBe("");
+    expect(toE164ForWhatsApp("Ahmad Danial")).toBe("Ahmad Danial");
   });
 });

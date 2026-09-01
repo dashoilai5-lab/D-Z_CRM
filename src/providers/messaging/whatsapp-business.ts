@@ -1,4 +1,5 @@
 import type { MessagingProvider, MessageSendResult } from "../types";
+import { toE164ForWhatsApp } from "@/lib/phone";
 
 /**
  * WhatsAppBusinessProvider — Meta WhatsApp Business Cloud API (§31 provider 换真 B 阶段)。
@@ -32,13 +33,18 @@ export class WhatsAppBusinessProvider implements MessagingProvider {
     if (!token || !phoneId) {
       return { ok: false, externalId: null, status: "FAILED" };
     }
+    // Real Graph API requires `to` in E.164; Customer.phone is stored local ("013-125 2832").
+    const recipient = toE164ForWhatsApp(to);
+    if (!recipient) {
+      return { ok: false, externalId: null, status: "FAILED" };
+    }
     try {
       const res = await fetch("https://graph.facebook.com/v19.0/" + phoneId + "/messages", {
         method: "POST",
         headers: { Authorization: "Bearer " + token, "Content-Type": "application/json" },
         body: JSON.stringify({
           messaging_product: "whatsapp",
-          to,
+          to: recipient,
           type: "text",
           text: { body },
         }),
