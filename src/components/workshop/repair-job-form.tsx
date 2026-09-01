@@ -36,7 +36,8 @@ export function RepairJobForm({
   const initialBike = preselectMotorcycle ? Object.values(motorcyclesByCustomer).flat().find((m) => m.id === preselectMotorcycle) : undefined;
   const [customerId, setCustomerId] = useState(initialBike?.customerId ?? preselectCustomer ?? "");
   const [motorcycleId, setMotorcycleId] = useState(initialBike?.id ?? "none");
-  const [mileage, setMileage] = useState("");
+  // 预填：从 Model A check-in 流预选的车 或 用户在表单里选的车，都用该车 currentMileage，避免里程写错（< 车实际里程）导致完成时 Mileage regression
+  const [mileage, setMileage] = useState(initialBike ? String(initialBike.currentMileage) : "");
   const [problem, setProblem] = useState("");
   const [mechanicId, setMechanicId] = useState("none");
   const [customerOpen, setCustomerOpen] = useState(false);
@@ -117,7 +118,7 @@ export function RepairJobForm({
           {motorcycles.length > 0 && (
             <div className="mt-4">
               <Label>Motorcycle</Label>
-              <Select value={motorcycleId} onValueChange={(v) => setMotorcycleId(v ?? "none")}>
+              <Select value={motorcycleId} onValueChange={(v) => { setMotorcycleId(v ?? "none"); const bik = motorcycles.find((m) => m.id === v); if (bik) setMileage(String(bik.currentMileage)); }}>
                 <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "Select motorcycle…" : motorcycles.find((m) => m.id === v)?.brand + " " + motorcycles.find((m) => m.id === v)?.model + " · " + motorcycles.find((m) => m.id === v)?.plate)}</SelectValue></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Select motorcycle…</SelectItem>
