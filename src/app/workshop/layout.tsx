@@ -1,5 +1,6 @@
 import { CommandPalette } from "@/components/shared/command-palette";
 import { ThemeControls } from "@/components/shared/theme-controls";
+import { LanguageToggle } from "@/components/shared/language-toggle";
 import { ScanQrButton } from "@/components/workshop/scan-qr-button";
 import { RefreshControls } from "@/components/workshop/refresh-controls";
 import { Sidebar } from "@/components/workshop/sidebar";
@@ -56,11 +57,13 @@ export default async function WorkshopLayout({ children }: { children: React.Rea
           <RefreshControls />
           <ScanQrButton />
           <TutorialHelpMenu userId={sidebarUser?.id ?? ""} />
+          <LanguageToggle lang={lang} compact />
           <ThemeControls />
         </div>
         {/* 移动端：顶部 sticky 刷新条（自动刷新 + 手动按钮常驻） */}
-        <div className="lg:hidden sticky top-0 z-20 border-b bg-background/95 backdrop-blur px-4 py-2">
+        <div className="lg:hidden sticky top-0 z-20 border-b bg-background/95 backdrop-blur px-4 py-2 flex items-center justify-between">
           <RefreshControls compact />
+          <LanguageToggle lang={lang} compact />
         </div>
         <main className="flex-1 px-4 md:px-6 py-6 pb-24 lg:pb-8 max-w-7xl w-full mx-auto">{children}</main>
         <MobileNav items={mobileItems.length ? mobileItems : [{ key: "dashboard", href: "/workshop/dashboard", label: "Dashboard" }]} />
