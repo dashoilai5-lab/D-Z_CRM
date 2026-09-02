@@ -13,7 +13,7 @@ import { db } from "@/lib/db";
 import { fmtDate, fmtKM, fmtDateTime } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 export default async function CustomerPassportPage({ params }: { params: Promise<{ id: string }> }) {
   const lang = await getLang();
@@ -63,18 +63,18 @@ export default async function CustomerPassportPage({ params }: { params: Promise
               <div className="mt-4 flex flex-wrap gap-2 text-xs border-t pt-3">
                 {loyalty && (
                   <span className="rounded-full bg-primary/10 text-primary px-2.5 py-1 font-medium">
-                    {loyalty.tier?.name ?? "Member"} · {loyalty.pointsBalance} pts
+                    {loyalty.tier?.name ?? t("ws.cust.member", lang)} · {loyalty.pointsBalance} pts
                   </span>
                 )}
                 {referralCount > 0 && (
-                  <span className="rounded-full bg-muted px-2.5 py-1">{referralCount} referral{referralCount > 1 ? "s" : ""} made</span>
+                  <span className="rounded-full bg-muted px-2.5 py-1">{tpl("ws.cust.referrals-made", lang, { n: referralCount })}</span>
                 )}
                 {customer.tags?.split(",").map((tg) => tg.trim()).filter(Boolean).map((tg) => (
                   <span key={tg} className="rounded-full bg-accent px-2.5 py-1">{tg}</span>
                 ))}
                 {consent && (
                   <span className={"rounded-full px-2.5 py-1 " + (consent.marketingOptIn ? "bg-emerald-500/15 text-emerald-600" : "bg-muted text-muted-foreground")}>
-                    Marketing {consent.marketingOptIn ? "opted in" : "opted out"} · prefers {consent.communicationPreference.toLowerCase()}
+                    {t(consent.marketingOptIn ? "ws.cust.mkt-optin" : "ws.cust.mkt-optout", lang)} · {tpl("ws.cust.prefers", lang, { channel: consent.communicationPreference.toLowerCase() })}
                   </span>
                 )}
               </div>
@@ -115,11 +115,11 @@ export default async function CustomerPassportPage({ params }: { params: Promise
       {/* FILE-001..010: attachments */}
       <div className="mt-5 rounded-2xl border bg-card p-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-sm">Attachments</h3>
+          <h3 className="font-semibold text-sm">{t("ws.cust.attachments", lang)}</h3>
           <AttachmentUpload customerId={id} />
         </div>
         {attachments.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No attachments yet.</p>
+          <p className="text-xs text-muted-foreground">{t("ws.cust.no-attachments", lang)}</p>
         ) : (
           <ul className="space-y-1.5">
             {attachments.map((a) => (
@@ -142,7 +142,7 @@ export default async function CustomerPassportPage({ params }: { params: Promise
           <TabsTrigger value="spending">{t("ws.cust.tab-spending", lang)}</TabsTrigger>
           <TabsTrigger value="messages">{t("rider.messages", lang)}</TabsTrigger>
           <TabsTrigger value="notes">{t("ws.cust.tab-notes", lang)}</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          <TabsTrigger value="timeline">{t("ws.cust.tab-timeline", lang)}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4">
@@ -267,9 +267,9 @@ export default async function CustomerPassportPage({ params }: { params: Promise
 
         <TabsContent value="timeline" className="mt-4">
           <div className="rounded-2xl border bg-card p-5">
-            <h3 className="font-semibold mb-4">Customer timeline</h3>
+            <h3 className="font-semibold mb-4">{t("ws.cust.timeline-title", lang)}</h3>
             {timeline.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No events yet.</p>
+              <p className="text-sm text-muted-foreground">{t("ws.cust.no-events", lang)}</p>
             ) : (
               <ol className="relative border-l border-border ml-2 space-y-5">
                 {timeline.map((ev, i) => (

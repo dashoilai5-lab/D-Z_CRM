@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { fmtKM, fmtDate } from "@/lib/format";
 import { isPromoActive } from "@/modules/marketing/promo";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 import { PageTransition } from "@/components/shared/page-transition";
 import { RiderScanQrButton } from "@/components/rider/scan-qr-button";
 
@@ -61,10 +61,10 @@ export default async function RiderHomePage() {
           <RiderScanQrButton />
           {isDue || isSoon ? (
             <span className={"rounded-full px-3 py-1 text-[11px] font-bold " + (isDue ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300" : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300")}>
-              {isDue ? "SERVICE DUE" : "SOON"}
+              {isDue ? t("rider.service-due", lang) : t("rider.soon", lang)}
             </span>
           ) : null}
-          <Link href="/rider/notifications" className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-card text-muted-foreground hover:text-foreground" aria-label="Notifications">
+          <Link href="/rider/notifications" className="relative inline-flex h-10 w-10 items-center justify-center rounded-2xl border bg-card text-muted-foreground hover:text-foreground" aria-label={t("notif.title", lang)}>
             <Bell className="h-5 w-5" />
             {unreadCount > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
@@ -97,9 +97,9 @@ export default async function RiderHomePage() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
             </span>
-            {activeJob.status === "READY" ? "YOUR MOTORCYCLE IS READY" : "YOUR MOTORCYCLE IS BEING SERVICED"}
+            {activeJob.status === "READY" ? t("rider.bike-ready", lang) : t("rider.bike-serviced", lang)}
           </div>
-          <p className="mt-1 text-xs opacity-90">Job {activeJob.jobNumber} · tap for live status</p>
+          <p className="mt-1 text-xs opacity-90">{tpl("rider.job-tap-live", lang, { n: activeJob.jobNumber })}</p>
         </Link>
       )}
 
@@ -121,7 +121,7 @@ export default async function RiderHomePage() {
               <div className="flex items-center justify-between text-xs">
                 <span className={"inline-flex items-center gap-1.5 font-semibold " + (isDue ? "text-red-700 dark:text-red-300" : isSoon ? "text-amber-700 dark:text-amber-300" : "text-muted-foreground")}>
                   {isDue ? <AlertTriangle className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
-                  {isDue ? "Service is due" : isSoon ? "Service coming up" : "Service schedule"}
+                  {isDue ? t("rider.svc-due", lang) : isSoon ? t("rider.svc-soon", lang) : t("rider.svc-schedule", lang)}
                 </span>
               </div>
               <div className="mt-2 flex items-center justify-between text-sm">

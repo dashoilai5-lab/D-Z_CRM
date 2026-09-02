@@ -40,7 +40,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
     motorcycleType: detail.motorcycle.type,
     items: [
       ...detail.items.map((i) => ({ id: i.id, description: i.description, kind: "item" as const, unitPriceSen: i.unitPriceSen, status: i.status })),
-      ...detail.parts.map((p) => ({ id: p.id, description: p.product?.name ?? "Part", kind: "part" as const, unitPriceSen: p.unitPriceSen, status: p.status })),
+      ...detail.parts.map((p) => ({ id: p.id, description: p.product?.name ?? t("ws.job.part", lang), kind: "part" as const, unitPriceSen: p.unitPriceSen, status: p.status })),
     ],
   };
 
@@ -67,8 +67,8 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
       {/* JOB-016 / rider lifecycle: customer-facing progress + ETA (linked to rider service-status) */}
       <div className="dz-panel p-4 mb-5">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-sm">Rider lifecycle progress</h3>
-          <Link href={"/rider/service-status"} className="text-[11px] text-primary hover:underline">customer view →</Link>
+          <h3 className="font-semibold text-sm">{t("ws.job.rider-lifecycle", lang)}</h3>
+          <Link href={"/rider/service-status"} className="text-[11px] text-primary hover:underline">{t("ws.job.customer-view", lang)}</Link>
         </div>
         {(() => {
           const order = ["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD", "READY", "COMPLETED"];
@@ -78,14 +78,14 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           return (
             <div>
               <div className="flex items-center justify-between text-xs mb-1">
-                <span className="text-muted-foreground">Booking → Ready for collection</span>
+                <span className="text-muted-foreground">{t("ws.job.booking-to-ready", lang)}</span>
                 <span className="font-bold tabular-nums text-primary">{pct}%</span>
               </div>
               <div className="h-2 rounded-full bg-muted overflow-hidden">
                 <div className="h-full rounded-full bg-primary" style={{ width: pct + "%" }} />
               </div>
               {eta && detail.status !== "COMPLETED" && (
-                <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><Clock className="h-3.5 w-3.5" /> Estimated ready: <strong>{fmtDateTime(eta)}</strong></p>
+                <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><Clock className="h-3.5 w-3.5" /> {t("ws.job.estimated-ready", lang)} <strong>{fmtDateTime(eta)}</strong></p>
               )}
             </div>
           );
@@ -94,7 +94,7 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
       {statusHistory.length > 0 && (
         <div className="dz-panel p-4 mb-5">
-          <h3 className="font-semibold text-sm mb-2">Status history</h3>
+          <h3 className="font-semibold text-sm mb-2">{t("ws.job.status-history", lang)}</h3>
           <ol className="flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
             {statusHistory.map((h, i) => (
               <li key={i} className="flex items-center gap-1.5">

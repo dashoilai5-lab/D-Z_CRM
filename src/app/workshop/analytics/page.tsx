@@ -4,6 +4,8 @@ import { salesAnalytics, serviceAnalytics, customerAnalytics, revenueAnalytics, 
 import { AnalyticsTabs } from "@/components/workshop/analytics-tabs";
 import { formatRM } from "@/lib/money";
 import { PageTransition } from "@/components/shared/page-transition";
+import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,7 @@ const PERIODS = [
 ];
 
 export default async function AnalyticsPage({ searchParams }: { searchParams: Promise<{ days?: string; from?: string; to?: string }> }) {
+  const lang = await getLang();
   const sp = await searchParams;
   // from/to 自定义范围优先；否则快捷周期
   const from = sp.from;
@@ -41,27 +44,28 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   const maxBrand = Math.max(...brands.map((b) => b.count), 1);
 
   const qs = (d: string) => "/workshop/analytics?days=" + d;
-  const rangeLabel = from ? from + " → " + (to ?? "today") : "";
+  const rangeLabel = from ? from + " → " + (to ?? t("analytics.today", lang)) : "";
+  const brandRange = from ? from + " → " + (to ?? t("analytics.today", lang)) : tpl("analytics.last-days", lang, { n: sinceDays });
 
   return (
     <PageTransition>
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h1 className="text-2xl font-bold">Analytics</h1>
-          <p className="text-sm text-muted-foreground">Consistent calculation rules with the dashboard (ANA-051){rangeLabel ? " · " + rangeLabel : ""}</p>
+          <h1 className="text-2xl font-bold">{t("analytics.title", lang)}</h1>
+          <p className="text-sm text-muted-foreground">{t("analytics.subtitle", lang)}{rangeLabel ? " · " + rangeLabel : ""}</p>
         </div>
         <div data-tut="analytics-range" className="flex flex-wrap items-center gap-1.5">
           {PERIODS.map((p) => (
             <Link key={p.key} href={qs(p.key)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (!from && sinceDays === p.days && untilDays === 0 ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
-              {p.label}
+              {t("analytics.period-" + p.key, lang)}
             </Link>
           ))}
           <form method="get" className="flex items-center gap-1 ml-2 text-xs">
             <input type="date" name="from" defaultValue={from} className="rounded-md border bg-background px-2 py-1.5" />
             <span className="text-muted-foreground">→</span>
             <input type="date" name="to" defaultValue={to} className="rounded-md border bg-background px-2 py-1.5" />
-            <button className="rounded-md border px-2 py-1.5 font-medium">Go</button>
+            <button className="rounded-md border px-2 py-1.5 font-medium">{t("analytics.go", lang)}</button>
           </form>
         </div>
       </div>
@@ -77,8 +81,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
 
       {/* 月度服务量 */}
       <div data-tut="analytics-chart" className="rounded-2xl border bg-card p-5">
-        <h3 className="font-semibold mb-1">Monthly services</h3>
-        <p className="text-xs text-muted-foreground mb-4">Completed jobs & unique motorcycles per month (last {months} month{months > 1 ? "s" : ""})</p>
+        <h3 className="font-semibold mb-1">{t("analytics.monthly-services", lang)}</h3>
+        <p className="text-xs text-muted-foreground mb-4">{tpl("analytics.monthly-desc", lang, { n: months })}</p>
         <div className="space-y-2">
           {monthly.map((m) => (
             <div key={m.key} className="flex items-center gap-3 text-xs">
@@ -88,7 +92,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
                   {m.count > 0 ? m.count : ""}
                 </div>
               </div>
-              <span className="w-24 shrink-0 text-right text-muted-foreground">{m.count} jobs · {m.vehicles} bikes</span>
+              <span className="w-24 shrink-0 text-right text-muted-foreground">{tpl("analytics.jobs-bikes", lang, { jobs: m.count, bikes: m.vehicles })}</span>
             </div>
           ))}
         </div>
@@ -96,22 +100,22 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
 
       {/* 品牌分析 */}
       <div className="rounded-2xl border bg-card p-5">
-        <h3 className="font-semibold mb-1">Brand analysis</h3>
-        <p className="text-xs text-muted-foreground mb-4">Services by motorcycle brand ({from ? from + " → " + (to ?? "today") : "last " + sinceDays + " days"})</p>
-        {brands.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">No data.</p>}
+        <h3 className="font-semibold mb-1">{t("analytics.brand-analysis", lang)}</h3>
+        <p className="text-xs text-muted-foreground mb-4">{tpl("analytics.brand-desc", lang, { range: brandRange })}</p>
+        {brands.length === 0 && <p className="text-sm text-muted-foreground text-center py-6">{t("analytics.no-data", lang)}</p>}
         <div className="space-y-3">
           {brands.map((b) => (
             <div key={b.brand}>
               <div className="flex items-center gap-3 text-xs mb-1">
                 <span className="w-28 shrink-0 font-semibold">{b.brand}</span>
-                <span className="text-muted-foreground">{b.count} jobs · {b.vehicles} bikes · {formatRM(b.salesSen)} · {b.share}%</span>
+                <span className="text-muted-foreground">{tpl("analytics.brand-stats", lang, { jobs: b.count, bikes: b.vehicles, sales: formatRM(b.salesSen), share: b.share })}</span>
               </div>
               <div className="h-4 rounded bg-muted/50 overflow-hidden">
                 <div className="h-full rounded bg-primary/70" style={{ width: Math.max(2, (b.count / maxBrand) * 100) + "%" }} />
               </div>
               {b.topModels.length > 0 && (
                 <div className="mt-0.5 text-[10px] text-muted-foreground">
-                  Top: {b.topModels.map((t) => t.model + " ×" + t.n).join(" · ")}
+                  {tpl("analytics.top", lang, { models: b.topModels.map((t) => t.model + " ×" + t.n).join(" · ") })}
                 </div>
               )}
             </div>

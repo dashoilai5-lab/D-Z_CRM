@@ -75,7 +75,7 @@ export default async function MechanicProfilePage() {
       <div className="relative">
         <div className="absolute right-0 top-0 flex items-center gap-2">
           <SignOutIconButton href="/login" title={t("mech.signout", lang)} />
-          <Link href="/mechanic-app/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label="Settings">
+          <Link href="/mechanic-app/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label={t("settings.title", lang)}>
             <SettingsIcon className="h-4 w-4" />
           </Link>
         </div>
@@ -83,7 +83,7 @@ export default async function MechanicProfilePage() {
       <div className="text-center">
         <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">{initials}</span>
         <h1 className="mt-3 text-xl font-bold">{me.name}</h1>
-        <p className="text-sm text-muted-foreground">Mechanic · {me.email ?? ""}</p>
+        <p className="text-sm text-muted-foreground">{t("mech.app", lang)} · {me.email ?? ""}</p>
       </div>
 
       {/* 统计卡 */}
@@ -119,7 +119,7 @@ export default async function MechanicProfilePage() {
 
       {/* 工作统计 */}
       <div className="rounded-2xl border bg-card p-4">
-        <h3 className="font-semibold mb-3">My working statistics</h3>
+        <h3 className="font-semibold mb-3">{t("mech.stats-title", lang)}</h3>
         {/* 汇总 */}
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="rounded-xl bg-muted/50 p-3 text-center">
@@ -128,15 +128,15 @@ export default async function MechanicProfilePage() {
           </div>
           <div className="rounded-xl bg-muted/50 p-3 text-center">
             <div className="text-lg font-bold tabular-nums">{formatRM(avgTicket)}</div>
-            <div className="text-[10px] text-muted-foreground">Avg ticket</div>
+            <div className="text-[10px] text-muted-foreground">{t("settle.col-avg", lang)}</div>
           </div>
           <div className="rounded-xl bg-muted/50 p-3 text-center">
             <div className="text-lg font-bold tabular-nums">{rating ? rating.toFixed(1) : "—"}</div>
-            <div className="text-[10px] text-muted-foreground">Rating ★</div>
+            <div className="text-[10px] text-muted-foreground">{t("mech.rating-star", lang)}</div>
           </div>
         </div>
         {/* 月度趋势 */}
-        <div className="text-xs font-semibold text-muted-foreground mb-2">Monthly jobs (12 months)</div>
+        <div className="text-xs font-semibold text-muted-foreground mb-2">{t("mech.monthly-jobs", lang)}</div>
         <div className="space-y-1.5">
           {monthStats.map((ms) => (
             <div key={ms.key} className="flex items-center gap-2 text-[11px]">

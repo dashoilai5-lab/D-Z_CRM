@@ -4,7 +4,7 @@ import { Bike, Phone, MapPin, Wrench, User as UserIcon } from "lucide-react";
 import { db } from "@/lib/db";
 import { fmtKM, fmtDate } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 import { motorcycleTypeInfo } from "@/lib/motorcycle-types";
 import { formatRM } from "@/lib/money";
 
@@ -49,15 +49,15 @@ export default async function QrMotorcyclePage({ params }: { params: Promise<{ i
         <div className="mt-5 grid grid-cols-3 gap-2">
           <div className="rounded-xl bg-muted/50 p-3 text-center">
             <div className="text-lg font-bold tabular-nums">{fmtKM(bike.currentMileage)}</div>
-            <div className="text-[10px] text-muted-foreground">Mileage</div>
+            <div className="text-[10px] text-muted-foreground">{t("bike.col-mileage", lang)}</div>
           </div>
           <div className="rounded-xl bg-muted/50 p-3 text-center">
             <div className="text-lg font-bold tabular-nums">{bike.lastServiceMileage ? fmtKM(bike.lastServiceMileage) : "—"}</div>
-            <div className="text-[10px] text-muted-foreground">Last service</div>
+            <div className="text-[10px] text-muted-foreground">{t("svc.last-service", lang)}</div>
           </div>
           <div className="rounded-xl bg-muted/50 p-3 text-center">
             <div className="text-lg font-bold tabular-nums">{bike.nextServiceMileage ? fmtKM(bike.nextServiceMileage) : "—"}</div>
-            <div className="text-[10px] text-muted-foreground">Next service</div>
+            <div className="text-[10px] text-muted-foreground">{t("qr.next-service", lang)}</div>
           </div>
         </div>
 
@@ -68,25 +68,25 @@ export default async function QrMotorcyclePage({ params }: { params: Promise<{ i
           <div className="mt-2 space-y-1.5 text-xs text-muted-foreground">
             {owner.phone && <div className="flex items-center gap-1.5"><Phone className="h-3 w-3" /> {owner.phone}</div>}
             {owner.email && <div className="flex items-center gap-1.5"><MapPin className="h-3 w-3" /> {owner.email}</div>}
-            <div className="flex items-center gap-1.5"><Wrench className="h-3 w-3" /> {owner.motorcycles.length} motorcycle(s) on record · {owner.motorcycles.reduce((a, m) => a + m.currentMileage, 0).toLocaleString()} km total</div>
+            <div className="flex items-center gap-1.5"><Wrench className="h-3 w-3" /> {tpl("qr.records-line", lang, { n: owner.motorcycles.length, km: owner.motorcycles.reduce((a, m) => a + m.currentMileage, 0).toLocaleString() })}</div>
           </div>
         </div>
 
         <div className="mt-5 rounded-2xl border bg-muted/30 p-4">
-          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Lifetime maintenance</div>
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("qr.lifetime", lang)}</div>
           <div className="mt-1 text-xl font-bold tabular-nums">{formatRM(lifetime)}</div>
           <div className="text-[10px] text-muted-foreground">{t("rider.lifetime-maintenance", lang)}</div>
         </div>
 
         <div className="mt-6 flex gap-2">
           <Link href={"/workshop/jobs/new?motorcycle=" + bike.id} className="flex-1 rounded-xl bg-primary py-3 text-center text-sm font-semibold text-primary-foreground">
-            New job
+            {t("qr.new-job", lang)}
           </Link>
           <Link href={"/workshop/customers/" + owner.id} className="flex-1 rounded-xl border py-3 text-center text-sm font-semibold">
-            Open customer
+            {t("qr.open-customer", lang)}
           </Link>
         </div>
-        <p className="mt-4 text-center text-[10px] text-muted-foreground">Scanned via D&Z motorcycle QR · {fmtDate(new Date())}</p>
+        <p className="mt-4 text-center text-[10px] text-muted-foreground">{tpl("qr.scan-motorcycle", lang, { date: fmtDate(new Date()) })}</p>
       </div>
     </main>
   );

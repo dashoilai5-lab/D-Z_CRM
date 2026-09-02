@@ -103,15 +103,15 @@ export function CreateJobForm({
     <div className="grid lg:grid-cols-5 gap-6">
       <div className="lg:col-span-3 space-y-6">
         <section className="rounded-2xl border bg-card p-5">
-          <h3 className="font-semibold mb-3">1 · Customer</h3>
+          <h3 className="font-semibold mb-3">{t("job-form.heading-customer", lang)}</h3>
           <div className="relative">
             <button type="button" onClick={() => setCustomerOpen((o) => !o)} className="w-full flex items-center justify-between rounded-lg border bg-background px-3 py-2 text-sm hover:bg-muted/40">
-              <span>{customerId ? customers.find((c) => c.id === customerId)?.name : "Select customer…"}</span>
+              <span>{customerId ? customers.find((c) => c.id === customerId)?.name : t("job-form.placeholder-customer", lang)}</span>
               <ChevronDown className="h-4 w-4 text-muted-foreground" />
             </button>
             {customerOpen && (
               <div className="absolute z-20 mt-1 w-full rounded-lg border bg-popover shadow-lg">
-                <Input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or phone…" className="border-0 border-b rounded-none focus-visible:ring-0" />
+                <Input autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={t("ws.customers.search-placeholder", lang)} className="border-0 border-b rounded-none focus-visible:ring-0" />
                 <div className="max-h-56 overflow-y-auto p-1">
                   {filteredCustomers.map((c) => (
                     <button key={c.id} type="button" onClick={() => { setCustomerId(c.id); setMotorcycleId(""); setCustomerOpen(false); setQ(""); }}
@@ -125,11 +125,11 @@ export function CreateJobForm({
           </div>
           {motorcycles.length > 0 && (
             <div className="mt-4">
-              <Label>Motorcycle</Label>
+              <Label>{t("ws.crm.return.col.motorcycle", lang)}</Label>
               <Select value={motorcycleId} onValueChange={(v) => setMotorcycleId(v ?? "none")}>
-                <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "Select motorcycle…" : motorcycles.find((m) => m.id === v) ? motorcycles.find((m) => m.id === v)!.brand + " " + motorcycles.find((m) => m.id === v)!.model + " · " + motorcycles.find((m) => m.id === v)!.plate : "Select motorcycle…")}</SelectValue></SelectTrigger>
+                <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? t("job-form.placeholder-motorcycle", lang) : motorcycles.find((m) => m.id === v) ? motorcycles.find((m) => m.id === v)!.brand + " " + motorcycles.find((m) => m.id === v)!.model + " · " + motorcycles.find((m) => m.id === v)!.plate : t("job-form.placeholder-motorcycle", lang))}</SelectValue></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">Select motorcycle…</SelectItem>
+                  <SelectItem value="none">{t("job-form.placeholder-motorcycle", lang)}</SelectItem>
                   {motorcycles.map((m) => (
                     <SelectItem key={m.id} value={m.id}>{m.brand} {m.model} · {m.plate} · {m.year}</SelectItem>
                   ))}
@@ -140,21 +140,21 @@ export function CreateJobForm({
         </section>
 
         <section className="rounded-2xl border bg-card p-5">
-          <h3 className="font-semibold mb-3">2 · Mileage &amp; Request</h3>
+          <h3 className="font-semibold mb-3">{t("job-form.heading-mileage", lang)}</h3>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <Label>Current Mileage (km)</Label>
-              <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="e.g. 31800" className="mt-1.5" />
+              <Label>{t("job-form.label-mileage", lang)}</Label>
+              <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder={t("job-form.placeholder-mileage", lang)} className="mt-1.5" />
             </div>
             <div>
-              <Label>Customer Request</Label>
-              <Input value={request} onChange={(e) => setRequest(e.target.value)} placeholder="e.g. Service sebelum balik kampung" className="mt-1.5" />
+              <Label>{t("ws.job.customer-request", lang)}</Label>
+              <Input value={request} onChange={(e) => setRequest(e.target.value)} placeholder={t("job-form.placeholder-request", lang)} className="mt-1.5" />
             </div>
           </div>
         </section>
 
         <section className="rounded-2xl border bg-card p-5">
-          <h3 className="font-semibold mb-3">3 · Recommended Package</h3>
+          <h3 className="font-semibold mb-3">{t("job-form.heading-package", lang)}</h3>
           <RadioGroup value={packageId} onValueChange={(v) => setPackageId(v ?? "")} className="grid sm:grid-cols-3 gap-3">
             {packages.map((p) => (
               <label key={p.id} className={"relative cursor-pointer rounded-2xl border p-4 transition-colors " + (packageId === p.id ? "border-primary ring-2 ring-primary/20" : "hover:border-primary/40")}>
@@ -162,7 +162,7 @@ export function CreateJobForm({
                 <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{p.tier}</div>
                 <div className="mt-1 font-semibold">{p.name}</div>
                 <div className="mt-1 text-lg font-bold tabular-nums">{formatRM(p.priceSen)}</div>
-                {p.isBestValue && <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">BEST VALUE</span>}
+                {p.isBestValue && <span className="mt-2 inline-block rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">{t("ws.packages.best-value", lang)}</span>}
                 {p.description && <p className="mt-2 text-[11px] text-muted-foreground leading-snug">{p.description}</p>}
               </label>
             ))}
@@ -170,10 +170,10 @@ export function CreateJobForm({
         </section>
 
         <section className="rounded-2xl border bg-card p-5">
-          <h3 className="font-semibold mb-1">Additional Services</h3>
-          <p className="text-xs text-muted-foreground mb-3">Add manual services beyond the package (prices adjustable at counter)</p>
+          <h3 className="font-semibold mb-1">{t("job-form.heading-additional", lang)}</h3>
+          <p className="text-xs text-muted-foreground mb-3">{t("job-form.additional-hint", lang)}</p>
           {!motorcycleId ? (
-            <p className="text-sm text-muted-foreground">Select a motorcycle to see services recommended for its type.</p>
+            <p className="text-sm text-muted-foreground">{t("job-form.select-bike-services", lang)}</p>
           ) : (
             <div className="space-y-1.5">
               {extras.map((s) => {
@@ -220,11 +220,11 @@ export function CreateJobForm({
         </section>
 
         <section className="rounded-2xl border bg-card p-5">
-          <h3 className="font-semibold mb-3">5 · Assign Mechanic</h3>
+          <h3 className="font-semibold mb-3">{t("job-form.heading-mechanic", lang)}</h3>
           <Select value={mechanicId} onValueChange={(v) => setMechanicId(v ?? "none")}>
-            <SelectTrigger className="mt-1.5 max-w-sm"><SelectValue>{(v) => (v === "none" ? "Assign later" : mechanics.find((m) => m.id === v)?.name ?? "Assign later")}</SelectValue></SelectTrigger>
+            <SelectTrigger className="mt-1.5 max-w-sm"><SelectValue>{(v) => (v === "none" ? t("job-form.assign-later", lang) : mechanics.find((m) => m.id === v)?.name ?? t("job-form.assign-later", lang))}</SelectValue></SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">Assign later</SelectItem>
+              <SelectItem value="none">{t("job-form.assign-later", lang)}</SelectItem>
               {mechanics.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
             </SelectContent>
           </Select>
@@ -235,12 +235,12 @@ export function CreateJobForm({
         <section className="rounded-2xl border bg-card p-5">
           <div className="flex items-center gap-2 mb-3">
             <Sparkles className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold">Sales Recommendations</h3>
+            <h3 className="font-semibold">{t("job-form.heading-recommendations", lang)}</h3>
           </div>
           {!motorcycleId ? (
-            <p className="text-sm text-muted-foreground">Select a motorcycle to see recommendations (engine oil, oil filter, brake check…).</p>
+            <p className="text-sm text-muted-foreground">{t("job-form.select-bike-recs", lang)}</p>
           ) : recs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Loading recommendations…</p>
+            <p className="text-sm text-muted-foreground">{t("job-form.loading-recs", lang)}</p>
           ) : (
             <div className="space-y-3">
               {recs.map((r) => {
@@ -255,18 +255,18 @@ export function CreateJobForm({
                       <div className="text-sm font-bold tabular-nums shrink-0">{formatRM(r.priceSen)}</div>
                     </div>
                     <button type="button" onClick={() => setShowScript(showScript === r.description ? null : r.description)} className="mt-1.5 text-[11px] font-medium text-primary hover:underline">
-                      {showScript === r.description ? "Hide script" : "Suggested sales script"}
+                      {showScript === r.description ? t("job-form.hide-script", lang) : t("job-form.show-script", lang)}
                     </button>
                     {showScript === r.description && (
                       <p className="mt-1 rounded-lg bg-primary/5 p-2.5 text-xs italic text-muted-foreground">“{r.script}”</p>
                     )}
                     <div className="mt-2.5 flex gap-2">
                       {state === "added" ? (
-                        <Button size="sm" variant="outline" className="flex-1" onClick={() => setRecState((s) => ({ ...s, [r.description]: "skipped" }))}><X className="h-3.5 w-3.5 mr-1" /> Remove</Button>
+                        <Button size="sm" variant="outline" className="flex-1" onClick={() => setRecState((s) => ({ ...s, [r.description]: "skipped" }))}><X className="h-3.5 w-3.5 mr-1" /> {t("job-form.remove", lang)}</Button>
                       ) : (
-                        <Button size="sm" className="flex-1" disabled={state === "skipped"} onClick={() => setRecState((s) => ({ ...s, [r.description]: "added" }))}><Check className="h-3.5 w-3.5 mr-1" /> ADD</Button>
+                        <Button size="sm" className="flex-1" disabled={state === "skipped"} onClick={() => setRecState((s) => ({ ...s, [r.description]: "added" }))}><Check className="h-3.5 w-3.5 mr-1" /> {t("job-form.add", lang)}</Button>
                       )}
-                      <Button size="sm" variant="ghost" disabled={state === "added"} onClick={() => setRecState((s) => ({ ...s, [r.description]: "skipped" }))}>SKIP</Button>
+                      <Button size="sm" variant="ghost" disabled={state === "added"} onClick={() => setRecState((s) => ({ ...s, [r.description]: "skipped" }))}>{t("job-form.skip", lang)}</Button>
                     </div>
                   </div>
                 );
@@ -276,18 +276,18 @@ export function CreateJobForm({
         </section>
 
         <section className="rounded-2xl border bg-card p-5 sticky top-24">
-          <h3 className="font-semibold mb-3">Estimated Total</h3>
+          <h3 className="font-semibold mb-3">{t("ws.job.estimated-total", lang)}</h3>
           <div className="space-y-1.5 text-sm">
             {pkg ? (
               <div className="flex justify-between"><span>{pkg.name}</span><span className="tabular-nums">{formatRM(pkg.priceSen)}</span></div>
-            ) : <div className="text-muted-foreground text-xs">No package selected</div>}
+            ) : <div className="text-muted-foreground text-xs">{t("job-form.no-package", lang)}</div>}
             {selectedRecs.map((r) => (
               <div key={r.description} className="flex justify-between text-xs"><span>{r.description}</span><span className="tabular-nums">{formatRM(r.priceSen)}</span></div>
             ))}
-            <div className="border-t pt-2 mt-2 flex justify-between font-bold"><span>Total</span><span className="tabular-nums">{formatRM(estimated)}</span></div>
+            <div className="border-t pt-2 mt-2 flex justify-between font-bold"><span>{t("common.total", lang)}</span><span className="tabular-nums">{formatRM(estimated)}</span></div>
           </div>
           <Button className="w-full mt-4" size="lg" disabled={pending || !customerId || !motorcycleId || !mileage} onClick={submit}>
-            <Bike className="h-4 w-4 mr-2" /> {pending ? "Creating…" : "Confirm Job"}
+            <Bike className="h-4 w-4 mr-2" /> {pending ? t("job-form.creating", lang) : t("job-form.confirm-job", lang)}
           </Button>
         </section>
       </div>

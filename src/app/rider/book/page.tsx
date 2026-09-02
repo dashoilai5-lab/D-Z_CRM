@@ -10,9 +10,9 @@ import { formatRM } from "@/lib/money";
 export const dynamic = "force-dynamic";
 
 const DEFAULT_HOURS = [
-  { d: "Mon – Fri", h: "9:00 AM – 6:00 PM" },
-  { d: "Saturday", h: "9:00 AM – 5:00 PM" },
-  { d: "Sunday", h: "Closed" },
+  { dKey: "rider.hours.monfri", h: "9:00 AM – 6:00 PM" },
+  { dKey: "rider.hours.sat", h: "9:00 AM – 5:00 PM" },
+  { dKey: "rider.hours.sun", h: null },
 ];
 
 export default async function BookPage({ searchParams }: { searchParams: Promise<{ campaign?: string; promo?: string; branch?: string }> }) {
@@ -65,7 +65,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
             <div className="flex items-center gap-3">
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><Store className="h-5 w-5" /></span>
               <div>
-                <div className="font-semibold text-sm">{selected.name} · {selected.city}{selected.isMain ? " (Main)" : ""}</div>
+                <div className="font-semibold text-sm">{selected.name} · {selected.city}{selected.isMain ? " (" + t("rider.branch-main", lang) + ")" : ""}</div>
                 <div className="text-xs text-muted-foreground">{selected.address ?? ""}</div>
               </div>
             </div>
@@ -75,11 +75,11 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
           {/* branch widgets strip */}
           <div className="grid grid-cols-2 gap-2">
             <div className="rounded-2xl border bg-card p-3">
-              <div className="flex items-center gap-1 text-[11px] text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /> Open slots (7 days)</div>
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /> {t("rider.open-slots-7", lang)}</div>
               <div className="mt-1 text-lg font-bold tabular-nums">{selected.slots}</div>
             </div>
             <div className="rounded-2xl border bg-card p-3">
-              <div className="flex items-center gap-1 text-[11px] text-muted-foreground"><Star className="h-3.5 w-3.5" /> Rating</div>
+              <div className="flex items-center gap-1 text-[11px] text-muted-foreground"><Star className="h-3.5 w-3.5" /> {t("rider.rating-label", lang)}</div>
               <div className="mt-1 text-lg font-bold tabular-nums">{selected.avgRating ? selected.avgRating.toFixed(1) : "—"}{selected.avgRating ? " ★" : ""}</div>
             </div>
           </div>
@@ -103,7 +103,7 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
                   <div className="flex items-center gap-3">
                     <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><MapPin className="h-5 w-5" /></span>
                     <div>
-                      <div className="font-semibold text-sm">{b.name} · <span className="text-primary">{b.city}</span>{b.isMain ? " (Main)" : ""}</div>
+                      <div className="font-semibold text-sm">{b.name} · <span className="text-primary">{b.city}</span>{b.isMain ? " (" + t("rider.branch-main", lang) + ")" : ""}</div>
                       <div className="text-xs text-muted-foreground mt-0.5">{b.address ?? ""}</div>
                     </div>
                   </div>
@@ -112,8 +112,8 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
                 <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground">
                   {b.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{b.phone}</span>}
                   <span className="inline-flex items-center gap-1"><CalendarDays className="h-3 w-3" />{tpl("book.slots-free", lang, { n: b.slots })}</span>
-                  <span className="inline-flex items-center gap-1"><Star className="h-3 w-3" />{b.avgRating ? b.avgRating.toFixed(1) + " ★" : "New"}</span>
-                  <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />9–6 Mon–Sat</span>
+                  <span className="inline-flex items-center gap-1"><Star className="h-3 w-3" />{b.avgRating ? b.avgRating.toFixed(1) + " ★" : t("rider.new", lang)}</span>
+                  <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" />{t("rider.hours-short", lang)}</span>
                 </div>
               </Link>
             ))}
@@ -138,8 +138,8 @@ export default async function BookPage({ searchParams }: { searchParams: Promise
             <div className="flex items-center gap-1.5 text-sm font-semibold"><Clock className="h-4 w-4 text-primary" /> {t("book.opening-hours", lang)}</div>
             <div className="mt-2 space-y-1">
               {DEFAULT_HOURS.map((h) => (
-                <div key={h.d} className="flex justify-between text-xs text-muted-foreground">
-                  <span>{h.d}</span><span>{h.h}</span>
+                <div key={h.dKey} className="flex justify-between text-xs text-muted-foreground">
+                  <span>{t(h.dKey, lang)}</span><span>{h.h ? h.h : t("rider.hours.closed", lang)}</span>
                 </div>
               ))}
             </div>

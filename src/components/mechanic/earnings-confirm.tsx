@@ -37,7 +37,7 @@ export function EarningsConfirm({ payouts }: { payouts: PendingPayout[] }) {
           <div className="flex items-center justify-between">
             <div>
               <div className="text-sm font-semibold">{p.period} · {fmtDate(new Date(p.periodStart))}</div>
-              <div className="text-xs text-muted-foreground">Salary {formatRM(p.totalSen)}</div>
+              <div className="text-xs text-muted-foreground">{t("payout.total", lang)} {formatRM(p.totalSen)}</div>
             </div>
             <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">{t("mech.awaiting-approval", lang)}</span>
           </div>

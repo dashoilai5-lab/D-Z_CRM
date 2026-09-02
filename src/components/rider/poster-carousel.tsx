@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Lightbox, useLightbox, type LightboxImage } from "@/components/shared/lightbox";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 /** Auto-sliding poster carousel (rider News): fades/slides between posters every
  *  4s, pauses on hover, swipeable on touch, dots + arrows for manual control,
@@ -11,6 +13,7 @@ import { Lightbox, useLightbox, type LightboxImage } from "@/components/shared/l
  *  parsed from the AI-gen size meta (SQUARE 1:1 / STORY 9:16 / BANNER 16:9) or,
  *  for photos without meta, measured from the loaded image. */
 export function PosterCarousel({ posters }: { posters: { id: string; title: string; url: string | null; description?: string | null }[] }) {
+  const lang = useLang();
   const { openIndex, open, close } = useLightbox();
   const n = posters.length;
   const [idx, setIdx] = useState(0);
@@ -59,7 +62,7 @@ export function PosterCarousel({ posters }: { posters: { id: string; title: stri
             onClick={() => open(posters.findIndex((x) => x.id === p.id))}
             className="relative w-full shrink-0 cursor-pointer overflow-hidden"
             style={{ aspectRatio: ratios[p.id] ?? metaRatio(p) }}
-            aria-label={"View poster: " + p.title}
+            aria-label={t("carousel.view_poster", lang) + " " + p.title}
           >
             {p.url ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -90,7 +93,7 @@ export function PosterCarousel({ posters }: { posters: { id: string; title: stri
             type="button"
             onClick={(e) => { e.stopPropagation(); prev(); }}
             className="absolute left-2 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm hover:bg-black/55"
-            aria-label="Previous poster"
+            aria-label={t("carousel.prev", lang)}
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -98,7 +101,7 @@ export function PosterCarousel({ posters }: { posters: { id: string; title: stri
             type="button"
             onClick={(e) => { e.stopPropagation(); next(); }}
             className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm hover:bg-black/55"
-            aria-label="Next poster"
+            aria-label={t("carousel.next", lang)}
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -114,7 +117,7 @@ export function PosterCarousel({ posters }: { posters: { id: string; title: stri
               type="button"
               onClick={(e) => { e.stopPropagation(); setIdx(i); }}
               className={cn("h-1.5 rounded-full transition-all", i === idx ? "w-4 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80")}
-              aria-label={"Go to poster " + (i + 1)}
+              aria-label={tpl("carousel.goto", lang, { n: i + 1 })}
             />
           ))}
         </div>

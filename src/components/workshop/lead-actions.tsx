@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateLead, addLeadNote, convertLead, closeLeadLost } from "@/actions/leads";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export function LeadActions({ leadId, stages, salespeople, currentStageId, currentOwnerId }: {
   leadId: string;
@@ -12,6 +14,7 @@ export function LeadActions({ leadId, stages, salespeople, currentStageId, curre
   currentOwnerId: string | null;
 }) {
   const router = useRouter();
+  const lang = useLang();
   const [note, setNote] = useState("");
   const [lostReason, setLostReason] = useState("");
   const [busy, setBusy] = useState(false);
@@ -21,8 +24,8 @@ export function LeadActions({ leadId, stages, salespeople, currentStageId, curre
     setBusy(true); setMsg("");
     const res = await fn();
     setBusy(false);
-    if (!res.ok) setMsg(res.error ?? "Failed");
-    else { setMsg("Saved ✓"); router.refresh(); }
+    if (!res.ok) setMsg(res.error ?? t("ws.lead.failed", lang));
+    else { setMsg(t("ws.lead.saved", lang)); router.refresh(); }
   }
 
   const inputCls = "w-full rounded-md border bg-background px-3 py-2 text-sm";
@@ -32,42 +35,42 @@ export function LeadActions({ leadId, stages, salespeople, currentStageId, curre
     <div className="space-y-4">
       {msg && <p className="rounded-md bg-primary/10 text-primary text-xs px-3 py-2">{msg}</p>}
       <div>
-        <label className={labelCls}>Pipeline stage</label>
+        <label className={labelCls}>{t("ws.lead.pipeline-stage", lang)}</label>
         <select
           className={inputCls}
           defaultValue={currentStageId ?? ""}
           disabled={busy}
           onChange={(e) => run(() => updateLead(leadId, { stageId: e.target.value || undefined }))}
         >
-          <option value="">No stage</option>
+          <option value="">{t("ws.lead.no-stage", lang)}</option>
           {stages.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
         </select>
       </div>
       <div>
-        <label className={labelCls}>Assigned salesperson</label>
+        <label className={labelCls}>{t("ws.lead.salesperson", lang)}</label>
         <select
           className={inputCls}
           defaultValue={currentOwnerId ?? ""}
           disabled={busy}
           onChange={(e) => run(() => updateLead(leadId, { assignedUserId: e.target.value || undefined }))}
         >
-          <option value="">Unassigned</option>
+          <option value="">{t("ws.lead.unassigned", lang)}</option>
           {salespeople.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.role})</option>)}
         </select>
       </div>
       <div>
-        <label className={labelCls}>Add note / activity</label>
-        <textarea className={inputCls} rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Record a call, WhatsApp reply…" />
+        <label className={labelCls}>{t("ws.lead.note", lang)}</label>
+        <textarea className={inputCls} rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder={t("ws.lead.note-placeholder", lang)} />
         <button
           className="mt-2 w-full rounded-md border px-3 py-1.5 text-sm font-medium disabled:opacity-50"
           disabled={busy || !note.trim()}
           onClick={async () => {
             setBusy(true);
             await addLeadNote(leadId, note);
-            setNote(""); setBusy(false); setMsg("Note added ✓"); router.refresh();
+            setNote(""); setBusy(false); setMsg(t("ws.lead.note-added", lang)); router.refresh();
           }}
         >
-          Add note
+          {t("ws.lead.add-note", lang)}
         </button>
       </div>
       <div className="grid grid-cols-2 gap-2 pt-1 border-t">
@@ -78,21 +81,21 @@ export function LeadActions({ leadId, stages, salespeople, currentStageId, curre
             setBusy(true); setMsg("");
             const res = await convertLead(leadId);
             setBusy(false);
-            if (!res.ok) { setMsg(res.error ?? "Failed"); return; }
+            if (!res.ok) { setMsg(res.error ?? t("ws.lead.failed", lang)); return; }
             router.push("/workshop/customers/" + res.customerId);
             router.refresh();
           }}
         >
-          Close Won → Customer
+          {t("ws.lead.close-won", lang)}
         </button>
         <div>
-          <input className={inputCls} placeholder="Lost reason…" value={lostReason} onChange={(e) => setLostReason(e.target.value)} />
+          <input className={inputCls} placeholder={t("ws.lead.lost-reason-placeholder", lang)} value={lostReason} onChange={(e) => setLostReason(e.target.value)} />
           <button
             className="mt-2 w-full rounded-md border border-destructive/40 text-destructive px-3 py-2 text-sm font-medium disabled:opacity-50"
             disabled={busy || !lostReason.trim()}
             onClick={() => run(() => closeLeadLost(leadId, lostReason))}
           >
-            Close Lost
+            {t("ws.lead.close-lost", lang)}
           </button>
         </div>
       </div>

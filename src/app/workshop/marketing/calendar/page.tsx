@@ -103,9 +103,9 @@ export default async function MarketingCalendarPage() {
                 </span>
                 {(() => { const s = msgStats.get(c.id); if (!s || s.sent === 0) return null; return (
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 px-2.5 py-1">
-                    <span className="font-semibold text-foreground">{s.sent}</span> sent
-                    {s.delivered > 0 && <><span className="text-emerald-600 dark:text-emerald-400 font-semibold">{s.delivered}</span> delivered</>}
-                    {s.failed > 0 && <><span className="text-red-600 dark:text-red-400 font-semibold">{s.failed}</span> failed</>}
+                    <span className="font-semibold text-foreground">{s.sent}</span> {t("ws.mkt.calendar.sent", lang)}
+                    {s.delivered > 0 && <><span className="text-emerald-600 dark:text-emerald-400 font-semibold">{s.delivered}</span> {t("ws.mkt.calendar.delivered", lang)}</>}
+                    {s.failed > 0 && <><span className="text-red-600 dark:text-red-400 font-semibold">{s.failed}</span> {t("ws.mkt.calendar.failed", lang)}</>}
                   </span>
                 ); })()}
               </div>

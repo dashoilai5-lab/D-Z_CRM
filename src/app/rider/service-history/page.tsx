@@ -96,7 +96,7 @@ export default async function NewsPage() {
       <Link href="/rider/motorcycles" className="dz-card-link flex items-center justify-between rounded-2xl border bg-card p-4">
         <div>
           <div className="text-sm font-semibold">{t("svc.history-title", lang)}</div>
-          <div className="text-xs text-muted-foreground">Open each motorcycle&apos;s passport to see its full service records.</div>
+          <div className="text-xs text-muted-foreground">{t("news.passport-desc", lang)}</div>
         </div>
         <ChevronRight className="h-4 w-4 text-muted-foreground" />
       </Link>

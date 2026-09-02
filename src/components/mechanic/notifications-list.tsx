@@ -64,7 +64,7 @@ export function MechanicNotificationsList({ userId, notifications }: { userId: s
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-semibold">{n.title}</span>
-                  {!n.readAt && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="Unread" />}
+                  {!n.readAt && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-label={t("mech.unread-dot", lang)} />}
                 </div>
                 {n.body && <p className="mt-0.5 text-xs text-muted-foreground">{n.body}</p>}
                 <div className="mt-1 text-[10px] text-muted-foreground/70">

@@ -33,7 +33,7 @@ export default async function RiderProfilePage() {
     <div className="space-y-5">
       <div data-tut="rider-profile-card" className="relative">
         <div className="absolute right-0 top-0 z-10 flex items-center gap-2">
-          <Link href="/rider/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label="Settings">
+          <Link href="/rider/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label={t("settings.title", lang)}>
             <SettingsIcon className="h-4 w-4" />
           </Link>
           <SignOutIconButton />
@@ -64,17 +64,17 @@ export default async function RiderProfilePage() {
       {loyalty && (
         <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary/70 text-primary-foreground p-5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">D&Z Member Card</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider opacity-80">{t("rider.member-card", lang)}</span>
             <span className="text-[11px] font-mono opacity-80">{loyalty.membershipId}</span>
           </div>
           <div className="mt-4 flex items-end justify-between">
             <div>
               <div className="text-3xl font-bold tabular-nums">{loyalty.pointsBalance}</div>
-              <div className="text-[11px] opacity-80">loyalty points</div>
+              <div className="text-[11px] opacity-80">{t("rider.loyalty-points", lang)}</div>
             </div>
             <div className="text-right">
-              <div className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold">{loyalty.tier?.name ?? "Member"}</div>
-              <div className="mt-1 text-[10px] opacity-80">{loyalty.tier?.benefits ?? "Earn points on every service"}</div>
+              <div className="rounded-full bg-white/15 px-3 py-1 text-sm font-semibold">{loyalty.tier?.name ?? t("rider.member", lang)}</div>
+              <div className="mt-1 text-[10px] opacity-80">{loyalty.tier?.benefits ?? t("rider.earn-points", lang)}</div>
             </div>
           </div>
         </div>
@@ -93,7 +93,7 @@ export default async function RiderProfilePage() {
           <p className="mt-2 text-sm font-medium text-emerald-900 dark:text-emerald-100">{messages[0].body}</p>
           <div className="mt-2 flex items-center justify-between">
             <span className="text-[11px] text-emerald-700/70 dark:text-emerald-400/70">
-              From D&Z Smart Workshop · WhatsApp
+              {t("rider.msg-from", lang)}
             </span>
             <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400">
               <CheckCheck className="h-3 w-3" /> {messages[0].status === "READ" ? t("rider.msg-read", lang) : t("rider.msg-delivered", lang)}

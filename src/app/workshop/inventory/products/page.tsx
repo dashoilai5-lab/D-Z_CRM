@@ -17,7 +17,7 @@ export default async function ProductsPage() {
         <div data-tut="products-list" className="overflow-x-auto max-h-[560px] overflow-y-auto">
           <table className="dz-table">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground sticky top-0 z-10">
-              <th className="px-4 py-3 font-medium">{t("ws.products.col.name", lang)}</th><th className="px-4 py-3 font-medium">SKU</th><th className="px-4 py-3 font-medium">Mfr No</th>
+              <th className="px-4 py-3 font-medium">{t("ws.products.col.name", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.sku", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.mfr-no", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.products.col.category", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.brand", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.products.col.cost", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.sell", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.products.col.margin", lang)}</th>
             </tr></thead>

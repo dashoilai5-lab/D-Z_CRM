@@ -51,7 +51,7 @@ export default async function ProfitPage({ searchParams }: { searchParams: Promi
         <form method="get" className="flex items-center gap-1 ml-2">
           <input type="hidden" name="period" value={period} />
           <input type="date" name="date" defaultValue={sp.date} className="rounded-md border bg-background px-3 py-1.5 text-xs" />
-          <button className="rounded-md border px-2 py-1.5 text-xs font-medium">Go</button>
+          <button className="rounded-md border px-2 py-1.5 text-xs font-medium">{t("fin.go", lang)}</button>
         </form>
         <span className="text-xs text-muted-foreground ml-auto">{t("settle.period-label", lang)}: <strong>{t("settle." + period, lang)}</strong> · {rangeLabel}</span>
       </div>

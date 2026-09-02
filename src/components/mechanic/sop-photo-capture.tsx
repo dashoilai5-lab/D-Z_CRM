@@ -31,7 +31,7 @@ export function SopPhotoCapture({ jobId, photos, canCapture = true }: { jobId: s
       fd.append("angle", ANGLE_CODE[angle]);
       const res = await fetch(`/api/jobs/${jobId}/photos`, { method: "POST", body: fd });
       const data = await res.json();
-      if (!data.ok) alert(data.error ?? "Upload failed");
+      if (!data.ok) alert(data.error ?? t("ws.ctrl.upload-failed", lang));
       router.refresh();
     } catch (err) {
       alert(String((err as Error).message));
@@ -59,7 +59,7 @@ export function SopPhotoCapture({ jobId, photos, canCapture = true }: { jobId: s
           return (
             <div key={angle} className="relative aspect-square overflow-hidden rounded-xl border bg-muted/40">
               {p?.photoUrl ? (
-                <img src={p.photoUrl} alt={angle} className="h-full w-full object-cover" />
+                <img src={p.photoUrl} alt={t(ANGLE_KEY[angle], lang)} className="h-full w-full object-cover" />
               ) : canCapture ? (
                 <label className="flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1 text-muted-foreground">
                   <Camera className="h-4 w-4" />

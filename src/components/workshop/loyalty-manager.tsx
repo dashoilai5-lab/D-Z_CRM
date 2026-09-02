@@ -68,14 +68,14 @@ export function LoyaltyManager({ rewards }: { rewards: { id: string; name: strin
 
   return (
     <div className="rounded-xl border bg-card p-4 space-y-4">
-      <h2 className="font-semibold text-sm">Points actions</h2>
+      <h2 className="font-semibold text-sm">{t("loyal.actions-title", lang)}</h2>
 
       {/* step 1 · search & select */}
       <div>
-        <label className={labelCls}>1 · Search &amp; select customer</label>
+        <label className={labelCls}>{t("loyal.step-search", lang)}</label>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-          <input className={inputCls + " w-full pl-8"} value={q} onChange={(e) => load(e.target.value)} placeholder="Type 2+ chars — name or phone…" />
+          <input className={inputCls + " w-full pl-8"} value={q} onChange={(e) => load(e.target.value)} placeholder={t("loyal.search-hint", lang)} />
         </div>
         {customers.length > 0 && (
           <div className="mt-1.5 rounded-md border max-h-40 overflow-y-auto divide-y">
@@ -106,26 +106,26 @@ export function LoyaltyManager({ rewards }: { rewards: { id: string; name: strin
             </div>
             {snapshot.account ? (
               <div className="text-right">
-                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Current points</div>
+                <div className="text-[10px] uppercase tracking-wide text-muted-foreground">{t("loyal.current-points", lang)}</div>
                 <div className="text-2xl font-bold tabular-nums text-primary">{snapshot.account.pointsBalance}</div>
                 <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
-                  <Crown className="h-3 w-3" /> {snapshot.account.tierName ?? "Member"}
+                  <Crown className="h-3 w-3" /> {snapshot.account.tierName ?? t("loyal.col-member", lang)}
                 </span>
               </div>
             ) : (
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">No account</span>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{t("loyal.no-account", lang)}</span>
             )}
           </div>
           {snapshot.account && (
             <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="rounded-lg bg-background p-2"><div className="text-muted-foreground">Earned</div><div className="font-semibold tabular-nums">{snapshot.account.totalEarned}</div></div>
-              <div className="rounded-lg bg-background p-2"><div className="text-muted-foreground">Redeemed</div><div className="font-semibold tabular-nums">{snapshot.account.totalRedeemed}</div></div>
-              <div className="rounded-lg bg-background p-2"><div className="text-muted-foreground">Since</div><div className="font-semibold">{snapshot.account.memberSince.toISOString().slice(0, 7)}</div></div>
+              <div className="rounded-lg bg-background p-2"><div className="text-muted-foreground">{t("loyal.earned", lang)}</div><div className="font-semibold tabular-nums">{snapshot.account.totalEarned}</div></div>
+              <div className="rounded-lg bg-background p-2"><div className="text-muted-foreground">{t("loyal.redeemed", lang)}</div><div className="font-semibold tabular-nums">{snapshot.account.totalRedeemed}</div></div>
+              <div className="rounded-lg bg-background p-2"><div className="text-muted-foreground">{t("loyal.since", lang)}</div><div className="font-semibold">{snapshot.account.memberSince.toISOString().slice(0, 7)}</div></div>
             </div>
           )}
           {snapshot.account && snapshot.account.recent.length > 0 && (
             <div className="mt-3">
-              <div className="text-[11px] font-medium text-muted-foreground mb-1">Recent activity</div>
+              <div className="text-[11px] font-medium text-muted-foreground mb-1">{t("loyal.recent-activity", lang)}</div>
               <div className="space-y-1">
                 {snapshot.account.recent.slice(0, 3).map((t, i) => (
                   <div key={i} className="flex justify-between text-[11px] text-muted-foreground">
@@ -142,40 +142,40 @@ export function LoyaltyManager({ rewards }: { rewards: { id: string; name: strin
 
       {/* step 3 · adjust */}
       <div className="border-t pt-3">
-        <label className={labelCls}>2 · Adjust points</label>
+        <label className={labelCls}>{t("loyal.step-adjust", lang)}</label>
         <div className="grid grid-cols-3 gap-2">
           <div>
-            <label className={labelCls}>Points</label>
+            <label className={labelCls}>{t("loyal.col-points", lang)}</label>
             <input className={inputCls + " w-full"} type="number" value={points} onChange={(e) => setPoints(e.target.value)} />
           </div>
           <div className="col-span-2">
-            <label className={labelCls}>Reason</label>
+            <label className={labelCls}>{t("loyal.reason", lang)}</label>
             <input className={inputCls + " w-full"} value={reason} onChange={(e) => setReason(e.target.value)} />
           </div>
         </div>
         <div className="mt-2 grid grid-cols-3 gap-2">
-          <button className="inline-flex items-center justify-center gap-1 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-40" disabled={busy || !hasCustomer} onClick={() => act(() => earnPointsAction({ customerId: snapshot!.customerId, points: parseInt(points) || 0, reason: "Manual earn: " + reason }), "Earned")}>
-            <Plus className="h-4 w-4" /> Earn
+          <button className="inline-flex items-center justify-center gap-1 rounded-md bg-emerald-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-40" disabled={busy || !hasCustomer} onClick={() => act(() => earnPointsAction({ customerId: snapshot!.customerId, points: parseInt(points) || 0, reason: "Manual earn: " + reason }), t("loyal.msg-earned", lang))}>
+            <Plus className="h-4 w-4" /> {t("loyal.earn", lang)}
           </button>
-          <button className="inline-flex items-center justify-center gap-1 rounded-md border px-3 py-2 text-sm font-medium disabled:opacity-40" disabled={busy || !hasCustomer} onClick={() => act(() => adjustPointsAction({ customerId: snapshot!.customerId, delta: -(parseInt(points) || 0), reason: "Adjust: " + reason }), "Adjusted")}>
-            <Minus className="h-4 w-4" /> Adjust −
+          <button className="inline-flex items-center justify-center gap-1 rounded-md border px-3 py-2 text-sm font-medium disabled:opacity-40" disabled={busy || !hasCustomer} onClick={() => act(() => adjustPointsAction({ customerId: snapshot!.customerId, delta: -(parseInt(points) || 0), reason: "Adjust: " + reason }), t("loyal.msg-adjusted", lang))}>
+            <Minus className="h-4 w-4" /> {t("loyal.adjust-minus", lang)}
           </button>
-          <button className="inline-flex items-center justify-center gap-1 rounded-md border px-3 py-2 text-sm font-medium disabled:opacity-40" disabled={busy || !hasCustomer} onClick={() => act(() => adjustPointsAction({ customerId: snapshot!.customerId, delta: parseInt(points) || 0, reason: "Adjust: " + reason }), "Adjusted")}>
-            <Plus className="h-4 w-4" /> Adjust +
+          <button className="inline-flex items-center justify-center gap-1 rounded-md border px-3 py-2 text-sm font-medium disabled:opacity-40" disabled={busy || !hasCustomer} onClick={() => act(() => adjustPointsAction({ customerId: snapshot!.customerId, delta: parseInt(points) || 0, reason: "Adjust: " + reason }), t("loyal.msg-adjusted", lang))}>
+            <Plus className="h-4 w-4" /> {t("loyal.adjust-plus", lang)}
           </button>
         </div>
       </div>
 
       {/* step 4 · redeem */}
       <div className="border-t pt-3">
-        <label className={labelCls}>3 · Redeem reward</label>
+        <label className={labelCls}>{t("loyal.step-redeem", lang)}</label>
         <div className="flex gap-2">
           <select className={inputCls + " flex-1"} value={rewardId} onChange={(e) => setRewardId(e.target.value)}>
-            <option value="">Select reward…</option>
+            <option value="">{t("loyal.select-reward", lang)}</option>
             {rewards.filter((r) => r.active).map((r) => <option key={r.id} value={r.id}>{r.name} ({r.pointsRequired} pts)</option>)}
           </select>
-          <button className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground disabled:opacity-40" disabled={busy || !hasCustomer || !rewardId} onClick={() => act(() => redeemRewardAction({ customerId: snapshot!.customerId, rewardId }), "Redeemed")}>
-            <Gift className="h-4 w-4" /> Redeem
+          <button className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground disabled:opacity-40" disabled={busy || !hasCustomer || !rewardId} onClick={() => act(() => redeemRewardAction({ customerId: snapshot!.customerId, rewardId }), t("loyal.msg-redeemed", lang))}>
+            <Gift className="h-4 w-4" /> {t("loyal.redeem", lang)}
           </button>
         </div>
       </div>

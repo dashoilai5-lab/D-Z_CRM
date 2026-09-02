@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 import { fmtKM, fmtDate, fmtDateTime } from "@/lib/format";
 import { formatRM } from "@/lib/money";
 import { TransferMotorcycle } from "@/components/workshop/transfer-motorcycle";
+import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -21,12 +23,13 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
     },
   });
   if (!bike) notFound();
+  const lang = await getLang();
   const customers = await db.customer.findMany({ where: { organisationId: org!.id }, orderBy: { name: "asc" }, select: { id: true, name: true }, take: 200 });
 
   return (
     <div className="max-w-4xl space-y-5">
       <Link href="/workshop/motorcycles" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
-        <ChevronLeft className="h-4 w-4" /> Motorcycles
+        <ChevronLeft className="h-4 w-4" /> {t("nav.motorcycles", lang)}
       </Link>
 
       <div className="dz-panel p-5">
@@ -41,29 +44,29 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
             </p>
           </div>
           <div className="text-right text-sm">
-            <div className="text-muted-foreground text-xs">Owner</div>
+            <div className="text-muted-foreground text-xs">{t("ws.moto.owner", lang)}</div>
             <Link className="font-medium hover:text-primary hover:underline" href={"/workshop/customers/" + bike.customer.id}>{bike.customer.name}</Link>
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
           <div className="rounded-lg bg-muted/50 p-3">
-            <div className="text-xs text-muted-foreground flex items-center gap-1"><Gauge className="h-3 w-3" /> Mileage</div>
+            <div className="text-xs text-muted-foreground flex items-center gap-1"><Gauge className="h-3 w-3" /> {t("ws.jobs.col-mileage", lang)}</div>
             <div className="font-semibold mt-0.5">{fmtKM(bike.currentMileage)}</div>
           </div>
           <div className="rounded-lg bg-muted/50 p-3">
-            <div className="text-xs text-muted-foreground flex items-center gap-1"><CalendarDays className="h-3 w-3" /> Last service</div>
+            <div className="text-xs text-muted-foreground flex items-center gap-1"><CalendarDays className="h-3 w-3" /> {t("rider.last-service", lang)}</div>
             <div className="font-semibold mt-0.5">{bike.lastServiceDate ? fmtDate(bike.lastServiceDate) : "—"}</div>
           </div>
           <div className="rounded-lg bg-muted/50 p-3">
-            <div className="text-xs text-muted-foreground">Next service</div>
+            <div className="text-xs text-muted-foreground">{t("rider.next-service", lang)}</div>
             <div className="font-semibold mt-0.5">{bike.nextServiceMileage ? fmtKM(bike.nextServiceMileage) + " km" : "—"}</div>
           </div>
           <div className="rounded-lg bg-muted/50 p-3">
-            <div className="text-xs text-muted-foreground flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> Warranty</div>
-            <div className="font-semibold mt-0.5">{bike.warrantyExpiry ? "until " + fmtDate(bike.warrantyExpiry) : bike.warrantyKm ? fmtKM(bike.warrantyKm) + " km" : "—"}</div>
+            <div className="text-xs text-muted-foreground flex items-center gap-1"><ShieldCheck className="h-3 w-3" /> {t("ws.moto.warranty", lang)}</div>
+            <div className="font-semibold mt-0.5">{bike.warrantyExpiry ? tpl("ws.moto.until", lang, { date: fmtDate(bike.warrantyExpiry) }) : bike.warrantyKm ? fmtKM(bike.warrantyKm) + " km" : "—"}</div>
           </div>
         </div>
-        {bike.purchaseDate && <p className="mt-3 text-xs text-muted-foreground">Purchased {fmtDate(bike.purchaseDate)}</p>}
+        {bike.purchaseDate && <p className="mt-3 text-xs text-muted-foreground">{tpl("ws.moto.purchased", lang, { date: fmtDate(bike.purchaseDate) })}</p>}
         {bike.notes && <p className="mt-3 text-sm border-t pt-3">{bike.notes}</p>}
         <div className="mt-4 border-t pt-4">
           <TransferMotorcycle bikeId={bike.id} currentOwnerId={bike.customerId} customers={customers} />
@@ -71,14 +74,14 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
       </div>
 
       <div className="dz-panel overflow-hidden">
-        <h2 className="font-semibold px-5 pt-4">Service history ({bike.jobs.length})</h2>
+        <h2 className="font-semibold px-5 pt-4">{tpl("ws.moto.service-history", lang, { n: bike.jobs.length })}</h2>
         <div className="overflow-x-auto mt-2">
           <table className="dz-table">
             <thead>
               <tr>
-                <th className="px-4 py-2.5 font-medium">Job</th><th className="px-4 py-2.5 font-medium">Date</th>
-                <th className="px-4 py-2.5 font-medium">Mileage</th><th className="px-4 py-2.5 font-medium">Status</th>
-                <th className="px-4 py-2.5 font-medium">Technician</th><th className="px-4 py-2.5 font-medium">Total</th>
+                <th className="px-4 py-2.5 font-medium">{t("ws.jobs.col-job", lang)}</th><th className="px-4 py-2.5 font-medium">{t("common.date", lang)}</th>
+                <th className="px-4 py-2.5 font-medium">{t("ws.jobs.col-mileage", lang)}</th><th className="px-4 py-2.5 font-medium">{t("common.status", lang)}</th>
+                <th className="px-4 py-2.5 font-medium">{t("ws.jobs.col-technician", lang)}</th><th className="px-4 py-2.5 font-medium">{t("common.total", lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -92,7 +95,7 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
                   <td className="px-4 py-2.5 font-semibold tabular-nums">{formatRM(j.invoice?.totalSen ?? 0)}</td>
                 </tr>
               ))}
-              {bike.jobs.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">No service history yet.</td></tr>}
+              {bike.jobs.length === 0 && <tr><td colSpan={6} className="px-4 py-8 text-center text-sm text-muted-foreground">{t("ws.moto.no-history", lang)}</td></tr>}
             </tbody>
           </table>
         </div>
@@ -102,7 +105,7 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
         <div className="grid sm:grid-cols-2 gap-4">
           {bike.reminders.length > 0 && (
             <div className="rounded-xl border bg-card p-4">
-              <h3 className="font-semibold text-sm mb-2">Service reminders</h3>
+              <h3 className="font-semibold text-sm mb-2">{t("ws.moto.service-reminders", lang)}</h3>
               {bike.reminders.map((r) => (
                 <div key={r.id} className="text-xs text-muted-foreground flex justify-between py-1">
                   <span>{fmtKM(r.nextServiceMileage)} km</span><span>{r.status}</span>
@@ -112,7 +115,7 @@ export default async function MotorcycleDetailPage({ params }: { params: Promise
           )}
           {bike.testRides.length > 0 && (
             <div className="rounded-xl border bg-card p-4">
-              <h3 className="font-semibold text-sm mb-2">Test rides</h3>
+              <h3 className="font-semibold text-sm mb-2">{t("nav.test-rides", lang)}</h3>
               {bike.testRides.map((r) => (
                 <div key={r.id} className="text-xs text-muted-foreground flex justify-between py-1">
                   <span>{fmtDate(r.rideDate)}{r.timeSlot ? " " + r.timeSlot : ""}</span><span>{r.status}</span>

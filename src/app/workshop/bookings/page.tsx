@@ -6,7 +6,7 @@ import { PageTransition } from "@/components/shared/page-transition";
 import { BookingActions } from "@/components/workshop/booking-actions";
 import { fmtDate, fmtRelative } from "@/lib/format";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -100,23 +100,23 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
     <div>
       <div className="flex items-center justify-between mb-1">
         <h1 className="text-2xl font-bold tracking-tight">{t("ws.bookings.title", lang)}</h1>
-        <Link href="/workshop/bookings/slots" className="text-sm text-primary hover:underline">Manage appointment slots →</Link>
+        <Link href="/workshop/bookings/slots" className="text-sm text-primary hover:underline">{t("ws.bookings.manage-slots", lang)}</Link>
       </div>
-      <p className="text-sm text-muted-foreground mb-4">{t("ws.bookings.subtitle", lang)} · {bookings.length} shown</p>
+      <p className="text-sm text-muted-foreground mb-4">{t("ws.bookings.subtitle", lang)} · {tpl("ws.bookings.shown", lang, { n: bookings.length })}</p>
 
       <form method="get" data-tut="bookings-filters" className="flex flex-wrap items-center gap-2 mb-4 text-sm">
         <select name="branch" defaultValue={sp.branch} className="rounded-md border bg-background px-3 py-2">
-          <option value="">All branches</option>
+          <option value="">{t("ws.bookings.all-branches", lang)}</option>
           {branches.map((b) => <option key={b.id} value={b.id}>{b.city}</option>)}
         </select>
         <input name="date" type="date" defaultValue={sp.date} className="rounded-md border bg-background px-3 py-2" />
-        <button className="rounded-md border px-3 py-2 font-medium">Filter</button>
+        <button className="rounded-md border px-3 py-2 font-medium">{t("ws.bookings.filter", lang)}</button>
         {(sp.status || sp.branch || sp.date || sp.sort) && (
           <Link href="/workshop/bookings" className="rounded-md border border-dashed px-3 py-2 font-medium text-muted-foreground hover:text-foreground hover:bg-accent">{t("book.reset-filters", lang)}</Link>
         )}
         <div className="flex-1" />
-        <a href={"/workshop/bookings?view=list" + (sp.branch ? "&branch=" + sp.branch : "") + (sp.date ? "&date=" + sp.date : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "list" ? "bg-primary text-primary-foreground" : "")}><List className="h-3.5 w-3.5" />List</a>
-        <a href={"/workshop/bookings?view=calendar" + (sp.branch ? "&branch=" + sp.branch : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "calendar" ? "bg-primary text-primary-foreground" : "")}><CalendarDays className="h-3.5 w-3.5" />Month</a>
+        <a href={"/workshop/bookings?view=list" + (sp.branch ? "&branch=" + sp.branch : "") + (sp.date ? "&date=" + sp.date : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "list" ? "bg-primary text-primary-foreground" : "")}><List className="h-3.5 w-3.5" />{t("ws.bookings.view-list", lang)}</a>
+        <a href={"/workshop/bookings?view=calendar" + (sp.branch ? "&branch=" + sp.branch : "")} className={"inline-flex items-center gap-1 rounded-md border px-3 py-2 " + (view === "calendar" ? "bg-primary text-primary-foreground" : "")}><CalendarDays className="h-3.5 w-3.5" />{t("ws.bookings.view-month", lang)}</a>
       </form>
 
       {/* 状态筛选条 + 日期排序切换 */}
@@ -137,7 +137,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
 
       {view === "calendar" ? (
         <div className="rounded-2xl border bg-card p-4">
-          <h2 className="font-semibold text-sm mb-3">{year}-{String(month + 1).padStart(2, "0")} — bookings per day</h2>
+          <h2 className="font-semibold text-sm mb-3">{year}-{String(month + 1).padStart(2, "0")} — {t("ws.bookings.per-day", lang)}</h2>
           <div className="grid grid-cols-7 gap-1.5 text-center">
             {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => <div key={i} className="text-[10px] text-muted-foreground font-medium py-1">{d}</div>)}
             {Array.from({ length: firstWeekday }).map((_, i) => <div key={"e" + i} />)}
@@ -153,7 +153,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
                   className={"rounded-lg border p-2 min-h-[52px] hover:bg-accent transition-colors " + (isToday ? "border-primary" : "")}
                 >
                   <div className="text-xs font-medium">{day}</div>
-                  {count > 0 && <div className={"mt-1 text-[10px] font-semibold " + (count >= 4 ? "text-destructive" : "text-primary")}>{count} booking{count > 1 ? "s" : ""}</div>}
+                  {count > 0 && <div className={"mt-1 text-[10px] font-semibold " + (count >= 4 ? "text-destructive" : "text-primary")}>{tpl(count > 1 ? "ws.bookings.n-plural" : "ws.bookings.n-single", lang, { n: count })}</div>}
                 </Link>
               );
             })}
@@ -190,7 +190,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
             </div>
             );
           })}
-          {sorted.length === 0 && <div className="rounded-2xl border bg-card p-10 text-center text-sm text-muted-foreground">No bookings match.</div>}
+          {sorted.length === 0 && <div className="rounded-2xl border bg-card p-10 text-center text-sm text-muted-foreground">{t("ws.bookings.empty", lang)}</div>}
         </div>
       )}
     </div>

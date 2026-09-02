@@ -27,7 +27,7 @@ export default async function MechanicJobPage({ params }: { params: Promise<{ id
     motorcycleType: detail.motorcycle.type,
     items: [
       ...detail.items.map((i) => ({ id: i.id, description: i.description, kind: "item" as const, unitPriceSen: i.unitPriceSen, status: i.status })),
-      ...detail.parts.map((p) => ({ id: p.id, description: p.product?.name ?? "Part", kind: "part" as const, unitPriceSen: p.unitPriceSen, status: p.status })),
+      ...detail.parts.map((p) => ({ id: p.id, description: p.product?.name ?? t("ws.job.part", lang), kind: "part" as const, unitPriceSen: p.unitPriceSen, status: p.status })),
     ],
   };
 

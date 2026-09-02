@@ -31,7 +31,7 @@ export function TransferMotorcycle({ bikeId, currentOwnerId, customers }: { bike
       {open && (
         <div className="mt-3 flex gap-2 items-end flex-wrap">
           <div className="flex-1 min-w-[200px]">
-            <label className="text-[11px] font-medium text-muted-foreground block mb-0.5">New owner</label>
+            <label className="text-[11px] font-medium text-muted-foreground block mb-0.5">{t("bike.new-owner", lang)}</label>
             <select className="w-full rounded-md border bg-background px-3 py-1.5 text-sm" value={targetId} onChange={(e) => setTargetId(e.target.value)}>
               <option value="">Select customer…</option>
               {customers.filter((c) => c.id !== currentOwnerId).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}

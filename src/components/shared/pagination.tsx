@@ -1,8 +1,10 @@
 // Server-compatible pagination controls — pure <Link>s, keeps existing searchParams.
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
-export function Pagination({
+export async function Pagination({
   basePath,
   page,
   totalPages,
@@ -14,6 +16,7 @@ export function Pagination({
   /** extra search params to preserve (e.g. { q, status }) — falsy values dropped */
   query?: Record<string, string | undefined>;
 }) {
+  const lang = await getLang();
   if (totalPages <= 1) return null;
   const mk = (p: number) => {
     const q = new URLSearchParams();
@@ -43,9 +46,9 @@ export function Pagination({
     (active ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground");
 
   return (
-    <nav className="flex items-center justify-center gap-1.5 mt-5" aria-label="Pagination">
+    <nav className="flex items-center justify-center gap-1.5 mt-5" aria-label={t("pag.label", lang)}>
       {page > 1 ? (
-        <Link href={mk(page - 1)} className={cls(false)} aria-label="Previous page"><ChevronLeft className="h-3.5 w-3.5" /></Link>
+        <Link href={mk(page - 1)} className={cls(false)} aria-label={t("pag.prev", lang)}><ChevronLeft className="h-3.5 w-3.5" /></Link>
       ) : (
         <span className={cls(false) + " opacity-40 pointer-events-none"} aria-hidden><ChevronLeft className="h-3.5 w-3.5" /></span>
       )}
@@ -57,7 +60,7 @@ export function Pagination({
         )
       )}
       {page < totalPages ? (
-        <Link href={mk(page + 1)} className={cls(false)} aria-label="Next page"><ChevronRight className="h-3.5 w-3.5" /></Link>
+        <Link href={mk(page + 1)} className={cls(false)} aria-label={t("pag.next", lang)}><ChevronRight className="h-3.5 w-3.5" /></Link>
       ) : (
         <span className={cls(false) + " opacity-40 pointer-events-none"} aria-hidden><ChevronRight className="h-3.5 w-3.5" /></span>
       )}

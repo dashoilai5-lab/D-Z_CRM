@@ -50,7 +50,7 @@ export function ProfileForm({ initial }: { customerId?: string; initial: RiderPr
       </div>
       <div>
         <Label>{t("common.phone", lang)}</Label>
-        <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1.5" placeholder="e.g. 012-345 6789" inputMode="tel" />
+        <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-1.5" placeholder={t("settings.phone-placeholder", lang)} inputMode="tel" />
       </div>
       <div>
         <Label>{t("common.email", lang)}</Label>

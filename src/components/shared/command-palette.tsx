@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, User, Bike, Wrench, Package, CornerDownLeft, Loader2 } from "lucide-react";
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 interface Hit {
   type: "customer" | "motorcycle" | "job" | "product";
@@ -14,6 +16,7 @@ interface Hit {
 
 /** Ctrl/Cmd+K global search (§18): customer, phone, plate, motorcycle, job, product, SKU. */
 export function CommandPalette() {
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const [hits, setHits] = useState<Hit[]>([]);
@@ -60,22 +63,22 @@ export function CommandPalette() {
         className="inline-flex h-8 w-full max-w-xs items-center gap-2 rounded-lg border bg-muted/40 px-3 text-sm text-muted-foreground hover:bg-muted/60 transition-colors"
       >
         <Search className="h-3.5 w-3.5" />
-        <span className="flex-1 text-left text-xs">Search customers, bikes, jobs, parts…</span>
+        <span className="flex-1 text-left text-xs">{t("cp.placeholder", lang)}</span>
         <kbd className="pointer-events-none rounded border bg-background px-1.5 py-0.5 text-[10px] font-medium">Ctrl K</kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <Command shouldFilter={false}>
-          <CommandInput placeholder="Search name, phone, plate, job no, SKU…" value={q} onValueChange={setQ} />
+          <CommandInput placeholder={t("cp.input", lang)} value={q} onValueChange={setQ} />
           <CommandList>
             {loading && (
               <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" /> Searching…
+                <Loader2 className="h-4 w-4 animate-spin" /> {t("common.searching", lang)}
               </div>
             )}
-            {!loading && q.trim() !== "" && hits.length === 0 && <CommandEmpty>No results for “{q}”.</CommandEmpty>}
+            {!loading && q.trim() !== "" && hits.length === 0 && <CommandEmpty>{tpl("cp.no_results", lang, { q })}</CommandEmpty>}
             {!loading && hits.length > 0 && (
               <>
-                <CommandGroup heading="Results">
+                <CommandGroup heading={t("cp.results", lang)}>
                   {hits.map((h, i) => (
                     <CommandItem
                       key={h.type + i}

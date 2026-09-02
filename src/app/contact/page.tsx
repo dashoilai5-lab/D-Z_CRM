@@ -1,10 +1,13 @@
 import { Bike, Phone, Mail, MapPin, Clock, MessageCircle, Send } from "lucide-react";
 import { db } from "@/lib/db";
 import { EnquiryForm } from "@/components/public/enquiry-form";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ model?: string }> }) {
+  const lang = await getLang();
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
   const branches = await db.branch.findMany({ where: { organisationId: org!.id } });
@@ -28,8 +31,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
       <div className="mx-auto max-w-4xl px-4 py-6 grid md:grid-cols-2 gap-6">
         <div className="space-y-5">
           <div>
-            <h1 className="text-3xl font-bold">Contact us</h1>
-            <p className="text-muted-foreground mt-1">Send an enquiry — it enters our CRM automatically and a sales advisor will follow up.</p>
+            <h1 className="text-3xl font-bold">{t("contact.title", lang)}</h1>
+            <p className="text-muted-foreground mt-1">{t("contact.subtitle", lang)}</p>
           </div>
           <div className="rounded-xl border bg-card p-4 space-y-3 text-sm">
             {org?.contactPhone && <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-muted-foreground" />{org.contactPhone}</div>}
@@ -44,7 +47,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
             )}
           </div>
           <div className="rounded-xl border bg-card p-4">
-            <h3 className="font-semibold text-sm mb-2">Our branches</h3>
+            <h3 className="font-semibold text-sm mb-2">{t("contact.branches_title", lang)}</h3>
             <ul className="space-y-2 text-sm">
               {branches.map((b) => (
                 <li key={b.id} className="flex items-center justify-between">

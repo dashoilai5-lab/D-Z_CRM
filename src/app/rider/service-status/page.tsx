@@ -71,7 +71,7 @@ export default async function ServiceStatusPage() {
               </div>
               <div className={"pb-6 text-sm " + (done ? "font-medium text-muted-foreground" : isActive ? "font-semibold text-primary" : "text-muted-foreground/60")}>
                 {stepLabel(s)}
-                {isActive && idx === 5 && <span className="ml-2 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[10px] px-2 py-0.5 font-semibold">✓ ready</span>}
+                {isActive && idx === 5 && <span className="ml-2 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[10px] px-2 py-0.5 font-semibold">{t("rider.checkmark-ready", lang)}</span>}
               </div>
             </div>
           );
@@ -107,7 +107,7 @@ export default async function ServiceStatusPage() {
             </div>
             {badgeFor(r)}
           </div>
-          {r.job && <div className="mt-1 text-xs text-muted-foreground font-mono">Job {r.job.jobNumber}</div>}
+          {r.job && <div className="mt-1 text-xs text-muted-foreground font-mono">{t("ws.jobs.col-job", lang)} {r.job.jobNumber}</div>}
           {r.booking && (
             <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
               <Wrench className="h-3.5 w-3.5" /> {r.booking.serviceType}
@@ -140,7 +140,7 @@ export default async function ServiceStatusPage() {
                     {r.outcome === "completed" ? t("svc.completed", lang) : r.outcome === "cancelled" ? t("svc.cancelled", lang) : r.outcome === "no_show" ? t("svc.no_show", lang) : "—"}
                   </span>
                   {r.outcome === "completed" && (
-                    <Link href="/rider/service-history" className="text-xs font-medium text-primary hover:underline">★ Rate this service</Link>
+                    <Link href="/rider/service-history" className="text-xs font-medium text-primary hover:underline">{t("rider.rate-service", lang)}</Link>
                   )}
                 </span>
               </div>

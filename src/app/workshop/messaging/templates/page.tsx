@@ -1,22 +1,25 @@
 import { db } from "@/lib/db";
 import { TemplateManager } from "@/components/workshop/template-manager";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function TemplatesPage() {
+  const lang = await getLang();
   const org = await db.organisation.findFirst();
   const templates = await db.messageTemplate.findMany({ where: { organisationId: org!.id }, orderBy: { createdAt: "desc" } });
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Message Templates</h1>
-        <p className="text-sm text-muted-foreground">Placeholders: {"{name}"} {"{service}"} {"{bike}"} {"{branch}"} {"{date}"} {"{time}"} {"{ref}"} {"{link}"} {"{invoice}"} {"{total}"}</p>
+        <h1 className="text-2xl font-bold">{t("msg.page-title", lang)}</h1>
+        <p className="text-sm text-muted-foreground">{t("msg.placeholders-label", lang)} {"{name}"} {"{service}"} {"{bike}"} {"{branch}"} {"{date}"} {"{time}"} {"{ref}"} {"{link}"} {"{invoice}"} {"{total}"}</p>
       </div>
       <TemplateManager />
       <div className="rounded-xl border bg-card overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
-            <tr><th className="px-3 py-2.5 font-medium">Name</th><th className="px-3 py-2.5 font-medium">Channel</th><th className="px-3 py-2.5 font-medium">Body</th><th className="px-3 py-2.5 font-medium">Active</th></tr>
+            <tr><th className="px-3 py-2.5 font-medium">{t("msg.col-name", lang)}</th><th className="px-3 py-2.5 font-medium">{t("msg.col-channel", lang)}</th><th className="px-3 py-2.5 font-medium">{t("msg.col-body", lang)}</th><th className="px-3 py-2.5 font-medium">{t("msg.col-active", lang)}</th></tr>
           </thead>
           <tbody>
             {templates.map((t) => (
@@ -27,7 +30,7 @@ export default async function TemplatesPage() {
                 <td className="px-3 py-2.5 text-xs">{t.active ? "✓" : "—"}</td>
               </tr>
             ))}
-            {templates.length === 0 && <tr><td colSpan={4} className="px-3 py-8 text-center text-sm text-muted-foreground">No templates yet.</td></tr>}
+            {templates.length === 0 && <tr><td colSpan={4} className="px-3 py-8 text-center text-sm text-muted-foreground">{t("msg.empty", lang)}</td></tr>}
           </tbody>
         </table>
       </div>

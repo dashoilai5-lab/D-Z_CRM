@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export function PackageSorter() {
+  const lang = useLang();
   const [mode, setMode] = useState("price");
 
   function sort(m: string) {
@@ -25,9 +28,9 @@ export function PackageSorter() {
   return (
     <span className="inline-flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs">
       <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground" />
-      <button className={mode === "price" ? "font-semibold text-primary" : "text-muted-foreground hover:text-foreground"} onClick={() => sort("price")}>Price</button>
+      <button className={mode === "price" ? "font-semibold text-primary" : "text-muted-foreground hover:text-foreground"} onClick={() => sort("price")}>{t("ws.pkg.sort-price", lang)}</button>
       <span className="text-muted-foreground/40">·</span>
-      <button className={mode === "tier" ? "font-semibold text-primary" : "text-muted-foreground hover:text-foreground"} onClick={() => sort("tier")}>Tier</button>
+      <button className={mode === "tier" ? "font-semibold text-primary" : "text-muted-foreground hover:text-foreground"} onClick={() => sort("tier")}>{t("ws.pkg.sort-tier", lang)}</button>
     </span>
   );
 }

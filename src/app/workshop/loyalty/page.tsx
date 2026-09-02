@@ -5,10 +5,13 @@ import { LoyaltyManager } from "@/components/workshop/loyalty-manager";
 import { ReferralManager } from "@/components/workshop/referral-manager";
 import { fmtDateTime } from "@/lib/format";
 import { PendingForm } from "@/components/shared/search-form";
+import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function LoyaltyPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const lang = await getLang();
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
   const [accounts, rewards, referrals] = await Promise.all([
@@ -20,20 +23,20 @@ export default async function LoyaltyPage({ searchParams }: { searchParams: Prom
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Loyalty & Referrals</h1>
-        <p className="text-sm text-muted-foreground">{accounts.length} members · points ledger · rewards · referral tracking</p>
+        <h1 className="text-2xl font-bold">{t("loyal.title", lang)}</h1>
+        <p className="text-sm text-muted-foreground">{tpl("loyal.subtitle", lang, { n: accounts.length })}</p>
       </div>
 
       <LoyaltyManager rewards={rewards.map((r) => ({ id: r.id, name: r.name, pointsRequired: r.pointsRequired, active: r.active }))} />
 
       <div className="rounded-xl border bg-card overflow-hidden">
-        <h2 className="font-semibold text-sm px-4 pt-3 pb-2">Members ({accounts.length})</h2>
+        <h2 className="font-semibold text-sm px-4 pt-3 pb-2">{tpl("loyal.members", lang, { n: accounts.length })}</h2>
         <PendingForm className="px-4 pb-3">
-          <input name="q" defaultValue={sp.q} placeholder="Search member…" className="w-full max-w-sm rounded-md border bg-background px-3 py-1.5 text-sm" />
+          <input name="q" defaultValue={sp.q} placeholder={t("loyal.search-member", lang)} className="w-full max-w-sm rounded-md border bg-background px-3 py-1.5 text-sm" />
         </PendingForm>
         <table className="w-full text-sm">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
-            <tr><th className="px-4 py-2 font-medium">Member</th><th className="px-4 py-2 font-medium">Tier</th><th className="px-4 py-2 font-medium">Points</th><th className="px-4 py-2 font-medium">Member since</th><th className="px-4 py-2 font-medium">Ledger</th></tr>
+            <tr><th className="px-4 py-2 font-medium">{t("loyal.col-member", lang)}</th><th className="px-4 py-2 font-medium">{t("loyal.col-tier", lang)}</th><th className="px-4 py-2 font-medium">{t("loyal.col-points", lang)}</th><th className="px-4 py-2 font-medium">{t("loyal.col-since", lang)}</th><th className="px-4 py-2 font-medium">{t("loyal.col-ledger", lang)}</th></tr>
           </thead>
           <tbody>
             {accounts.map((a) => (
@@ -44,7 +47,7 @@ export default async function LoyaltyPage({ searchParams }: { searchParams: Prom
                 <td className="px-4 py-2.5 text-xs">{a.memberSince.toISOString().slice(0, 10)}</td>
                 <td className="px-4 py-2.5">
                   <details>
-                    <summary className="text-xs text-primary cursor-pointer">transactions ({a.transactions.length})</summary>
+                    <summary className="text-xs text-primary cursor-pointer">{tpl("loyal.transactions", lang, { n: a.transactions.length })}</summary>
                     <div className="mt-2 space-y-1 max-h-40 overflow-y-auto">
                       {a.transactions.map((t) => (
                         <div key={t.id} className="text-[11px] text-muted-foreground flex justify-between gap-4">
@@ -57,7 +60,7 @@ export default async function LoyaltyPage({ searchParams }: { searchParams: Prom
                 </td>
               </tr>
             ))}
-            {accounts.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">No members yet — points are awarded automatically on service completion.</td></tr>}
+            {accounts.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-muted-foreground">{t("loyal.empty", lang)}</td></tr>}
           </tbody>
         </table>
       </div>

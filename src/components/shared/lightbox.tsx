@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface LightboxImage {
   src: string;
@@ -33,6 +35,7 @@ export function useLightbox() {
 }
 
 export function Lightbox({ images, index, onClose }: { images: LightboxImage[]; index: number | null; onClose: () => void }) {
+  const lang = useLang();
   // index changes remount via key={index} at call sites, so initial state is enough.
   const [cur, setCur] = useState(index ?? 0);
 
@@ -54,13 +57,13 @@ export function Lightbox({ images, index, onClose }: { images: LightboxImage[]; 
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="Image preview"
+      aria-label={t("common.image-preview", lang)}
     >
       {/* close button */}
       <button
         onClick={onClose}
         className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-        aria-label="Close image"
+        aria-label={t("common.close-image", lang)}
         data-testid="lightbox-close"
       >
         <X className="h-5 w-5" />
@@ -79,14 +82,14 @@ export function Lightbox({ images, index, onClose }: { images: LightboxImage[]; 
           <button
             onClick={(e) => { e.stopPropagation(); prev(); }}
             className="absolute left-4 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            aria-label="Previous image"
+            aria-label={t("common.previous-image", lang)}
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); next(); }}
             className="absolute right-4 top-1/2 -translate-y-1/2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors"
-            aria-label="Next image"
+            aria-label={t("common.next-image", lang)}
           >
             <ChevronRight className="h-5 w-5" />
           </button>

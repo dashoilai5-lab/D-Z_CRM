@@ -9,7 +9,7 @@ import { QuotationPrintActions } from "@/components/workshop/quotation-print-act
 
 export const dynamic = "force-dynamic";
 
-const SOURCE_LABEL: Record<string, string> = { SERVICE: "Service", PART: "Part", FEE: "Fee", APPROVAL: "Approval" };
+const SOURCE_LABEL: Record<string, string> = { SERVICE: "ws.kind.service", PART: "ws.kind.part", FEE: "ws.kind.fee", APPROVAL: "ws.kind.approval" };
 
 export default async function InvoicePrintPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -105,7 +105,7 @@ export default async function InvoicePrintPage({ params }: { params: Promise<{ i
             {invoice.items.map((it) => (
               <tr key={it.id} className="border-b border-neutral-100">
                 <td className="py-2 pr-2">{it.description}</td>
-                <td className="py-2 pr-2 text-xs text-neutral-500">{SOURCE_LABEL[it.source] ?? it.source}</td>
+                <td className="py-2 pr-2 text-xs text-neutral-500">{SOURCE_LABEL[it.source] ? t(SOURCE_LABEL[it.source], lang) : it.source}</td>
                 <td className="py-2 pr-2 text-center tabular-nums">{it.quantity}</td>
                 <td className="py-2 pr-2 text-right tabular-nums">{formatRM(it.unitPriceSen)}</td>
                 <td className="py-2 text-right font-semibold tabular-nums">{formatRM(it.lineTotalSen)}</td>

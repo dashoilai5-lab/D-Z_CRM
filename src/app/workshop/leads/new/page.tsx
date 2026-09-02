@@ -4,9 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { createLead } from "@/actions/leads";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export default function NewLeadPage() {
   const router = useRouter();
+  const lang = useLang();
   const [form, setForm] = useState({ customerName: "", phone: "", email: "", sourceId: "", stageId: "", motorcycleInterest: "", modelInterest: "", notes: "", estimatedValueRM: "", assignedUserId: "", nextFollowUpAt: "", tags: "" });
   const [dupes, setDupes] = useState<number | null>(null);
   const [error, setError] = useState("");
@@ -32,7 +35,7 @@ export default function NewLeadPage() {
       tags: form.tags || undefined,
     });
     setBusy(false);
-    if (!res.ok) { setError("Failed to create lead"); return; }
+    if (!res.ok) { setError(t("lead.failed", lang)); return; }
     if (res.duplicates > 0) { setDupes(res.duplicates); return; }
     router.push("/workshop/leads/" + res.id);
     router.refresh();
@@ -44,15 +47,15 @@ export default function NewLeadPage() {
   return (
     <div className="max-w-2xl space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">New Lead</h1>
-        <p className="text-sm text-muted-foreground">Walk-in, phone or social — record the enquiry, it flows into the pipeline.</p>
+        <h1 className="text-2xl font-bold">{t("lead.new", lang)}</h1>
+        <p className="text-sm text-muted-foreground">{t("lead.new-subtitle", lang)}</p>
       </div>
 
       {dupes != null && (
         <div className="flex items-start gap-2 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 text-sm px-3 py-2">
           <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-          <span>{dupes} similar lead{dupes > 1 ? "s" : ""} found with the same phone/email. Lead saved anyway — review duplicates before converting.</span>
-          <button className="ml-auto shrink-0 underline" onClick={() => { setDupes(null); router.push("/workshop/leads"); }}>View leads</button>
+          <span>{tpl("lead.dupe-warn", lang, { n: dupes })}</span>
+          <button className="ml-auto shrink-0 underline" onClick={() => { setDupes(null); router.push("/workshop/leads"); }}>{t("lead.view-leads", lang)}</button>
         </div>
       )}
       {error && <p className="rounded-md bg-destructive/10 text-destructive text-sm px-3 py-2">{error}</p>}
@@ -60,55 +63,55 @@ export default function NewLeadPage() {
       <form onSubmit={submit} className="rounded-xl border bg-card p-5 space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="sm:col-span-2">
-            <label className={labelCls}>Customer name *</label>
-            <input className={inputCls} required value={form.customerName} onChange={(e) => set("customerName", e.target.value)} placeholder="e.g. Nurul Aisyah" />
+            <label className={labelCls}>{t("lead.customer-name", lang)}</label>
+            <input className={inputCls} required value={form.customerName} onChange={(e) => set("customerName", e.target.value)} placeholder={t("lead.ph-name", lang)} />
           </div>
           <div>
-            <label className={labelCls}>Phone</label>
-            <input className={inputCls} value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder="012-345 6789" />
+            <label className={labelCls}>{t("lead.phone", lang)}</label>
+            <input className={inputCls} value={form.phone} onChange={(e) => set("phone", e.target.value)} placeholder={t("lead.ph-phone", lang)} />
           </div>
           <div>
-            <label className={labelCls}>Email</label>
-            <input className={inputCls} type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="name@email.com" />
+            <label className={labelCls}>{t("lead.email", lang)}</label>
+            <input className={inputCls} type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder={t("lead.ph-email", lang)} />
           </div>
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className={labelCls}>Source</label>
+            <label className={labelCls}>{t("lead.source", lang)}</label>
             <select className={inputCls} value={form.sourceId} onChange={(e) => set("sourceId", e.target.value)}>
-              <option value="">Select source…</option>
-              <option value="walkin">Walk-in</option>
-              <option value="phone">Phone</option>
-              <option value="social">Social Media</option>
-              <option value="whatsapp">WhatsApp</option>
+              <option value="">{t("lead.select-source", lang)}</option>
+              <option value="walkin">{t("lead.source.walkin", lang)}</option>
+              <option value="phone">{t("lead.source.phone", lang)}</option>
+              <option value="social">{t("lead.source.social", lang)}</option>
+              <option value="whatsapp">{t("lead.source.whatsapp", lang)}</option>
             </select>
           </div>
           <div>
-            <label className={labelCls}>Motorcycle interest</label>
-            <input className={inputCls} value={form.motorcycleInterest} onChange={(e) => set("motorcycleInterest", e.target.value)} placeholder="e.g. Yamaha Y16ZR" />
+            <label className={labelCls}>{t("lead.motorcycle-interest", lang)}</label>
+            <input className={inputCls} value={form.motorcycleInterest} onChange={(e) => set("motorcycleInterest", e.target.value)} placeholder={t("lead.ph-bike", lang)} />
           </div>
         </div>
         <div>
-          <label className={labelCls}>Notes</label>
-          <textarea className={inputCls} rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder="What is the prospect looking for?" />
+          <label className={labelCls}>{t("lead.notes", lang)}</label>
+          <textarea className={inputCls} rows={3} value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder={t("lead.ph-notes", lang)} />
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
           <div>
-            <label className={labelCls}>Est. deal value (RM)</label>
+            <label className={labelCls}>{t("lead.est-value", lang)}</label>
             <input className={inputCls} type="number" min="0" step="0.01" value={form.estimatedValueRM} onChange={(e) => set("estimatedValueRM", e.target.value)} />
           </div>
           <div>
-            <label className={labelCls}>Next follow-up</label>
+            <label className={labelCls}>{t("lead.next-followup", lang)}</label>
             <input className={inputCls} type="datetime-local" value={form.nextFollowUpAt} onChange={(e) => set("nextFollowUpAt", e.target.value)} />
           </div>
           <div>
-            <label className={labelCls}>Tags</label>
-            <input className={inputCls} value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder="comma, separated" />
+            <label className={labelCls}>{t("lead.tags", lang)}</label>
+            <input className={inputCls} value={form.tags} onChange={(e) => set("tags", e.target.value)} placeholder={t("lead.ph-tags", lang)} />
           </div>
         </div>
         <div className="flex justify-end gap-2">
-          <button type="button" className="rounded-md border px-4 py-2 text-sm" onClick={() => router.back()}>Cancel</button>
-          <button type="submit" disabled={busy} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">{busy ? "Saving…" : "Create lead"}</button>
+          <button type="button" className="rounded-md border px-4 py-2 text-sm" onClick={() => router.back()}>{t("common.cancel", lang)}</button>
+          <button type="submit" disabled={busy} className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50">{busy ? t("lead.saving", lang) : t("lead.create", lang)}</button>
         </div>
       </form>
     </div>

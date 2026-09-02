@@ -152,7 +152,7 @@ export function ForemanPayoutView({ foremen, lang, orgCommissionValue }: { forem
                     return (
                       <div key={k} className={paid ? "opacity-60" : ""}>
                         <div className="flex items-center gap-3 px-4 py-2.5">
-                          <button type="button" onClick={() => toggle(k)} aria-label="select" className="shrink-0">{selected.has(k) ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5 text-muted-foreground/50" />}</button>
+                          <button type="button" onClick={() => toggle(k)} aria-label={t("foreman.select", lang)} className="shrink-0">{selected.has(k) ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5 text-muted-foreground/50" />}</button>
                           <button type="button" onClick={() => setOpenDay(dayOpen ? null : k)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                             <div className="min-w-0 flex-1">
                               <div className="text-sm font-medium">{fmtDate(b.date)} · {b.jobs} job{b.jobs > 1 ? "s" : ""}</div>
@@ -165,7 +165,7 @@ export function ForemanPayoutView({ foremen, lang, orgCommissionValue }: { forem
                             <ChevronDown className={"h-3.5 w-3.5 text-muted-foreground transition-transform " + (dayOpen ? "rotate-180" : "")} />
                           </button>
                           <span className={"shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold " + (paid ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : b.payoutStatus === "MECHANIC_APPROVED" ? "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300" : partial ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300")}>{paid ? t("payout.paid", lang) : b.payoutStatus === "MECHANIC_APPROVED" ? "MECHANIC OK" : partial ? t("payout.partial", lang) : t("payout.unpaid", lang)}</span>
-                          {!paid && b.payoutStatus === "MECHANIC_APPROVED" && b.payoutId && <Button size="sm" className="shrink-0" onClick={() => setAgreeFor({ payoutId: b.payoutId!, name: f.name, totalSen: b.totalSen })}>Agree & pay</Button>}
+                          {!paid && b.payoutStatus === "MECHANIC_APPROVED" && b.payoutId && <Button size="sm" className="shrink-0" onClick={() => setAgreeFor({ payoutId: b.payoutId!, name: f.name, totalSen: b.totalSen })}>{t("payout.agree-pay", lang)}</Button>}
                           {!paid && b.payoutStatus !== "MECHANIC_APPROVED" && (
                             <Button size="sm" variant="outline" className="shrink-0" onClick={() => { setPayFor({ userId: f.id, name: f.name, date: b.date, baseSen: b.baseSen, commissionSen: b.commissionSen, addonBonusSen: b.addonBonusSen, totalSen: b.totalSen, paidSen: b.paidSen }); setAmount(String((b.totalSen - b.paidSen) / 100)); setMethod("CASH"); }}>{t("payout.pay", lang)}</Button>
                           )}
@@ -178,7 +178,7 @@ export function ForemanPayoutView({ foremen, lang, orgCommissionValue }: { forem
                                 <span className="inline-flex items-center gap-1">{t("payout.bonus", lang)} <Input inputMode="decimal" placeholder="0" value={bonusBuf[k] ?? ""} onChange={(e) => setBonusBuf((p) => ({ ...p, [k]: e.target.value }))} onBlur={() => saveBonus(f.id, b.date, b.commissionSen, b.addonBonusSen)} className="h-7 w-20 rounded-md border bg-background px-1.5 text-right text-xs tabular-nums" /></span>
                               </span>
                             </div>
-                            {b.jobsList.length === 0 && <p className="text-[11px] text-muted-foreground px-1">No jobs.</p>}
+                            {b.jobsList.length === 0 && <p className="text-[11px] text-muted-foreground px-1">{t("payout.no-jobs", lang)}</p>}
                             {b.jobsList.map((j) => (
                               <div key={j.jobId} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-[11px] hover:bg-muted/70">
                                 <Link href={"/workshop/jobs/" + j.jobId} className="flex items-center gap-2 flex-1 min-w-0"><span className="font-mono font-semibold text-primary">{j.jobNumber}</span><span className="font-medium">{j.plate}</span><span className="text-muted-foreground truncate">{j.customer}</span><span className="ml-auto font-bold tabular-nums">{formatRM(j.salesSen)}</span></Link>
@@ -231,7 +231,7 @@ export function ForemanPayoutView({ foremen, lang, orgCommissionValue }: { forem
         <DialogContent>
           <DialogHeader><DialogTitle>Agree & pay salary · {agreeFor?.name}</DialogTitle><DialogDescription>Mechanic has approved — confirm to release {agreeFor ? formatRM(agreeFor.totalSen) : ""}</DialogDescription></DialogHeader>
           <div className="space-y-3 py-2">
-            <div><Label>Method</Label><div className="mt-1.5 grid grid-cols-2 gap-2">{["CASH", "QR"].map((m) => (<button key={m} type="button" onClick={() => setAgreeMethod(m)} className={"rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors " + (agreeMethod === m ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{m === "CASH" ? "💵 Cash" : "📱 QR"}</button>))}</div></div>
+            <div><Label>{t("payout.method", lang)}</Label><div className="mt-1.5 grid grid-cols-2 gap-2">{["CASH", "QR"].map((m) => (<button key={m} type="button" onClick={() => setAgreeMethod(m)} className={"rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors " + (agreeMethod === m ? "border-primary bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>{m === "CASH" ? "💵 " + t("payout.cash", lang) : "📱 QR"}</button>))}</div></div>
             <Button className="w-full" disabled={pending} onClick={doAgree}>Confirm — release salary</Button>
           </div>
         </DialogContent>

@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { ReorderActions } from "@/components/workshop/reorder-actions";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { invReason } from "@/lib/inv-labels";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,7 @@ export default async function ReorderPage() {
             <div key={r.productId} className="flex flex-wrap items-center gap-3 dz-panel p-4">
               <div className="flex-1 min-w-44">
                 <div className="font-medium text-sm">{r.name}</div>
-                <div className="text-xs text-muted-foreground">{t("ws.reorder.current-stock", lang)} {r.quantity} · {t("ws.reorder.est-days-left", lang)} {r.daysRemaining ?? "—"} · {r.reason}</div>
+                <div className="text-xs text-muted-foreground">{t("ws.reorder.current-stock", lang)} {r.quantity} · {t("ws.reorder.est-days-left", lang)} {r.daysRemaining ?? "—"} · {invReason(r.reason ?? "", lang)}</div>
               </div>
               <div className="text-right text-sm">
                 <div className="font-semibold">{t("ws.reorder.recommended", lang)} {r.recommendedReorderQty || r.minStock * 2}×</div>

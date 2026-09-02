@@ -2,6 +2,8 @@
 
 import { Megaphone, Clapperboard, BookOpen, type LucideIcon } from "lucide-react";
 import { Lightbox, useLightbox } from "@/components/shared/lightbox";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface MaterialItem {
   id: string;
@@ -21,6 +23,7 @@ export interface MaterialGroup {
 const TYPE_ICON: Record<string, LucideIcon> = { POSTER: Megaphone, REEL: Clapperboard, STORY: BookOpen };
 
 export function MaterialGrid({ groups }: { groups: MaterialGroup[] }) {
+  const lang = useLang();
   const { openIndex, open, close } = useLightbox();
   // flatten all real images for lightbox navigation
   const flat: { src: string; alt: string; caption: string }[] = [];
@@ -46,7 +49,7 @@ export function MaterialGrid({ groups }: { groups: MaterialGroup[] }) {
               return (
                 <div key={a.id} className="overflow-hidden rounded-2xl border bg-card">
                   {a.url ? (
-                    <button type="button" onClick={() => open(i)} className="group relative block aspect-[3/4] w-full overflow-hidden bg-muted cursor-zoom-in" aria-label={"View " + a.title}>
+                    <button type="button" onClick={() => open(i)} className="group relative block aspect-[3/4] w-full overflow-hidden bg-muted cursor-zoom-in" aria-label={t("mat.view", lang) + a.title}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={a.url} alt={a.title} className="h-full w-full object-cover transition-transform group-hover:scale-[1.03]" />
                       <span className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />

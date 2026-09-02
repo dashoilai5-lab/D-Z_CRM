@@ -48,7 +48,7 @@ export function MechanicOrdersView({ current, completed, name }: { current: Orde
             <button onClick={() => setAuto((a) => !a)} aria-label={t("mech.auto-refresh", lang)} className={cn("relative h-5 w-9 rounded-full transition-colors", auto ? "bg-primary" : "bg-muted")}>
               <span className={cn("absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all", auto ? "left-[18px]" : "left-0.5")} />
             </button>
-            {auto ? t("mech.auto-refresh", lang) : "OFF"}
+            {auto ? t("mech.auto-refresh", lang) : t("mech.off", lang)}
           </label>
           <button onClick={doRefresh} disabled={refreshing} className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-50">
             <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} /> {t("mech.refresh", lang)}

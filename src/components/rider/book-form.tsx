@@ -53,7 +53,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
   const bikeType = selectedBike ? motorcycleTypeInfo(selectedBike.type) : undefined;
   // additional services applicable to the bike type (workshop-style)
   const serviceGroups = selectedBike ? servicesForType(selectedBike.type) : [];
-  const groupedServices = serviceGroups.length > 0 ? serviceGroups : [{ family: "All Services", items: [...SERVICE_CATALOG] }];
+  const groupedServices = serviceGroups.length > 0 ? serviceGroups : [{ family: t("book.all-services", lang), items: [...SERVICE_CATALOG] }];
 
   const pkg = packages.find((p) => p.id === packageId);
   const extrasList = Object.values(extras);
@@ -65,7 +65,7 @@ export function BookForm({ customerId, bikes, packages, campaignId, availableSlo
       if (!timeSlot) { toast.error(t("toast.pick-time", lang)); return; }
       const isRepairType = jobType === "repair";
       // build a readable service summary: package + selected extras (service) OR Repair (repair)
-      const serviceType = isRepairType ? t("job-type.repair", lang) : ([pkg?.name, ...extrasList.map((x) => x.label)].filter(Boolean).join(" + ") || "General Checkup");
+      const serviceType = isRepairType ? t("job-type.repair", lang) : ([pkg?.name, ...extrasList.map((x) => x.label)].filter(Boolean).join(" + ") || t("book.general-checkup", lang));
       // 结构化 service：套餐 + 附加服务（Check In 时同步到 job）；维修只带描述
       const addons = isRepairType ? undefined : extrasList.map((x) => ({ description: x.label, kind: "SERVICE" as const, quantity: 1, unitPriceSen: x.priceSen }));
       await bookService({ customerId, motorcycleId: motorcycleId === "none" ? "" : motorcycleId, serviceType, packageId: isRepairType ? undefined : pkg?.id, addons, type: isRepairType ? "REPAIR" : "SERVICE", date, timeSlot, notes: notes || undefined, campaignId: campaignId || undefined, branchId });

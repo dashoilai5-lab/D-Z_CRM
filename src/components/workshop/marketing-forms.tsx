@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Sparkles, Upload } from "lucide-react";
 import { createCampaign, createPoster, createScript, updateCampaign } from "@/actions/marketing";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 const TONES = [
   { id: "brand", label: "Brand", swatch: "bg-gradient-to-br from-slate-800 to-orange-500" },
@@ -45,6 +47,7 @@ export interface CampaignDraft {
 function iso(d: Date): string { return d.toISOString().slice(0, 10); }
 
 export function CampaignForm({ initial, onDone }: { initial?: CampaignDraft; onDone?: () => void }) {
+  const lang = useLang();
   const { pending, open, setOpen, run } = useForm();
   const [name, setName] = useState(initial?.name ?? "");
   const [type, setType] = useState(initial?.type ?? "PROMO");
@@ -58,9 +61,9 @@ export function CampaignForm({ initial, onDone }: { initial?: CampaignDraft; onD
   const submit = () => {
     const payload = { name, type: type as never, status: status as never, audience, startDate, endDate: endDate || undefined, discountPercent: discount ? Number(discount) : undefined };
     if (isEdit) {
-      run(() => updateCampaign({ id: initial.id, ...payload }), "Campaign updated");
+      run(() => updateCampaign({ id: initial.id, ...payload }), t("ws.mkt.form.campaign-updated", lang));
     } else {
-      run(() => createCampaign(payload), "Campaign created");
+      run(() => createCampaign(payload), t("ws.mkt.form.campaign-created", lang));
     }
     onDone?.();
   };
@@ -68,41 +71,41 @@ export function CampaignForm({ initial, onDone }: { initial?: CampaignDraft; onD
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-        {isEdit ? "Edit" : "New Campaign"}
+        {isEdit ? t("ws.mkt.form.edit", lang) : t("ws.mkt.form.new-campaign", lang)}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit campaign" : "New campaign"}</DialogTitle>
-          <DialogDescription>{isEdit ? "Update the campaign details." : "Plan a promotion, reminder or return campaign."}</DialogDescription>
+          <DialogTitle>{isEdit ? t("ws.mkt.form.edit-campaign", lang) : t("ws.mkt.form.new-campaign-title", lang)}</DialogTitle>
+          <DialogDescription>{isEdit ? t("ws.mkt.form.edit-campaign-desc", lang) : t("ws.mkt.form.new-campaign-desc", lang)}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
-          <div><Label>Name</Label><Input data-testid="campaign-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Hari Merdeka Promo" className="mt-1.5" /></div>
+          <div><Label>{t("ws.mkt.form.name", lang)}</Label><Input data-testid="campaign-name" value={name} onChange={(e) => setName(e.target.value)} placeholder={t("ws.mkt.form.name-placeholder", lang)} className="mt-1.5" /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Type</Label>
+            <div><Label>{t("ws.mkt.form.type", lang)}</Label>
               <Select value={type} onValueChange={(v) => setType(v ?? "PROMO")}><SelectTrigger data-testid="campaign-type" className="mt-1.5"><SelectValue /></SelectTrigger>
-                <SelectContent>{typeOptions.map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}</SelectContent></Select>
+                <SelectContent>{typeOptions.map(([v]) => <SelectItem key={v} value={v}>{t("ws.mkt.calendar.type." + v, lang)}</SelectItem>)}</SelectContent></Select>
             </div>
-            <div><Label>Status</Label>
+            <div><Label>{t("ws.mkt.form.status", lang)}</Label>
               <Select value={status} onValueChange={(v) => setStatus(v ?? "DRAFT")}><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-                <SelectContent>{statusOptions.map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}</SelectContent></Select>
+                <SelectContent>{statusOptions.map(([v]) => <SelectItem key={v} value={v}>{t("ws.mkt.status." + v, lang)}</SelectItem>)}</SelectContent></Select>
             </div>
           </div>
-          <div><Label>Audience</Label>
+          <div><Label>{t("ws.mkt.form.audience", lang)}</Label>
             <Select value={audience} onValueChange={(v) => setAudience(v ?? "ALL")}><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
-              <SelectContent>{audienceOptions.map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}</SelectContent></Select>
+              <SelectContent>{audienceOptions.map(([v]) => <SelectItem key={v} value={v}>{t("ws.mkt.audience." + v, lang)}</SelectItem>)}</SelectContent></Select>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Start date</Label><Input data-testid="campaign-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1.5" /></div>
-            <div><Label>End date (optional)</Label><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1.5" /></div>
+            <div><Label>{t("ws.mkt.form.start-date", lang)}</Label><Input data-testid="campaign-start" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="mt-1.5" /></div>
+            <div><Label>{t("ws.mkt.form.end-date", lang)}</Label><Input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="mt-1.5" /></div>
           </div>
           {type === "PROMO" && (
-            <div><Label>Discount % (PROMO only)</Label><Input data-testid="campaign-discount" type="number" min={1} max={100} value={discount} onChange={(e) => setDiscount(e.target.value)} placeholder="e.g. 20" className="mt-1.5" /></div>
+            <div><Label>{t("ws.mkt.form.discount", lang)}</Label><Input data-testid="campaign-discount" type="number" min={1} max={100} value={discount} onChange={(e) => setDiscount(e.target.value)} placeholder={t("ws.mkt.form.discount-placeholder", lang)} className="mt-1.5" /></div>
           )}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>{t("ws.mkt.form.cancel", lang)}</Button>
           <Button data-testid="campaign-submit" disabled={!name || !startDate || pending} onClick={submit}>
-            {isEdit ? "Save Changes" : "Create Campaign"}
+            {isEdit ? t("ws.mkt.form.save-changes", lang) : t("ws.mkt.form.create-campaign", lang)}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -112,6 +115,7 @@ export function CampaignForm({ initial, onDone }: { initial?: CampaignDraft; onD
 
 export function PosterForm() {
   const router = useRouter();
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -154,96 +158,96 @@ export function PosterForm() {
     setBusy(false);
     if (data.ok) {
       setResult({ url: data.url });
-      toast.success("Poster generated — added to the library");
+      toast.success(t("ws.mkt.form.poster-generated", lang));
       setOpen(false); // auto-close so the flow never feels stuck
       router.refresh();
     } else {
-      setResult({ error: data.error ?? "Generation failed" });
+      setResult({ error: data.error ?? t("ws.mkt.form.gen-failed", lang) });
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex h-9 items-center gap-1.5 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-        <Sparkles className="h-4 w-4" /> Generate with AI
+        <Sparkles className="h-4 w-4" /> {t("ws.mkt.form.generate-ai", lang)}
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Generate poster</DialogTitle>
-          <DialogDescription>Upload a reference asset (optional), describe what you need — we compose a branded poster automatically.</DialogDescription>
+          <DialogTitle>{t("ws.mkt.form.generate-poster", lang)}</DialogTitle>
+          <DialogDescription>{t("ws.mkt.form.generate-desc", lang)}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
           <div>
-            <Label>Poster title *</Label>
-            <Input data-testid="poster-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Servis Musim Ini" className="mt-1.5" />
+            <Label>{t("ws.mkt.form.poster-title", lang)}</Label>
+            <Input data-testid="poster-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("ws.mkt.form.poster-title-placeholder", lang)} className="mt-1.5" />
           </div>
           <div>
-            <Label>Subtitle / message</Label>
-            <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder="e.g. Keep your bike ready for the season" className="mt-1.5" />
+            <Label>{t("ws.mkt.form.subtitle", lang)}</Label>
+            <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} placeholder={t("ws.mkt.form.poster-subtitle-placeholder", lang)} className="mt-1.5" />
           </div>
           <div>
-            <Label>Promo (optional)</Label>
-            <Input value={promo} onChange={(e) => setPromo(e.target.value)} placeholder="e.g. RM20 OFF · July" className="mt-1.5" />
+            <Label>{t("ws.mkt.form.promo", lang)}</Label>
+            <Input value={promo} onChange={(e) => setPromo(e.target.value)} placeholder={t("ws.mkt.form.promo-placeholder", lang)} className="mt-1.5" />
           </div>
           <div>
-            <Label>Tone</Label>
+            <Label>{t("ws.mkt.form.tone", lang)}</Label>
             <div className="mt-1.5 flex gap-2 flex-wrap">
-              {TONES.map((t) => (
-                <button key={t.id} type="button" onClick={() => setTone(t.id)} className={"flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs " + (tone === t.id ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
-                  <span className={"h-3 w-3 rounded-full " + t.swatch} /> {t.label}
+              {TONES.map((tn) => (
+                <button key={tn.id} type="button" onClick={() => setTone(tn.id)} className={"flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs " + (tone === tn.id ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
+                  <span className={"h-3 w-3 rounded-full " + tn.swatch} /> {t("ws.mkt.tone." + tn.id, lang)}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label>Size</Label>
+            <Label>{t("ws.mkt.form.size", lang)}</Label>
             <div className="mt-1.5 flex gap-2 flex-wrap">
               {SIZES.map((s) => (
                 <button key={s.id} type="button" onClick={() => setSize(s.id)} className={"rounded-lg border px-2.5 py-1.5 text-xs " + (size === s.id ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
-                  {s.label}
+                  {t("ws.mkt.size." + s.id, lang)}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label>Style</Label>
+            <Label>{t("ws.mkt.form.style", lang)}</Label>
             <div className="mt-1.5 flex gap-2 flex-wrap">
-              {[["poster", "Graphic poster"], ["photo", "Photo style"]].map(([v, label]) => (
+              {[["poster", "ws.mkt.form.style-poster"], ["photo", "ws.mkt.form.style-photo"]].map(([v, label]) => (
                 <button key={v} type="button" onClick={() => setVisual(v)} className={"rounded-lg border px-2.5 py-1.5 text-xs " + (visual === v ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
-                  {label}
+                  {t(label, lang)}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label>How many variants</Label>
+            <Label>{t("ws.mkt.form.variants", lang)}</Label>
             <div className="mt-1.5 flex gap-2">
               {["1", "2", "4"].map((c) => (
                 <button key={c} type="button" onClick={() => setCount(c)} className={"rounded-lg border px-3 py-1.5 text-xs " + (count === c ? "border-primary ring-1 ring-primary/40" : "hover:border-primary/40")}>
-                  {c} {c === "1" ? "poster" : "posters"}
+                  {c} {c === "1" ? t("ws.mkt.form.poster", lang) : t("ws.mkt.form.posters", lang)}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <Label>Reference asset (optional — used as a visual in the poster)</Label>
+            <Label>{t("ws.mkt.form.ref-asset", lang)}</Label>
             <label className="mt-1.5 flex cursor-pointer items-center gap-2 rounded-lg border border-dashed px-3 py-2 text-xs text-muted-foreground hover:bg-accent/40">
-              <Upload className="h-4 w-4" /> {uploading ? "Uploading…" : assetUrl ? "✓ " + assetUrl.split("/").pop() : "Upload image…"}
+              <Upload className="h-4 w-4" /> {uploading ? t("ws.ctrl.uploading", lang) : assetUrl ? "✓ " + assetUrl.split("/").pop() : t("ws.mkt.form.upload-image", lang)}
               <input type="file" accept="image/*" className="hidden" onChange={onAsset} disabled={uploading} />
             </label>
           </div>
           {result?.url && (
             <div className="rounded-lg border p-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={result.url} alt="Generated poster" className="w-full rounded-md border" />
+              <img src={result.url} alt={t("ws.mkt.form.alt-generated", lang)} className="w-full rounded-md border" />
             </div>
           )}
           {result?.error && <p className="text-xs text-destructive">{result.error}</p>}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Close</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>{t("ws.mkt.form.close", lang)}</Button>
           <Button data-testid="poster-generate" disabled={!title.trim() || busy} onClick={generate}>
-            <Sparkles className="h-4 w-4 mr-1.5" /> {busy ? "Generating…" : "Generate poster"}
+            <Sparkles className="h-4 w-4 mr-1.5" /> {busy ? t("ws.mkt.form.generating", lang) : t("ws.mkt.form.generate-poster", lang)}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -252,36 +256,37 @@ export function PosterForm() {
 }
 
 export function ScriptForm() {
+  const lang = useLang();
   const { pending, open, setOpen, run } = useForm();
   const [title, setTitle] = useState(""); const [platform, setPlatform] = useState("TIKTOK"); const [hook, setHook] = useState(""); const [body, setBody] = useState(""); const [tone, setTone] = useState("");
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex h-9 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50">
-        New Script
+        {t("ws.mkt.form.new-script", lang)}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>New reels script</DialogTitle>
-          <DialogDescription>TikTok / Reels script template for the workshop.</DialogDescription>
+          <DialogTitle>{t("ws.mkt.form.new-script-title", lang)}</DialogTitle>
+          <DialogDescription>{t("ws.mkt.form.new-script-desc", lang)}</DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
-          <div><Label>Title</Label><Input data-testid="script-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Chain & Sprocket Check" className="mt-1.5" /></div>
+          <div><Label>{t("ws.mkt.form.name", lang)}</Label><Input data-testid="script-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("ws.mkt.form.title-placeholder", lang)} className="mt-1.5" /></div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Platform</Label>
+            <div><Label>{t("ws.mkt.form.platform", lang)}</Label>
               <Select value={platform} onValueChange={(v) => setPlatform(v ?? "TIKTOK")}><SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="TIKTOK">TikTok</SelectItem><SelectItem value="REELS">Reels</SelectItem><SelectItem value="YT_SHORTS">YT Shorts</SelectItem></SelectContent></Select>
             </div>
-            <div><Label>Tone</Label><Input value={tone} onChange={(e) => setTone(e.target.value)} placeholder="e.g. casual, urgent" className="mt-1.5" /></div>
+            <div><Label>{t("ws.mkt.form.tone", lang)}</Label><Input value={tone} onChange={(e) => setTone(e.target.value)} placeholder={t("ws.mkt.form.tone-placeholder", lang)} className="mt-1.5" /></div>
           </div>
-          <div><Label>Hook (first 3 seconds)</Label><Input data-testid="script-hook" value={hook} onChange={(e) => setHook(e.target.value)} placeholder="e.g. Your chain is dangerous…" className="mt-1.5" /></div>
-          <div><Label>Script body</Label><Textarea data-testid="script-body" value={body} onChange={(e) => setBody(e.target.value)} placeholder="Scene-by-scene script…" className="mt-1.5" rows={5} /></div>
+          <div><Label>{t("ws.mkt.form.hook", lang)}</Label><Input data-testid="script-hook" value={hook} onChange={(e) => setHook(e.target.value)} placeholder={t("ws.mkt.form.hook-placeholder", lang)} className="mt-1.5" /></div>
+          <div><Label>{t("ws.mkt.form.script-body", lang)}</Label><Textarea data-testid="script-body" value={body} onChange={(e) => setBody(e.target.value)} placeholder={t("ws.mkt.form.body-placeholder", lang)} className="mt-1.5" rows={5} /></div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>{t("ws.mkt.form.cancel", lang)}</Button>
           <Button data-testid="script-submit" disabled={!title || !body || pending} onClick={() => run(
             () => createScript({ title, platform, hook: hook || undefined, body, tone: tone || undefined }),
-            "Script added"
-          )}>Add Script</Button>
+            t("ws.mkt.form.script-added", lang)
+          )}>{t("ws.mkt.form.add-script", lang)}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

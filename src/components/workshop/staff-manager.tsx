@@ -63,9 +63,9 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Add staff and manage who can access the workshop.</p>
+        <p className="text-sm text-muted-foreground">{t("staff.subtitle", lang)}</p>
         {!adding && (
-          <Button size="sm" onClick={() => setAdding(true)}><Plus className="h-4 w-4 mr-1.5" /> Add Staff</Button>
+          <Button size="sm" onClick={() => setAdding(true)}><Plus className="h-4 w-4 mr-1.5" /> {t("staff.add-staff", lang)}</Button>
         )}
       </div>
 
@@ -73,27 +73,27 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
         <div className="rounded-2xl border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2">
             <UserPlus className="h-4 w-4 text-primary" />
-            <h3 className="font-semibold">Add team member</h3>
+            <h3 className="font-semibold">{t("staff.add-member-title", lang)}</h3>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
-            <div><Label>Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Ali bin Abu" className="mt-1.5" /></div>
+            <div><Label>{t("common.name", lang)}</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("staff.placeholder-name", lang)} className="mt-1.5" /></div>
             <div>
-              <Label>Role</Label>
+              <Label>{t("staff.label-role", lang)}</Label>
               <Select value={role} onValueChange={(v) => setRole(v ?? "MECHANIC")}>
                 <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {ROLE_OPTIONS.map(([v, l]) => <SelectItem key={v} value={v}>{l}</SelectItem>)}
+                  {ROLE_OPTIONS.map(([v]) => <SelectItem key={v} value={v}>{t("staff.role." + v, lang)}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
-            <div><Label>Phone (optional)</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="e.g. 012-345 6789" className="mt-1.5" /></div>
-            <div><Label>Email (optional)</Label><Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="e.g. ali@dz.my" className="mt-1.5" /></div>
+            <div><Label>{t("staff.label-phone-optional", lang)}</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t("staff.placeholder-phone", lang)} className="mt-1.5" /></div>
+            <div><Label>{t("staff.label-email-optional", lang)}</Label><Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("staff.placeholder-email", lang)} className="mt-1.5" /></div>
             <div><Label>{t("staff.password", lang)} <span className="text-muted-foreground">({t("staff.optional", lang)})</span></Label><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t("staff.password-hint", lang)} className="mt-1.5" /></div>
           </div>
           <p className="text-xs text-muted-foreground">{t("staff.login-hint", lang)}</p>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setAdding(false)}>Cancel</Button>
-            <Button disabled={pending || !name.trim()} onClick={submit}>{pending ? "Adding…" : "Add Staff"}</Button>
+            <Button variant="outline" onClick={() => setAdding(false)}>{t("common.cancel", lang)}</Button>
+            <Button disabled={pending || !name.trim()} onClick={submit}>{pending ? t("staff.adding", lang) : t("staff.add-staff", lang)}</Button>
           </div>
         </div>
       )}
@@ -102,21 +102,21 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead><tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
-              <th className="px-4 py-3 font-medium">Name</th><th className="px-4 py-3 font-medium">Role</th>
-              <th className="px-4 py-3 font-medium">Contact</th><th className="px-4 py-3 font-medium">Jobs</th>
-              <th className="px-4 py-3 font-medium">Status</th><th className="px-4 py-3" />
+              <th className="px-4 py-3 font-medium">{t("common.name", lang)}</th><th className="px-4 py-3 font-medium">{t("staff.label-role", lang)}</th>
+              <th className="px-4 py-3 font-medium">{t("lead.col-contact", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.kpi.col-jobs", lang)}</th>
+              <th className="px-4 py-3 font-medium">{t("common.status", lang)}</th><th className="px-4 py-3" />
             </tr></thead>
             <tbody>
               {staff.map((s) => (
                 <tr key={s.id} className={"border-b last:border-0 " + (s.active ? "" : "opacity-50")}>
                   <td className="px-4 py-3 font-medium">{s.name}</td>
                   <td className="px-4 py-3">
-                    <span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold " + (ROLE_BADGE[s.role] ?? "bg-slate-100 text-slate-600 dark:text-slate-300")}>{s.role.replace("_", " ")}</span>
+                    <span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold " + (ROLE_BADGE[s.role] ?? "bg-slate-100 text-slate-600 dark:text-slate-300")}>{t("staff.role." + s.role, lang)}</span>
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">{s.phone ?? "—"}{s.email ? " · " + s.email : ""}</td>
                   <td className="px-4 py-3 tabular-nums">{s.jobCount}</td>
                   <td className="px-4 py-3">
-                    <span className={"text-[11px] font-semibold " + (s.active ? "text-emerald-600 dark:text-emerald-300" : "text-slate-400")}>{s.active ? "Active" : "Inactive"}</span>
+                    <span className={"text-[11px] font-semibold " + (s.active ? "text-emerald-600 dark:text-emerald-300" : "text-slate-400")}>{s.active ? t("staff.status-active", lang) : t("staff.status-inactive", lang)}</span>
                   </td>
                   <td className="px-4 py-3 text-right">
                     {s.role !== "OWNER" && s.role !== "SUPER_ADMIN" && (
@@ -124,7 +124,7 @@ export function StaffManager({ staff }: { staff: StaffRow[] }) {
                         onClick={() => toggle(s.id, s.active, s.name)}
                         disabled={pending}
                         className="inline-flex h-7 w-7 items-center justify-center rounded-lg border text-muted-foreground hover:bg-muted disabled:opacity-40"
-                        title={s.active ? "Deactivate" : "Activate"}
+                        title={s.active ? t("staff.title-deactivate", lang) : t("staff.title-activate", lang)}
                       >
                         <Power className="h-3.5 w-3.5" />
                       </button>

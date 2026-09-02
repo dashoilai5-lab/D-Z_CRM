@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { QrCode } from "lucide-react";
 import { QrToggle } from "@/components/shared/qr-toggle";
 import { workshopQrUrl } from "@/lib/qr";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface QrFlags {
   enableMotorcycleQr: boolean;
@@ -18,6 +20,7 @@ export interface QrFlags {
  */
 export function QrSettings({ orgId, flags }: { orgId: string; flags: QrFlags }) {
   const router = useRouter();
+  const lang = useLang();
   const [pending, start] = useTransition();
   const [local, setLocal] = useState(flags);
 
@@ -31,26 +34,26 @@ export function QrSettings({ orgId, flags }: { orgId: string; flags: QrFlags }) 
         body: JSON.stringify(next),
       });
       if (res.ok) {
-        toast.success("QR settings saved");
+        toast.success(t("qr-settings.saved", lang));
         router.refresh();
       } else {
         setLocal(flags);
-        toast.error("Failed to save QR settings");
+        toast.error(t("qr-settings.failed", lang));
       }
     });
   };
 
   const rows: { key: keyof QrFlags; label: string; desc: string }[] = [
-    { key: "enableMotorcycleQr", label: "Motorcycle QR", desc: "Bike passport QR — workshop scans to load vehicle + owner" },
-    { key: "enableRiderProfileQr", label: "Rider Profile QR", desc: "Profile QR — workshop scans to load rider account" },
-    { key: "enableWorkshopQr", label: "Workshop QR", desc: "Shop QR — riders scan to check in at this workshop" },
+    { key: "enableMotorcycleQr", label: t("bike.qr-label", lang), desc: t("qr-settings.motorcycle.desc", lang) },
+    { key: "enableRiderProfileQr", label: t("qr-settings.rider.label", lang), desc: t("qr-settings.rider.desc", lang) },
+    { key: "enableWorkshopQr", label: t("qr-settings.workshop.label", lang), desc: t("qr-settings.workshop.desc", lang) },
   ];
 
   return (
     <div className="rounded-2xl border bg-card p-5">
       <div className="flex items-center gap-2 mb-3">
         <QrCode className="h-4 w-4 text-primary" />
-        <h2 className="font-semibold">QR Codes</h2>
+        <h2 className="font-semibold">{t("qr-settings.title", lang)}</h2>
       </div>
       <div className="space-y-2.5">
         {rows.map((r) => (
@@ -74,7 +77,7 @@ export function QrSettings({ orgId, flags }: { orgId: string; flags: QrFlags }) 
       </div>
       {local.enableWorkshopQr && (
         <div className="mt-4 flex justify-center">
-          <QrToggle value={workshopQrUrl(orgId)} label="Workshop QR" defaultShow={false} size={96} />
+          <QrToggle value={workshopQrUrl(orgId)} label={t("qr-settings.workshop.label", lang)} defaultShow={false} size={96} />
         </div>
       )}
     </div>

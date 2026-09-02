@@ -6,7 +6,7 @@ import { AppBrandIcon } from "@/components/shared/app-brand-icon";
 import { signUpRider } from "@/actions/auth-supabase";
 import { LanguageSwitcher } from "@/components/rider/language-switcher";
 import { useLang } from "@/components/shared/language-context";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 import { COUNTRY_CODES } from "@/lib/phone";
 
 /** Rider 顾客自助注册页。 */
@@ -33,11 +33,11 @@ export default function RiderSignupPage() {
     if (!res.ok) { setError(res.error); return; }
     if (res.signInFailed) {
       // 账号已建，但自动登录失败（如 phone-only 需 Supabase Phone provider）——引导手动登录
-      setInfo("Account created! Sign in with your " + (res.signInFailed.includes("phone") || res.signInFailed.includes("Phone") ? "phone number" : "email") + " and password.");
+      setInfo(tpl("signup.created-signin", lang, { id: res.signInFailed.includes("phone") || res.signInFailed.includes("Phone") ? t("signup.phone-number", lang) : t("common.email", lang) }));
       return;
     }
     if (res.emailConfirm) {
-      setInfo("Account created! Check your email for a confirmation link, then sign in.");
+      setInfo(t("signup.created-email", lang));
     } else {
       // 新注册必无摩托 → 引导注册第一辆
       router.push("/rider/bike-first");
@@ -67,7 +67,7 @@ export default function RiderSignupPage() {
           <form onSubmit={doSignup} className="space-y-3">
             <div>
               <label className={labelCls}>{t("signup.full-name", lang)}</label>
-              <input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+              <input className={inputCls} required value={name} onChange={(e) => setName(e.target.value)} placeholder={t("signup.ph-name", lang)} />
             </div>
             <div>
               <label className={labelCls}>{t("common.phone", lang)}</label>
@@ -75,13 +75,13 @@ export default function RiderSignupPage() {
                 <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className="w-32 rounded-md border bg-background px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
                   {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
                 </select>
-                <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="123-456 789" />
+                <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t("signup.ph-phone", lang)} />
               </div>
               <p className="mt-1 text-[10px] text-muted-foreground">{t("signup.country-hint", lang)}</p>
             </div>
             <div>
               <label className={labelCls}>{t("signup.email-optional", lang)}</label>
-              <input className={inputCls} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+              <input className={inputCls} type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("signup.ph-email", lang)} />
             </div>
             <div>
               <label className={labelCls}>{t("form.gender", lang)}</label>

@@ -1,9 +1,12 @@
 import { db } from "@/lib/db";
 import { fmtDateTime } from "@/lib/format";
+import { getLang } from "@/lib/get-lang";
+import { t } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function AuditLogsPage({ searchParams }: { searchParams: Promise<{ action?: string; entity?: string }> }) {
+  const lang = await getLang();
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
   const where: Record<string, unknown> = { organisationId: org!.id };
@@ -16,11 +19,11 @@ export default async function AuditLogsPage({ searchParams }: { searchParams: Pr
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Audit Logs</h1>
-        <p className="text-sm text-muted-foreground">Sensitive operations — login, bookings, job status, transfers, loyalty (AUDIT-001..015)</p>
+        <h1 className="text-2xl font-bold">{t("audit.title", lang)}</h1>
+        <p className="text-sm text-muted-foreground">{t("audit.subtitle", lang)}</p>
       </div>
       <div className="flex gap-2 flex-wrap text-sm">
-        <a href="/workshop/settings/audit-logs" className={"rounded-md border px-3 py-2 " + (!sp.action && !sp.entity ? "bg-primary text-primary-foreground" : "")}>All</a>
+        <a href="/workshop/settings/audit-logs" className={"rounded-md border px-3 py-2 " + (!sp.action && !sp.entity ? "bg-primary text-primary-foreground" : "")}>{t("audit.all", lang)}</a>
         {actionGroups.map((a) => (
           <a key={a.action} href={"/workshop/settings/audit-logs?action=" + encodeURIComponent(a.action)} className={"rounded-md border px-3 py-2 " + (sp.action === a.action ? "bg-primary text-primary-foreground" : "")}>
             {a.action} ({a._count})
@@ -32,8 +35,8 @@ export default async function AuditLogsPage({ searchParams }: { searchParams: Pr
           <table className="dz-table">
             <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
               <tr>
-                <th className="px-3 py-2.5 font-medium">Time</th><th className="px-3 py-2.5 font-medium">Action</th><th className="px-3 py-2.5 font-medium">Entity</th>
-                <th className="px-3 py-2.5 font-medium">Branch</th><th className="px-3 py-2.5 font-medium">After</th>
+                <th className="px-3 py-2.5 font-medium">{t("audit.col-time", lang)}</th><th className="px-3 py-2.5 font-medium">{t("audit.col-action", lang)}</th><th className="px-3 py-2.5 font-medium">{t("audit.col-entity", lang)}</th>
+                <th className="px-3 py-2.5 font-medium">{t("audit.col-branch", lang)}</th><th className="px-3 py-2.5 font-medium">{t("audit.col-after", lang)}</th>
               </tr>
             </thead>
             <tbody>
@@ -46,7 +49,7 @@ export default async function AuditLogsPage({ searchParams }: { searchParams: Pr
                   <td className="px-3 py-2 text-[11px] text-muted-foreground max-w-xs truncate">{r.after ?? ""}</td>
                 </tr>
               ))}
-              {rows.length === 0 && <tr><td colSpan={5} className="px-3 py-10 text-center text-sm text-muted-foreground">No audit events yet.</td></tr>}
+              {rows.length === 0 && <tr><td colSpan={5} className="px-3 py-10 text-center text-sm text-muted-foreground">{t("audit.empty", lang)}</td></tr>}
             </tbody>
           </table>
         </div>

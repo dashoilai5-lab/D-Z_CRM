@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { setChecklistResult, startChecklist, requestApproval } from "@/actions/mechanic";
 import { transitionJob } from "@/actions/workshop";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export interface ChecklistItemDto { id: string; name: string; result: string; note: string | null }
 export interface FindingDto { id: string; title: string; severity: string; note: string | null; recommendedRepair: string | null; priceSen: number | null; status: string; approvalStatus?: string }
@@ -21,6 +23,7 @@ export function ChecklistRunner({
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
+  const lang = useLang();
   const [note, setNote] = useState<Record<string, string>>({});
   const [repair, setRepair] = useState<Record<string, string>>({});
   const [price, setPrice] = useState<Record<string, string>>({});
@@ -30,18 +33,18 @@ export function ChecklistRunner({
     start(async () => {
       await setChecklistResult(jobId, itemId, result as never, note[itemId] || undefined);
       router.refresh();
-      toast.success("Checklist updated");
+      toast.success(t("checklist.toast-updated", lang));
     });
 
   const submitApproval = (itemId: string, title: string) => {
     const r = repair[itemId];
     const p = Number(price[itemId]);
-    if (!r || !p) { toast.error("Recommended repair and price are required"); return; }
+    if (!r || !p) { toast.error(t("checklist.toast-repair-required", lang)); return; }
     start(async () => {
-      await requestApproval({ jobId, executionItemId: itemId, title, severity: "WARNING", note: note[itemId] ?? "Found during inspection.", recommendedRepair: r, priceSen: Math.round(p * 100) });
+      await requestApproval({ jobId, executionItemId: itemId, title, severity: "WARNING", note: note[itemId] ?? t("checklist.note-found", lang), recommendedRepair: r, priceSen: Math.round(p * 100) });
       router.refresh();
       setApprovalPanel(null);
-      toast.success("Approval requested — customer will see it in the Rider app");
+      toast.success(t("checklist.toast-requested", lang));
     });
   };
 
@@ -50,7 +53,7 @@ export function ChecklistRunner({
       try {
         const r = await transitionJob(jobId, "COMPLETED");
         router.refresh();
-        if (r.ok && r.result) toast.success("Service completed — invoice " + r.result.invoiceNumber + " · GP " + "RM" + (r.result.grossProfitSen / 100));
+        if (r.ok && r.result) toast.success(tpl("checklist.toast-completed", lang, { invoice: r.result.invoiceNumber, gp: r.result.grossProfitSen / 100 }));
       } catch (e) { toast.error((e as Error).message); }
     });
 
@@ -58,22 +61,22 @@ export function ChecklistRunner({
     <div className="space-y-5">
       <div className="flex items-center justify-between rounded-2xl border bg-card p-4">
         <div>
-          <div className="font-mono text-xs text-muted-foreground">JOB</div>
+          <div className="font-mono text-xs text-muted-foreground">{t("checklist.job", lang)}</div>
           <div className="font-bold">#{jobNumber}</div>
         </div>
         <div className="flex gap-2">
           {(status === "IN_PROGRESS" || status === "AWAITING_APPROVAL") && (
-            <Button size="sm" variant="outline" disabled={pending} onClick={() => start(async () => { await transitionJob(jobId, "READY"); router.refresh(); toast.success("Marked ready"); })}>Mark Ready</Button>
+            <Button size="sm" variant="outline" disabled={pending} onClick={() => start(async () => { await transitionJob(jobId, "READY"); router.refresh(); toast.success(t("checklist.toast-marked-ready", lang)); })}>{t("checklist.mark-ready", lang)}</Button>
           )}
           {(status === "READY" || status === "IN_PROGRESS" || status === "AWAITING_APPROVAL") && (
-            <Button size="sm" disabled={pending} onClick={complete} data-testid="complete-service">Complete Service</Button>
+            <Button size="sm" disabled={pending} onClick={complete} data-testid="complete-service">{t("checklist.complete-service", lang)}</Button>
           )}
         </div>
       </div>
 
       {!hasChecklist && (
         <Button className="w-full" data-testid="start-checklist" onClick={() => start(async () => { await startChecklist(jobId); router.refresh(); })} disabled={pending}>
-          Start Inspection Checklist
+          {t("checklist.start", lang)}
         </Button>
       )}
 
@@ -103,26 +106,26 @@ export function ChecklistRunner({
                 </div>
                 {(result === "WARNING" || result === "FAIL") && (
                   <div className="mt-3 rounded-xl bg-muted/50 p-3">
-                    <Input placeholder="Mechanic note (e.g. Chain is too loose)" value={note[item.id] ?? ""} onChange={(e) => setNote((n) => ({ ...n, [item.id]: e.target.value }))} className="bg-background h-8 text-sm" />
+                    <Input placeholder={t("checklist.note-placeholder", lang)} value={note[item.id] ?? ""} onChange={(e) => setNote((n) => ({ ...n, [item.id]: e.target.value }))} className="bg-background h-8 text-sm" />
                     {!active ? (
                       <Button size="sm" variant="outline" className="mt-2" data-testid={"approval-request-" + item.name.replace(/\s+/g, "-")} onClick={() => setApprovalPanel(item.id)}>
-                        <MessageSquare className="h-3.5 w-3.5 mr-1.5" /> Request Customer Approval
+                        <MessageSquare className="h-3.5 w-3.5 mr-1.5" /> {t("checklist.request-approval", lang)}
                       </Button>
                     ) : (
                       <div className="mt-2 space-y-2">
                         <div className="grid grid-cols-2 gap-2">
                           <div>
-                            <Label className="text-[11px]">Recommended Repair</Label>
-                            <Input value={repair[item.id] ?? ""} onChange={(e) => setRepair((n) => ({ ...n, [item.id]: e.target.value }))} placeholder="Chain Adjustment" className="bg-background h-8 text-sm mt-0.5" />
+                            <Label className="text-[11px]">{t("checklist.repair-label", lang)}</Label>
+                            <Input value={repair[item.id] ?? ""} onChange={(e) => setRepair((n) => ({ ...n, [item.id]: e.target.value }))} placeholder={t("checklist.repair-placeholder", lang)} className="bg-background h-8 text-sm mt-0.5" />
                           </div>
                           <div>
-                            <Label className="text-[11px]">Price (RM)</Label>
-                            <Input inputMode="decimal" value={price[item.id] ?? ""} onChange={(e) => setPrice((n) => ({ ...n, [item.id]: e.target.value }))} placeholder="20" className="bg-background h-8 text-sm mt-0.5" />
+                            <Label className="text-[11px]">{t("checklist.price-label", lang)}</Label>
+                            <Input inputMode="decimal" value={price[item.id] ?? ""} onChange={(e) => setPrice((n) => ({ ...n, [item.id]: e.target.value }))} placeholder={t("checklist.price-placeholder", lang)} className="bg-background h-8 text-sm mt-0.5" />
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button size="sm" data-testid="approval-send" onClick={() => submitApproval(item.id, item.name)} disabled={pending}>Send Request</Button>
-                          <Button size="sm" variant="ghost" onClick={() => setApprovalPanel(null)}>Cancel</Button>
+                          <Button size="sm" data-testid="approval-send" onClick={() => submitApproval(item.id, item.name)} disabled={pending}>{t("checklist.send-request", lang)}</Button>
+                          <Button size="sm" variant="ghost" onClick={() => setApprovalPanel(null)}>{t("common.cancel", lang)}</Button>
                         </div>
                       </div>
                     )}
@@ -136,7 +139,7 @@ export function ChecklistRunner({
 
       {findings.length > 0 && (
         <div className="rounded-2xl border bg-card p-4">
-          <h3 className="font-semibold mb-3">Findings &amp; Approvals</h3>
+          <h3 className="font-semibold mb-3">{t("checklist.findings-title", lang)}</h3>
           <div className="space-y-2">
             {findings.map((f) => (
               <div key={f.id} className="flex items-center justify-between rounded-xl bg-muted/40 p-3 text-sm">
@@ -144,9 +147,9 @@ export function ChecklistRunner({
                   <div className="font-medium">{f.title} <span className={"text-[10px] font-bold uppercase " + (f.severity === "WARNING" ? "text-amber-600 dark:text-amber-300" : "text-red-600 dark:text-red-300")}>({f.severity})</span></div>
                   {f.recommendedRepair && <div className="text-xs text-muted-foreground">{f.recommendedRepair} · RM{((f.priceSen ?? 0) / 100).toFixed(2)}</div>}
                 </div>
-                {f.approvalStatus === "PENDING" && <span className="text-xs font-semibold text-amber-600 dark:text-amber-300 flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" /> WAITING CUSTOMER</span>}
-                {f.approvalStatus === "APPROVED" && <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-300 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> CUSTOMER APPROVED</span>}
-                {f.approvalStatus === "DECLINED" && <span className="text-xs font-semibold text-red-500 flex items-center gap-1"><XCircle className="h-3.5 w-3.5" /> CUSTOMER DECLINED</span>}
+                {f.approvalStatus === "PENDING" && <span className="text-xs font-semibold text-amber-600 dark:text-amber-300 flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" /> {t("checklist.status-waiting", lang)}</span>}
+                {f.approvalStatus === "APPROVED" && <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-300 flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" /> {t("checklist.status-approved", lang)}</span>}
+                {f.approvalStatus === "DECLINED" && <span className="text-xs font-semibold text-red-500 flex items-center gap-1"><XCircle className="h-3.5 w-3.5" /> {t("checklist.status-declined", lang)}</span>}
               </div>
             ))}
           </div>

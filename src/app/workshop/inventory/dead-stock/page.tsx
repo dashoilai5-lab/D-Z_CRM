@@ -4,6 +4,7 @@ import { inventoryService } from "@/modules/inventory/service";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
 import { t } from "@/lib/i18n";
+import { invRecommendation } from "@/lib/inv-labels";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ export default async function DeadStockPage() {
                   <td className="px-4 py-2.5 tabular-nums">{r.daysSinceLastSale} {t("ws.dead.days-ago", lang)}</td>
                   <td className="px-4 py-2.5 tabular-nums">{r.daysSinceLastSale}</td>
                   <td className="px-4 py-2.5"><span className={"rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 " + (r.stage === "CRITICAL_DEAD_STOCK" ? "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950/50 dark:text-red-300 dark:ring-red-900" : r.stage === "DEAD_STOCK_WARNING" ? "bg-orange-50 text-orange-700 ring-orange-200 dark:bg-orange-950/50 dark:text-orange-300 dark:ring-orange-900" : "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:ring-blue-900")}>{t("ws.dead.stage." + r.stage, lang)}</span></td>
-                  <td className="px-4 py-2.5 text-xs text-muted-foreground">{r.recommendation}</td>
+                  <td className="px-4 py-2.5 text-xs text-muted-foreground">{invRecommendation(r.recommendation, lang)}</td>
                 </tr>
               ))}
             </tbody>

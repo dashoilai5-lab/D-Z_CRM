@@ -35,11 +35,11 @@ export function SettingsForm({ name, phone, email, lang }: { name: string; phone
         <div className="space-y-3">
           <div>
             <Label>{t("common.name", lang)}</Label>
-            <Input value={n} onChange={(ev) => setN(ev.target.value)} className="mt-1.5" placeholder="Your name" />
+            <Input value={n} onChange={(ev) => setN(ev.target.value)} className="mt-1.5" placeholder={t("signup.ph-name", lang)} />
           </div>
           <div>
             <Label>{t("common.phone", lang)}</Label>
-            <Input value={p} onChange={(ev) => setP(ev.target.value)} className="mt-1.5" placeholder="e.g. 012-345 6789" inputMode="tel" />
+            <Input value={p} onChange={(ev) => setP(ev.target.value)} className="mt-1.5" placeholder={t("settings.phone-placeholder", lang)} inputMode="tel" />
           </div>
           <div>
             <Label>{t("common.email", lang)}</Label>

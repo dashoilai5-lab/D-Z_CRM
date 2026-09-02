@@ -6,7 +6,7 @@ import { PackageEditor } from "@/components/workshop/package-editor";
 import { NewPackageForm } from "@/components/workshop/new-package-form";
 import { PackageSorter } from "@/components/workshop/package-sorter";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +53,7 @@ export default async function PackagesPage() {
               <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">{p.tier}</span>
               <div className="flex items-center gap-1.5">
                 {p.isBestValue && <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200">{t("ws.packages.best-value", lang)}</Badge>}
-                {!p.active && <Badge className="bg-muted text-muted-foreground">Inactive</Badge>}
+                {!p.active && <Badge className="bg-muted text-muted-foreground">{t("ws.pkg.inactive", lang)}</Badge>}
               </div>
             </div>
             <h3 className="mt-2 text-xl font-bold">{p.name}</h3>
@@ -65,10 +65,10 @@ export default async function PackagesPage() {
                 return (
                   <li key={i.id} className="flex items-center gap-2 flex-wrap">
                     <span className="text-emerald-600 dark:text-emerald-300">{i.kind === "GIFT" ? "+" : "✓"}</span> {i.name}
-                    {i.kind === "GIFT" && <span className="rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300 text-[10px] px-1.5 py-0.5 font-semibold">FREE</span>}
+                    {i.kind === "GIFT" && <span className="rounded-full bg-violet-500/15 text-violet-600 dark:text-violet-300 text-[10px] px-1.5 py-0.5 font-semibold">{t("ws.pkg.free", lang)}</span>}
                     {dups.length > 0 && (
                       <span className="rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 text-[10px] px-1.5 py-0.5 font-medium">
-                        ⚠ also in {dups.join(", ")}
+                        {tpl("ws.pkg.also-in", lang, { names: dups.join(", ") })}
                       </span>
                     )}
                   </li>

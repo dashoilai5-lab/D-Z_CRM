@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Moon, Sun, Type, Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 type FontSize = "sm" | "md" | "lg" | "xl";
 
@@ -16,6 +18,7 @@ function readFontSize(): FontSize {
 }
 
 export function ThemeControls({ compact = false }: { compact?: boolean }) {
+  const lang = useLang();
   const { resolvedTheme, setTheme } = useTheme();
   const [fontSize, setFontSize] = useState<FontSize>("md");
   const [mounted, setMounted] = useState(false);
@@ -49,20 +52,20 @@ export function ThemeControls({ compact = false }: { compact?: boolean }) {
       <button
         type="button"
         onClick={() => setTheme(dark ? "light" : "dark")}
-        title={dark ? "Switch to light mode" : "Switch to dark mode"}
-        aria-label="Toggle dark mode"
+        title={dark ? t("theme.to_light", lang) : t("theme.to_dark", lang)}
+        aria-label={t("theme.toggle_dark", lang)}
         className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
       >
         {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
       </button>
       <span className="h-4 w-px bg-border" />
-      <button type="button" onClick={() => step(-1)} title="Smaller text" aria-label="Decrease font size" className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+      <button type="button" onClick={() => step(-1)} title={t("theme.smaller_text", lang)} aria-label={t("theme.decrease_font", lang)} className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
         <Minus className="h-3.5 w-3.5" />
       </button>
-      <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-muted-foreground" title="Font size">
+      <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-muted-foreground" title={t("theme.font_size", lang)}>
         <Type className="h-3 w-3" />
       </span>
-      <button type="button" onClick={() => step(1)} title="Larger text" aria-label="Increase font size" className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
+      <button type="button" onClick={() => step(1)} title={t("theme.larger_text", lang)} aria-label={t("theme.increase_font", lang)} className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
         <Plus className="h-3.5 w-3.5" />
       </button>
     </div>

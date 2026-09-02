@@ -4,10 +4,13 @@ import { db } from "@/lib/db";
 import { markAllNotificationsRead } from "@/actions/notifications";
 import { fmtDateTime } from "@/lib/format";
 import { MarkReadButton } from "@/components/workshop/mark-read-button";
+import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function NotificationsPage({ searchParams }: { searchParams: Promise<{ type?: string; all?: string }> }) {
+  const lang = await getLang();
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
   // base scope (branch or system-wide) — independent of the active type filter
@@ -26,16 +29,16 @@ export default async function NotificationsPage({ searchParams }: { searchParams
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><Bell className="h-5 w-5" /> Notifications</h1>
-          <p className="text-sm text-muted-foreground">{unread} unread · {items.length} total</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><Bell className="h-5 w-5" /> {t("notif.title", lang)}</h1>
+          <p className="text-sm text-muted-foreground">{tpl("notif.subtitle", lang, { unread, total: items.length })}</p>
         </div>
         <form action={markAllNotificationsRead}>
-          <button className="rounded-md border px-3 py-2 text-sm font-medium inline-flex items-center gap-1.5"><CheckCheck className="h-4 w-4" /> Mark all read</button>
+          <button className="rounded-md border px-3 py-2 text-sm font-medium inline-flex items-center gap-1.5"><CheckCheck className="h-4 w-4" /> {t("notif.mark-all", lang)}</button>
         </form>
       </div>
 
       <div className="flex gap-2 text-sm flex-wrap">
-        <a href="/workshop/notifications" className={"rounded-md border px-3 py-2 " + (!sp.type ? "bg-primary text-primary-foreground" : "")}>All</a>
+        <a href="/workshop/notifications" className={"rounded-md border px-3 py-2 " + (!sp.type ? "bg-primary text-primary-foreground" : "")}>{t("notif.all", lang)}</a>
         {typeCounts.map((t) => (
           <a key={t.type} href={"/workshop/notifications?type=" + t.type} className={"rounded-md border px-3 py-2 " + (sp.type === t.type ? "bg-primary text-primary-foreground" : "")}>
             {t.type} ({t._count})
@@ -44,7 +47,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       </div>
 
       <div className="rounded-xl border bg-card divide-y">
-        {visible.length === 0 && <div className="px-4 py-10 text-center text-sm text-muted-foreground">No notifications.</div>}
+        {visible.length === 0 && <div className="px-4 py-10 text-center text-sm text-muted-foreground">{t("notif.empty", lang)}</div>}
         {visible.map((n) => (
           <div key={n.id} className={"px-4 py-3 flex items-start gap-3 " + (n.readAt ? "opacity-60" : "")} data-testid="notif-row">
             <span className={"mt-1.5 h-2 w-2 shrink-0 rounded-full " + (n.readAt ? "bg-muted" : "bg-primary")} />
@@ -56,7 +59,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {n.link && <Link href={n.link} className="text-xs text-primary hover:underline">Open</Link>}
+              {n.link && <Link href={n.link} className="text-xs text-primary hover:underline">{t("notif.open", lang)}</Link>}
               {!n.readAt && <MarkReadButton id={n.id} />}
             </div>
           </div>

@@ -3,10 +3,13 @@ import { Search, Plus } from "lucide-react";
 import { db } from "@/lib/db";
 import { fmtKM, fmtDate } from "@/lib/format";
 import { PendingForm } from "@/components/shared/search-form";
+import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function MotorcyclesPage({ searchParams }: { searchParams: Promise<{ q?: string; brand?: string }> }) {
+  const lang = await getLang();
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
   const where: Record<string, unknown> = { customer: { organisationId: org!.id } };
@@ -28,35 +31,35 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
     <div className="space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Motorcycles</h1>
-          <p className="text-sm text-muted-foreground">{bikes.length} vehicles in the registry</p>
+          <h1 className="text-2xl font-bold">{t("bike.page-title", lang)}</h1>
+          <p className="text-sm text-muted-foreground">{tpl("bike.registry-count", lang, { n: bikes.length })}</p>
         </div>
         <Link href="/workshop/customers" className="inline-flex items-center gap-1.5 rounded-md bg-primary text-primary-foreground px-3 py-2 text-sm font-medium">
-          <Plus className="h-4 w-4" /> Register via Customer
+          <Plus className="h-4 w-4" /> {t("bike.register-via-customer", lang)}
         </Link>
       </div>
 
       <PendingForm data-tut="motorcycles-search" className="flex gap-2">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <input name="q" defaultValue={sp.q} placeholder="Search plate, VIN, brand, model…" className="w-full rounded-md border bg-background pl-8 pr-3 py-2 text-sm" />
+          <input name="q" defaultValue={sp.q} placeholder={t("bike.search-placeholder", lang)} className="w-full rounded-md border bg-background pl-8 pr-3 py-2 text-sm" />
         </div>
         <select name="brand" defaultValue={sp.brand} className="rounded-md border bg-background px-3 py-2 text-sm">
-          <option value="">All brands</option>
+          <option value="">{t("bike.all-brands", lang)}</option>
           {brands.map((b) => <option key={b.brand} value={b.brand}>{b.brand}</option>)}
         </select>
-        <button className="rounded-md border px-3 py-2 text-sm font-medium">Search</button>
+        <button className="rounded-md border px-3 py-2 text-sm font-medium">{t("bike.search", lang)}</button>
       </PendingForm>
 
       <div data-tut="motorcycles-list" className="rounded-xl border bg-card overflow-x-auto max-h-[560px] overflow-y-auto">
         <table className="dz-table">
           <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
             <tr>
-              <th className="px-3 py-2.5 font-medium">Motorcycle</th>
-              <th className="px-3 py-2.5 font-medium">Owner</th>
-              <th className="px-3 py-2.5 font-medium">Mileage</th>
-              <th className="px-3 py-2.5 font-medium">Last service</th>
-              <th className="px-3 py-2.5 font-medium">Next service</th>
+              <th className="px-3 py-2.5 font-medium">{t("bike.col-motorcycle", lang)}</th>
+              <th className="px-3 py-2.5 font-medium">{t("bike.col-owner", lang)}</th>
+              <th className="px-3 py-2.5 font-medium">{t("bike.col-mileage", lang)}</th>
+              <th className="px-3 py-2.5 font-medium">{t("bike.col-last-service", lang)}</th>
+              <th className="px-3 py-2.5 font-medium">{t("bike.col-next-service", lang)}</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +75,7 @@ export default async function MotorcyclesPage({ searchParams }: { searchParams: 
                 <td className="px-3 py-2.5 text-xs">{m.nextServiceMileage ? fmtKM(m.nextServiceMileage) : "—"}</td>
               </tr>
             ))}
-            {bikes.length === 0 && <tr><td colSpan={5} className="px-3 py-10 text-center text-sm text-muted-foreground">No motorcycles found.</td></tr>}
+            {bikes.length === 0 && <tr><td colSpan={5} className="px-3 py-10 text-center text-sm text-muted-foreground">{t("bike.empty", lang)}</td></tr>}
           </tbody>
         </table>
       </div>

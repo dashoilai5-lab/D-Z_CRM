@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pencil, Gift, X } from "lucide-react";
 import { updatePackage, type PackageItemInput } from "@/actions/packages";
 import { useLang } from "@/components/shared/language-context";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 type PkgItem = { id: string; name: string; kind: string; defaultQty: number; priceSen: number; productId: string | null };
 type Pkg = { id: string; name: string; tier: string; priceSen: number; description: string | null; isBestValue: boolean; active: boolean; items: PkgItem[] };
@@ -57,40 +57,40 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
   return (
     <div>
       <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-accent">
-        <Pencil className="h-3.5 w-3.5" /> Edit package
+        <Pencil className="h-3.5 w-3.5" /> {t("package.edit-button", lang)}
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setOpen(false)}>
           <div className="w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl border bg-background p-5" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold">Edit {pkg.name}</h2>
+              <h2 className="font-semibold">{tpl("package.edit-title", lang, { name: pkg.name })}</h2>
               <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>Name</label>
+                <label className={labelCls}>{t("ws.products.col.name", lang)}</label>
                 <input className={inputCls + " w-full"} value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div>
-                <label className={labelCls}>Price (RM)</label>
+                <label className={labelCls}>{t("package.label-price", lang)}</label>
                 <input className={inputCls + " w-full"} type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)} />
               </div>
               <div className="col-span-2">
-                <label className={labelCls}>Description</label>
+                <label className={labelCls}>{t("ws.job.col-description", lang)}</label>
                 <input className={inputCls + " w-full"} value={description} onChange={(e) => setDescription(e.target.value)} />
               </div>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={isBestValue} onChange={(e) => setIsBestValue(e.target.checked)} /> Best value
+                <input type="checkbox" checked={isBestValue} onChange={(e) => setIsBestValue(e.target.checked)} /> {t("package.best-value", lang)}
               </label>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} /> Active
+                <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} /> {t("package.active", lang)}
               </label>
             </div>
 
             <div className="mt-4">
-              <label className={labelCls}>Included items — tick to include (⚠ = also in another package)</label>
+              <label className={labelCls}>{t("package.included-instructions", lang)}</label>
               <div className="rounded-lg border max-h-48 overflow-y-auto divide-y">
                 {candidates.map((c) => {
                   const sel = isSelected(c.name);
@@ -100,7 +100,7 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
                       <input type="checkbox" checked={sel} onChange={() => toggle(c)} />
                       <span className="flex-1">{c.name}</span>
                       <span className="text-[10px] text-muted-foreground uppercase">{c.kind}</span>
-                      {dups.length > 0 && <span className="rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 text-[10px] px-1.5 py-0.5">⚠ in {dups.join(", ")}</span>}
+                      {dups.length > 0 && <span className="rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-400 text-[10px] px-1.5 py-0.5">⚠ {t("package.dup-in", lang)} {dups.join(", ")}</span>}
                     </label>
                   );
                 })}
@@ -108,21 +108,21 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
             </div>
 
             <div className="mt-3">
-              <label className={labelCls}>Free gift (optional)</label>
+              <label className={labelCls}>{t("package.free-gift", lang)}</label>
               <div className="flex gap-2">
-                <input className={inputCls + " flex-1"} value={giftName} onChange={(e) => setGiftName(e.target.value)} placeholder="e.g. Free keychain / chain lube sachet" />
+                <input className={inputCls + " flex-1"} value={giftName} onChange={(e) => setGiftName(e.target.value)} placeholder={t("package.gift-placeholder", lang)} />
                 <button
                   className="rounded-md border px-3 py-1.5 text-xs font-medium inline-flex items-center gap-1 hover:bg-accent"
                   disabled={!giftName.trim()}
                   onClick={() => { setItems((p) => [...p, { name: giftName.trim(), kind: "GIFT" }]); setGiftName(""); }}
                 >
-                  <Gift className="h-3.5 w-3.5" /> Add
+                  <Gift className="h-3.5 w-3.5" /> {t("common.add", lang)}
                 </button>
               </div>
             </div>
 
             <div className="mt-3 rounded-lg bg-muted/50 p-3">
-              <div className="text-[11px] font-medium text-muted-foreground mb-1.5">Currently included ({items.length})</div>
+              <div className="text-[11px] font-medium text-muted-foreground mb-1.5">{tpl("package.currently-included", lang, { n: items.length })}</div>
               <div className="flex flex-wrap gap-1.5">
                 {items.map((i) => (
                   <span key={i.name} className="inline-flex items-center gap-1 rounded-full border bg-background px-2 py-0.5 text-xs">
@@ -135,9 +135,9 @@ export function PackageEditor({ pkg, candidates, dupMap }: {
 
             {msg && <p className="mt-2 text-xs text-primary">{msg}</p>}
             <div className="mt-4 flex justify-end gap-2">
-              <button className="rounded-md border px-4 py-2 text-sm" onClick={() => setOpen(false)}>Cancel</button>
+              <button className="rounded-md border px-4 py-2 text-sm" onClick={() => setOpen(false)}>{t("common.cancel", lang)}</button>
               <button className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50" disabled={busy} onClick={save}>
-                {busy ? "Saving…" : "Save package"}
+                {busy ? t("package.saving", lang) : t("package.save", lang)}
               </button>
             </div>
           </div>

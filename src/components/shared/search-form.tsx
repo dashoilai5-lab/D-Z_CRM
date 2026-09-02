@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 /** Wrap any native GET filter/search form to show a brief "Searching…" indicator
  *  on submit. Does NOT prevent default submission — the core navigation logic
@@ -8,13 +10,15 @@ import { useState } from "react";
 export function PendingForm({
   children,
   className = "",
-  label = "Searching…",
+  label,
   ...rest
 }: {
   children: React.ReactNode;
   className?: string;
   label?: string;
 }) {
+  const lang = useLang();
+  const resolvedLabel = label ?? t("common.searching", lang);
   const [pending, setPending] = useState(false);
   return (
     <form method="get" className={"relative " + className} onSubmit={() => setPending(true)} {...rest}>
@@ -22,7 +26,7 @@ export function PendingForm({
       {pending && (
         <span className="absolute -top-3 right-2 z-20 inline-flex items-center gap-1.5 rounded-full border bg-card px-2.5 py-1 text-[11px] font-medium text-muted-foreground shadow-sm animate-pulse">
           <span className="h-3 w-3 rounded-full border-2 border-muted-foreground/30 border-t-primary animate-spin" />
-          {label}
+          {resolvedLabel}
         </span>
       )}
     </form>
@@ -38,7 +42,7 @@ export function ExportCsvButton({
   href,
   name,
   data,
-  label = "Export CSV",
+  label,
   className = "",
 }: {
   href?: string;
@@ -47,6 +51,8 @@ export function ExportCsvButton({
   label?: string;
   className?: string;
 }) {
+  const lang = useLang();
+  const resolvedLabel = label ?? t("common.export_csv", lang);
   const [busy, setBusy] = useState(false);
 
   async function onClick() {
@@ -87,7 +93,7 @@ export function ExportCsvButton({
       className={"inline-flex items-center gap-1.5 disabled:opacity-60 " + className}
     >
       {busy && <span className="h-3 w-3 rounded-full border-2 border-current/30 border-t-current animate-spin" />}
-      {busy ? "Exporting…" : label}
+      {busy ? t("common.exporting", lang) : resolvedLabel}
     </button>
   );
 }

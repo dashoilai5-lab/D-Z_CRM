@@ -4,10 +4,13 @@ import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session-user";
 import { OrgProfileForm, BranchManager, ServiceTypeManager, LostReasonsEditor } from "@/components/workshop/settings-forms";
 import { QrSettings } from "@/components/workshop/qr-settings";
+import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
+  const lang = await getLang();
   const session = await getSessionUser();
   const isOwner = session.kind === "staff" && (session.role === "OWNER" || session.role === "SUPER_ADMIN");
   const org = await db.organisation.findFirst();
@@ -17,21 +20,21 @@ export default async function SettingsPage() {
     db.user.findMany({ where: { organisationId: org!.id, active: true }, orderBy: { name: "asc" } }),
   ]);
   const links = [
-    { href: "/workshop/staff", label: "Users & Staff", desc: users.length + " active users", icon: Users },
-    { href: "/workshop/bookings/slots", label: "Appointment Slots", desc: "Slots, capacity, holidays", icon: CalendarClock },
-    { href: "/workshop/automations", label: "Automations", desc: "Event rules", icon: Bot },
-    { href: "/workshop/messaging/templates", label: "Message Templates", desc: "WhatsApp/SMS/email", icon: MessageSquare },
-    { href: "/workshop/loyalty", label: "Loyalty & Rewards", desc: "Tiers, points, referrals", icon: Star },
-    { href: "/workshop/integrations", label: "Integrations", desc: "Provider configs", icon: Plug },
-    { href: "/workshop/settings/audit-logs", label: "Audit Logs", desc: "Sensitive operations", icon: ShieldCheck },
-    { href: "/workshop/import", label: "CSV Import / Export", desc: "Data migration", icon: FileUp },
-    ...(isOwner ? [{ href: "/workshop/settings/developer", label: "Developer Settings", desc: "Access matrix · data mgmt", icon: Code2 }] : []),
+    { href: "/workshop/staff", label: t("ws.settings.link.staff", lang), desc: tpl("ws.settings.link.staff-desc", lang, { n: users.length }), icon: Users },
+    { href: "/workshop/bookings/slots", label: t("ws.settings.link.slots", lang), desc: t("ws.settings.link.slots-desc", lang), icon: CalendarClock },
+    { href: "/workshop/automations", label: t("ws.settings.link.automations", lang), desc: t("ws.settings.link.automations-desc", lang), icon: Bot },
+    { href: "/workshop/messaging/templates", label: t("ws.settings.link.templates", lang), desc: t("ws.settings.link.templates-desc", lang), icon: MessageSquare },
+    { href: "/workshop/loyalty", label: t("ws.settings.link.loyalty", lang), desc: t("ws.settings.link.loyalty-desc", lang), icon: Star },
+    { href: "/workshop/integrations", label: t("ws.settings.link.integrations", lang), desc: t("ws.settings.link.integrations-desc", lang), icon: Plug },
+    { href: "/workshop/settings/audit-logs", label: t("ws.settings.link.audit", lang), desc: t("ws.settings.link.audit-desc", lang), icon: ShieldCheck },
+    { href: "/workshop/import", label: t("ws.settings.link.import", lang), desc: t("ws.settings.link.import-desc", lang), icon: FileUp },
+    ...(isOwner ? [{ href: "/workshop/settings/developer", label: t("ws.settings.link.developer", lang), desc: t("ws.settings.link.developer-desc", lang), icon: Code2 }] : []),
   ];
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Settings</h1>
-        <p className="text-sm text-muted-foreground">Organisation profile, branches, service catalogue and configuration hubs</p>
+        <h1 className="text-2xl font-bold">{t("ws.settings.title", lang)}</h1>
+        <p className="text-sm text-muted-foreground">{t("ws.settings.subtitle", lang)}</p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">
@@ -46,7 +49,7 @@ export default async function SettingsPage() {
       <ServiceTypeManager serviceTypes={serviceTypes.map((s) => ({ id: s.id, name: s.name, category: s.category, durationMin: s.durationMin, priceSen: s.priceSen, active: s.active }))} />
 
       <div>
-        <h2 className="font-semibold mb-3">Configuration hubs</h2>
+        <h2 className="font-semibold mb-3">{t("ws.settings.config-hubs", lang)}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {links.map((l) => (
             <Link key={l.href} href={l.href} className="rounded-xl border bg-card p-4 hover:border-primary/40 transition-colors">

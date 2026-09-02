@@ -12,7 +12,7 @@ import type { QuoteLine } from "@/modules/quotations/service";
 export const dynamic = "force-dynamic";
 
 const STATUS_KEY: Record<string, string> = { PENDING: "pdf.pending", APPROVED: "pdf.approved", REJECTED: "pdf.rejected" };
-const KIND_LABEL: Record<string, string> = { PART: "Part", LABOUR: "Labour", SERVICE: "Service", ADDON: "Add-on", FEE: "Fee" };
+const KIND_LABEL: Record<string, string> = { PART: "ws.kind.part", LABOUR: "ws.kind.labour", SERVICE: "ws.kind.service", ADDON: "ws.kind.addon", FEE: "ws.kind.fee" };
 
 export default async function QuotationPrintPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -101,7 +101,7 @@ export default async function QuotationPrintPage({ params }: { params: Promise<{
             {lines.map((l, i) => (
               <tr key={i} className="border-b border-neutral-100">
                 <td className="py-2 pr-2">{l.description}</td>
-                <td className="py-2 pr-2 text-xs text-neutral-500">{KIND_LABEL[l.kind] ?? l.kind}</td>
+                <td className="py-2 pr-2 text-xs text-neutral-500">{KIND_LABEL[l.kind] ? t(KIND_LABEL[l.kind], lang) : l.kind}</td>
                 <td className="py-2 pr-2 text-center tabular-nums">{l.qty}</td>
                 <td className="py-2 pr-2 text-right tabular-nums">{formatRM(l.unitPriceSen)}</td>
                 <td className="py-2 text-right font-semibold tabular-nums">{formatRM(l.lineTotalSen)}</td>

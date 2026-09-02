@@ -8,6 +8,8 @@ import {
 } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 export interface CalendarCampaign {
   id: string;
@@ -26,7 +28,6 @@ const TYPE_BAR: Record<string, string> = {
   REMINDER: "bg-blue-500",
   NEWS: "bg-amber-500",
 };
-const TYPE_LABEL: Record<string, string> = { PROMO: "Promo", RETURN: "Return", REMINDER: "Reminder", NEWS: "News" };
 const STATUS_TONE: Record<string, string> = {
   ACTIVE: "text-emerald-600 dark:text-emerald-300", SCHEDULED: "text-blue-600 dark:text-blue-300", DRAFT: "text-slate-400", ENDED: "text-slate-400 line-through",
 };
@@ -48,6 +49,7 @@ function CampaignChip({ c, mini }: { c: CalendarCampaign; mini?: boolean }) {
 }
 
 export function PromoCalendarGrid({ campaigns }: { campaigns: CalendarCampaign[] }) {
+  const lang = useLang();
   const [view, setView] = useState<View>("month");
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<Date | null>(null);
@@ -87,7 +89,7 @@ export function PromoCalendarGrid({ campaigns }: { campaigns: CalendarCampaign[]
   };
 
   const title =
-    view === "week" ? format(cursor, "'Week of' d MMM yyyy")
+    view === "week" ? t("promo-cal.week-of", lang) + " " + format(cursor, "d MMM yyyy")
     : view === "month" ? format(cursor, "MMMM yyyy")
     : format(cursor, "yyyy");
 
@@ -96,21 +98,21 @@ export function PromoCalendarGrid({ campaigns }: { campaigns: CalendarCampaign[]
       {/* header: view switcher + nav */}
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-1.5">
-          <button onClick={() => nav(-1)} className="inline-flex h-7 w-7 items-center justify-center rounded-md border hover:bg-muted" aria-label="Previous"><ChevronLeft className="h-3.5 w-3.5" /></button>
-          <button onClick={() => nav(1)} className="inline-flex h-7 w-7 items-center justify-center rounded-md border hover:bg-muted" aria-label="Next"><ChevronRight className="h-3.5 w-3.5" /></button>
+          <button onClick={() => nav(-1)} className="inline-flex h-7 w-7 items-center justify-center rounded-md border hover:bg-muted" aria-label={t("promo-cal.prev", lang)}><ChevronLeft className="h-3.5 w-3.5" /></button>
+          <button onClick={() => nav(1)} className="inline-flex h-7 w-7 items-center justify-center rounded-md border hover:bg-muted" aria-label={t("promo-cal.next", lang)}><ChevronRight className="h-3.5 w-3.5" /></button>
           <div className="font-semibold text-sm ml-1">{title}</div>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex rounded-lg border p-0.5">
             {(["week", "month", "year"] as View[]).map((v) => (
               <button key={v} onClick={() => { setView(v); setSelected(null); }} className={cn("rounded-md px-2.5 py-1 text-[11px] font-semibold capitalize transition-colors", view === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                {v}
+                {t("promo-cal.view." + v, lang)}
               </button>
             ))}
           </div>
           <div className="flex gap-2 text-[9px] text-muted-foreground">
-            {(["PROMO", "RETURN", "REMINDER", "NEWS"] as const).map((t) => (
-              <span key={t} className="inline-flex items-center gap-0.5"><span className={"h-1.5 w-1.5 rounded-full " + TYPE_BAR[t]} />{TYPE_LABEL[t]}</span>
+            {(["PROMO", "RETURN", "REMINDER", "NEWS"] as const).map((ty) => (
+              <span key={ty} className="inline-flex items-center gap-0.5"><span className={"h-1.5 w-1.5 rounded-full " + TYPE_BAR[ty]} />{t("ws.mkt.calendar.type." + ty, lang)}</span>
             ))}
           </div>
         </div>
@@ -138,7 +140,7 @@ export function PromoCalendarGrid({ campaigns }: { campaigns: CalendarCampaign[]
       {view === "month" && (
         <>
           <div className="grid grid-cols-7 text-center text-[9px] font-semibold uppercase text-muted-foreground mb-0.5">
-            {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d}>{d}</div>)}
+            {(["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const).map((d) => <div key={d}>{t("promo-cal.day." + d, lang)}</div>)}
           </div>
           <div className="grid grid-cols-7 gap-px bg-border/50 rounded-lg overflow-hidden">
             {monthGrid.map((d) => {
@@ -151,7 +153,7 @@ export function PromoCalendarGrid({ campaigns }: { campaigns: CalendarCampaign[]
                   <span className={cn("inline-flex h-4 w-4 items-center justify-center rounded text-[9px] font-medium", today ? "bg-primary text-primary-foreground" : inMonth ? "text-foreground" : "text-muted-foreground/40", sel && "bg-primary text-primary-foreground")}>{format(d, "d")}</span>
                   <div className="mt-0.5 space-y-0.5">
                     {items.slice(0, 2).map((c) => <CampaignChip key={c.id} c={c} mini />)}
-                    {items.length > 2 && <div className="text-[8px] text-muted-foreground">+{items.length - 2} more</div>}
+                    {items.length > 2 && <div className="text-[8px] text-muted-foreground">{"+" + (items.length - 2) + " " + t("promo-cal.more", lang)}</div>}
                   </div>
                 </button>
               );
@@ -185,14 +187,14 @@ export function PromoCalendarGrid({ campaigns }: { campaigns: CalendarCampaign[]
       {/* selected day details */}
       {selectedCampaigns.length > 0 && (
         <div className="mt-2 rounded-lg border bg-muted/30 p-2.5 space-y-1">
-          <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{selected ? format(selected, "EEE, d MMM yyyy") : ""} · {selectedCampaigns.length} activit{selectedCampaigns.length > 1 ? "ies" : "y"}</div>
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{selected ? format(selected, "EEE, d MMM yyyy") : ""} · {selectedCampaigns.length} {t(selectedCampaigns.length > 1 ? "promo-cal.activities" : "promo-cal.activity", lang)}</div>
           {selectedCampaigns.map((c) => (
             <div key={c.id} className="flex items-center gap-1.5 text-xs">
               <span className={"h-1.5 w-1.5 rounded-full shrink-0 " + (TYPE_BAR[c.type] ?? "bg-slate-400")} />
               <span className="flex-1 truncate font-medium">{c.name}</span>
               {c.discountPercent && <span className="text-[10px] font-bold text-purple-600 dark:text-purple-300">−{c.discountPercent}%</span>}
-              <span className="text-[9px] font-semibold capitalize text-muted-foreground">{c.status.toLowerCase()}</span>
-              {c.conversions > 0 && <span className="text-[9px] text-emerald-600 dark:text-emerald-300 font-semibold">{c.conversions} bookings</span>}
+              <span className="text-[9px] font-semibold capitalize text-muted-foreground">{t("ws.mkt.status." + c.status, lang)}</span>
+              {c.conversions > 0 && <span className="text-[9px] text-emerald-600 dark:text-emerald-300 font-semibold">{c.conversions} {t("dash.unit-bookings", lang)}</span>}
             </div>
           ))}
         </div>

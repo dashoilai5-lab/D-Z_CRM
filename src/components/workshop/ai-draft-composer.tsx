@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { draftMessage, sendDraft } from "@/actions/ai";
 import { useLang } from "@/components/shared/language-context";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 const KINDS = [
   { value: "follow_up", label: "Follow-up" }, { value: "booking_reminder", label: "Booking reminder" },
@@ -71,9 +71,9 @@ export function AiDraftComposer() {
     <div className="space-y-3">
       <div className="grid sm:grid-cols-3 gap-3">
         <div>
-          <label className={labelCls}>Customer</label>
-          <input className={inputCls + " w-full"} value={q} onChange={(e) => search(e.target.value)} placeholder="Search customer…" />
-          {searching && <p className="text-[10px] text-muted-foreground mt-0.5 animate-pulse">Searching…</p>}
+          <label className={labelCls}>{t("ws.crm.return.col.customer", lang)}</label>
+          <input className={inputCls + " w-full"} value={q} onChange={(e) => search(e.target.value)} placeholder={t("ai.placeholder-search", lang)} />
+          {searching && <p className="text-[10px] text-muted-foreground mt-0.5 animate-pulse">{t("ai.searching", lang)}</p>}
           {customers.length > 0 && (
             <div className="mt-1 rounded-md border max-h-32 overflow-y-auto">
               {customers.map((c) => (
@@ -83,34 +83,34 @@ export function AiDraftComposer() {
               ))}
             </div>
           )}
-          {customerId && !customers.length && <p className="text-[10px] text-emerald-600 dark:text-emerald-300 mt-0.5">Selected ✓</p>}
+          {customerId && !customers.length && <p className="text-[10px] text-emerald-600 dark:text-emerald-300 mt-0.5">{t("ai.selected", lang)}</p>}
         </div>
         <div>
-          <label className={labelCls}>Message type</label>
+          <label className={labelCls}>{t("ai.label-message-type", lang)}</label>
           <select className={inputCls + " w-full"} value={kind} onChange={(e) => setKind(e.target.value)}>
-            {KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+            {KINDS.map((k) => <option key={k.value} value={k.value}>{t("ai.kind." + k.value, lang)}</option>)}
           </select>
         </div>
         <div>
-          <label className={labelCls}>Tone</label>
+          <label className={labelCls}>{t("ai.label-tone", lang)}</label>
           <select className={inputCls + " w-full"} value={tone} onChange={(e) => setTone(e.target.value)}>
-            {TONES.map((t) => <option key={t} value={t}>{t}</option>)}
+            {TONES.map((tone) => <option key={tone} value={tone}>{t("ai.tone." + tone, lang)}</option>)}
           </select>
         </div>
       </div>
       <button className="rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50" disabled={busy || !customerId} onClick={generate}>
-        Generate draft (AI)
+        {t("ai.generate", lang)}
       </button>
       {body && (
         <div className="rounded-lg border p-3 space-y-2">
           <textarea className="w-full rounded-md border bg-background px-3 py-2 text-sm" rows={5} value={body} onChange={(e) => setBody(e.target.value)} />
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <div className="text-[10px] text-muted-foreground">
-              Facts referenced: {Object.entries(facts).filter(([, v]) => v).map(([k]) => k).join(", ") || "—"} · AI draft — verify before sending
+              {tpl("ai.facts-hint", lang, { f: Object.entries(facts).filter(([, v]) => v).map(([k]) => k).join(", ") || "—" })}
             </div>
             <div className="flex gap-2">
-              <button className="rounded-md border px-3 py-1.5 text-xs font-medium" onClick={() => setBody("")}>Discard</button>
-              <button className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium disabled:opacity-50" disabled={busy || !body.trim()} onClick={send}>Send</button>
+              <button className="rounded-md border px-3 py-1.5 text-xs font-medium" onClick={() => setBody("")}>{t("ai.discard", lang)}</button>
+              <button className="rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium disabled:opacity-50" disabled={busy || !body.trim()} onClick={send}>{t("ai.send", lang)}</button>
             </div>
           </div>
         </div>

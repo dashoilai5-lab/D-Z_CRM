@@ -6,7 +6,7 @@ import { BellRing, CalendarClock, Megaphone, MessageSquare, Info, CheckCheck } f
 import { cn } from "@/lib/utils";
 import { markNotificationsRead } from "@/actions/rider";
 import { useLang } from "@/components/shared/language-context";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 const TYPE_ICON: Record<string, { icon: typeof Info; cls: string }> = {
   REMINDER: { icon: CalendarClock, cls: "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" },
@@ -42,12 +42,12 @@ export function NotificationsList({ customerId, notifications }: { customerId: s
         <h1 className="text-2xl font-bold">{t("rider.notifications-title", lang)}</h1>
         {unread > 0 && (
           <button onClick={markAll} disabled={pending} className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-medium hover:bg-muted disabled:opacity-50">
-            <CheckCheck className="h-3.5 w-3.5" /> Mark all read
+            <CheckCheck className="h-3.5 w-3.5" /> {t("rider.mark-all-read", lang)}
           </button>
         )}
       </div>
 
-      {notifications.length === 0 && <p className="text-sm text-muted-foreground text-center py-12">No notifications yet.</p>}
+      {notifications.length === 0 && <p className="text-sm text-muted-foreground text-center py-12">{t("rider.no-notifications", lang)}</p>}
 
       <div className="space-y-2">
         {notifications.map((n) => {
@@ -60,7 +60,7 @@ export function NotificationsList({ customerId, notifications }: { customerId: s
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-semibold">{n.title}</span>
-                  {!n.readAt && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-label="Unread" />}
+                  {!n.readAt && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" aria-label={t("mech.unread-dot", lang)} />}
                 </div>
                 {n.body && <p className="mt-0.5 text-xs text-muted-foreground">{n.body}</p>}
                 <div className="mt-1 text-[10px] text-muted-foreground/70">
@@ -72,7 +72,7 @@ export function NotificationsList({ customerId, notifications }: { customerId: s
         })}
       </div>
       <div className="flex items-center justify-center gap-1.5 pt-1 text-[11px] text-muted-foreground">
-        <BellRing className="h-3.5 w-3.5" /> {unread} unread
+        <BellRing className="h-3.5 w-3.5" /> {tpl("rider.unread-count", lang, { n: unread })}
       </div>
     </div>
   );

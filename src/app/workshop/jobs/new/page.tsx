@@ -26,7 +26,7 @@ export default async function NewJobPage({ searchParams }: { searchParams: Promi
     <div>
       <PageHeader
         title={isRepair ? t("ws.job.repair", lang) : t("ws.job.service", lang)}
-        subtitle={isRepair ? "Customer → motorcycle → parts → labour → mechanic" : "Customer → motorcycle → package → recommendations → mechanic"}
+        subtitle={isRepair ? t("ws.job.repair-flow", lang) : t("ws.job.service-flow", lang)}
         backHref="/workshop/jobs"
       />
       {isRepair ? (

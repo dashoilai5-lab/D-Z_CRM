@@ -19,14 +19,14 @@ export default async function AiCentrePage() {
 
       {/* AI-011/013..019: message drafts */}
       <div className="rounded-2xl border bg-card p-5">
-        <h2 className="font-semibold mb-1 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> AI Message Drafts</h2>
-        <p className="text-xs text-muted-foreground mb-4">Drafts are generated from structured CRM data only — review and edit before sending (AI-018/019).</p>
+        <h2 className="font-semibold mb-1 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> {t("ws.ai.drafts-title", lang)}</h2>
+        <p className="text-xs text-muted-foreground mb-4">{t("ws.ai.drafts-sub", lang)}</p>
         <AiDraftComposer />
       </div>
 
       {/* AI-020..027: business insights (rule-based) */}
       <div>
-        <h2 className="font-semibold mb-3 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> AI Business Insights</h2>
+        <h2 className="font-semibold mb-3 flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> {t("ws.ai.insights-title", lang)}</h2>
         <div className="space-y-3">
         {recs.map((r, i) => (
           <Link key={i} href={r.href} className="group flex items-start gap-4 rounded-2xl border bg-card p-5 hover:border-primary/40 transition-colors">

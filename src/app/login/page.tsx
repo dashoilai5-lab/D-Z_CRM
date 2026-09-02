@@ -6,6 +6,7 @@ import { AppBrandIcon } from "@/components/shared/app-brand-icon";
 import { signInWithPassword, signInWithOtp, verifyOtp } from "@/actions/auth-supabase";
 import { LanguageSwitcher } from "@/components/rider/language-switcher";
 import { useLang } from "@/components/shared/language-context";
+import { t } from "@/lib/i18n";
 
 type LoginMode = "password" | "otp";
 
@@ -39,7 +40,7 @@ export default function LoginPage() {
     setBusy(false);
     if (!res.ok) { setError(res.error); return; }
     setOtpSent(true);
-    setInfo("OTP sent. Check your email (dev: see Supabase logs / local console).");
+    setInfo(t("pub.login.otp_sent", lang));
   }
 
   async function doVerifyOtp(e: React.FormEvent) {
@@ -68,14 +69,14 @@ export default function LoginPage() {
             <AppBrandIcon app="workshop" className="h-7 w-7" />
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight">D&Z AI CRM</h1>
-          <p className="text-sm text-muted-foreground">Dealer · Workshop · Rider — one platform</p>
+          <p className="text-sm text-muted-foreground">{t("pub.login.tagline", lang)}</p>
         </div>
         <div className="rounded-2xl border bg-card/95 backdrop-blur p-6 shadow-xl shadow-black/5">
           <div className="mb-4 flex gap-1 rounded-lg bg-muted p-1">
-            <button type="button" className={tabCls(loginMode === "password")} onClick={() => { setLoginMode("password"); setError(""); setInfo(""); }}>Password</button>
-            <button type="button" className={tabCls(loginMode === "otp")} onClick={() => { setLoginMode("otp"); setError(""); setInfo(""); }}>Email code</button>
+            <button type="button" className={tabCls(loginMode === "password")} onClick={() => { setLoginMode("password"); setError(""); setInfo(""); }}>{t("pub.login.tab_password", lang)}</button>
+            <button type="button" className={tabCls(loginMode === "otp")} onClick={() => { setLoginMode("otp"); setError(""); setInfo(""); }}>{t("pub.login.tab_email_code", lang)}</button>
           </div>
-          <p className="text-sm text-muted-foreground mb-5">Sign in with your D&Z account</p>
+          <p className="text-sm text-muted-foreground mb-5">{t("pub.login.heading", lang)}</p>
 
           {error && <p className="mb-3 rounded-md bg-destructive/10 text-destructive text-sm px-3 py-2">{error}</p>}
           {info && <p className="mb-3 rounded-md bg-primary/10 text-primary text-sm px-3 py-2">{info}</p>}
@@ -83,15 +84,15 @@ export default function LoginPage() {
           {loginMode === "password" && (
             <form onSubmit={doPassword} className="space-y-3">
               <div>
-                <label className={labelCls}>Email</label>
+                <label className={labelCls}>{t("common.email", lang)}</label>
                 <input className={inputCls} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@dz.my" />
               </div>
               <div>
-                <label className={labelCls}>Password</label>
+                <label className={labelCls}>{t("form.password", lang)}</label>
                 <input className={inputCls} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
-                {busy ? "Signing in…" : "Sign in"}
+                {busy ? t("pub.login.signing_in", lang) : t("pub.login.sign_in", lang)}
               </button>
             </form>
           )}
@@ -99,11 +100,11 @@ export default function LoginPage() {
           {loginMode === "otp" && !otpSent && (
             <form onSubmit={doSendOtp} className="space-y-3">
               <div>
-                <label className={labelCls}>Email</label>
+                <label className={labelCls}>{t("common.email", lang)}</label>
                 <input className={inputCls} type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@dz.my" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md border py-2 text-sm font-medium hover:bg-accent disabled:opacity-50">
-                {busy ? "Sending…" : "Send me a code"}
+                {busy ? t("pub.login.sending", lang) : t("pub.login.send_code", lang)}
               </button>
             </form>
           )}
@@ -111,11 +112,11 @@ export default function LoginPage() {
           {loginMode === "otp" && otpSent && (
             <form onSubmit={doVerifyOtp} className="space-y-3">
               <div>
-                <label className={labelCls}>OTP code</label>
+                <label className={labelCls}>{t("form.otp_code", lang)}</label>
                 <input className={inputCls} inputMode="numeric" required value={otpToken} onChange={(e) => setOtpToken(e.target.value)} placeholder="123456" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
-                {busy ? "Verifying…" : "Verify & continue"}
+                {busy ? t("pub.login.verifying", lang) : t("pub.login.verify_continue", lang)}
               </button>
             </form>
           )}

@@ -12,6 +12,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { updateJobDetails, addJobServiceItems, removeJobItem } from "@/actions/workshop";
 import { formatRM } from "@/lib/money";
 import { SERVICE_CATALOG, servicesForType } from "@/lib/service-catalog";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export interface EditJobData {
   jobId: string;
@@ -26,6 +28,7 @@ export interface MechanicOption { id: string; name: string }
 export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics: MechanicOption[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
+  const lang = useLang();
   const [open, setOpen] = useState(false);
   const [mileage, setMileage] = useState(String(data.mileage));
   const [request, setRequest] = useState(data.customerRequest ?? "");
@@ -52,7 +55,7 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
         }
         setOpen(false);
         router.refresh();
-        toast.success("Job details updated" + (added.length > 0 ? " — " + added.length + " service line(s) added" : ""));
+        toast.success(t("job-form.toast-updated", lang) + (added.length > 0 ? " — " + tpl("job-form.toast-lines-added", lang, { n: added.length }) : ""));
       } catch (e) {
         toast.error((e as Error).message);
       }
@@ -62,37 +65,37 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
     start(async () => {
       await removeJobItem({ jobId: data.jobId, kind, itemId });
       router.refresh();
-      toast.success("Removed " + description);
+      toast.success(tpl("job-form.toast-removed", lang, { name: description }));
     });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium hover:bg-muted">
-        <Pencil className="h-3.5 w-3.5" /> Edit Details
+        <Pencil className="h-3.5 w-3.5" /> {t("bike.edit-details", lang)}
       </DialogTrigger>
       <DialogContent style={{ maxWidth: "48rem" }} className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Edit Job Details</DialogTitle>
-          <DialogDescription>Update mileage, customer request, mechanic, and service lines.</DialogDescription>
+          <DialogTitle>{t("job-form.edit-title", lang)}</DialogTitle>
+          <DialogDescription>{t("job-form.edit-desc", lang)}</DialogDescription>
         </DialogHeader>
 
         <div className="grid sm:grid-cols-3 gap-3 py-2">
           <div>
-            <Label>Mileage (km)</Label>
+            <Label>{t("job-form.mileage", lang)}</Label>
             <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} className="mt-1.5" />
           </div>
           <div>
-            <Label>Mechanic</Label>
+            <Label>{t("job-form.mechanic", lang)}</Label>
             <Select value={mechanicId} onValueChange={(v) => setMechanicId(v ?? "")}>
-              <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? "Unassigned" : mechanics.find((m) => m.id === v)?.name ?? "Unassigned")}</SelectValue></SelectTrigger>
+              <SelectTrigger className="mt-1.5"><SelectValue>{(v) => (v === "none" ? t("job-form.unassigned", lang) : mechanics.find((m) => m.id === v)?.name ?? t("job-form.unassigned", lang))}</SelectValue></SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Unassigned</SelectItem>
+                <SelectItem value="none">{t("job-form.unassigned", lang)}</SelectItem>
                 {mechanics.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
           <div>
-            <Label>Customer Request</Label>
+            <Label>{t("ws.job.customer-request", lang)}</Label>
             <Input value={request} onChange={(e) => setRequest(e.target.value)} placeholder="—" className="mt-1.5" />
           </div>
         </div>
@@ -100,9 +103,9 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
         <div className="grid sm:grid-cols-2 gap-4 mt-1">
           {/* current lines with remove */}
           <div>
-            <Label>Job Lines</Label>
+            <Label>{t("ws.job.lines-title", lang)}</Label>
             <div className="mt-1.5 space-y-1 max-h-52 overflow-y-auto">
-              {data.items.length === 0 && <p className="text-xs text-muted-foreground">No lines yet.</p>}
+              {data.items.length === 0 && <p className="text-xs text-muted-foreground">{t("job-form.no-lines", lang)}</p>}
               {data.items.map((it) => (
                 <div key={it.id} className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm">
                   <span className="flex-1 truncate">{it.description}</span>
@@ -111,7 +114,7 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
                     type="button"
                     onClick={() => removeLine(it.kind, it.id, it.description)}
                     className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:bg-red-50 hover:text-red-600"
-                    title="Remove line"
+                    title={t("job-form.remove-line-title", lang)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -122,7 +125,7 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
 
           {/* add-on services */}
           <div>
-            <Label>Add Additional Service</Label>
+            <Label>{t("job-form.add-service", lang)}</Label>
             <div className="mt-1.5 space-y-1 max-h-52 overflow-y-auto">
               {extras.map((s) => {
                 const active = !!extra[s.key];
@@ -147,15 +150,15 @@ export function EditJobForm({ data, mechanics }: { data: EditJobData; mechanics:
             </div>
             {Object.keys(extra).length > 0 && (
               <p className="mt-1.5 text-[11px] text-emerald-700 dark:text-emerald-300">
-                {Object.keys(extra).length} service(s) will be added — +{formatRM(Object.values(extra).reduce((s, x) => s + x.priceSen, 0))}
+                {tpl("job-form.will-add", lang, { n: Object.keys(extra).length })} — +{formatRM(Object.values(extra).reduce((s, x) => s + x.priceSen, 0))}
               </p>
             )}
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button disabled={pending} onClick={save}>{pending ? "Saving…" : "Save Changes"}</Button>
+          <Button variant="outline" onClick={() => setOpen(false)}>{t("common.cancel", lang)}</Button>
+          <Button disabled={pending} onClick={save}>{pending ? t("job-form.saving", lang) : t("profile.save-changes", lang)}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

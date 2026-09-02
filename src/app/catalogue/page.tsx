@@ -5,10 +5,13 @@ import { db } from "@/lib/db";
 import { BIKE_BRANDS, BRAND_MODEL_MAP, bikeImageFor } from "@/lib/bike-models";
 import { formatRM } from "@/lib/money";
 import { PendingForm } from "@/components/shared/search-form";
+import { getLang } from "@/lib/get-lang";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
 export default async function CataloguePage({ searchParams }: { searchParams: Promise<{ brand?: string; q?: string }> }) {
+  const lang = await getLang();
   const sp = await searchParams;
   const org = await db.organisation.findFirst();
   const branches = await db.branch.findMany({ where: { organisationId: org!.id } });
@@ -33,19 +36,19 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
 
       <div className="mx-auto max-w-4xl px-4 py-6 space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Motorcycle Catalogue</h1>
-          <p className="text-muted-foreground mt-1">Browse available models across {branches.length} branches. Enquire and we&apos;ll get back to you.</p>
+          <h1 className="text-3xl font-bold">{t("cat.title", lang)}</h1>
+          <p className="text-muted-foreground mt-1">{tpl("cat.subtitle", lang, { n: branches.length })}</p>
         </div>
 
         <PendingForm className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input name="q" defaultValue={sp.q} placeholder="Search models…" className="w-full rounded-lg border bg-background pl-8 pr-3 py-2 text-sm" />
+            <input name="q" defaultValue={sp.q} placeholder={t("cat.search_placeholder", lang)} className="w-full rounded-lg border bg-background pl-8 pr-3 py-2 text-sm" />
           </div>
           <select name="brand" defaultValue={brand} className="rounded-lg border bg-background px-3 py-2 text-sm">
             {BIKE_BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
-          <button className="rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium">Go</button>
+          <button className="rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium">{t("cat.go", lang)}</button>
         </PendingForm>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -64,16 +67,16 @@ export default async function CataloguePage({ searchParams }: { searchParams: Pr
                   />
                 </div>
                 <div className="mt-3 font-semibold">{brand} {m}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">From {formatRM(price * 100)}</div>
-                <div className="mt-1"><span className="inline-flex rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 text-[11px] px-2 py-0.5">In stock</span></div>
+                <div className="text-xs text-muted-foreground mt-0.5">{tpl("cat.from_price", lang, { price: formatRM(price * 100) })}</div>
+                <div className="mt-1"><span className="inline-flex rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 text-[11px] px-2 py-0.5">{t("cat.in_stock", lang)}</span></div>
                 <Link href={"/contact?model=" + encodeURIComponent(brand + " " + m)} className="mt-3 rounded-lg border text-center py-1.5 text-sm font-medium hover:bg-accent">
-                  Enquire
+                  {t("cat.enquire", lang)}
                 </Link>
               </div>
             );
           })}
         </div>
-        {models.length === 0 && <p className="text-sm text-muted-foreground py-8 text-center">No models match.</p>}
+        {models.length === 0 && <p className="text-sm text-muted-foreground py-8 text-center">{t("cat.no_models", lang)}</p>}
       </div>
     </main>
   );

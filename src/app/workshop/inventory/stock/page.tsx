@@ -32,7 +32,7 @@ export default async function StockPage() {
               <th className="px-4 py-3 font-medium">{t("ws.stock.col.product", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.stock.col.qty", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.stock.col.min", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.stock.col.value", lang)}</th>
               <th className="px-4 py-3 font-medium">{t("ws.stock.col.days-left", lang)}</th><th className="px-4 py-3 font-medium">{t("ws.stock.col.level", lang)}</th>
-              <th className="px-4 py-3 font-medium">Adjust / Transfer</th>
+              <th className="px-4 py-3 font-medium">{t("ws.stock.col.adjust-transfer", lang)}</th>
             </tr></thead>
             <tbody>
               {rows.map((r) => (

@@ -7,7 +7,7 @@ import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { submitReview } from "@/actions/rider";
 import { useLang } from "@/components/shared/language-context";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 export function ReviewCard({ customerId, branchId, jobId, existingRating }: { customerId: string; branchId: string; jobId: string; existingRating: number | null }) {
   const router = useRouter();
@@ -43,13 +43,13 @@ export function ReviewCard({ customerId, branchId, jobId, existingRating }: { cu
   return (
     <div className="mt-2.5">
       <button onClick={() => setOpen(true)} className="rounded-xl bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground hover:text-foreground">
-        Rate this service ★
+        {t("rider.rate-service", lang)}
       </button>
       {open && (
         <div className="mt-2 rounded-xl border p-3 space-y-2.5">
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((s) => (
-              <button key={s} type="button" onMouseEnter={() => setHover(s)} onMouseLeave={() => setHover(0)} onClick={() => setRating(s)} aria-label={s + " stars"} className="p-0.5">
+              <button key={s} type="button" onMouseEnter={() => setHover(s)} onMouseLeave={() => setHover(0)} onClick={() => setRating(s)} aria-label={tpl("rider.stars-aria", lang, { n: s })} className="p-0.5">
                 <Star className={cn("h-6 w-6 transition-colors", (hover || rating) >= s ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30")} />
               </button>
             ))}
@@ -57,13 +57,13 @@ export function ReviewCard({ customerId, branchId, jobId, existingRating }: { cu
           <input
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            placeholder="How was the service? (optional)"
+            placeholder={t("rider.review-placeholder", lang)}
             className="h-9 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           />
           <div className="flex gap-2">
             <button onClick={() => setOpen(false)} className="flex-1 rounded-lg border py-2 text-xs font-medium hover:bg-muted">{t("common.cancel-short", lang)}</button>
             <button onClick={submit} disabled={pending || rating === 0} className="flex-1 rounded-lg bg-primary py-2 text-xs font-semibold text-primary-foreground disabled:opacity-50">
-              {pending ? "Sending…" : "Submit review"}
+              {pending ? t("form.sending", lang) : t("rider.submit-review", lang)}
             </button>
           </div>
         </div>

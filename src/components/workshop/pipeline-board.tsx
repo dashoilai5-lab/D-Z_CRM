@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
 import { updateLead } from "@/actions/leads";
 import { formatRM } from "@/lib/money";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 export interface BoardLead {
   id: string; customerName: string; phone: string | null; valueSen: number;
@@ -14,6 +16,7 @@ export interface BoardStage { id: string; name: string; count: number; valueSen:
 
 export function PipelineBoard({ stages, leads }: { stages: BoardStage[]; leads: BoardLead[] }) {
   const router = useRouter();
+  const lang = useLang();
 
   async function move(id: string, stageId: string) {
     await updateLead(id, { stageId: stageId || undefined });
@@ -37,7 +40,7 @@ export function PipelineBoard({ stages, leads }: { stages: BoardStage[]; leads: 
                     <Link href={"/workshop/leads/" + l.id} className="font-medium text-sm hover:underline">{l.customerName}</Link>
                     {l.isStale && (
                       <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-300 text-[10px] px-1.5 py-0.5">
-                        <AlertTriangle className="h-3 w-3" /> stale
+                        <AlertTriangle className="h-3 w-3" /> {t("pipeline.stale", lang)}
                       </span>
                     )}
                   </div>
@@ -49,19 +52,19 @@ export function PipelineBoard({ stages, leads }: { stages: BoardStage[]; leads: 
                       className="rounded border bg-background px-1.5 py-0.5 text-xs"
                       onChange={(e) => move(l.id, e.target.value)}
                     >
-                      <option value="">No stage</option>
+                      <option value="">{t("ws.lead.no-stage", lang)}</option>
                       {stages.map((st) => <option key={st.id} value={st.id}>{st.name}</option>)}
                     </select>
                   </div>
                 </div>
               ))}
-              {items.length === 0 && <div className="text-xs text-muted-foreground/60 text-center py-4">No leads</div>}
+              {items.length === 0 && <div className="text-xs text-muted-foreground/60 text-center py-4">{t("pipeline.no-leads", lang)}</div>}
             </div>
           </div>
         );
       })}
       <div className="min-w-[240px] w-[240px] shrink-0 rounded-xl border border-dashed p-3 text-center text-sm text-muted-foreground">
-        {leads.filter((l) => !l.stageId).length} un-staged
+        {tpl("pipeline.un-staged", lang, { n: leads.filter((l) => !l.stageId).length })}
       </div>
     </div>
   );

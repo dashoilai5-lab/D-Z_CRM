@@ -3,32 +3,35 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download } from "lucide-react";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 type ImportKind = "customers" | "motorcycles" | "products";
 
-const KIND_META: Record<ImportKind, { label: string; api: string; desc: string; template: string }> = {
+const KIND_META: Record<ImportKind, { labelKey: string; api: string; descKey: string; template: string }> = {
   customers: {
-    label: "Customers",
+    labelKey: "import.kind.customers",
     api: "/api/import/customers",
-    desc: "Columns: name, phone, email, address, tags, notes — phone duplicates are skipped, never overwritten.",
+    descKey: "import.desc.customers",
     template: "/csv-templates/customers.csv",
   },
   motorcycles: {
-    label: "Motorcycles",
+    labelKey: "import.kind.motorcycles",
     api: "/api/import/motorcycles",
-    desc: "Columns: customerPhone, brand, model, year, plate, vin, engineNo, color, type, currentMileage — plate duplicates are skipped; customerPhone must match an existing customer.",
+    descKey: "import.desc.motorcycles",
     template: "/csv-templates/motorcycles.csv",
   },
   products: {
-    label: "Products",
+    labelKey: "import.kind.products",
     api: "/api/import/products",
-    desc: "Columns: sku, name, category, brand, unit, sellPrice (RM), costPrice (RM), minStock, safetyStock, leadTimeDays, barcode, manufacturerPartNo, compatibleModels, supplierName — sku duplicates are skipped.",
+    descKey: "import.desc.products",
     template: "/csv-templates/products.csv",
   },
 };
 
 export default function ImportPage() {
   const router = useRouter();
+  const lang = useLang();
   const [kind, setKind] = useState<ImportKind>("customers");
   const [rows, setRows] = useState<Record<string, string>[]>([]);
   const [fileName, setFileName] = useState("");
@@ -93,8 +96,8 @@ export default function ImportPage() {
   return (
     <div className="max-w-3xl space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">CSV Import</h1>
-        <p className="text-sm text-muted-foreground">Import customers, motorcycles or products from CSV. Download a template, fill it, then upload (IMPORT-001..013).</p>
+        <h1 className="text-2xl font-bold">{t("import.title", lang)}</h1>
+        <p className="text-sm text-muted-foreground">{t("import.subtitle", lang)}</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -104,24 +107,24 @@ export default function ImportPage() {
             onClick={() => { setKind(k); setRows([]); setFileName(""); setResult(null); }}
             className={"rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors " + (k === kind ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground hover:border-primary/40")}
           >
-            {KIND_META[k].label}
+            {t(KIND_META[k].labelKey, lang)}
           </button>
         ))}
         <a href={meta.template} download className="ml-auto inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium text-primary hover:bg-accent">
-          <Download className="h-3.5 w-3.5" /> Template
+          <Download className="h-3.5 w-3.5" /> {t("import.template", lang)}
         </a>
       </div>
 
-      <p className="text-sm text-muted-foreground">{meta.desc}</p>
+      <p className="text-sm text-muted-foreground">{t(meta.descKey, lang)}</p>
 
       <div className="rounded-xl border bg-card p-5">
         <label className="block cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm text-muted-foreground hover:bg-accent/40">
-          {fileName || "Click to choose a CSV file"}
+          {fileName || t("import.choose-file", lang)}
           <input type="file" accept=".csv,text/csv" className="hidden" onChange={onFile} />
         </label>
         {rows.length > 0 && (
           <div className="mt-4">
-            <p className="text-xs text-muted-foreground mb-2">{rows.length} rows parsed — preview:</p>
+            <p className="text-xs text-muted-foreground mb-2">{tpl("import.rows-preview", lang, { n: rows.length })}</p>
             <div className="rounded-md border max-h-44 overflow-auto">
               <table className="w-full text-xs">
                 <thead className="bg-muted/50 sticky top-0">
@@ -137,7 +140,7 @@ export default function ImportPage() {
               </table>
             </div>
             <button className="mt-3 rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-medium disabled:opacity-50" disabled={busy} onClick={doImport}>
-              {busy ? "Importing…" : "Import " + rows.length + " rows"}
+              {busy ? t("import.importing", lang) : tpl("import.import-rows", lang, { n: rows.length })}
             </button>
           </div>
         )}
@@ -145,11 +148,11 @@ export default function ImportPage() {
 
       {result && (
         <div className="rounded-xl border bg-card p-4">
-          <h2 className="font-semibold text-sm mb-2">Result</h2>
+          <h2 className="font-semibold text-sm mb-2">{t("import.result", lang)}</h2>
           <div className="grid grid-cols-3 gap-2 text-sm">
-            <div className="rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 p-2 text-center font-bold">{result.imported} imported</div>
-            <div className="rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300 p-2 text-center font-bold">{result.duplicates} duplicates skipped</div>
-            <div className="rounded-lg bg-destructive/10 text-destructive p-2 text-center font-bold">{result.failed} failed</div>
+            <div className="rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 p-2 text-center font-bold">{tpl("import.imported", lang, { n: result.imported })}</div>
+            <div className="rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-300 p-2 text-center font-bold">{tpl("import.duplicates", lang, { n: result.duplicates })}</div>
+            <div className="rounded-lg bg-destructive/10 text-destructive p-2 text-center font-bold">{tpl("import.failed", lang, { n: result.failed })}</div>
           </div>
           {result.errors.length > 0 && (
             <div className="mt-3 max-h-40 overflow-auto rounded-md bg-muted/50 p-3 space-y-1">

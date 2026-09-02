@@ -50,7 +50,7 @@ export default function RiderLoginPage() {
             <AppBrandIcon app="rider" className="h-7 w-7" />
           </div>
           <h1 className="mt-4 text-2xl font-bold tracking-tight">D&Z Rider</h1>
-          <p className="text-sm text-muted-foreground">Your bikes, bookings & service — one place</p>
+          <p className="text-sm text-muted-foreground">{t("rider.login-sub", lang)}</p>
         </div>
         <div className="rounded-2xl border bg-card/95 backdrop-blur p-6 shadow-xl shadow-black/5">
           <div className="mb-4 flex gap-1 rounded-lg bg-muted p-1">
@@ -69,7 +69,7 @@ export default function RiderLoginPage() {
                   <select value={countryCode} onChange={(e) => setCountryCode(e.target.value)} className="w-32 rounded-md border bg-background px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
                     {COUNTRY_CODES.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
                   </select>
-                  <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="123-456 789" />
+                  <input className={inputCls} type="tel" inputMode="tel" autoComplete="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t("login.ph-phone", lang)} />
                 </div>
               </div>
               <div>
@@ -77,7 +77,7 @@ export default function RiderLoginPage() {
                 <input className={inputCls} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
-                {busy ? "Signing in…" : "Sign in"}
+                {busy ? t("login.signing-in", lang) : t("login.signin", lang)}
               </button>
             </form>
           )}
@@ -86,14 +86,14 @@ export default function RiderLoginPage() {
             <form onSubmit={(e) => { e.preventDefault(); doLogin(email, "+60"); }} className="space-y-3">
               <div>
                 <label className={labelCls}>{t("common.email", lang)}</label>
-                <input className={inputCls} type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@dz.my" />
+                <input className={inputCls} type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t("login.ph-email", lang)} />
               </div>
               <div>
                 <label className={labelCls}>{t("login.password-tab", lang)}</label>
                 <input className={inputCls} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
               </div>
               <button type="submit" disabled={busy} className="w-full rounded-md bg-primary text-primary-foreground py-2 text-sm font-medium disabled:opacity-50">
-                {busy ? "Signing in…" : "Sign in"}
+                {busy ? t("login.signing-in", lang) : t("login.signin", lang)}
               </button>
             </form>
           )}
@@ -102,7 +102,7 @@ export default function RiderLoginPage() {
           <a href="/rider/signup" className="text-primary hover:underline">{t("login.new-here", lang)}</a>
         </p>
         <p className="mt-1 text-center text-xs text-muted-foreground">
-          For workshop staff, use the <a href="/login" className="text-primary hover:underline">workshop sign-in</a>
+          {t("rider.staff-line", lang)} <a href="/login" className="text-primary hover:underline">{t("rider.workshop-signin", lang)}</a>
         </p>
       </div>
     </div>

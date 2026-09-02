@@ -29,27 +29,27 @@ export function JobActions({ jobId, status, sopComplete = true }: { jobId: strin
 
   return (
     <div className="flex flex-wrap gap-2">
-      {status === "WAITING" && <Button size="sm" disabled={pending || !sopComplete} onClick={() => run("IN_PROGRESS", "Job started")}>Start Service</Button>}
+      {status === "WAITING" && <Button size="sm" disabled={pending || !sopComplete} onClick={() => run("IN_PROGRESS", t("job-action.start-msg", lang))}>{t("job-action.start-service", lang)}</Button>}
       {status === "WAITING" && !sopComplete && (
         <span className="w-full text-[11px] font-medium text-amber-600 dark:text-amber-400">{t("mech.sop.start-blocked", lang)}</span>
       )}
       {["WAITING", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK"].includes(status) && (
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("QC_CHECK", "Sent to QC")}>QC Check</Button>
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("QC_CHECK", t("job-action.qc-msg", lang))}>{t("svc.qc_check", lang)}</Button>
       )}
       {["IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS", "ON_HOLD"].includes(status) && (
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("READY", "Marked ready for collection")}>Mark Ready</Button>
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("READY", t("job-action.ready-msg", lang))}>{t("job-action.mark-ready", lang)}</Button>
       )}
       {["IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "ON_HOLD"].includes(status) && (
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("WAITING_PARTS", "Waiting for parts")}>Waiting Parts</Button>
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("WAITING_PARTS", t("job-action.parts-msg", lang))}>{t("job-action.waiting-parts", lang)}</Button>
       )}
       {["IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK", "WAITING_PARTS"].includes(status) && (
-        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("ON_HOLD", "On hold")}>On Hold</Button>
+        <Button size="sm" variant="outline" disabled={pending} onClick={() => run("ON_HOLD", t("job-action.hold-msg", lang))}>{t("job-action.on-hold", lang)}</Button>
       )}
       {["READY", "IN_PROGRESS", "AWAITING_APPROVAL", "QC_CHECK"].includes(status) && (
-        <Button size="sm" disabled={pending} onClick={() => run("COMPLETED")}>Complete Job</Button>
+        <Button size="sm" disabled={pending} onClick={() => run("COMPLETED")}>{t("job-action.complete", lang)}</Button>
       )}
       {status !== "COMPLETED" && status !== "CANCELLED" && (
-        <Button size="sm" variant="ghost" disabled={pending} onClick={() => run("CANCELLED", "Job cancelled")}>Cancel</Button>
+        <Button size="sm" variant="ghost" disabled={pending} onClick={() => run("CANCELLED", t("job-action.cancel-msg", lang))}>{t("common.cancel", lang)}</Button>
       )}
     </div>
   );

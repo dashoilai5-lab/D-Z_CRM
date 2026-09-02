@@ -49,7 +49,7 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
       <div data-tut="settlements-filter" className="flex flex-wrap items-center gap-1.5 mb-3">
         {DAY_FILTERS.map((f) => (
           <Link key={f.key} href={qs(f.key)} className={"rounded-full border px-3 py-1 text-xs font-medium transition-colors " + (days === f.days ? "bg-primary text-primary-foreground" : "bg-card hover:bg-accent")}>
-            {f.label}
+            {t("settle.day-filter." + f.key, lang)}
           </Link>
         ))}
         <span className="text-xs text-muted-foreground ml-auto">{fmtDate(result.start)} – {fmtDate(result.end)}</span>
@@ -68,15 +68,15 @@ export default async function SettlementsPage({ searchParams }: { searchParams: 
 
       {/* 发薪历史 */}
       <div className="mt-8 rounded-2xl border bg-card p-4">
-        <h3 className="font-semibold mb-3">Payout history</h3>
+        <h3 className="font-semibold mb-3">{t("settle.payout-history", lang)}</h3>
         {history.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-6">No payouts yet.</p>
+          <p className="text-sm text-muted-foreground text-center py-6">{t("settle.no-payouts", lang)}</p>
         ) : (
           <div data-tut="settlements-table" className="overflow-x-auto max-h-[560px] overflow-y-auto">
             <table className="dz-table w-full text-xs">
               <thead><tr className="border-b bg-muted/40 text-left text-muted-foreground">
-                <th className="px-3 py-2 font-medium">Date</th><th className="px-3 py-2 font-medium">Foreman</th><th className="px-3 py-2 font-medium">Period</th>
-                <th className="px-3 py-2 text-right font-medium">Salary</th><th className="px-3 py-2 text-right font-medium">Paid</th><th className="px-3 py-2 font-medium">Status</th><th className="px-3 py-2 font-medium">Payments</th>
+                <th className="px-3 py-2 font-medium">{t("settle.col-date", lang)}</th><th className="px-3 py-2 font-medium">{t("settle.col-foreman", lang)}</th><th className="px-3 py-2 font-medium">{t("settle.col-period", lang)}</th>
+                <th className="px-3 py-2 text-right font-medium">{t("settle.col-salary", lang)}</th><th className="px-3 py-2 text-right font-medium">{t("settle.col-paid", lang)}</th><th className="px-3 py-2 font-medium">{t("settle.col-status", lang)}</th><th className="px-3 py-2 font-medium">{t("settle.col-payments", lang)}</th>
               </tr></thead>
               <tbody>
                 {history.map((h) => (

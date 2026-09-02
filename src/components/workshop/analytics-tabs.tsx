@@ -3,10 +3,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart, Bar as RBar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { ExportCsvButton } from "@/components/shared/search-form";
+import { useLang } from "@/components/shared/language-context";
+import { t, tpl } from "@/lib/i18n";
 
 type KV = { label: string; value: number };
 function ChartBar({ data, color = "var(--primary)" }: { data: KV[]; color?: string }) {
-  if (data.length === 0) return <p className="text-xs text-muted-foreground py-6 text-center">No data.</p>;
+  const lang = useLang();
+  if (data.length === 0) return <p className="text-xs text-muted-foreground py-6 text-center">{t("analytics.no-data", lang)}</p>;
   return (
     <div className="h-56">
       <ResponsiveContainer width="100%" height="100%">
@@ -43,57 +46,58 @@ export function AnalyticsTabs(props: {
   branches: { id: string; city: string; leads: number; bookings: number; revenue: number; revenueLabel: string; customers: number }[];
 }) {
   const s = props.sales, sv = props.service, c = props.customers, r = props.revenue, inv = props.inventory;
+  const lang = useLang();
   return (
     <Tabs defaultValue="sales">
       <TabsList className="flex-wrap h-auto">
-        <TabsTrigger value="sales">Sales</TabsTrigger><TabsTrigger value="service">Service</TabsTrigger>
-        <TabsTrigger value="customer">Customers</TabsTrigger><TabsTrigger value="revenue">Revenue</TabsTrigger>
-        <TabsTrigger value="inventory">Inventory</TabsTrigger><TabsTrigger value="branches">Branches</TabsTrigger>
+        <TabsTrigger value="sales">{t("analytics.tab-sales", lang)}</TabsTrigger><TabsTrigger value="service">{t("analytics.tab-service", lang)}</TabsTrigger>
+        <TabsTrigger value="customer">{t("analytics.tab-customers", lang)}</TabsTrigger><TabsTrigger value="revenue">{t("analytics.tab-revenue", lang)}</TabsTrigger>
+        <TabsTrigger value="inventory">{t("analytics.tab-inventory", lang)}</TabsTrigger><TabsTrigger value="branches">{t("analytics.tab-branches", lang)}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="sales" className="mt-4 space-y-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          <K label="Leads" v={String(s.total)} /><K label="Won" v={String(s.won)} /><K label="Lost" v={String(s.lost)} />
-          <K label="Conversion" v={s.conversionRate + "%"} /><K label="Stale" v={String(s.stale)} /><K label="By person" v={String(s.bySalesperson.length)} />
+          <K label={t("analytics.leads", lang)} v={String(s.total)} /><K label={t("lead.status.WON", lang)} v={String(s.won)} /><K label={t("lead.status.LOST", lang)} v={String(s.lost)} />
+          <K label={t("analytics.conversion", lang)} v={s.conversionRate + "%"} /><K label={t("analytics.stale", lang)} v={String(s.stale)} /><K label={t("analytics.by-person", lang)} v={String(s.bySalesperson.length)} />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <Section title="Leads by source" data={s.bySource} csv="leads-by-source" />
-          <Section title="Pipeline by stage" data={s.byStage} csv="leads-by-stage" />
-          <Section title="Leads by salesperson" data={s.bySalesperson} csv="leads-by-salesperson" />
-          <Section title="Leads by motorcycle model" data={s.byModel} csv="leads-by-model" />
-          <Section title="Closed-lost reasons" data={s.lostReasons} csv="lost-reasons" />
+          <Section title={t("analytics.section-leads-source", lang)} data={s.bySource} csv="leads-by-source" />
+          <Section title={t("analytics.section-pipeline-stage", lang)} data={s.byStage} csv="leads-by-stage" />
+          <Section title={t("analytics.section-leads-salesperson", lang)} data={s.bySalesperson} csv="leads-by-salesperson" />
+          <Section title={t("analytics.section-leads-model", lang)} data={s.byModel} csv="leads-by-model" />
+          <Section title={t("analytics.section-lost-reasons", lang)} data={s.lostReasons} csv="lost-reasons" />
         </div>
       </TabsContent>
 
       <TabsContent value="service" className="mt-4 space-y-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          <K label="Bookings" v={String(sv.total)} /><K label="Completed" v={String(sv.completed)} /><K label="Cancelled" v={String(sv.cancelled)} />
-          <K label="No-shows" v={String(sv.noShow)} /><K label="Throughput" v={String(sv.throughput)} /><K label="Avg days" v={String(sv.avgCompletionDays)} />
+          <K label={t("analytics.bookings", lang)} v={String(sv.total)} /><K label={t("common.completed", lang)} v={String(sv.completed)} /><K label={t("common.cancelled", lang)} v={String(sv.cancelled)} />
+          <K label={t("analytics.no-shows", lang)} v={String(sv.noShow)} /><K label={t("analytics.throughput", lang)} v={String(sv.throughput)} /><K label={t("analytics.avg-days", lang)} v={String(sv.avgCompletionDays)} />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <Section title="Technician workload" data={sv.technicianWorkload} csv="technician-workload" />
-          <Section title="Most performed services" data={sv.topServices} csv="top-services" />
+          <Section title={t("analytics.section-technician-workload", lang)} data={sv.technicianWorkload} csv="technician-workload" />
+          <Section title={t("analytics.section-top-services", lang)} data={sv.topServices} csv="top-services" />
         </div>
-        <p className="text-xs text-muted-foreground">Waiting for parts: {sv.waitingParts}</p>
+        <p className="text-xs text-muted-foreground">{t("svc.waiting_parts", lang)}: {sv.waitingParts}</p>
       </TabsContent>
 
       <TabsContent value="customer" className="mt-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          <K label="Customers" v={String(c.total)} /><K label="New (30d)" v={String(c.new)} /><K label="Repeat" v={String(c.repeat)} />
-          <K label="Retention" v={c.retentionRate + "%"} /><K label="Inactive" v={String(c.inactive)} /><K label="Members" v={String(c.members)} />
+          <K label={t("analytics.customers", lang)} v={String(c.total)} /><K label={t("analytics.new-30d", lang)} v={String(c.new)} /><K label={t("analytics.repeat", lang)} v={String(c.repeat)} />
+          <K label={t("analytics.retention", lang)} v={c.retentionRate + "%"} /><K label={t("analytics.inactive", lang)} v={String(c.inactive)} /><K label={t("analytics.members", lang)} v={String(c.members)} />
         </div>
         <div className="mt-4 rounded-xl border bg-card p-4 text-sm">
-          Avg service frequency: <strong>{c.avgServiceFrequency}</strong> per customer · Referrals made: <strong>{c.referrals}</strong>
+          {t("analytics.avg-frequency", lang)}: <strong>{c.avgServiceFrequency}</strong> {t("analytics.per-customer", lang)} · {t("analytics.referrals-made", lang)}: <strong>{c.referrals}</strong>
         </div>
       </TabsContent>
 
       <TabsContent value="revenue" className="mt-4 space-y-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          <K label="Total (30d)" v={r.totalLabel} /><K label="Prev 30d" v={r.prevLabel ?? "—"} /><K label="Change" v={(r.pctChange >= 0 ? "+" : "") + r.pctChange + "%"} />
-          <K label="Repeat" v={r.repeatLabel} /><K label="Avg/customer" v={r.avgLabel} />
+          <K label={t("analytics.total-30d", lang)} v={r.totalLabel} /><K label={t("analytics.prev-30d", lang)} v={r.prevLabel ?? "—"} /><K label={t("analytics.change", lang)} v={(r.pctChange >= 0 ? "+" : "") + r.pctChange + "%"} />
+          <K label={t("analytics.repeat", lang)} v={r.repeatLabel} /><K label={t("analytics.avg-customer", lang)} v={r.avgLabel} />
         </div>
         <div className="rounded-xl border bg-card p-4">
-          <h3 className="font-semibold text-sm mb-2">Revenue trend</h3>
+          <h3 className="font-semibold text-sm mb-2">{t("analytics.revenue-trend", lang)}</h3>
           <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={r.trend} margin={{ top: 4, right: 4, left: -18, bottom: 0 }}>
@@ -107,21 +111,21 @@ export function AnalyticsTabs(props: {
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <Section title="Revenue by branch" data={r.byBranch} csv="revenue-by-branch" />
-          <Section title="Revenue by source" data={r.bySource} csv="revenue-by-source" />
-          <Section title="Revenue by service type" data={r.byServiceType} csv="revenue-by-service" />
-          <Section title="Revenue per customer" data={r.perCustomer} csv="revenue-per-customer" />
+          <Section title={t("analytics.section-revenue-branch", lang)} data={r.byBranch} csv="revenue-by-branch" />
+          <Section title={t("analytics.section-revenue-source", lang)} data={r.bySource} csv="revenue-by-source" />
+          <Section title={t("analytics.section-revenue-service", lang)} data={r.byServiceType} csv="revenue-by-service" />
+          <Section title={t("analytics.section-revenue-customer", lang)} data={r.perCustomer} csv="revenue-per-customer" />
         </div>
       </TabsContent>
 
       <TabsContent value="inventory" className="mt-4 space-y-4">
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-          <K label="Items" v={String(inv.totalItems)} /><K label="Low stock" v={String(inv.lowStock)} /><K label="Out of stock" v={String(inv.outOfStock)} />
-          <K label="Total qty" v={String(inv.totalQty)} /><K label="Movements" v={String(inv.movements)} />
+          <K label={t("analytics.items", lang)} v={String(inv.totalItems)} /><K label={t("analytics.low-stock", lang)} v={String(inv.lowStock)} /><K label={t("analytics.out-of-stock", lang)} v={String(inv.outOfStock)} />
+          <K label={t("analytics.total-qty", lang)} v={String(inv.totalQty)} /><K label={t("analytics.movements", lang)} v={String(inv.movements)} />
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <Section title="Stock by branch" data={inv.byBranch} csv="stock-by-branch" />
-          <Section title="Low/out of stock items" data={inv.lowStockList} csv="low-stock" />
+          <Section title={t("analytics.section-stock-branch", lang)} data={inv.byBranch} csv="stock-by-branch" />
+          <Section title={t("analytics.section-low-stock", lang)} data={inv.lowStockList} csv="low-stock" />
         </div>
       </TabsContent>
 
@@ -129,7 +133,7 @@ export function AnalyticsTabs(props: {
         <div className="rounded-xl border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 text-left text-xs text-muted-foreground">
-              <tr><th className="px-4 py-2.5 font-medium">Branch</th><th className="px-4 py-2.5 font-medium">Leads</th><th className="px-4 py-2.5 font-medium">Bookings</th><th className="px-4 py-2.5 font-medium">Customers</th><th className="px-4 py-2.5 font-medium">Revenue</th><th className="px-4 py-2.5 font-medium">Rank</th></tr>
+              <tr><th className="px-4 py-2.5 font-medium">{t("analytics.th-branch", lang)}</th><th className="px-4 py-2.5 font-medium">{t("analytics.leads", lang)}</th><th className="px-4 py-2.5 font-medium">{t("analytics.bookings", lang)}</th><th className="px-4 py-2.5 font-medium">{t("analytics.customers", lang)}</th><th className="px-4 py-2.5 font-medium">{t("analytics.th-revenue", lang)}</th><th className="px-4 py-2.5 font-medium">{t("analytics.th-rank", lang)}</th></tr>
             </thead>
             <tbody>
               {props.branches.map((b, i) => (

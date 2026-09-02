@@ -83,10 +83,10 @@ export function ReviewManager({ reviews }: { reviews: ReviewRow[] }) {
             <div className="mt-auto pt-3 space-y-2">
               {replying === r.id ? (
                 <div className="space-y-2">
-                  <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="Write a public reply…" rows={2} className="w-full rounded-lg border bg-background px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring" />
+                  <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder={t("review.reply-placeholder", lang)} rows={2} className="w-full rounded-lg border bg-background px-2.5 py-1.5 text-xs outline-none focus:ring-2 focus:ring-ring" />
                   <div className="flex gap-2">
-                    <button onClick={() => { setReplying(null); setReplyText(""); }} className="flex-1 rounded-lg border py-1.5 text-xs font-medium hover:bg-muted">Cancel</button>
-                    <button onClick={() => submitReply(r.id)} disabled={pending} className="flex-1 rounded-lg bg-primary py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50">Post Reply</button>
+                    <button onClick={() => { setReplying(null); setReplyText(""); }} className="flex-1 rounded-lg border py-1.5 text-xs font-medium hover:bg-muted">{t("common.cancel", lang)}</button>
+                    <button onClick={() => submitReply(r.id)} disabled={pending} className="flex-1 rounded-lg bg-primary py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50">{t("review.post-reply", lang)}</button>
                   </div>
                 </div>
               ) : (
@@ -104,7 +104,7 @@ export function ReviewManager({ reviews }: { reviews: ReviewRow[] }) {
             </div>
           </div>
         ))}
-        {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-10 col-span-full">No reviews in this filter.</p>}
+        {filtered.length === 0 && <p className="text-sm text-muted-foreground text-center py-10 col-span-full">{t("review.no-reviews-filter", lang)}</p>}
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export default async function RiderSettingsPage() {
     <PageTransition>
     <div className="space-y-5">
       <Link href="/rider/profile" className="inline-flex items-center gap-1 text-sm text-muted-foreground">
-        <ChevronLeft className="h-4 w-4" /> {t("settings.title", lang) === "Settings" ? "Back to profile" : "Back"}
+        <ChevronLeft className="h-4 w-4" /> {t("rider.back-profile", lang)}
       </Link>
 
       <div>

@@ -12,9 +12,10 @@ import { MOTORCYCLE_TYPES, motorcycleTypeInfo } from "@/lib/motorcycle-types";
 import { servicesForType } from "@/lib/service-catalog";
 import { BIKE_BRANDS, modelsForBrand, OTHERS } from "@/lib/bike-models";
 import { useLang } from "@/components/shared/language-context";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 const COLORS = ["Black", "Red", "Blue", "White", "Grey", "Silver", "Green", "Orange"];
+const COLOR_KEY: Record<string, string> = { Black: "form.color.black", Red: "form.color.red", Blue: "form.color.blue", White: "form.color.white", Grey: "form.color.grey", Silver: "form.color.silver", Green: "form.color.green", Orange: "form.color.orange" };
 const THIS_YEAR = new Date().getFullYear();
 
 export interface MotorcycleDraft {
@@ -36,7 +37,7 @@ export function MotorcycleForm({
   motorcycleId,
   initial,
   onDone,
-  submitLabel = "SAVE",
+  submitLabel,
 }: {
   customerId?: string;
   motorcycleId?: string;
@@ -101,7 +102,7 @@ export function MotorcycleForm({
               </SelectContent>
             </Select>
             {brandIsCustom && (
-              <Input value={customBrand || (brand !== OTHERS ? brand : "")} onChange={(e) => setCustomBrand(e.target.value)} placeholder="Brand name" className="mt-1.5" />
+              <Input value={customBrand || (brand !== OTHERS ? brand : "")} onChange={(e) => setCustomBrand(e.target.value)} placeholder={t("form.brand-placeholder", lang)} className="mt-1.5" />
             )}
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -121,7 +122,7 @@ export function MotorcycleForm({
               <Select value={color} onValueChange={(v) => setColor(v ?? "Black")}>
                 <SelectTrigger className="mt-1.5 w-full"><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {COLORS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  {COLORS.map((c) => <SelectItem key={c} value={c}>{t(COLOR_KEY[c] ?? c, lang)}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -138,11 +139,11 @@ export function MotorcycleForm({
               </SelectContent>
             </Select>
             {modelIsCustom && (
-              <Input value={customModel || (model !== OTHERS ? model : "")} onChange={(e) => setCustomModel(e.target.value)} placeholder="Model name" className="mt-1.5" />
+              <Input value={customModel || (model !== OTHERS ? model : "")} onChange={(e) => setCustomModel(e.target.value)} placeholder={t("form.model-placeholder", lang)} className="mt-1.5" />
             )}
           </div>
           <div>
-            <Label>Current Mileage (km)</Label>
+            <Label>{t("rider.current-mileage", lang)} (km)</Label>
             <Input inputMode="numeric" value={mileage} onChange={(e) => setMileage(e.target.value)} className="mt-1.5" />
           </div>
         </div>
@@ -150,7 +151,7 @@ export function MotorcycleForm({
 
       <div>
         <Label>{t("form.motorcycle-type", lang)}</Label>
-        <p className="text-[11px] text-muted-foreground mt-0.5">Pick the style that best matches — this drives your service recommendations</p>
+        <p className="text-[11px] text-muted-foreground mt-0.5">{t("form.type-hint", lang)}</p>
         <div className="mt-2 grid grid-cols-2 gap-2">
           {MOTORCYCLE_TYPES.map((t) => {
             const active = type === t.key;
@@ -177,7 +178,7 @@ export function MotorcycleForm({
 
       {typeInfo && services.length > 0 && (
         <div className="rounded-2xl border bg-muted/30 p-3">
-          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Recommended services for {typeInfo.label}</div>
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{tpl("form.recommended-services", lang, { label: typeInfo.label })}</div>
           <div className="mt-1.5 flex flex-wrap gap-1.5">
             {typeInfo.serviceFocus.map((s) => (
               <span key={s} className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-medium text-primary">{s}</span>
@@ -187,7 +188,7 @@ export function MotorcycleForm({
       )}
 
       <Button className="w-full" size="lg" disabled={pending || !effectiveModel || !effectiveBrand} onClick={submit}>
-        {pending ? t("form.saving", lang) : submitLabel}
+        {pending ? t("form.saving", lang) : (submitLabel || t("common.save", lang))}
       </Button>
     </div>
   );

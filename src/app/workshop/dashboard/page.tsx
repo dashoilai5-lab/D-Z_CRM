@@ -10,7 +10,7 @@ import { formatRM } from "@/lib/money";
 import { getSessionUser, personaForRole } from "@/lib/session-user";
 import { PageTransition } from "@/components/shared/page-transition";
 import { getLang } from "@/lib/get-lang";
-import { t } from "@/lib/i18n";
+import { t, tpl } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -90,16 +90,16 @@ export default async function DashboardPage() {
 
       {/* DASH-002..023: leads / repeat / upcoming / tasks */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        <StatCard icon={<Filter className="h-4 w-4" />} label="Total Leads" value={dash.totalLeads ?? 0} unit={t("dash.unit-leads", lang)} sub={"+" + (dash.newLeads ?? 0) + " this month"} href="/workshop/leads" />
-        <StatCard icon={<Users className="h-4 w-4" />} label="Repeat customers" value={(dash.repeatPct ?? 0) + "%"} href="/workshop/customers" tone="success" />
-        <StatCard icon={<CalendarClock className="h-4 w-4" />} label="Upcoming bookings" value={dash.upcomingBookings ?? 0} unit={t("dash.unit-bookings", lang)} href="/workshop/bookings" />
-        <StatCard icon={<ListTodo className="h-4 w-4" />} label="Open follow-up tasks" value={dash.openTasks ?? 0} unit={t("dash.unit-tasks", lang)} href="/workshop/tasks" />
+        <StatCard icon={<Filter className="h-4 w-4" />} label={t("dash.total-leads", lang)} value={dash.totalLeads ?? 0} unit={t("dash.unit-leads", lang)} sub={tpl("dash.leads-this-month", lang, { n: dash.newLeads ?? 0 })} href="/workshop/leads" />
+        <StatCard icon={<Users className="h-4 w-4" />} label={t("dash.repeat-customers", lang)} value={(dash.repeatPct ?? 0) + "%"} href="/workshop/customers" tone="success" />
+        <StatCard icon={<CalendarClock className="h-4 w-4" />} label={t("dash.upcoming-bookings", lang)} value={dash.upcomingBookings ?? 0} unit={t("dash.unit-bookings", lang)} href="/workshop/bookings" />
+        <StatCard icon={<ListTodo className="h-4 w-4" />} label={t("dash.open-followup-tasks", lang)} value={dash.openTasks ?? 0} unit={t("dash.unit-tasks", lang)} href="/workshop/tasks" />
       </div>
 
       {/* customer-facing service lifecycle distribution */}
       <section className="rounded-2xl border bg-card p-4">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="font-semibold">Service lifecycle (customer view)</h2>
+          <h2 className="font-semibold">{t("dash.lifecycle-title", lang)}</h2>
           <Link href="/workshop/jobs" className="text-xs font-medium text-primary hover:underline">jobs →</Link>
         </div>
         {(dash.lifecycleDist ?? []).some((s) => s.count > 0) ? (
@@ -116,7 +116,7 @@ export default async function DashboardPage() {
               };
               return dash.lifecycleDist.map((s, i) => (
                 <Link key={s.label} href={s.href ?? "/workshop/jobs"} className="group flex items-center gap-3 text-xs rounded-md px-1 -mx-1 hover:bg-muted/40 transition-colors">
-                  <span className="w-32 shrink-0 text-muted-foreground group-hover:text-foreground">{s.label.replace(/_/g, " ").toLowerCase().replace(/^./, (c) => c.toUpperCase())}</span>
+                  <span className="w-32 shrink-0 text-muted-foreground group-hover:text-foreground">{t("svc." + s.label, lang)}</span>
                   <div className="flex-1 h-5 rounded-md bg-muted/60 overflow-hidden">
                     <div className={"h-full rounded-md " + (STEP_COLOR[s.label] ?? "bg-primary/70")} style={{ width: Math.max(4, (s.count / Math.max(1, ...dash.lifecycleDist.map((x) => x.count))) * 100) + "%" }} />
                   </div>
@@ -126,7 +126,7 @@ export default async function DashboardPage() {
             })()}
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">No active service jobs right now.</p>
+          <p className="text-xs text-muted-foreground">{t("dash.no-active-jobs", lang)}</p>
         )}
       </section>
 
