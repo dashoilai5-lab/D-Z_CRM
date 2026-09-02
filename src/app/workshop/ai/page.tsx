@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function AiCentrePage() {
   const lang = await getLang();
   const branch = await db.branch.findFirst({ where: { isMain: true } });
-  const recs = await aiService.recommendations(branch?.id);
+  const recs = await aiService.recommendations(branch?.id, lang);
   return (
     <div className="space-y-6">
       <PageHeader title={t("dash.ai-centre", lang)} subtitle={t("ws.ai.subtitle", lang)} />

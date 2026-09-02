@@ -4,13 +4,14 @@ import { staffService } from "@/modules/staff/service";
 import { db } from "@/lib/db";
 import { DEFAULT_SERVICE_INTERVAL_KM } from "@/lib/constants";
 import { formatRM } from "@/lib/money";
+import { t, tpl, type Lang } from "@/lib/i18n";
 
 /**
  * AI Command Centre (§39) — rule-based in the prototype; OpenAI later.
  * AI is never the source of truth for money, stock, mileage or KPIs (§88).
  */
 export class AiService {
-  async recommendations(branchId?: string) {
+  async recommendations(branchId?: string, lang: Lang = "en") {
     const out: {
       icon: string; title: string; detail: string; action: string; href: string; tone: "danger" | "warn" | "info" | "success";
     }[] = [];
@@ -20,9 +21,9 @@ export class AiService {
     if (overdue.length > 0) {
       const potential = overdue.length * 12000;
       out.push({
-        icon: "users", title: overdue.length + " customer" + (overdue.length > 1 ? "s are" : " is") + " overdue for service.",
-        detail: "Potential revenue " + formatRM(potential) + ". Send a WhatsApp reminder now.",
-        action: "VIEW CUSTOMERS", href: "/workshop/crm/reminders", tone: "danger",
+        icon: "users", title: tpl("ai.overdue.title", lang, { n: overdue.length }),
+        detail: tpl("ai.overdue.detail", lang, { rm: formatRM(potential) }),
+        action: t("ai.overdue.action", lang), href: "/workshop/crm/reminders", tone: "danger",
       });
     }
 
@@ -31,9 +32,9 @@ export class AiService {
       const urgent = recs.filter((r) => r.daysRemaining !== null && r.daysRemaining <= 7);
       if (urgent.length > 0) {
         out.push({
-          icon: "box", title: urgent.length + " product" + (urgent.length > 1 ? "s" : "") + " may run out within 7 days.",
-          detail: "Reorder " + urgent.slice(0, 3).map((u) => u.name).join(", ") + " before stock hits zero.",
-          action: "REVIEW STOCK", href: "/workshop/inventory/stock", tone: "warn",
+          icon: "box", title: tpl("ai.stock.title", lang, { n: urgent.length }),
+          detail: tpl("ai.stock.detail", lang, { products: urgent.slice(0, 3).map((u) => u.name).join(", ") }),
+          action: t("ai.stock.action", lang), href: "/workshop/inventory/stock", tone: "warn",
         });
       }
 
@@ -41,9 +42,9 @@ export class AiService {
       const deadValue = dead.reduce((s, r) => s + r.valueSen, 0);
       if (deadValue > 0) {
         out.push({
-          icon: "tag", title: formatRM(deadValue) + " is tied up in dead stock (" + dead.length + " items).",
-          detail: "Create a promotion or bundle these items into service packages.",
-          action: "CREATE PROMOTION", href: "/workshop/inventory/dead-stock", tone: "warn",
+          icon: "tag", title: tpl("ai.dead.title", lang, { rm: formatRM(deadValue), n: dead.length }),
+          detail: t("ai.dead.detail", lang),
+          action: t("ai.dead.action", lang), href: "/workshop/inventory/dead-stock", tone: "warn",
         });
       }
     }
@@ -54,9 +55,9 @@ export class AiService {
       const avgConv = withPkg.length ? withPkg.reduce((s, x) => s + x.packageConversion, 0) / withPkg.length : 0;
       if (avgConv < 70) {
         out.push({
-          icon: "trending", title: "Package conversion is " + Math.round(avgConv) + "%.",
-          detail: "Train counter staff to recommend GOOD / BETTER / BEST at check-in.",
-          action: "REVIEW KPI", href: "/workshop/staff/kpi", tone: "info",
+          icon: "trending", title: tpl("ai.kpi.title", lang, { n: Math.round(avgConv) }),
+          detail: t("ai.kpi.detail", lang),
+          action: t("ai.kpi.action", lang), href: "/workshop/staff/kpi", tone: "info",
         });
       }
     }

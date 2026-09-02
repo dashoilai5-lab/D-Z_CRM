@@ -16,11 +16,11 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const branch = await db.branch.findFirst({ where: { isMain: true } });
-  const [dash, recs, session, lang] = await Promise.all([
+  const lang = await getLang();
+  const [dash, recs, session] = await Promise.all([
     dashboardService.get(branch?.id),
-    aiService.recommendations(branch?.id),
+    aiService.recommendations(branch?.id, lang),
     getSessionUser(),
-    getLang(),
   ]);
 
   // 当前用户：真实登录（Supabase→User）
@@ -54,7 +54,7 @@ export default async function DashboardPage() {
         <h1 className="text-2xl font-bold tracking-tight">{greeting}, {greetingName}</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
           {session.authenticated ? (
-            <>{session.name} · <span className="font-medium text-foreground">{session.role.replace(/_/g, " ")}</span></>
+            <>{session.name} · <span className="font-medium text-foreground">{t("role." + session.role, lang)}</span></>
           ) : (
             isMechanic ? t("dash.mechanic-sub", lang) : isOwner ? t("dash.owner-sub", lang) : t("dash.counter-sub", lang)
           )}
@@ -100,7 +100,7 @@ export default async function DashboardPage() {
       <section className="rounded-2xl border bg-card p-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="font-semibold">{t("dash.lifecycle-title", lang)}</h2>
-          <Link href="/workshop/jobs" className="text-xs font-medium text-primary hover:underline">jobs →</Link>
+          <Link href="/workshop/jobs" className="text-xs font-medium text-primary hover:underline">{t("dash.jobs-link", lang)} →</Link>
         </div>
         {(dash.lifecycleDist ?? []).some((s) => s.count > 0) ? (
           <div className="space-y-2">
