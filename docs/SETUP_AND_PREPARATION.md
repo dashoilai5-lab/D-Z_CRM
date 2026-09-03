@@ -61,6 +61,8 @@ plist 文件：`com.dz-platform.server.plist` / `com.dz-platform.e2e.plist`
 | `OPENAI_API_KEY` | AI provider（生产） | OpenAI |
 | `WHATSAPP_API_TOKEN` | Meta WhatsApp Business API | Meta Developers |
 | `WHATSAPP_PHONE_ID` | WhatsApp 商业号 | Meta |
+| `WHATSAPP_VERIFY_TOKEN` | WhatsApp webhook 验签 | Meta Developers |
+| `WHATSAPP_APP_SECRET` | WhatsApp webhook HMAC 验签（可选） | Meta Developers |
 | `STORAGE_BUCKET` | Supabase Storage bucket | Supabase |
 | `SENTRY_DSN` | 错误监控 | Sentry |
 | `NEXTAUTH_SECRET` / `AUTH_SECRET` | 认证加密 | 自生成 |
@@ -85,6 +87,7 @@ plist 文件：`com.dz-platform.server.plist` / `com.dz-platform.e2e.plist`
 | `20260819021924_motorcycle_type` | Motorcycle.type（车型分类） |
 | `20260819043819_booking_campaign_attr` | Booking.campaignId（促销归因） |
 | `20260819044007_review_reply` | Review.reply/repliedAt（评价运营） |
+| `20260901005433_whatsapp_message_external_id` | Message.externalId（WhatsApp 回执关联键） |
 
 ### 3.3 数据模型（33 模型）
 身份：`Organisation → Branch → User / Customer (+CustomerAuthProfile)`
@@ -175,7 +178,7 @@ pnpm db:studio    # Prisma Studio 可视化
 - [ ] 中间件从 cookie-persona 改为真实 session（现有 nav-registry/middleware 复用）
 
 ### 5.3 Provider 换真
-- [ ] Messaging → Meta WhatsApp Business API（`WHATSAPP_API_TOKEN`/PHONE_ID）
+- [ ] Messaging → Meta WhatsApp Business API（`WHATSAPP_API_TOKEN`/PHONE_ID——代码就绪（E.164 归一化 + externalId 落地 + 回执 webhook），仅欠真实密钥）
 - [ ] AI → OpenAI（`OPENAI_API_KEY`）
 - [ ] Storage → Supabase Storage（海报 url 从 /posters/ 迁移到 bucket）
 - [ ] Payment → 网关（Stripe/FPX）
@@ -256,6 +259,7 @@ pnpm db:studio    # Prisma Studio 可视化
 | 2026-09-01 | 发票打印 PDF（feat/job-invoice-payment 追加）：新增 /invoice/[id] 打印页（复用 quotation 的 window.print() 模式，pdf.invoice-* 词条）；QuotationPrintActions 支持 title 属性；InvoicePaymentPanel 头部加 Download PDF（job 页/发票页均有）；i18n 补 pdf.invoice/invoice-no/branch/no-bike/no-items/subtotal/discount/tax/thanks | 发票可打印/存 PDF；tsc0/build 全绿 + 实测渲染明细/小计/总价/未结 |
 | 2026-09-01 | Add Staff 支持创建登录账号（fix/staff-login-password）：createStaff 增加可选 email+password —— 提供时用 Supabase admin API 建 auth 账号(email_confirm) 并把 User.authId 绑上（登录时 injectBizClaims 读 User 注入 claims）；staff-manager 加 Password 字段 + toast「login created」；i18n staff.*/toast.staff-login-created | 新员工可立即用 邮箱+密码 登录（按角色路由）；无 schema 变更；tsc0/build 全绿 + 实测新增 MECHANIC staff 用 teststaff@dz.my/Test12345 登录落在 /mechanic-app |
 | 2026-09-01 | 教程 DOCX 生成工具（scripts/tutorial-capture.ts + tutorial-docx.ts，依赖 docx）：Playwright 全页截图（workshop 42/rider 12/mechanic 4，生产）+ docx 库生成带 TOC/每页标题/截图/说明的《D&Z Platform User Guide.docx》；gitignore tutorial-screens/ 与生成的 docx（大产物） | 一键重生成全功能教程；脚本可复用；51MB（高分辨率全页截图） |
+| 2026-09-01 | provider 换真收尾（Messaging→Meta WhatsApp）：① phone.ts 加 toE164ForWhatsApp（本地 "013-125 2832"→"+60131252832"）并在 whatsapp-business.send() 归一化 to（真实 Graph API 要求 E.164，否则换真即失败）② Message 加 externalId（迁移 whatsapp_message_external_id，两 schema 同步）③ 三处发送持久化 externalId（messaging.service/crm.service/marketing.broadcastCampaign）④ 新增 /api/webhooks/whatsapp（GET 验签 hub.challenge + POST 按 externalId 更新 status，可选 HMAC） | Messaging 换真代码完备：配好 WHATSAPP_API_TOKEN/PHONE_ID/VERIFY_TOKEN 即真发+回执可追踪；生产 PG 需加 Message.externalId 列 + 4 个 env；tsc0/lint0/unit26/build 全绿 |
 | 2026-08-19 | 新增迁移 `booking_campaign_attr`、`review_reply` | Booking.campaignId、Review.reply |
 | 2026-09-01 | i18n 补全 workshop 12 组件剩余硬编码英文（promo-calendar-grid/qr-settings/recommendation-actions/referral-manager/reminder-actions/reorder-actions/send-due-button/settings-forms/slot-manager/task-list/template-manager/toggle-integration），新增 80 key（promo-cal.*/qr-settings.*/recommendation.*/referral.*/reminder.*/reorder.*/send-due.*/settings-form.*/slot.*/task-list.*/template.*/toggle-int.*），复用 bike.qr-label/common.*/ws.* 等现有 key | workshop 设置/促销日历/时段/任务/模板/QR/推荐/补货界面支持 en/zh/ms；tsc0 |
 | 2026-08-19 | 新增迁移 `motorcycle_type`、`promo_discount` | Motorcycle.type、Campaign.discountPercent |

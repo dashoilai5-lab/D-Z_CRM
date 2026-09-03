@@ -52,6 +52,7 @@ export const messagingModule = {
         channel,
         body,
         status: result.status,
+        externalId: result.externalId ?? null,
         referenceType: input.referenceType ?? template.name,
       },
     });

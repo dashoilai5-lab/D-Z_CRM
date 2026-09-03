@@ -72,3 +72,15 @@ export function toE164(local: string): string {
 export function fmtStoredPhone(local: string): string {
   return local.slice(0, 3) + "-" + local.slice(3, 6) + " " + local.slice(6);
 }
+
+/** archive value -> E.164 for WhatsApp Graph API `to` */
+export function toE164ForWhatsApp(phone: string | null | undefined): string {
+  if (!phone) return "";
+  const raw = phone.trim();
+  if (/^\+[1-9]\d{7,14}$/.test(raw)) return raw;
+  const d = digitsOnly(raw);
+  if (!d) return raw;
+  if (/^01\d{8}$/.test(d)) return "+60" + d.slice(1);
+  if (d.startsWith("60") && d.length === 11) return "+" + d;
+  return "+" + d;
+}
