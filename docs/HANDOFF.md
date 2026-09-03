@@ -1,112 +1,71 @@
-# HANDOFF — D&Z Platform（2026-08-27 16:47，会话 session-d5638e96 打包）
+# HANDOFF — D&Z Platform（2026-09-02 17:3x，session 67081e33）
 
-> 本文件由 session-pack 生成，session-resume 可续接。历史版见 docs/HANDOFF.pre-session-pack.md。
+> 本文件由 session-pack 生成，session-resume 可续接。
 
 ## 一句话状态
-本地与生产 = main @ 8def9dc，已全部 push，三服务 200。
-今日（8-27）上线 8 项：Rider 手机/邮箱双通道登录注册 → 账号隔离（rider/mechanic/员工三端）→ Developer Settings（模块矩阵+清空数据）→ Workshop 自动刷新 → 首辆摩托引导 → 手机号放宽+国家区号 → 登录语言切换 → Rider 登录页拆分（Phone/Email）。上线准备：docs/ONBOARDING_PLAN.md + 模块覆盖脚本（feat/workshop-module-setup 分支未 merge）。
-剩余需求：Rider ①②④（手机/WhatsApp 登录、老客注册、每月换油提醒）+ Workshop ④（3-6-12 月保养时间线）+ 经销商验证 + provider 换真。
-流程约定：feature 分支 → 本地预览验证 → push → merge main → 自动部署（用户强调：先本地预览后才 push）。
+本地 = main @ 341c409（LOCAL merge，**未 push**；push 前须先生产 PG 加 Message.externalId 列，见 §5.3.1）。前一轮大项① i18n 全中文部署（304a77f/3be5a14）② Workshop OS 语言切换（cf5f23f）③ 三端截图文档 ④ TESTING_GUIDE ⑤ 生产测试数据清理。本轮：⑧ provider 换真——把 feat/whatsapp-real-provider 合并进 main（Meta WhatsApp provider + Message.externalId + 回执 webhook + RLS fix），go-live runbook 已写进 SETUP §5.3.1。
 
 ## 会话信息
-- 会话 ID：session-d5638e96-57df-4f76-9aff-2e55301e19fb（名称「继续D&Z会话」）
-- 打包时间：2026-08-27 16:47
+- 原会话 ID：session-67081e33-cf2f-428c-9e46-8689c06d7b79
+- 打包时间：2026-09-02
 - 续接口令：继续 D&Z
 
 ## 完成进度
-- Demo 模式彻底移除（b7649ce）：persona/demo bar/审计脚本全删，Supabase 真实登录唯一认证
-- 部署流程改革（bd4026a）：main force push 覆盖废弃历史；GitHub 集成唯一部署通道；永不本地 vercel deploy --prod
-- Vercel Cron 服务提醒（4666b3f）：/api/cron/reminders + vercel.json crons 每日 09:00 + CRON_SECRET 鉴权
-- 生产功能②（36871db）：群发统计徽章、assetUrl helper、WhatsApp/OpenAI provider 骨架 + env 驱动切换
-- Rider 4 bugfix（5a4ac1e）、里程展示重构（2156dac）、QR 系统（8f951a6，摩托/车主/门店三场景）
-- 图片/海报生产修复（44d0bbe）：storage 同步 + scripts/sync-storage-to-supabase.ts
-- Rider Settings（70d2125）+ 扩展（merge 077a378）：语言切换（dz_lang cookie）、通知偏好（4 开关）、更换密码
-- Rider 语言 bug 修复（merge 33aad24）、首页 QR 扫码器（merge d871868）、QR 落地页布局修复（merge 29d460f）
-- 移除登录引导页（merge 34fa9d4）：未登录访问 rider 页直接 307 → /rider/login
-- 人工测试 bug 修复（merge 969d638）：book 真实 open slots 按钮组 + 剩余量 + 预约/时段日期时区归一（UTC 零点）
-- Workshop bookings 增强（merge 8049024）：状态筛选 + 创建时间 + 日期升降序 + Reset + 未来优先
-- Booking→Job service 同步（merge 4714e46）：servicePackageId/serviceAddons（生产 PG 已 ALTER）+ Check In 自动同步
-- 新增 Owner 账号 CRM_DO_Owner@gmail.com（Dashoil123，本地+生产可用）
-- 技师结算/薪资/发薪闭环（merge ec60721，9 commit）：settlements 时间 filter + foreman 发薪中心 + 薪资规则 + 发薪历史 + Finance 周期收支 + 客户发票结清 + 发票 ISSUED 待结清
-- 技师考勤（merge f4e14a8）：Attendance 表（生产已建）+ /workshop/attendance 打卡
-- Analytics 增强（merge 6f5f092）：月度服务量 + 品牌分析 + 时间 filter（7d/30d/90d/12m）+ from→to
-- Mechanic 专属 App（merge 9a54f5c，6 commit）：/mechanic-app（仅 MECHANIC）Grab 接单 + job 详情 + Earnings + Profile + Settings + 发薪双向确认（PENDING→MECHANIC_APPROVED→PAID）+ 全 i18n
-- Mechanic Profile 工作统计（294dd21）：汇总（工单/客单价/评分）+ 12 个月月度趋势柱状（+8 业务月）
-- Yamaha LC135 车型拆分（merge 9b9e412）：135LC Fi → LC135 V1 / LC135 V2 - V7 / LC135 V8（bike-models 下拉 + seed 目录，本地+生产实测）
-- Rider 登录页拆分（merge 3febb06）：Phone/Email 两个独立 tab（手机+密码 / 邮箱+密码），移除 Email code OTP；workshop /login 的 email OTP 保留——生产实测双 tab ✓
-- 登录/注册页语言切换（merge 35c69cf）：/rider/login、/rider/signup、/login 顶部加 LanguageSwitcher（EN/中文/BM）默认英文——生产实测三页切换器 ✓
-- 手机号注册/登录放宽+国家区号（merge 38b7063）：phone.ts 加 digitsOnly/combinePhone/normalizePhoneLoose/matchKey/COUNTRY_CODES；任意数字号码即通过（不再报 Phone required）；注册/登录页区号下拉显示国家名（默认 Malaysia +60）；Customer.phone 存 E.164 兼容旧本地格式；e2e 20 过——生产实测区号下拉 ✓
-- Rider 首辆摩托引导（merge 859c21d）：登录/注册 action 返回 hasBike；无车用户登录/注册跳 /rider/bike-first（表单+稍后再说）；home 无车虚线引导卡；motorcycles 空态引导卡；三语词条 bike.first-*——生产实测注册→跳引导 ✓
-- Workshop 自动刷新（merge 9345744）：顶部常驻刷新按钮 + Auto 开关（默认开 30s router.refresh 软刷新不丢状态），desktop header + mobile sticky 条——生产实测控件显示 ✓
-- Developer Settings（merge 21dff21）：/workshop/settings/developer 仅 OWNER——密码门禁 15min（dz_dev HttpOnly cookie，secure 按协议判断）+ 角色×模块访问矩阵（Permission 覆盖行即时生效：navForRoleWithPerms 导航过滤 + layout can() URL 守卫）+ first-wave 预置 + 清空业务数据（保留配置，事务删 40 业务表）｜踩坑：server→client 传 icon 组件引用报 ERROR 60597609（sidebar 改 key 内部映射图标）；本地 dev.db 已清空为试用空店（备份 prisma/dev.db.bak-1054，恢复=cp 回+重启）｜生产实测解锁+矩阵 ✓
-- 账号控制·路由隔离矩阵（merge 8ac3027）：middleware 按 JWT claims role 隔离 + 三端 layout 权威守卫——rider 只能 rider app（访问 workshop OS 弹回 /rider/home）、mechanic 只能 mechanic app（登录直达）、员工（除 mechanic）才能 workshop OS；登录后按角色跳转；e2e 全量 74/75（1 并发 flake 单跑过），生产实测三角色隔离 ✓
-- Mechanic App 登出修复（merge 3aefea6）：profile 页右上角加 SignOutIconButton（复用 rider 组件 href 参数化 /login，三语 mech.signout）——生产实测登出→/login + middleware 拦截 ✓
-- Rider 手机/邮箱双通道（merge 5cc2978，8 commit）：登录手机或邮箱二选一（src/lib/phone.ts 归一化 013-125 2832/0131252832/+60131252832，E.164 去 60 前缀补前导 0）；手机号→Customer.phone→authId→email 登录（兼容现有账号）/phone-only 走 Supabase phone（需开 Phone provider）；注册页手机必填+邮箱选填+gender+密码确认；手机号匹配老客绑 authId 不新建（Rider ② 核心）｜生产实测：手机号 012-345 6789 登录 ✓ email 登录 ✓ 注册页全字段 ✓；注意生产 Customer 是旧 seed（email 全 null、phone 占位号）
-- 上线准备（本地存档，未部署）：docs/ONBOARDING_PLAN.md——workshop 上线计划（资料收集表 §1/模块开放策略 §2 第一波开 13 关 15/CSV 模板/检查清单）；scripts/setup-workshop-modules.ts——按 org×角色×模块 写 Permission 覆盖行关闭进阶模块（--dry-run/--open/--close/--open-all 可逆）
-- 注：294dd21/a9db9cf 两次小改动直接在 main 提交（未走 branch 流程），已向用户说明后续按流程
+- i18n 全端：+~470 词条（i18n.ts ~2031），tsc/lint/build 0 错误；304a77f + 3be5a14 已上生产并验证 UI 全中文（数据值/品牌/原始枚举保持原文）。
+- 语言切换：Workshop OS 桌面+移动顶栏加 LanguageToggle（cf5f23f），:3002+生产实测点击中文整页切换。
+- 截图：app-screenshots/{Workshop OS 50, Mechanic 6, Rider 16}（Rider 为英文版）。工具 scripts/capture-app.ts（LANG env，登录后再设 dz_lang cookie 修 rider 中文登录）。
+- 文档：docs/*截图说明.{md,pdf,docx}（DOCX 首屏）；docs/TESTING_GUIDE.md + .pdf（同事测试：Manager/Mechanic 可用账号、Rider 自助注册）。
+- 生产数据清理：客户 111→2（Ahmad Danial、Muhammad binti Zain），员工 11 保留，工单 186→22/摩托 139→4/发票 155→14/预约 43→10；Supabase auth 23→12（11 孤儿删）。备份 docs/backups/prod-backup-2026-09-02T08-59-07-884Z.sql（2MB 全库，可回滚）。
+- ManagerDemo/MechanicDemo 密码重置为 Dashoil@!789（managerdemo@gmail.com / mechanicdemo@gmail.com，均已实测登录）。
+- 前序（已部署）：Add Staff 登录（6bc5a38）、教程 DOCX（4f3f594）、发票收款（438f233）等。
+- provider 换真（本轮，本地未 push）：发现 feat/whatsapp-real-provider（d9f297a WhatsApp + 5857cc4 RLS fix）未合 main → 已合入 main（341c409，双 schema 加 Message.externalId + toE164ForWhatsApp 归一化 + 三处持久化 externalId + /api/webhooks/whatsapp 回执）；生产 build 复现通过（prisma generate --schema schema.pg.prisma && next build = 0），tsc0/lint0(118w)/test29；SETUP §5.3.1 上线 runbook（生产 PG 幂等加列→push→Vercel env→Meta webhook）；本地 dev.db 已含列，:3002/:3003/:3102 重启后 200。
 
 ## 下一步（按优先级）
-1. 经销商验证（需真人，dtodo 59e04e5e 逾期）：填 docs/DEALER_FEEDBACK.md，按 DEMO_SCRIPT 演示，回答 6 个产品决策
-2. 生产迁移 §65（dtodo 92b29072，q2）：provider 换真——骨架已就绪（whatsapp-business.ts/openai.ts + env 驱动），只差 Meta WhatsApp Business 企业验证 + OpenAI billing + 密钥配置
-3. Rider ① 手机/WhatsApp 登录（当前用邮箱+密码，需 Supabase phone auth 或 WhatsApp OTP）
-4. Rider ② 老客户注册（老客已有历史记录，注册时关联）
-5. Rider ④ 每月换油提醒（Cron 已有每日 09:00 骨架，扩展按 serviceInterval 触发）
-6. Workshop ④ 3-6-12 月保养时间线（客户维度服务时间线视图）
-7. 可选：Sentry 验证、k6 压测
+1. **provider 换真上线（代码已就绪 341c409，本地未 push）**——按 SETUP §5.3.1 顺序：① 生产 PG 幂等加列 `ALTER TABLE "Message" ADD COLUMN IF NOT EXISTS "externalId" TEXT;`（先于 push）② `git push origin main` 触发 auto-deploy ③ Vercel 配 WHATSAPP_API_TOKEN/PHONE_ID/VERIFY_TOKEN/APP_SECRET(+OPENAI_API_KEY) ④ Meta 配 webhook；Payment/Notification provider 仍未做（需选网关/推送，待用户定）
+2. 经销商验证（需真人：DEALER_FEEDBACK.md + DEMO_SCRIPT + 6 产品决策，dtodo 59e04e5e）
+3. ✅ 已核验：清理结果无需再同步 TESTING_GUIDE.md / DEMO_ACCOUNTS.md（无已删旧账号引用）
+4. 待用户定：MANAGER 权限开放更多模块；枚举下拉（MAINTENANCE/REPAIR、WHATSAPP/SMS/EMAIL/APP）是否翻中文；Rider 文档标题/说明是否改英文；Payment/Notification provider 选型
+5. commit 本轮 untracked 产物（docs/*截图说明、TESTING_GUIDE、scripts/capture-app.ts/gen-*.ts 等；**prod 备份 SQL docs/backups/ 与 screenshots/ 需先 gitignore 或移出仓库**，勿入库）
 
 ## 基线测试（命令 + 期望通过数）
 - pnpm exec tsc --noEmit：0 错误
-- pnpm lint：0 errors（89 warnings 存量）
-- pnpm test：26 个通过
-- pnpm exec playwright test：75 过 / 6 skip / 0 败
-- pnpm run build：通过
+- pnpm lint：0 errors（~118 warnings 存量）
+- pnpm test：29 通过（5 文件）
+- pnpm build：本地 sqlite 通过
+- 生产 build 复现（改 schema 后必跑）：pnpm exec prisma generate --schema prisma/schema.pg.prisma && pnpm exec next build：0
 
 ## 服务与恢复
-- workshop demo：curl http://localhost:3002 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.server
-- rider demo：curl http://localhost:3003 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.rider
-- e2e：curl http://localhost:3102 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.e2e
-- 注意：:3002 与 :3003 共享 .next——构建后必须两个都重启（否则陈旧 chunk 报 "couldn't load"）；改 plist env 后必须 unload+load（kickstart -k 不够）；本地服务偶发 stream closed early（重启即恢复）
-- 生产：https://d-z-crm.vercel.app ｜ 部署：push main 自动（GitHub 集成）
+- workshop demo :3002：curl 200 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.server
+- rider demo :3003：curl 200 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.rider
+- e2e :3102：curl 200 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.e2e
+- 生产：curl https://d-z-crm.vercel.app（push main auto-deploy；永不本地 vercel deploy）
 
 ## git 状态
-- 分支：main ｜ HEAD：8def9dc（docs: handoff - rider login tabs deployed）｜ 已 push
-- 本地 dev.db：试用空店状态（业务全清、配置保留）；员工 authId 已全重绑（owner/manager/counter/marketing/inventory/mechanic×3）
-- feat/workshop-module-setup @ a614dc0：模块覆盖脚本 + 台账（未 merge 未 push，用户决定不需要；ONBOARDING_PLAN.md 已在 main）
-- feat/rider-phone-login 已合并上线并清理（5cc2978 → 生产）
-- 未提交：仅 screenshots/ 截图 + scripts/_tmp-fix-dates.ts（临时脚本，可删）
-- 远程与本地一致（分叉 0/0）；全部 feature/fix 分支已清理
+- 分支：main @ 341c409（LOCAL 已合并 provider 分支，**未 push**；push 前先做生产 PG externalId 迁移）；未跟踪约 58 项（docs/*截图说明、TESTING_GUIDE.*、docs/backups/*.sql、docs/logo-png、screenshots、scripts/capture-app.ts/gen-*.ts 等；app-screenshots/ 已 gitignore）。**注意**：prod 备份 SQL（docs/backups/prod-backup-*.sql）与 screenshots/ 含敏感/调试内容，提交前先 gitignore 或移出仓库。
+- 注意：改 Prisma schema 必须 sqlite + schema.pg.prisma 同步
 
 ## 关键决策与约定
-- 部署环境 = Vercel（唯一生产）；流程 = feature 分支 → push → Preview → 用户确认 → merge main → 自动部署
-- 永不本地 vercel deploy --prod（避免 .env 污染 + 无 git 追溯）
-- NEXT_PUBLIC_* 构建期内联：生产 NEXT_PUBLIC_BASE_URL 必须 = https://d-z-crm.vercel.app
-- Vercel 云端构建不跑 prisma migrate deploy——schema 变更上线前必须手动应用生产 PG（PG 兼容 SQL）；schema.pg.prisma 必须与 schema.prisma 同步
-- 业务日期（预约日/时段日/结算日）统一存 UTC 零点（YYYY-MM-DD + 'T00:00:00Z'），禁止服务器本地时刻（本地 +8 vs Vercel UTC 会偏移）；显示用 toISOString().slice(0,10) / fmtDate；周期窗口用 src/lib/period.ts periodWindow()
-- 发薪双向确认：workshop 发起 PENDING → mechanic app 批准 MECHANIC_APPROVED → workshop Agree CASH/QR → PAID
-- 配置类改动必须更新 docs/SETUP_AND_PREPARATION.md §9 台账（env/模块/API/迁移/端口/依赖/测试/i18n）
-- Rider 里程展示：不显示当前里程/进度，只显示 Last/Next 服务节点
+- 业务日期（预约/时段）存 UTC 零点（YYYY-MM-DD+'T00:00:00Z'）；真实时间戳 UTC，显示 toISOString().slice(0,10)
+- 截图/教学用生产（本地 dev.db 的 Customer.authId 绑定会丢，rider 本地登录报 No D&Z account linked）
+- i18n：只翻 UI 文案，数据值（车款/姓名/车牌/地址/日期/金额/促销名/服务类型/品牌 D&Z）与原始枚举代码不翻
+- 单租户 app（org findFirst）；生产 DB 变更用幂等 SQL 定向加（勿 db push，会 DROP qrEnabled）
+- DICT 追加在 i18n.ts 的 DICT 对象末尾；词条前缀 ws./mech./navr./nav./form./status./ai./role./inv. 等
 
 ## 踩坑与事实
-- 本地生成的海报/附件只在 ./storage（local provider），生产读 Supabase bucket——不同步则生产 404；用 scripts/sync-storage-to-supabase.ts
-- provider 选择：VERCEL=1 用 Supabase，否则 local（next start 恒 production，不能按 NODE_ENV 判）
-- assetUrl 规则：/api/* 保持同源（拼 BASE_URL 会跨端口 404），仅 public 静态资源绝对化
-- 本地 dev.db 被 prisma migrate reset 后，Customer.authId 绑定丢失（seed 只建 authId=null）——需查 Supabase admin API 重绑测试账号（ahmad.danial@dz.my、daniel.tan@dz.my、aizat/hafiz/ravi 等）；已重绑但根治方案=把绑定写进 seed
-- node-pg 显示 timestamp 无 tz 时按 +8 偏移——用 to_char 确认存储值是正确零点即非 bug
-- 模板字符串里 ${ 在写文件时需转义
-- CRM-D&Z 路径含 & → bash 命令需用 workdir 参数（cd 会断）
-- e2e 用独立 e2e.db，global-setup 清库播种 + link-auth 回填 + 重启服务
+- Playwright addInitScript 跑在隔离 world（闭包变量丢失，计数器在主 world 为 0）；主 world 需用 page.evaluate 点引导关闭按钮 / 写 localStorage 才生效
+- capture-app.ts：登录后再 set dz_lang cookie——若建上下文就设中文，rider 登录页 Email tab 按钮文案变「邮箱」，hasText:"Email" 找不到导致登录失败
+- docx ImageRun type 用 "jpg"（非 "jpeg"）；sharp 需 limitInputPixels:false（超大全页图如 Marketing-Posters）
+- .env 值带引号需去引号再解析；addCookies 用 domain+path 勿 url+path 混用
+- RLS helper app_jwt_claim 必须优先读 user_metadata（Supabase JWT 顶层 role='authenticated' 遮蔽业务 role）
+- 生产数据清理：Customer 外键多为 RESTRICT 无级联，需按 BUSINESS_TABLES 叶子→根顺序删；先全库备份
+- merge 提交前**勿 `git add -A`**（会把手头 untracked 产物一并卷进 merge commit）——只 `git add` 冲突/合并文件；若已卷入，备份分支 + `git reset --soft`/`--hard` 重做
 
 ## 待办（dtodo）
-- 59e04e5e 经销商验证（逾期 2026-08-19，需真人：DEALER_FEEDBACK.md + DEMO_SCRIPT + 6 产品决策）
-- 92b29072 生产迁移 §65（逾期 2026-08-19，q2 重要不紧急，剩 provider 换真）
-
-## 测试账号（docs/DEMO_ACCOUNTS.md 全量）
-- Owner：CRM_DO_Owner@gmail.com / Dashoil123（密码 Dashoil@!789）
-- 技师：aizat.bin.ismail@dz.my / hafiz.bin.hassan@dz.my / ravi.a.l.kumar@dz.my / daniel.tan@dz.my
-- 客户：ahmad.danial@dz.my 等
+- 59e04e5e 经销商验证（需真人，逾期 2026-08-19）
+- 92b29072 生产迁移（q2，逾期 2026-08-19）：provider 换真部分完成
 
 ## 新会话头 10 分钟
-1. curl localhost:3002 / :3003 / :3102 探活，挂了 kickstart（注意两服务共享 .next）
-2. 读本文件 + git log 确认分支/HEAD（main @ a9db9cf，已 push）
-3. 跑基线：tsc + build（unit 20 / e2e 75 可选）
-4. 看下一步：经销商验证（需真人）/ provider 换真 / Rider ①②④ / Workshop ④
+1. curl :3002 / :3003 / :3102 + 生产探活（挂了 launchctl kickstart）
+2. 读 docs/HANDOFF.md + memory project/daily + dtodo
+3. 跑基线（tsc 0 / lint 0errors / test 26 / build）
+4. 从下一步挑：经销商验证(需真人) / provider 换真 / 同步清理到文档 / commit untracked 产物

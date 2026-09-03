@@ -178,11 +178,22 @@ pnpm db:studio    # Prisma Studio 可视化
 - [ ] 中间件从 cookie-persona 改为真实 session（现有 nav-registry/middleware 复用）
 
 ### 5.3 Provider 换真
-- [ ] Messaging → Meta WhatsApp Business API（`WHATSAPP_API_TOKEN`/PHONE_ID——代码就绪（E.164 归一化 + externalId 落地 + 回执 webhook），仅欠真实密钥）
-- [ ] AI → OpenAI（`OPENAI_API_KEY`）
-- [ ] Storage → Supabase Storage（海报 url 从 /posters/ 迁移到 bucket）
-- [ ] Payment → 网关（Stripe/FPX）
-- [ ] Notification → 推送（FCM/APNs）
+- [x] Messaging 代码就绪并已合并到 main（merge feat/whatsapp-real-provider = d9f297a：E.164 归一化 + Message.externalId + 回执 webhook /api/webhooks/whatsapp），见下方 5.3.1 上线步骤（未上线，仅欠真实密钥与 webhook 配置）
+- [ ] AI → OpenAI（`OPENAI_API_KEY`，代码就绪选中即换真）
+- [x] Storage 已换真（生产 VERCEL=1 → Supabase Storage dz-assets）
+- [ ] Payment → 网关（Stripe/FPX，未做）
+- [ ] Notification → 推送（FCM/APNs，未做）
+
+#### 5.3.1 WhatsApp Messaging 上线步骤（按顺序，缺一不可）
+1. **生产 PG 加列（幂等，必须先于 push 部署）**——Supabase SQL editor 执行：
+   ```sql
+   ALTER TABLE "Message" ADD COLUMN IF NOT EXISTS "externalId" TEXT;
+   ```
+   （对应迁移 `prisma/migrations/20260901005433_whatsapp_message_external_id`；本地 dev.db 已含此列。）
+2. **push main 触发 Vercel auto-deploy**：本地 `git push origin main`（勿本地 `vercel deploy`）。
+3. **Vercel 配置 env（production）**：`WHATSAPP_API_TOKEN`、`WHATSAPP_PHONE_ID`、`WHATSAPP_VERIFY_TOKEN`、`WHATSAPP_APP_SECRET`（可选，启 HMAC 验签）；AI 另配 `OPENAI_API_KEY`。
+4. **Meta 配置 Webhook**：Meta Developers → WhatsApp → Configuration → Callback URL = `https://d-z-crm.vercel.app/api/webhooks/whatsapp`，Verify token 与 `WHATSAPP_VERIFY_TOKEN` 一致，Subscribe `messages`。
+5. **验证**：生产配 token 后发一条消息 → `Message.externalId` 有值、status 随回执更新（GET 验签 hub.challenge 200）；无 token 时走 mock（本地 :3002）。
 
 ### 5.4 部署
 - [ ] Vercel 项目创建 + 环境变量配置（§2）
@@ -241,6 +252,7 @@ pnpm db:studio    # Prisma Studio 可视化
 
 | 日期 | 改动 | 影响 |
 | --- | --- | --- |
+| 2026-09-02 | merge feat/whatsapp-real-provider into main（5857cc4 RLS fix + d9f297a Meta WhatsApp provider：toE164ForWhatsApp 归一化 + Message.externalId（两 schema + 迁移）+ 三处持久化 externalId + /api/webhooks/whatsapp 回执 webhook）+ SETUP §5.3.1 上线 runbook（生产 PG 幂等加列 → push → Vercel env → Meta webhook） | main 现含 WhatsApp 换真代码：配 WHATSAPP_API_TOKEN/PHONE_ID/VERIFY_TOKEN + 生产 PG 加 Message.externalId + Meta webhook 即真发+回执可追踪；本地 dev.db 已含列，:3002/:3003/:3102 重启后 200；tsc0/lint0(118w)/test29/build 全绿 |
 | 2026-08-29 | Mechanic 开工前 SOP 拍照（SOP-001）：新增 ServiceJobPhoto 表 + JobPhotoAngle 枚举（迁移 pre_service_photo_sop）；/api/jobs/[id]/photos 上传；jobService.transition 对 IN_PROGRESS 强校验 5 角度齐全；技师端 sop-photo-capture（5 角度 capture）/workshop jobs 照片查看；照片走 storageProvider（生产 Supabase Storage，本地 ./storage） | 开工前必拍 5 张车辆状态照（front/back/left/right/meter），缺张无法开工；counter 可在工单查看；i18n 加 mech.sop.*/ws.job.sop-*；tsc0/lint0/unit26/build 全绿 |
 | 2026-08-29 | Workshop SOP 照片点击放大：新增 src/components/workshop/job-photos-view.tsx（复用 shared/lightbox，点击放大 + X/backdrop/Esc 关闭 + 左右切换） | counter 查看开工前照片更直观；复用现有灯箱组件，无新依赖 |
 | 2026-08-29 | Mechanic App 新增通知中心（Alerts）：/mechanic-app/notifications 页面 + 底部导航 Alerts tab（Bell 图标 + 未读角标随 layout 计数）+ src/actions/mechanic-notifications.ts markMechanicNotificationsRead；assignMechanic 给被指派技师发 JOB 站内通知 | Mechanic App 三端通知对齐（workshop/rider 已有）；i18n 加 mech.alerts/mech.notifications-* 等 5 key；tsc0/lint0(111w)/unit26/build 全绿 |
