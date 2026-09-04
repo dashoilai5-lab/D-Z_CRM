@@ -19,6 +19,7 @@
 - ManagerDemo/MechanicDemo 密码重置为 Dashoil@!789（managerdemo@gmail.com / mechanicdemo@gmail.com，均已实测登录）。
 - 前序（已部署）：Add Staff 登录（6bc5a38）、教程 DOCX（4f3f594）、发票收款（438f233）等。
 - provider 换真（本轮，本地未 push）：发现 feat/whatsapp-real-provider（d9f297a WhatsApp + 5857cc4 RLS fix）未合 main → 已合入 main（341c409，双 schema 加 Message.externalId + toE164ForWhatsApp 归一化 + 三处持久化 externalId + /api/webhooks/whatsapp 回执）；生产 build 复现通过（prisma generate --schema schema.pg.prisma && next build = 0），tsc0/lint0(118w)/test29；SETUP §5.3.1 上线 runbook（生产 PG 幂等加列→push→Vercel env→Meta webhook）；本地 dev.db 已含列，:3002/:3003/:3102 重启后 200。
+- **AI Assistant（feat/workshop-ai-assistant，86c27e4 本地未 push）**：Workshop OS 左下角浮动 FAB↔可调面板↔最小化；多轮对话按当前语言回复；intent router + tool registry 接地真值；AiProvider 扩展 chat(system+messages)；OpenAI key 配 gitignore 的 .env（OPENAI_MODEL=gpt-4o-mini）；tsc0/lint0/test39/build 全绿。
 
 ## 下一步（按优先级）
 1. **provider 换真上线（代码已就绪 341c409，本地未 push）**——按 SETUP §5.3.1 顺序：① 生产 PG 幂等加列 `ALTER TABLE "Message" ADD COLUMN IF NOT EXISTS "externalId" TEXT;`（先于 push）② `git push origin main` 触发 auto-deploy ③ Vercel 配 WHATSAPP_API_TOKEN/PHONE_ID/VERIFY_TOKEN/APP_SECRET(+OPENAI_API_KEY) ④ Meta 配 webhook；Payment/Notification provider 仍未做（需选网关/推送，待用户定）
