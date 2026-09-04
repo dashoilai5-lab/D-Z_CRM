@@ -126,7 +126,7 @@ export async function runTool(kind: string, ctx: AssistantCtx): Promise<ToolResu
     }
     case "analytics_revenue": {
       const r = await revenueAnalytics(ctx.orgId, 30);
-      return { context: "revenue30dSen=" + r.total + "; prev30dSen=" + r.prevTotal + "; pctChange=" + r.pctChange + "%; avgPerCustomerSen=" + r.avgPerCustomer + "; repeatRevenueSen=" + r.repeatRevenue + "; topServiceTypes=" + compact(r.byServiceType) + "; topCustomers=" + compact(r.perCustomer) };
+      return { context: "revenue30d=" + formatRM(r.total) + "; prev30d=" + formatRM(r.prevTotal) + "; pctChange=" + r.pctChange + "%; avgPerCustomer=" + formatRM(r.avgPerCustomer) + "; repeatRevenue=" + formatRM(r.repeatRevenue) + "; topServiceTypes=" + compact(r.byServiceType) + "; topCustomers=" + compact(r.perCustomer) };
     }
     case "analytics_customers": {
       const c = await customerAnalytics(ctx.orgId, 30);
@@ -151,7 +151,7 @@ export async function runTool(kind: string, ctx: AssistantCtx): Promise<ToolResu
     case "analytics_overview": {
       const [svc, rev, cust] = await Promise.all([serviceAnalytics(ctx.orgId, 30), revenueAnalytics(ctx.orgId, 30), customerAnalytics(ctx.orgId, 30)]);
       const brand = await brandAnalytics(ctx.orgId, 365);
-      return { context: "overview30d: bookings=" + svc.total + "; completed=" + svc.completed + "; revenueSen=" + rev.total + "; pctChange=" + rev.pctChange + "%; customers=" + cust.total + "; repeat=" + cust.repeat + "; retention=" + cust.retentionRate + "%; topBrand=" + (brand[0] ? brand[0].brand : "n/a") };
+      return { context: "overview30d: bookings=" + svc.total + "; completed=" + svc.completed + "; revenue=" + formatRM(rev.total) + "; pctChange=" + rev.pctChange + "%; customers=" + cust.total + "; repeat=" + cust.repeat + "; retention=" + cust.retentionRate + "%; topBrand=" + (brand[0] ? brand[0].brand : "n/a") };
     }
     default:
       return { context: "" };

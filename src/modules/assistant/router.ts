@@ -32,7 +32,7 @@ export function detectIntent(text: string): Intent {
   const job = /job|工单|servis/.test(t);
 
   // ---- analytics / insight questions (trend/analysis/statistics/brand/monthly) ----
-  const analytics = /analytic|analys|分析|统计|insight|趋势|trend|prestasi|laporan|report|compare|对比|占比|share|breakdown|排行|popular|most popular|最受欢迎|\btop\b|最|salesperson/.test(t);
+  const analytics = /analytic|analys|分析|统计|insight|趋势|trend|prestasi|laporan|report|compare|对比|占比|share|breakdown|排行|popular|most popular|最受欢迎|\btop\b|最|salesperson|repeat|retention|留存|会员|member|loyalty|回头/.test(t);
   if (analytics) {
     if (/brand|品牌|jenama/.test(t)) return { kind: "analytics_brand" };
     if (/monthly|每月|月度|per month|by month|month trend/.test(t)) return { kind: "analytics_monthly_services" };

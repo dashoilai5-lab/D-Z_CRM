@@ -78,6 +78,7 @@ describe("assistant detectIntent (multilingual)", () => {
     expect(detectIntent("每月服务量趋势").kind).toBe("analytics_monthly_services");
     expect(detectIntent("whats my revenue trend").kind).toBe("analytics_revenue");
     expect(detectIntent("repeat customers analysis").kind).toBe("analytics_customers");
+    expect(detectIntent("whats my repeat customer rate").kind).toBe("analytics_customers");
     expect(detectIntent("top salesperson").kind).toBe("analytics_sales");
     expect(detectIntent("inventory analytics").kind).toBe("analytics_inventory");
     expect(detectIntent("show me the analytics").kind).toBe("analytics_overview");
