@@ -2,6 +2,7 @@ import "server-only";
 import { db } from "@/lib/db";
 import { bookingService } from "@/modules/bookings/service";
 import { financeService } from "@/modules/finance/service";
+import { inventoryService } from "@/modules/inventory/service";
 
 export interface AssistantCtx {
   orgId: string;
@@ -47,6 +48,11 @@ export const GUIDES: Record<"invoice" | "create-job" | "checkin", Guide> = {
 
 export interface ToolResult { context: string; }
 
+/** sen → "RM 1,234.56" (pre-formatted so the model never does sen→RM math). */
+function formatRM(sen: number): string {
+  return "RM " + (sen / 100).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
 export async function runTool(kind: string, ctx: AssistantCtx): Promise<ToolResult> {
   switch (kind) {
     case "booking_today": {
@@ -77,6 +83,36 @@ export async function runTool(kind: string, ctx: AssistantCtx): Promise<ToolResu
     case "reminders_due": {
       const due = await db.serviceReminder.count({ where: { status: { in: ["DUE", "OVERDUE"] } } });
       return { context: "dueReminders=" + due };
+    }
+    case "check_ins": {
+      const where = ctx.branchId ? { branchId: ctx.branchId, status: "CHECKED_IN" as const } : { status: "CHECKED_IN" as const };
+      const n = await db.booking.count({ where });
+      return { context: "checkedInBookings=" + n };
+    }
+    case "parts_count": {
+      const where = ctx.branchId ? { branchId: ctx.branchId } : {};
+      const agg = await db.inventory.aggregate({ where, _sum: { quantity: true } });
+      const units = agg._sum.quantity ?? 0;
+      const skus = await db.product.count();
+      return { context: "totalPartsUnits=" + units + "; productSkuCount=" + skus };
+    }
+    case "month_earnings": {
+      const d = await financeService.periodDashboard("month");
+      return { context: "monthRevenue=" + formatRM(d.revenue) + " (" + d.revenue + " sen); monthInvoiceCount=" + d.count };
+    }
+    case "dead_stock_value": {
+      const bid = ctx.branchId || (await db.branch.findFirst({ where: { isMain: true }, select: { id: true } }))?.id;
+      const valSen = bid ? await inventoryService.deadStockValue(bid) : 0;
+      return { context: "deadStockValue=" + formatRM(valSen) + " (" + valSen + " sen)" };
+    }
+    case "overdue_customers": {
+      const rows = await db.serviceReminder.findMany({ where: { status: { in: ["OVERDUE", "DUE"] } }, distinct: ["customerId"], select: { customerId: true } });
+      return { context: "overdueCustomers=" + rows.length };
+    }
+    case "average_rating": {
+      const agg = await db.review.aggregate({ where: { status: { in: ["SUBMITTED", "PUBLISHED"] }, rating: { not: null } }, _avg: { rating: true } });
+      const avg = agg._avg.rating ? (Math.round(agg._avg.rating * 10) / 10).toFixed(1) : "0.0";
+      return { context: "averageRating=" + avg };
     }
     default:
       return { context: "" };

@@ -1,8 +1,13 @@
 // Deterministic intent detection for the Workshop AI assistant.
 // Pure (no DB / no network) so it is unit-testable. Multilingual keywords.
+// "how many / 多少 / berapa" count questions take precedence over "how-to (how)" guides.
+
+export type IntentKind =
+  | "booking_today" | "revenue_today" | "customers_count" | "jobs_overview" | "stock_alerts" | "reminders_due"
+  | "check_ins" | "parts_count" | "month_earnings" | "dead_stock_value" | "overdue_customers" | "average_rating";
 
 export type Intent =
-  | { kind: "booking_today" | "revenue_today" | "customers_count" | "jobs_overview" | "stock_alerts" | "reminders_due" }
+  | { kind: IntentKind }
   | { kind: "guide"; guide: "invoice" | "create-job" | "checkin" }
   | { kind: "general" };
 
@@ -10,26 +15,49 @@ const has = (t: string, ...needles: string[]) => needles.some((n) => t.includes(
 
 export function detectIntent(text: string): Intent {
   const t = text.toLowerCase();
-  const today = has(t, "今天", "今日", "today", "hari ini");
-  const booking = has(t, "预约", "预定", "booking", "tempahan");
-  const revenue = has(t, "收入", "营收", "赚", "revenue", "income", "pendapatan", "earning");
-  const customer = has(t, "客户", "顾客", "customer", "pelanggan");
-  const job = has(t, "工单", "job", "servis");
-  const stock = has(t, "库存", "stock", "inventori", "缺货", "reorder");
-  const reminder = has(t, "提醒", "reminder", "peringatan", "due");
-  const invoice = has(t, "账单", "发票", "invoice", "invois", "billing", "收款");
-  const checkin = has(t, "签到", "check in", "checkin", "check-in");
-  const create = has(t, "创建", "新增", "create", "new", "how", "如何", "macam mana", "cara");
+  const count = /how many|how much|total|count|多少|几个|berapa|jumlah|总数/.test(t);
+  const today = /今天|今日|today|hari ini/.test(t);
+  const month = /this month|本月|这个月|month ini|bulan ini/.test(t);
+  const booking = /booking|预约|预定|tempahan/.test(t);
+  const checkin = /check ?-?in|check in|checkin|签到|进店|masuk/.test(t);
+  const revenue = /revenue|income|earnings|收入|营收|赚|pendapatan|earning|profit|saldo/.test(t);
+  const customer = /customer|客户|顾客|pelanggan/.test(t);
+  const parts = /part|备件|零件|配件|sparepart|spare part|商品|product/.test(t);
+  const dead = /dead ?stock|滞销|死库|stok mati|slow.?moving/.test(t);
+  const reminders = /提醒|reminder|peringatan/.test(t);
+  // "customers overdue for service" → overdue_customers；"提醒/reminder" → reminders_due
+  const custOverdue = !reminders && /(customer|customers|客户|顾客|pelanggan|保养|servis)/.test(t) && /(overdue|逾期|过期|terlewat|due|到期|seterusnya)/.test(t);
+  const rating = /rating|评分|评价|review|bintang|星/.test(t);
+  const job = /job|工单|servis/.test(t);
 
-  // data reads (prefer the most specific signal first)
+  // ---- count / quantity questions (take precedence over how-to "how") ----
+  if (count) {
+    if (checkin) return { kind: "check_ins" };
+    if (dead) return { kind: "dead_stock_value" };
+    if (parts) return { kind: "parts_count" };
+    if (custOverdue) return { kind: "overdue_customers" };
+    if (rating) return { kind: "average_rating" };
+    if (customer) return { kind: "customers_count" };
+    if (booking) return { kind: "booking_today" };
+  }
+
+  // ---- money / timeframe ----
+  if (revenue && month) return { kind: "month_earnings" };
   if (today && revenue) return { kind: "revenue_today" };
-  if (today && booking) return { kind: "booking_today" };
-  if (customer && !today) return { kind: "customers_count" };
+  if (revenue) return { kind: "month_earnings" };
+  if (booking && today) return { kind: "booking_today" };
+  if (customer) return { kind: "customers_count" };
   if (job && today) return { kind: "jobs_overview" };
-  if (stock) return { kind: "stock_alerts" };
-  if (reminder) return { kind: "reminders_due" };
+  if (dead) return { kind: "dead_stock_value" };
+  if (custOverdue) return { kind: "overdue_customers" };
+  if (rating) return { kind: "average_rating" };
+  if (parts) return { kind: "parts_count" };
+  if (has(t, "库存", "stock", "inventori", "缺货", "reorder", "low stock")) return { kind: "stock_alerts" };
+  if (has(t, "提醒", "reminder", "peringatan", "due")) return { kind: "reminders_due" };
 
-  // how-to guides
+  // ---- how-to guides ----
+  const invoice = has(t, "账单", "发票", "invoice", "invois", "billing", "收款", "payment");
+  const create = has(t, "创建", "新增", "create", "new", "how do", "如何", "macam mana", "cara");
   if (create && invoice) return { kind: "guide", guide: "invoice" };
   if (create && checkin) return { kind: "guide", guide: "checkin" };
   if (create && (job || booking)) return { kind: "guide", guide: "create-job" };

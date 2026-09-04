@@ -41,6 +41,36 @@ describe("assistant detectIntent (multilingual)", () => {
     expect(detectIntent("如何创建工单")).toEqual({ kind: "guide", guide: "create-job" });
   });
 
+  it("routes check-ins count (was wrongly a how-to)", () => {
+    expect(detectIntent("how many check in").kind).toBe("check_ins");
+    expect(detectIntent("今天进店多少个？").kind).toBe("check_ins");
+  });
+
+  it("routes parts count", () => {
+    expect(detectIntent("how many total parts i have").kind).toBe("parts_count");
+    expect(detectIntent("总共有多少配件？").kind).toBe("parts_count");
+  });
+
+  it("routes month earnings", () => {
+    expect(detectIntent("whats my current earnings of this month").kind).toBe("month_earnings");
+    expect(detectIntent("本月收入多少？").kind).toBe("month_earnings");
+  });
+
+  it("routes dead stock value", () => {
+    expect(detectIntent("whats my dead stock value").kind).toBe("dead_stock_value");
+    expect(detectIntent("滞销库存价值多少？").kind).toBe("dead_stock_value");
+  });
+
+  it("routes overdue customers", () => {
+    expect(detectIntent("how many customers are overdue for service").kind).toBe("overdue_customers");
+    expect(detectIntent("有多少客户逾期未保养？").kind).toBe("overdue_customers");
+  });
+
+  it("routes average rating", () => {
+    expect(detectIntent("whats my average rating now").kind).toBe("average_rating");
+    expect(detectIntent("我的平均评分是多少？").kind).toBe("average_rating");
+  });
+
   it("falls back to general", () => {
     expect(detectIntent("你好").kind).toBe("general");
     expect(detectIntent("what is the meaning of life").kind).toBe("general");
