@@ -109,7 +109,7 @@ export function WorkshopAIAssistant({ userId }: { userId?: string }) {
           style={{ width: size.w, height: size.h, maxWidth: "min(92vw, 640px)", maxHeight: "calc(100vh - 2rem)" }}
         >
           {/* header */}
-          <div className="flex items-center gap-2 border-b px-3 py-2.5">
+          <div className="flex items-center gap-2 border-b pl-5 pr-3 py-2.5">
             <Sparkles className="h-4 w-4 text-primary" />
             <span className="text-sm font-semibold">{t("ai.assistant.title", lang)}</span>
             <div className="flex-1" />
@@ -161,7 +161,7 @@ export function WorkshopAIAssistant({ userId }: { userId?: string }) {
           </div>
 
           {/* resize handle */}
-          <div onPointerDown={onResizeStart} className="absolute bottom-0 left-0 h-5 w-5 cursor-nwse-resize text-muted-foreground" aria-hidden>
+          <div onPointerDown={onResizeStart} className="absolute top-0 left-0 h-5 w-5 cursor-nwse-resize text-muted-foreground" aria-hidden>
             <svg viewBox="0 0 20 20" className="h-5 w-5"><path d="M13 2 L2 13 M16 6 L6 16 M18 11 L11 18" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" /></svg>
           </div>
         </div>
