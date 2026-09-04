@@ -71,6 +71,19 @@ describe("assistant detectIntent (multilingual)", () => {
     expect(detectIntent("我的平均评分是多少？").kind).toBe("average_rating");
   });
 
+  it("routes analytics queries", () => {
+    expect(detectIntent("brand analysis").kind).toBe("analytics_brand");
+    expect(detectIntent("哪个品牌最受欢迎").kind).toBe("analytics_brand");
+    expect(detectIntent("monthly service trend").kind).toBe("analytics_monthly_services");
+    expect(detectIntent("每月服务量趋势").kind).toBe("analytics_monthly_services");
+    expect(detectIntent("whats my revenue trend").kind).toBe("analytics_revenue");
+    expect(detectIntent("repeat customers analysis").kind).toBe("analytics_customers");
+    expect(detectIntent("top salesperson").kind).toBe("analytics_sales");
+    expect(detectIntent("inventory analytics").kind).toBe("analytics_inventory");
+    expect(detectIntent("show me the analytics").kind).toBe("analytics_overview");
+    expect(detectIntent("最常用的服务是什么").kind).toBe("analytics_service");
+  });
+
   it("falls back to general", () => {
     expect(detectIntent("你好").kind).toBe("general");
     expect(detectIntent("what is the meaning of life").kind).toBe("general");

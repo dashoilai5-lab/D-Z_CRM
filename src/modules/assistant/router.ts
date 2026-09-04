@@ -4,7 +4,8 @@
 
 export type IntentKind =
   | "booking_today" | "revenue_today" | "customers_count" | "jobs_overview" | "stock_alerts" | "reminders_due"
-  | "check_ins" | "parts_count" | "month_earnings" | "dead_stock_value" | "overdue_customers" | "average_rating";
+  | "check_ins" | "parts_count" | "month_earnings" | "dead_stock_value" | "overdue_customers" | "average_rating"
+  | "analytics_service" | "analytics_revenue" | "analytics_customers" | "analytics_monthly_services" | "analytics_brand" | "analytics_inventory" | "analytics_sales" | "analytics_overview";
 
 export type Intent =
   | { kind: IntentKind }
@@ -29,6 +30,19 @@ export function detectIntent(text: string): Intent {
   const custOverdue = !reminders && /(customer|customers|客户|顾客|pelanggan|保养|servis)/.test(t) && /(overdue|逾期|过期|terlewat|due|到期|seterusnya)/.test(t);
   const rating = /rating|评分|评价|review|bintang|星/.test(t);
   const job = /job|工单|servis/.test(t);
+
+  // ---- analytics / insight questions (trend/analysis/statistics/brand/monthly) ----
+  const analytics = /analytic|analys|分析|统计|insight|趋势|trend|prestasi|laporan|report|compare|对比|占比|share|breakdown|排行|popular|most popular|最受欢迎|\btop\b|最|salesperson/.test(t);
+  if (analytics) {
+    if (/brand|品牌|jenama/.test(t)) return { kind: "analytics_brand" };
+    if (/monthly|每月|月度|per month|by month|month trend/.test(t)) return { kind: "analytics_monthly_services" };
+    if (/top service|popular service|热门|最常|top servis/.test(t)) return { kind: "analytics_service" };
+    if (/salesperson|销售员|top sales|sales team|jualan/.test(t)) return { kind: "analytics_sales" };
+    if (/repeat|retention|回头|会员|member|loyalty|referral|推荐|忠诚/.test(t)) return { kind: "analytics_customers" };
+    if (/inventory|库存|inventori/.test(t)) return { kind: "analytics_inventory" };
+    if (/revenue|sales|销售|pendapatan|profit|营收/.test(t)) return { kind: "analytics_revenue" };
+    return { kind: "analytics_overview" };
+  }
 
   // ---- count / quantity questions (take precedence over how-to "how") ----
   if (count) {

@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { bookingService } from "@/modules/bookings/service";
 import { financeService } from "@/modules/finance/service";
 import { inventoryService } from "@/modules/inventory/service";
+import { salesAnalytics, serviceAnalytics, customerAnalytics, revenueAnalytics, inventoryAnalytics, monthlyServiceAnalytics, brandAnalytics } from "@/modules/analytics/service";
 
 export interface AssistantCtx {
   orgId: string;
@@ -51,6 +52,11 @@ export interface ToolResult { context: string; }
 /** sen → "RM 1,234.56" (pre-formatted so the model never does sen→RM math). */
 function formatRM(sen: number): string {
   return "RM " + (sen / 100).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+/** Compact a {label,value}[] into "label=value, ..." (top N). */
+function compact(arr: { label: string; value: number }[], n = 5): string {
+  return arr.slice(0, n).map((x) => x.label + "=" + x.value).join(", ");
 }
 
 export async function runTool(kind: string, ctx: AssistantCtx): Promise<ToolResult> {
@@ -113,6 +119,39 @@ export async function runTool(kind: string, ctx: AssistantCtx): Promise<ToolResu
       const agg = await db.review.aggregate({ where: { status: { in: ["SUBMITTED", "PUBLISHED"] }, rating: { not: null } }, _avg: { rating: true } });
       const avg = agg._avg.rating ? (Math.round(agg._avg.rating * 10) / 10).toFixed(1) : "0.0";
       return { context: "averageRating=" + avg };
+    }
+    case "analytics_service": {
+      const s = await serviceAnalytics(ctx.orgId, 30);
+      return { context: "serviceAnalytics30d: bookings=" + s.total + "; completed=" + s.completed + "; cancelled=" + s.cancelled + "; noShow=" + s.noShow + "; throughput=" + s.throughput + "; avgCompletionDays=" + s.avgCompletionDays + "; waitingParts=" + s.waitingParts + "; topServices=" + compact(s.topServices) + "; workload=" + compact(s.technicianWorkload) };
+    }
+    case "analytics_revenue": {
+      const r = await revenueAnalytics(ctx.orgId, 30);
+      return { context: "revenue30dSen=" + r.total + "; prev30dSen=" + r.prevTotal + "; pctChange=" + r.pctChange + "%; avgPerCustomerSen=" + r.avgPerCustomer + "; repeatRevenueSen=" + r.repeatRevenue + "; topServiceTypes=" + compact(r.byServiceType) + "; topCustomers=" + compact(r.perCustomer) };
+    }
+    case "analytics_customers": {
+      const c = await customerAnalytics(ctx.orgId, 30);
+      return { context: "customerAnalytics: total=" + c.total + "; new=" + c.new + "; repeat=" + c.repeat + "; retentionRate=" + c.retentionRate + "%; avgServiceFrequency=" + c.avgServiceFrequency + "; members=" + c.members + "; referrals=" + c.referrals + "; inactive=" + c.inactive };
+    }
+    case "analytics_monthly_services": {
+      const m = await monthlyServiceAnalytics(ctx.orgId, 12);
+      return { context: "monthlyServices=" + m.map((x) => x.key + "(" + x.count + " jobs/" + x.vehicles + " bikes)").join(", ") };
+    }
+    case "analytics_brand": {
+      const b = await brandAnalytics(ctx.orgId, 365);
+      return { context: "brands365d=" + b.slice(0, 6).map((x) => x.brand + "(jobs=" + x.count + ",vehicles=" + x.vehicles + ",share=" + x.share + "%,salesSen=" + x.salesSen + ")").join(", ") };
+    }
+    case "analytics_inventory": {
+      const i = await inventoryAnalytics(ctx.orgId);
+      return { context: "inventoryAnalytics: totalItems=" + i.totalItems + "; lowStock=" + i.lowStock + "; outOfStock=" + i.outOfStock + "; totalQty=" + i.totalQty + "; movements=" + i.movements };
+    }
+    case "analytics_sales": {
+      const s = await salesAnalytics(ctx.orgId, 30);
+      return { context: "salesAnalytics30d: leads=" + s.total + "; won=" + s.won + "; lost=" + s.lost + "; conversionRate=" + s.conversionRate + "%; staleLeads=" + s.stale + "; topSources=" + compact(s.bySource) + "; topSalespeople=" + compact(s.bySalesperson) + "; topModels=" + compact(s.byModel) };
+    }
+    case "analytics_overview": {
+      const [svc, rev, cust] = await Promise.all([serviceAnalytics(ctx.orgId, 30), revenueAnalytics(ctx.orgId, 30), customerAnalytics(ctx.orgId, 30)]);
+      const brand = await brandAnalytics(ctx.orgId, 365);
+      return { context: "overview30d: bookings=" + svc.total + "; completed=" + svc.completed + "; revenueSen=" + rev.total + "; pctChange=" + rev.pctChange + "%; customers=" + cust.total + "; repeat=" + cust.repeat + "; retention=" + cust.retentionRate + "%; topBrand=" + (brand[0] ? brand[0].brand : "n/a") };
     }
     default:
       return { context: "" };
