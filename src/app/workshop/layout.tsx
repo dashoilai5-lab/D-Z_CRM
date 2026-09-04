@@ -7,6 +7,7 @@ import { Sidebar } from "@/components/workshop/sidebar";
 import { MobileNav, type MobileNavItem } from "@/components/workshop/mobile-nav";
 import { FeatureTutorial } from "@/components/workshop/feature-tutorial";
 import { TutorialHelpMenu } from "@/components/workshop/tutorial-help-menu";
+import { WorkshopAIAssistant } from "@/components/workshop/ai-assistant";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { can } from "@/lib/auth/permissions";
@@ -70,6 +71,8 @@ export default async function WorkshopLayout({ children }: { children: React.Rea
       </div>
       {/* In-app feature tutorial: 首次进入某功能页触发该页引导 */}
       <FeatureTutorial userId={sidebarUser?.id ?? ""} />
+      {/* Workshop AI assistant — 左下角浮动助手（可调大小 / 可最小化） */}
+      <WorkshopAIAssistant userId={sidebarUser?.id ?? ""} />
     </div>
   );
 }

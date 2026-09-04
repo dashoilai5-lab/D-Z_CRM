@@ -16,7 +16,14 @@ export interface MessagingProvider {
 export interface AiProvider {
   readonly name: string;
   generate(prompt: string, opts?: { maxTokens?: number }): Promise<string>;
-  /** Production: OpenAI. Prototype: MockAIProvider (rule-based canned text). */
+  /** Multi-turn chat with optional system message. Production: OpenAI. Prototype: MockAIProvider (rule-based canned text). */
+  chat(messages: AiChatMessage[], opts?: { maxTokens?: number; temperature?: number }): Promise<string>;
+}
+
+/** A chat message for the AiProvider.chat (system / user / assistant). */
+export interface AiChatMessage {
+  role: "system" | "user" | "assistant";
+  content: string;
 }
 
 export interface StorageProvider {

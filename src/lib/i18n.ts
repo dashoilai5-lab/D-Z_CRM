@@ -2309,6 +2309,18 @@ export const DICT: Dict = {
   "role.MARKETING": { en: "MARKETING", zh: "营销", ms: "PEMASARAN" },
   "role.INVENTORY": { en: "INVENTORY", zh: "库存", ms: "INVENTORI" },
 
+  // ---- Workshop AI Assistant (floating widget) ----
+  "ai.assistant.title": { en: "AI Assistant", zh: "AI 助手", ms: "Pembantu AI" },
+  "ai.assistant.welcome": { en: "Hi! Ask me about today's bookings, today's revenue, or how to do things in the workshop.", zh: "你好！问我今日预约、今日收入，或如何在工坊里操作。", ms: "Hai! Tanya saya tentang tempahan hari ini, pendapatan hari ini, atau cara melakukan operasi." },
+  "ai.assistant.placeholder": { en: "Ask anything…", zh: "输入问题…", ms: "Tanya apa-apa…" },
+  "ai.assistant.thinking": { en: "Thinking…", zh: "思考中…", ms: "Berfikir…" },
+  "ai.assistant.send": { en: "Send", zh: "发送", ms: "Hantar" },
+  "ai.assistant.clear": { en: "Clear", zh: "清空", ms: "Padam" },
+  "ai.assistant.collapse": { en: "Collapse", zh: "收起", ms: "Kecilkan" },
+  "ai.assistant.chip.bookings": { en: "How many bookings today?", zh: "今天有多少预约？", ms: "Berapa tempahan hari ini?" },
+  "ai.assistant.chip.revenue": { en: "How much revenue today?", zh: "今天收入多少？", ms: "Berapa pendapatan hari ini?" },
+  "ai.assistant.chip.invoice": { en: "How do I create an invoice?", zh: "如何创建账单？", ms: "Macam mana cipta invois?" },
+
 };
 
 export function t(key: string, lang: Lang): string {

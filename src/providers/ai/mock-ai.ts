@@ -1,4 +1,4 @@
-import type { AiProvider } from "../types";
+import type { AiProvider, AiChatMessage } from "../types";
 
 /** MockAIProvider — deterministic canned generation (no LLM in prototype). */
 export class MockAIProvider implements AiProvider {
@@ -15,6 +15,18 @@ export class MockAIProvider implements AiProvider {
     if (p.includes("summary"))
       return "Pelanggan setia sejak 2019. Servis berkala konsisten, minyak hitam setiap 3,000 km.";
     return "D&Z Smart Workshop — servis berkualiti untuk motosikal anda.";
+  }
+
+  async chat(messages: AiChatMessage[]): Promise<string> {
+    // Deterministic mock: echo the last tool-provided context or a canned reply.
+    const lastUser = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+    const hasCtx = lastUser.includes("【上下文】");
+    if (hasCtx) {
+      const m = lastUser.match(/【上下文】([\s\S]*?)(?:\n\n|$)/);
+      if (m && m[1]) return "Mock: " + m[1].trim().slice(0, 160);
+    }
+    if (lastUser.toLowerCase().includes("booking")) return "Mock: 今日预约数据已拉取。请配置 OPENAI_API_KEY 以启用真实 AI 回答。";
+    return "Mock: 已分析。请配置 OPENAI_API_KEY 以启用真实 AI 回答。";
   }
 }
 

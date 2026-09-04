@@ -31,6 +31,9 @@ a service then `revalidatePath("/", "layout")` so both apps refresh immediately.
 
 ## Provider abstraction (§11)
 
+`AiProvider` now also exposes `chat(messages, opts)` (system + multi-turn) in addition to `generate(prompt)`.
+The Workshop AI assistant (`src/modules/assistant/`) routes intents → `tools.ts` (org/branch-scoped real data) → `AiProvider.chat` with a lang-aware system prompt, so replies are localized and grounded on live numbers. See SETUP §9 (2026-09-03).
+
 `src/providers/types.ts` defines `MessagingProvider / AiProvider / StorageProvider /
 PaymentProvider / NotificationProvider`. The prototype ships mock implementations
 (MockMessagingProvider = WhatsApp stand-in, etc.). Business modules only depend on
