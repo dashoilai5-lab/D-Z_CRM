@@ -4,7 +4,7 @@ import type { AiChatMessage } from "@/providers/types";
 import type { Lang } from "@/lib/i18n";
 import { detectIntent } from "./router";
 import { runTool, GUIDES, type AssistantCtx } from "./tools";
-import { buildSystemPrompt } from "./prompt";
+import { buildSystemPrompt, sanitizeReply } from "./prompt";
 
 export interface AssistantUserMessage { role: "user" | "assistant"; content: string; }
 
@@ -42,5 +42,6 @@ export async function askAssistant(args: { messages: AssistantUserMessage[]; lan
     }
   }
 
-  return await aiProvider.chat(final, { maxTokens: 700, temperature: 0.4 });
+  const raw = await aiProvider.chat(final, { maxTokens: 700, temperature: 0.4 });
+  return sanitizeReply(raw);
 }

@@ -12,5 +12,20 @@ export function buildSystemPrompt(lang: Lang): string {
     "- For how-to questions, give clear numbered steps from the 【指南】 block, written in " + LANG_NAME[lang] + ".",
     "- Only help with D&Z Workshop OS / motorcycle-workshop operations. For anything unrelated, politely decline.",
     "- Never ask for or echo passwords, API keys, or secrets.",
+    "- FORMATTING: Reply in PLAIN TEXT. Do NOT use Markdown, asterisks (* or **), backticks, hashtags (#), or bullet/emoji glyphs (•, - , ★). Use plain sentences and simple line breaks only. Numbers/steps may use \"1. step\".",
   ].join("\n");
+}
+
+/** Strip Markdown/asterisks so replies read as plain, professional text. */
+export function sanitizeReply(text: string): string {
+  return text
+    .replace(/\*\*/g, "")
+    .replace(/\*/g, "")
+    .replace(/`{1,3}/g, "")
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/^\s*[\-•★]\s+/gm, "")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/[ \t]+$/gm, "")
+    .trim();
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { detectIntent } from "@/modules/assistant/router";
-import { buildSystemPrompt } from "@/modules/assistant/prompt";
+import { buildSystemPrompt, sanitizeReply } from "@/modules/assistant/prompt";
 
 describe("assistant detectIntent (multilingual)", () => {
   it("routes revenue-today (zh/en/ms)", () => {
@@ -102,5 +102,18 @@ describe("assistant buildSystemPrompt", () => {
     const p = buildSystemPrompt("en");
     expect(p).toContain("NEVER invent");
     expect(p).toContain("secrets");
+    expect(p).toContain("PLAIN TEXT");
+  });
+});
+
+describe("assistant sanitizeReply", () => {
+  it("strips bold/italic asterisks", () => {
+    expect(sanitizeReply("**Yamaha** is top")).toBe("Yamaha is top");
+    expect(sanitizeReply("*hi*")).toBe("hi");
+  });
+  it("strips bullet glyphs + backticks + markdown links", () => {
+    expect(sanitizeReply("- **Oct 2025**: 0 jobs\n- **Nov**: 2")).toBe("Oct 2025: 0 jobs\nNov: 2");
+    expect(sanitizeReply("use `query`")).toBe("use query");
+    expect(sanitizeReply("[details](https://x.com)")).toBe("details");
   });
 });
