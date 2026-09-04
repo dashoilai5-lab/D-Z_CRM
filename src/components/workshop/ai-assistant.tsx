@@ -54,7 +54,7 @@ export function WorkshopAIAssistant({ userId }: { userId?: string }) {
       if (!dragRef.current) return;
       const dx = ev.clientX - dragRef.current.x;
       const dy = ev.clientY - dragRef.current.y;
-      setSize({ w: clamp(dragRef.current.w + dx, 280, 640), h: clamp(dragRef.current.h - dy, 320, 760) });
+      setSize({ w: clamp(dragRef.current.w - dx, 280, 640), h: clamp(dragRef.current.h - dy, 320, 760) });
     };
     const up = () => {
       dragRef.current = null;
@@ -95,7 +95,7 @@ export function WorkshopAIAssistant({ userId }: { userId?: string }) {
       {!open && (
         <button
           onClick={() => toggle(true)}
-          className="fixed bottom-4 left-4 z-50 flex h-13 w-13 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl hover:opacity-90 transition-opacity"
+          className="fixed bottom-4 right-4 z-50 flex h-13 w-13 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl hover:opacity-90 transition-opacity"
           aria-label={t("ai.assistant.title", lang)}
           style={{ height: 52, width: 52 }}
         >
@@ -105,7 +105,7 @@ export function WorkshopAIAssistant({ userId }: { userId?: string }) {
 
       {open && (
         <div
-          className="fixed bottom-4 left-4 z-50 flex flex-col rounded-2xl border bg-card text-card-foreground shadow-2xl overflow-hidden"
+          className="fixed bottom-4 right-4 z-50 flex flex-col rounded-2xl border bg-card text-card-foreground shadow-2xl overflow-hidden"
           style={{ width: size.w, height: size.h, maxWidth: "min(92vw, 640px)", maxHeight: "calc(100vh - 2rem)" }}
         >
           {/* header */}
@@ -161,7 +161,7 @@ export function WorkshopAIAssistant({ userId }: { userId?: string }) {
           </div>
 
           {/* resize handle */}
-          <div onPointerDown={onResizeStart} className="absolute bottom-0 right-0 h-5 w-5 cursor-nwse-resize text-muted-foreground" aria-hidden>
+          <div onPointerDown={onResizeStart} className="absolute bottom-0 left-0 h-5 w-5 cursor-nwse-resize text-muted-foreground" aria-hidden>
             <svg viewBox="0 0 20 20" className="h-5 w-5"><path d="M13 2 L2 13 M16 6 L6 16 M18 11 L11 18" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" /></svg>
           </div>
         </div>
