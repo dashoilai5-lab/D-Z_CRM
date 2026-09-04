@@ -1,29 +1,30 @@
 import { PageHeader } from "@/components/shared/page-header";
 import { db } from "@/lib/db";
 import { getLang } from "@/lib/get-lang";
+import { getSessionUser } from "@/lib/session-user";
 import { t } from "@/lib/i18n";
+import { ChecklistTemplateEditor } from "@/components/workshop/checklist-template-editor";
 
 export const dynamic = "force-dynamic";
 
 export default async function ChecklistsPage() {
-  const lang = await getLang();
-  const templates = await db.checklistTemplate.findMany({ include: { items: { orderBy: { order: "asc" } } } });
+  const [lang, session] = await Promise.all([getLang(), getSessionUser()]);
+  const templates = await db.checklistTemplate.findMany({
+    include: { items: { orderBy: { order: "asc" } } },
+    orderBy: { name: "asc" },
+  });
+  const dto = templates.map((tmpl) => ({
+    id: tmpl.id,
+    name: tmpl.name,
+    isDefault: tmpl.isDefault,
+    items: tmpl.items.map((i) => ({ id: i.id, name: i.name, category: i.category, order: i.order })),
+  }));
+  // Mechanics run checklists; management staff edit the library.
+  const canEdit = session.kind === "staff" && session.role !== "MECHANIC";
   return (
     <div>
       <PageHeader title={t("nav.checklists", lang)} subtitle={t("ws.checklist.subtitle", lang)} />
-      <div className="grid md:grid-cols-2 gap-4">
-        {templates.map((tmpl) => (
-          <div key={tmpl.id} className="dz-panel p-5">
-            <div className="font-semibold">{tmpl.name} {tmpl.isDefault && <Badge className="ml-1 bg-primary/10 text-primary">{t("ws.checklist.default", lang)}</Badge>}</div>
-            <div className="mt-3 grid grid-cols-2 gap-1.5">
-              {tmpl.items.map((i) => (
-                <div key={i.id} className="rounded-lg bg-muted/40 px-2.5 py-1.5 text-xs">{i.order}. {i.name}</div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <ChecklistTemplateEditor templates={dto} canEdit={canEdit} />
     </div>
   );
 }
-import { Badge } from "@/components/ui/badge";

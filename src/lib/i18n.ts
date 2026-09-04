@@ -478,6 +478,18 @@ export const DICT: Dict = {
   "ws.checklist.in-progress": { en: "In progress", zh: "进行中", ms: "Dalam proses" },
   "ws.checklist.subtitle": { en: "Inspection templates used by mechanics", zh: "机械师使用的检查模板", ms: "Templat pemeriksaan yang digunakan oleh mekanik" },
   "ws.checklist.title": { en: "Inspection Checklist", zh: "检查清单", ms: "Senarai Semak Pemeriksaan" },
+  "ws.checklist.add-template": { en: "Add template", zh: "添加模板", ms: "Tambah templat" },
+  "ws.checklist.add-item": { en: "Add item", zh: "添加检查项", ms: "Tambah item" },
+  "ws.checklist.delete-template": { en: "Delete", zh: "删除", ms: "Padam" },
+  "ws.checklist.delete-item": { en: "Delete", zh: "删除", ms: "Padam" },
+  "ws.checklist.set-default": { en: "Set default", zh: "设为默认", ms: "Jadikan lalai" },
+  "ws.checklist.item-name": { en: "Item name", zh: "检查项名称", ms: "Nama item" },
+  "ws.checklist.item-category": { en: "Category", zh: "分类", ms: "Kategori" },
+  "ws.checklist.new-item": { en: "New Item", zh: "新检查项", ms: "Item Baru" },
+  "ws.checklist.new-template": { en: "New Template", zh: "新模板", ms: "Templat Baru" },
+  "ws.checklist.confirm-delete": { en: "Are you sure?", zh: "确定删除？", ms: "Pastikan?" },
+  "ws.checklist.empty": { en: "No checklist templates yet.", zh: "暂无检查模板。", ms: "Tiada templat lagi." },
+  "ws.checklist.last-template": { en: "Cannot delete the last template.", zh: "不能删除最后一个模板。", ms: "Tidak boleh padam templat terakhir." },
 
   // --- workshop finance: profit dashboard ---
   "ws.finance.profit.subtitle": { en: "Revenue = Sales · Gross Profit = Revenue − COGS · Margin = GP / Revenue × 100 (§38)", zh: "营收 = 销售额 · 毛利 = 营收 − 成本 · 利润率 = 毛利 / 营收 × 100（§38）", ms: "Hasil = Jualan · Untung Kasar = Hasil − KOS · Margin = UK / Hasil × 100 (§38)" },
