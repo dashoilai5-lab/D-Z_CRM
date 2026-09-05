@@ -74,3 +74,6 @@ docs/ppt-assets/
 tutorial-screens/
 docs/*User Guide*.docx
 app-screenshots/
+
+# production database dumps (contains customer PII — never commit)
+docs/backups/

@@ -1,72 +1,68 @@
-# HANDOFF — D&Z Platform（2026-09-02 17:3x，session 67081e33）
+# HANDOFF — D&Z Platform（2026-09-04 17:1x）
 
 > 本文件由 session-pack 生成，session-resume 可续接。
 
 ## 一句话状态
-本地 = main @ 341c409（LOCAL merge，**未 push**；push 前须先生产 PG 加 Message.externalId 列，见 §5.3.1）。前一轮大项① i18n 全中文部署（304a77f/3be5a14）② Workshop OS 语言切换（cf5f23f）③ 三端截图文档 ④ TESTING_GUIDE ⑤ 生产测试数据清理。本轮：⑧ provider 换真——把 feat/whatsapp-real-provider 合并进 main（Meta WhatsApp provider + Message.externalId + 回执 webhook + RLS fix），go-live runbook 已写进 SETUP §5.3.1。
+本地 = main @ e85b363（已 push，生产已部署，四端全 200）。本轮：把独立 Vite 介绍站（DZ-Intro-Site）集成为 CRM 的 /intro 静态页（public/intro，base=/intro/），提供四链接（介绍页/workshop/rider/mechanic）；TESTING_GUIDE.md 新增介绍页 + 重生成 PDF。前序：AI assistant（analytics+纯文本）、checklist 可编辑、provider（WhatsApp externalId）等已上线。
 
 ## 会话信息
-- 原会话 ID：session-67081e33-cf2f-428c-9e46-8689c06d7b79
-- 打包时间：2026-09-02
+- 原会话 ID：session-c5a58fbb-3d0a-4fd7-b8f8-bdc43069d460
+- 打包时间：2026-09-04
 - 续接口令：继续 D&Z
 
 ## 完成进度
-- i18n 全端：+~470 词条（i18n.ts ~2031），tsc/lint/build 0 错误；304a77f + 3be5a14 已上生产并验证 UI 全中文（数据值/品牌/原始枚举保持原文）。
-- 语言切换：Workshop OS 桌面+移动顶栏加 LanguageToggle（cf5f23f），:3002+生产实测点击中文整页切换。
-- 截图：app-screenshots/{Workshop OS 50, Mechanic 6, Rider 16}（Rider 为英文版）。工具 scripts/capture-app.ts（LANG env，登录后再设 dz_lang cookie 修 rider 中文登录）。
-- 文档：docs/*截图说明.{md,pdf,docx}（DOCX 首屏）；docs/TESTING_GUIDE.md + .pdf（同事测试：Manager/Mechanic 可用账号、Rider 自助注册）。
-- 生产数据清理：客户 111→2（Ahmad Danial、Muhammad binti Zain），员工 11 保留，工单 186→22/摩托 139→4/发票 155→14/预约 43→10；Supabase auth 23→12（11 孤儿删）。备份 docs/backups/prod-backup-2026-09-02T08-59-07-884Z.sql（2MB 全库，可回滚）。
-- ManagerDemo/MechanicDemo 密码重置为 Dashoil@!789（managerdemo@gmail.com / mechanicdemo@gmail.com，均已实测登录）。
-- 前序（已部署）：Add Staff 登录（6bc5a38）、教程 DOCX（4f3f594）、发票收款（438f233）等。
-- provider 换真（本轮，本地未 push）：发现 feat/whatsapp-real-provider（d9f297a WhatsApp + 5857cc4 RLS fix）未合 main → 已合入 main（341c409，双 schema 加 Message.externalId + toE164ForWhatsApp 归一化 + 三处持久化 externalId + /api/webhooks/whatsapp 回执）；生产 build 复现通过（prisma generate --schema schema.pg.prisma && next build = 0），tsc0/lint0(118w)/test29；SETUP §5.3.1 上线 runbook（生产 PG 幂等加列→push→Vercel env→Meta webhook）；本地 dev.db 已含列，:3002/:3003/:3102 重启后 200。
-- **AI Assistant（feat/workshop-ai-assistant，86c27e4 本地未 push）**：Workshop OS 左下角浮动 FAB↔可调面板↔最小化；多轮对话按当前语言回复；intent router + tool registry 接地真值；AiProvider 扩展 chat(system+messages)；OpenAI key 配 gitignore 的 .env（OPENAI_MODEL=gpt-4o-mini）；tsc0/lint0/test39/build 全绿。
+- **介绍站**（独立项目 /Users/Jun/Documents/DZ-Intro-Site）：Vite+React19+Tailwind4；暗色金主题（D&Z amber oklch(0.62 0.19 45)）、Clash Display+Space Grotesk；Aurora/Ember 粒子、SplitText/GradientText/CountUp/Marquee/Magnetic、glass 卡；三语 EN/中文/BM（i18n context + LangToggle）；Hero 产品视觉（Workshop 浏览器 mockup + Rider/Mechanic 手机浮层）；产品视频区（intro.mp4，play/pause/replay，hover 控件）；responsive。
+- **集成**：Vite base=/intro/ 构建；硬编码 /images、/videos 改 /intro/...；dist 拷入 CRM public/intro/（含 13MB 视频）；CRM tsc 0 + 生产 build 复现通过；分支 feat/intro-site 合并 main 并 push（4db10f9..f055fa6）部署；/intro 200。
+- **四链接**：介绍页 https://d-z-crm.vercel.app/intro / Workshop /login / Rider /rider/login / Mechanic /mechanic-app（三端 App 200/200/307）。
+- **TESTING_GUIDE**：新增 〇、介绍页 + 四入口；PDF 重生成（docs/TESTING_GUIDE.pdf 421K，未跟踪）。commit e85b363 已 push。
+- 前序（已部署）：AI assistant（intent router + tools + Analytics 全数据 + sanitizeReply 纯文本）、checklist 可编辑（ChecklistTemplateEditor）、provider 上线（Message.externalId 生产已补列）。
 
 ## 下一步（按优先级）
-1. **provider 换真上线（代码已就绪 341c409，本地未 push）**——按 SETUP §5.3.1 顺序：① 生产 PG 幂等加列 `ALTER TABLE "Message" ADD COLUMN IF NOT EXISTS "externalId" TEXT;`（先于 push）② `git push origin main` 触发 auto-deploy ③ Vercel 配 WHATSAPP_API_TOKEN/PHONE_ID/VERIFY_TOKEN/APP_SECRET(+OPENAI_API_KEY) ④ Meta 配 webhook；Payment/Notification provider 仍未做（需选网关/推送，待用户定）
-2. 经销商验证（需真人：DEALER_FEEDBACK.md + DEMO_SCRIPT + 6 产品决策，dtodo 59e04e5e）
-3. ✅ 已核验：清理结果无需再同步 TESTING_GUIDE.md / DEMO_ACCOUNTS.md（无已删旧账号引用）
-4. 待用户定：MANAGER 权限开放更多模块；枚举下拉（MAINTENANCE/REPAIR、WHATSAPP/SMS/EMAIL/APP）是否翻中文；Rider 文档标题/说明是否改英文；Payment/Notification provider 选型
-5. commit 本轮 untracked 产物（docs/*截图说明、TESTING_GUIDE、scripts/capture-app.ts/gen-*.ts 等；**prod 备份 SQL docs/backups/ 与 screenshots/ 需先 gitignore 或移出仓库**，勿入库）
+1. **介绍站后续改动**：改 DZ-Intro-Site 源码 → node node_modules/vite/bin/vite.js build（base=/intro/）→ 拷 dist/* 到 CRM public/intro/ → CRM 提交部署。勿改 CRM Next 代码。
+2. 经销商验证（需真人：DEALER_FEEDBACK + DEMO_SCRIPT，dtodo 59e04e5e）。
+3. provider 换真收尾（dtodo 92b29072）：Vercel 配 WHATSAPP_API_TOKEN/PHONE_ID/VERIFY_TOKEN(+OPENAI_API_KEY) + Meta webhook；生产 PG externalId 列已补；Payment/Notification 未做（选型待定）。
+4. 待用户定：Payment/Notification 选型；MANAGER 权限开放更多模块；枚举下拉（MAINTENANCE/REPAIR、WHATSAPP/SMS/EMAIL/APP）翻中文；Rider 文档语言。
+5. 处理 58 个 untracked 交付物（docs/backups/*.sql 生产备份、screenshots、TESTING_GUIDE.pdf、ACCEPTANCE_REPORT.html、scripts/*.ts 等）——提交前先 gitignore/排除敏感项。
 
 ## 基线测试（命令 + 期望通过数）
 - pnpm exec tsc --noEmit：0 错误
 - pnpm lint：0 errors（~118 warnings 存量）
-- pnpm test：29 通过（5 文件）
+- pnpm test：48 通过（6 文件）
 - pnpm build：本地 sqlite 通过
-- 生产 build 复现（改 schema 后必跑）：pnpm exec prisma generate --schema prisma/schema.pg.prisma && pnpm exec next build：0
+- 生产 build 复现：prisma generate --schema schema.pg.prisma && next build：0
 
 ## 服务与恢复
 - workshop demo :3002：curl 200 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.server
 - rider demo :3003：curl 200 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.rider
 - e2e :3102：curl 200 ｜ 挂了：launchctl kickstart -k gui/$(id -u)/com.dz-platform.e2e
-- 生产：curl https://d-z-crm.vercel.app（push main auto-deploy；永不本地 vercel deploy）
+- 生产：https://d-z-crm.vercel.app（push main auto-deploy）；介绍页 https://d-z-crm.vercel.app/intro（/intro/ 308→/intro）
 
 ## git 状态
-- 分支：main @ 341c409（LOCAL 已合并 provider 分支，**未 push**；push 前先做生产 PG externalId 迁移）；未跟踪约 58 项（docs/*截图说明、TESTING_GUIDE.*、docs/backups/*.sql、docs/logo-png、screenshots、scripts/capture-app.ts/gen-*.ts 等；app-screenshots/ 已 gitignore）。**注意**：prod 备份 SQL（docs/backups/prod-backup-*.sql）与 screenshots/ 含敏感/调试内容，提交前先 gitignore 或移出仓库。
-- 注意：改 Prisma schema 必须 sqlite + schema.pg.prisma 同步
+- 分支：main @ e85b363（已推送，生产已部署）；当前工作分支 feat/login-app-identity（登录页三端差异化，已本地验证未推送）；未跟踪约 57 项（screenshots、TESTING_GUIDE.pdf、ACCEPTANCE_REPORT.html、scripts/*.ts、docs/logo-png、docs 文档等）。docs/backups/*.sql（生产库备份含 PII）已加入 .gitignore 不再入库。
+- 注意：改 Prisma schema 必须 sqlite + schema.pg.prisma 同步；勿 git add -A。
 
 ## 关键决策与约定
-- 业务日期（预约/时段）存 UTC 零点（YYYY-MM-DD+'T00:00:00Z'）；真实时间戳 UTC，显示 toISOString().slice(0,10)
-- 截图/教学用生产（本地 dev.db 的 Customer.authId 绑定会丢，rider 本地登录报 No D&Z account linked）
-- i18n：只翻 UI 文案，数据值（车款/姓名/车牌/地址/日期/金额/促销名/服务类型/品牌 D&Z）与原始枚举代码不翻
-- 单租户 app（org findFirst）；生产 DB 变更用幂等 SQL 定向加（勿 db push，会 DROP qrEnabled）
-- DICT 追加在 i18n.ts 的 DICT 对象末尾；词条前缀 ws./mech./navr./nav./form./status./ai./role./inv. 等
+- 介绍站集成：Vite base=/intro/ → CRM public/intro/ 静态，同一 Next 部署下 /intro 提供介绍页；不改 Next 路由/构建（safe）；硬编码资源路径需 /intro/ 前缀。
+- 业务日期存 UTC 零点（YYYY-MM-DD+T00:00:00Z）；真实时间戳 UTC；金额整数 sen，展示预格式化 RM。
+- 三端 i18n：只翻 UI 文案，数据值/品牌/原始枚举不翻；DICT 追加 i18n.ts 末尾。
+- 生产 DB 变更用幂等 SQL 定向加（勿 db push）；双 schema 同步铁律。
+- local demo 用 :3002（勿 3000，被另一 AI 会话占用并 kill 占用者）。
+- 生产文档截图：dev.db reset 后 Customer.authId 绑定丢失，教学截图一律用生产。
 
 ## 踩坑与事实
-- Playwright addInitScript 跑在隔离 world（闭包变量丢失，计数器在主 world 为 0）；主 world 需用 page.evaluate 点引导关闭按钮 / 写 localStorage 才生效
-- capture-app.ts：登录后再 set dz_lang cookie——若建上下文就设中文，rider 登录页 Email tab 按钮文案变「邮箱」，hasText:"Email" 找不到导致登录失败
-- docx ImageRun type 用 "jpg"（非 "jpeg"）；sharp 需 limitInputPixels:false（超大全页图如 Marketing-Posters）
-- .env 值带引号需去引号再解析；addCookies 用 domain+path 勿 url+path 混用
-- RLS helper app_jwt_claim 必须优先读 user_metadata（Supabase JWT 顶层 role='authenticated' 遮蔽业务 role）
-- 生产数据清理：Customer 外键多为 RESTRICT 无级联，需按 BUSINESS_TABLES 叶子→根顺序删；先全库备份
-- merge 提交前**勿 `git add -A`**（会把手头 untracked 产物一并卷进 merge commit）——只 `git add` 冲突/合并文件；若已卷入，备份分支 + `git reset --soft`/`--hard` 重做
+- pnpm 10 的 verify-deps-before-run 因 esbuild ignored-builds 硬报错（pnpm.onlyBuiltDependencies 弃用、pnpm-workspace.yaml 亦未生效）→ 直跑 node node_modules/vite/bin/vite.js build|dev 绕过。
+- sips 默认居中裁剪，顶部裁剪用 --cropOffset 0 0；项目无 sharp（改 sips）。
+- /intro/ 308→/intro（Next trailing slash），用 /intro 无斜杠。
+- Next.js 对 public/<subdir>/index.html 的托管需部署完成才 200（期间服务旧版）。
+- OPENAI key 曾在对话明文出现 → 上线后建议轮换。
+- Playwright 合成事件不触发 CSS :hover；下拉需 click 状态（ExploreMenu 已做 hover+click 双模式）。
 
 ## 待办（dtodo）
 - 59e04e5e 经销商验证（需真人，逾期 2026-08-19）
-- 92b29072 生产迁移（q2，逾期 2026-08-19）：provider 换真部分完成
+- 92b29072 生产迁移（q2，逾期 2026-08-19）：provider 换真——WhatsApp 代码已合并+生产 externalId 列已补；剩 Vercel env + Meta webhook + Payment/Notification 选型
 
 ## 新会话头 10 分钟
-1. curl :3002 / :3003 / :3102 + 生产探活（挂了 launchctl kickstart）
+1. curl :3002 / :3003 / :3102 / prod / /intro 探活（挂了 launchctl kickstart）
 2. 读 docs/HANDOFF.md + memory project/daily + dtodo
-3. 跑基线（tsc 0 / lint 0errors / test 26 / build）
-4. 从下一步挑：经销商验证(需真人) / provider 换真 / 同步清理到文档 / commit untracked 产物
+3. 跑基线（tsc 0 / lint 0errors / test 48 / build）
+4. 从下一步挑：介绍站改动 / 经销商验证(需真人) / provider env+webhook / 处理 untracked
