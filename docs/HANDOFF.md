@@ -3,7 +3,7 @@
 > 本文件由 session-pack 生成，session-resume 可续接。
 
 ## 一句话状态
-本地 = main @ e85b363（已 push，生产已部署，四端全 200）。本轮：把独立 Vite 介绍站（DZ-Intro-Site）集成为 CRM 的 /intro 静态页（public/intro，base=/intro/），提供四链接（介绍页/workshop/rider/mechanic）；TESTING_GUIDE.md 新增介绍页 + 重生成 PDF。前序：AI assistant（analytics+纯文本）、checklist 可编辑、provider（WhatsApp externalId）等已上线。
+本地 = main @ 06be6cd（已 push，生产已部署，四端全 200）。本轮：登录页三端差异化已上线（Workshop/Rider/Mechanic 专属配色+字眼+互跳）。前序：把独立 Vite 介绍站（DZ-Intro-Site）集成为 CRM 的 /intro 静态页（public/intro，base=/intro/），提供四链接（介绍页/workshop/rider/mechanic）；TESTING_GUIDE.md 新增介绍页 + 重生成 PDF。前序：AI assistant（analytics+纯文本）、checklist 可编辑、provider（WhatsApp externalId）等已上线。
 
 ## 会话信息
 - 原会话 ID：session-c5a58fbb-3d0a-4fd7-b8f8-bdc43069d460
@@ -38,7 +38,7 @@
 - 生产：https://d-z-crm.vercel.app（push main auto-deploy）；介绍页 https://d-z-crm.vercel.app/intro（/intro/ 308→/intro）
 
 ## git 状态
-- 分支：main @ e85b363（已推送，生产已部署）；当前工作分支 feat/login-app-identity（登录页三端差异化，已本地验证未推送）；未跟踪约 57 项（screenshots、TESTING_GUIDE.pdf、ACCEPTANCE_REPORT.html、scripts/*.ts、docs/logo-png、docs 文档等）。docs/backups/*.sql（生产库备份含 PII）已加入 .gitignore 不再入库。
+- 分支：main @ 06be6cd（已推送，生产已部署）——登录页三端差异化已合并上线（Workshop 琥珀 / Rider 青绿 / Mechanic 宝蓝 + 名牌徽章 + 标题/口号 + 底部角色互跳 + 新增 /mechanic-app/login；认证/跳转逻辑未动）。docs/backups/ 已 gitignore。；未跟踪约 57 项（screenshots、TESTING_GUIDE.pdf、ACCEPTANCE_REPORT.html、scripts/*.ts、docs/logo-png、docs 文档等）。docs/backups/*.sql（生产库备份含 PII）已加入 .gitignore 不再入库。
 - 注意：改 Prisma schema 必须 sqlite + schema.pg.prisma 同步；勿 git add -A。
 
 ## 关键决策与约定
