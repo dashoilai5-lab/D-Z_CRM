@@ -49,7 +49,7 @@ export default async function WorkshopLayout({ children }: { children: React.Rea
     .map((i) => ({ key: i.key, href: i.href, label: i.label }));
 
   return (
-    <div className="flex min-h-screen bg-muted/30">
+    <div className="flex min-h-screen bg-muted/30 bg-[radial-gradient(90%_70%_at_88%_-12%,oklch(0.62_0.19_45/0.07),transparent_60%)]">
       <Sidebar persona={persona} sections={filteredNav} role={session.authenticated ? session.role : undefined} user={sidebarUser} lang={lang} />
       <div className="flex-1 flex flex-col min-w-0">
         <div className="hidden lg:flex items-center gap-4 border-b bg-background px-6 h-16">

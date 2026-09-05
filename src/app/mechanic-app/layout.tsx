@@ -25,7 +25,7 @@ export default async function MechanicAppLayout({ children }: { children: React.
   const unread = session.user ? await db.notification.count({ where: { userId: session.user.id, readAt: null } }) : 0;
 
   return (
-    <div className="flex min-h-dvh flex-col bg-muted/40">
+    <div className="flex min-h-dvh flex-col bg-muted/40 bg-[radial-gradient(110%_55%_at_50%_-12%,oklch(0.62_0.19_45/0.06),transparent_65%)]">
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-md items-center justify-between px-4 py-3">
           <div className="flex items-center gap-2">

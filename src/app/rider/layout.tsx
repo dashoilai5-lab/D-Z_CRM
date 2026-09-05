@@ -26,7 +26,7 @@ export default async function RiderLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-muted/40">
+    <div className="flex min-h-dvh flex-col bg-muted/40 bg-[radial-gradient(110%_55%_at_50%_-12%,oklch(0.62_0.19_45/0.06),transparent_65%)]">
       {/* 认证页（login/signup）无底部导航；其他页保留（内容底部预留 nav 空间） */}
       <main className={"flex-1 w-full max-w-md mx-auto px-4 py-6 " + (isAuthPage ? "pb-10" : "pb-28")}>
         {children}

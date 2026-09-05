@@ -103,10 +103,10 @@ export function Sidebar({ persona, role, sections, user, lang = "en" }: { person
                     aria-current={active ? "page" : undefined}
                     title={expanded ? undefined : item.label}
                     className={cn(
-                      "relative flex items-center rounded-lg text-[13px] font-medium transition-colors",
+                      "relative flex items-center rounded-lg text-[13px] font-medium transition-all duration-300 ease-spring",
                       expanded ? "gap-2.5 px-2.5 py-1.5" : "gap-0 justify-center px-0 py-2",
                       active
-                        ? "bg-sidebar-primary text-sidebar-primary-foreground font-semibold shadow-sm"
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground font-semibold shadow-[0_6px_20px_-6px_oklch(0.62_0.19_45_/_0.6)]"
                         : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
                     )}
                   >

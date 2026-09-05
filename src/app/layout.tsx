@@ -29,6 +29,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <RouteProgress />
         <RouteOverlay />
+        <div aria-hidden className="grain-overlay" />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
           <LanguageProvider lang={lang}>{children}</LanguageProvider>
         </ThemeProvider>

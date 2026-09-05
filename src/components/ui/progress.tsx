@@ -45,7 +45,7 @@ function ProgressIndicator({
   return (
     <ProgressPrimitive.Indicator
       data-slot="progress-indicator"
-      className={cn("h-full bg-primary transition-all", className)}
+      className={cn("h-full bg-gradient-to-r from-primary to-[color-mix(in_oklab,var(--primary),white_18%)] transition-all duration-500 ease-spring", className)}
       {...props}
     />
   )
