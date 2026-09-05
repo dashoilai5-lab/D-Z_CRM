@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { AppBrandIcon } from "@/components/shared/app-brand-icon";
 import { getSessionUser } from "@/lib/session-user";
 import { getLang } from "@/lib/get-lang";
@@ -8,12 +9,17 @@ import { MechanicNav } from "@/components/mechanic/mechanic-nav";
 
 /** Mechanic App：仅 MECHANIC 角色；移动端 app 布局（rider 风格 + Grab 底部导航）。 */
 export default async function MechanicAppLayout({ children }: { children: React.ReactNode }) {
-  const lang = await getLang();
-  const session = await getSessionUser();
+  const [session, lang] = await Promise.all([getSessionUser(), getLang()]);
+  const h = await headers();
+  const pathname = h.get("x-pathname") ?? "";
+  const isAuthPage = pathname === "/mechanic-app/login";
+
+  // 登录页：独立品牌页，不做任何守卫、不渲染 app 骨架（避免套在 mechanic chrome 里）
+  if (isAuthPage) return <>{children}</>;
+
   if (session.kind === "customer") redirect("/rider/home"); // rider 顾客不能进 mechanic app
-  if (session.kind !== "staff" || session.role !== "MECHANIC") {
-    redirect("/workshop/dashboard"); // 其他员工 → workshop OS
-  }
+  if (session.kind === "none") redirect("/mechanic-app/login"); // 未登录 → 技师专属登录页
+  if (session.role !== "MECHANIC") redirect("/workshop/dashboard"); // 其他员工 → workshop OS
 
   // alerts 未读角标（userId-scoped notifications 未读计数）
   const unread = session.user ? await db.notification.count({ where: { userId: session.user.id, readAt: null } }) : 0;

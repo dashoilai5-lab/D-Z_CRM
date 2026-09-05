@@ -74,7 +74,7 @@ export default async function MechanicProfilePage() {
       {/* 头像 + 名字（rider profile 风格） */}
       <div className="relative">
         <div className="absolute right-0 top-0 flex items-center gap-2">
-          <SignOutIconButton href="/login" title={t("mech.signout", lang)} />
+          <SignOutIconButton href="/mechanic-app/login" title={t("mech.signout", lang)} />
           <Link href="/mechanic-app/settings" className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-muted/60 text-muted-foreground hover:bg-muted" aria-label={t("settings.title", lang)}>
             <SettingsIcon className="h-4 w-4" />
           </Link>

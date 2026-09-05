@@ -72,9 +72,13 @@ export async function middleware(req: NextRequest) {
     return r;
   }
 
-  // mechanic-app：未登录 → workshop 登录页（角色守卫在 layout 里做）
+  // mechanic-app：未登录 → 技师专属登录页（/mechanic-app/login 本身放行）
   if (pathname.startsWith("/mechanic-app")) {
-    const url = new URL("/login", req.url);
+    if (pathname === "/mechanic-app/login") {
+      response.headers.set("x-pathname", pathname);
+      return response;
+    }
+    const url = new URL("/mechanic-app/login", req.url);
     url.searchParams.set("next", pathname);
     const r = NextResponse.redirect(url);
     r.headers.set("x-pathname", pathname);
